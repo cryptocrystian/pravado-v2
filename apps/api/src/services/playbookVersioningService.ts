@@ -169,14 +169,19 @@ export function diffGraphs(
       const changes: string[] = [];
 
       if (oldNode.data.label !== newNode.data.label) {
-        changes.push(`Label: "${oldNode.data.label}" → "${newNode.data.label}"`);
+        changes.push(
+          `Label: "${oldNode.data.label}" → "${newNode.data.label}"`
+        );
       }
 
       if (oldNode.type !== newNode.type) {
         changes.push(`Type: ${oldNode.type} → ${newNode.type}`);
       }
 
-      if (JSON.stringify(oldNode.data.config) !== JSON.stringify(newNode.data.config)) {
+      if (
+        JSON.stringify(oldNode.data.config) !==
+        JSON.stringify(newNode.data.config)
+      ) {
         changes.push('Configuration changed');
       }
 

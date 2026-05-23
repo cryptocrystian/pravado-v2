@@ -50,7 +50,10 @@ import { GovernanceService } from '../../services/governanceService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: SupabaseClient
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -66,11 +69,16 @@ async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<s
  * Validator schemas use .nullable().optional() producing T | null | undefined,
  * but service types expect T | undefined
  */
-function stripNulls<T extends Record<string, unknown>>(obj: T): { [K in keyof T]: Exclude<T[K], null> } {
+function stripNulls<T extends Record<string, unknown>>(
+  obj: T
+): { [K in keyof T]: Exclude<T[K], null> } {
   const result = {} as { [K in keyof T]: Exclude<T[K], null> };
   for (const key in obj) {
     const value = obj[key];
-    result[key] = (value === null ? undefined : value) as Exclude<T[typeof key], null>;
+    result[key] = (value === null ? undefined : value) as Exclude<
+      T[typeof key],
+      null
+    >;
   }
   return result;
 }
@@ -94,7 +102,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
   }
 
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const governanceService = new GovernanceService(supabase);
 
   // ========================================
@@ -120,15 +131,24 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governancePoliciesQuerySchema.safeParse(request.query);
+        const parseResult = governancePoliciesQuerySchema.safeParse(
+          request.query
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await governanceService.listPolicies(orgId, parseResult.data);
+        const result = await governanceService.listPolicies(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -160,15 +180,25 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = createGovernancePolicyInputSchema.safeParse(request.body);
+        const parseResult = createGovernancePolicyInputSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const policy = await governanceService.createPolicy(orgId, parseResult.data, userId);
+        const policy = await governanceService.createPolicy(
+          orgId,
+          parseResult.data,
+          userId
+        );
         return reply.code(201).send({ success: true, data: policy });
       } catch (err) {
         const error = err as Error;
@@ -200,7 +230,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governancePolicyIdParamSchema.safeParse(request.params);
+        const parseResult = governancePolicyIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -208,7 +240,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const result = await governanceService.getPolicyDetail(orgId, parseResult.data.id);
+        const result = await governanceService.getPolicyDetail(
+          orgId,
+          parseResult.data.id
+        );
         if (!result) {
           return reply.code(404).send({
             success: false,
@@ -247,7 +282,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governancePolicyIdParamSchema.safeParse(request.params);
+        const paramsResult = governancePolicyIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -255,15 +292,26 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const bodyResult = updateGovernancePolicyInputSchema.safeParse(request.body);
+        const bodyResult = updateGovernancePolicyInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
-        const policy = await governanceService.updatePolicy(orgId, paramsResult.data.id, stripNulls(bodyResult.data), userId);
+        const policy = await governanceService.updatePolicy(
+          orgId,
+          paramsResult.data.id,
+          stripNulls(bodyResult.data),
+          userId
+        );
         return reply.send({ success: true, data: policy });
       } catch (err) {
         const error = err as Error;
@@ -295,7 +343,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governancePolicyIdParamSchema.safeParse(request.params);
+        const parseResult = governancePolicyIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -335,7 +385,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governancePolicyIdParamSchema.safeParse(request.params);
+        const parseResult = governancePolicyIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -343,7 +395,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const result = await governanceService.getPolicyVersions(orgId, parseResult.data.id);
+        const result = await governanceService.getPolicyVersions(
+          orgId,
+          parseResult.data.id
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -364,81 +419,87 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
    * GET /api/v1/governance/rules
    * List governance rules
    */
-  server.get(
-    '/rules',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+  server.get('/rules', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
 
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
-          });
-        }
-
-        const parseResult = governanceRulesQuerySchema.safeParse(request.query);
-        if (!parseResult.success) {
-          return reply.code(400).send({
-            success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
-          });
-        }
-
-        const result = await governanceService.listRules(orgId, parseResult.data);
-        return reply.send({ success: true, data: result });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Governance] Failed to list rules', { error });
-        return reply.code(500).send({
+      if (!orgId) {
+        return reply.code(404).send({
           success: false,
-          error: { code: 'INTERNAL_ERROR', message: error.message },
+          error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
         });
       }
+
+      const parseResult = governanceRulesQuerySchema.safeParse(request.query);
+      if (!parseResult.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid query parameters',
+            details: parseResult.error.errors,
+          },
+        });
+      }
+
+      const result = await governanceService.listRules(orgId, parseResult.data);
+      return reply.send({ success: true, data: result });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Governance] Failed to list rules', { error });
+      return reply.code(500).send({
+        success: false,
+        error: { code: 'INTERNAL_ERROR', message: error.message },
+      });
     }
-  );
+  });
 
   /**
    * POST /api/v1/governance/rules
    * Create a new governance rule
    */
-  server.post(
-    '/rules',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+  server.post('/rules', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
 
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
-          });
-        }
-
-        const parseResult = createGovernanceRuleInputSchema.safeParse(request.body);
-        if (!parseResult.success) {
-          return reply.code(400).send({
-            success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
-          });
-        }
-
-        const rule = await governanceService.createRule(orgId, parseResult.data, userId);
-        return reply.code(201).send({ success: true, data: rule });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Governance] Failed to create rule', { error });
-        return reply.code(500).send({
+      if (!orgId) {
+        return reply.code(404).send({
           success: false,
-          error: { code: 'INTERNAL_ERROR', message: error.message },
+          error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
         });
       }
+
+      const parseResult = createGovernanceRuleInputSchema.safeParse(
+        request.body
+      );
+      if (!parseResult.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request body',
+            details: parseResult.error.errors,
+          },
+        });
+      }
+
+      const rule = await governanceService.createRule(
+        orgId,
+        parseResult.data,
+        userId
+      );
+      return reply.code(201).send({ success: true, data: rule });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Governance] Failed to create rule', { error });
+      return reply.code(500).send({
+        success: false,
+        error: { code: 'INTERNAL_ERROR', message: error.message },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/governance/rules/:id
@@ -459,7 +520,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceRuleIdParamSchema.safeParse(request.params);
+        const parseResult = governanceRuleIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -467,7 +530,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const rule = await governanceService.getRule(orgId, parseResult.data.id);
+        const rule = await governanceService.getRule(
+          orgId,
+          parseResult.data.id
+        );
         if (!rule) {
           return reply.code(404).send({
             success: false,
@@ -506,7 +572,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governanceRuleIdParamSchema.safeParse(request.params);
+        const paramsResult = governanceRuleIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -514,15 +582,26 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const bodyResult = updateGovernanceRuleInputSchema.safeParse(request.body);
+        const bodyResult = updateGovernanceRuleInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
-        const rule = await governanceService.updateRule(orgId, paramsResult.data.id, stripNulls(bodyResult.data), userId);
+        const rule = await governanceService.updateRule(
+          orgId,
+          paramsResult.data.id,
+          stripNulls(bodyResult.data),
+          userId
+        );
         return reply.send({ success: true, data: rule });
       } catch (err) {
         const error = err as Error;
@@ -554,7 +633,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceRuleIdParamSchema.safeParse(request.params);
+        const parseResult = governanceRuleIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -598,15 +679,24 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceFindingsQuerySchema.safeParse(request.query);
+        const parseResult = governanceFindingsQuerySchema.safeParse(
+          request.query
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await governanceService.listFindings(orgId, parseResult.data);
+        const result = await governanceService.listFindings(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -638,15 +728,24 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = createGovernanceFindingInputSchema.safeParse(request.body);
+        const parseResult = createGovernanceFindingInputSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const finding = await governanceService.createFinding(orgId, parseResult.data);
+        const finding = await governanceService.createFinding(
+          orgId,
+          parseResult.data
+        );
         return reply.code(201).send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
@@ -678,7 +777,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceFindingIdParamSchema.safeParse(request.params);
+        const parseResult = governanceFindingIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -686,7 +787,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const result = await governanceService.getFindingDetail(orgId, parseResult.data.id);
+        const result = await governanceService.getFindingDetail(
+          orgId,
+          parseResult.data.id
+        );
         if (!result) {
           return reply.code(404).send({
             success: false,
@@ -725,7 +829,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governanceFindingIdParamSchema.safeParse(request.params);
+        const paramsResult = governanceFindingIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -733,15 +839,26 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const bodyResult = updateGovernanceFindingInputSchema.safeParse(request.body);
+        const bodyResult = updateGovernanceFindingInputSchema.safeParse(
+          request.body
+        );
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: bodyResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: bodyResult.error.errors,
+            },
           });
         }
 
-        const finding = await governanceService.updateFinding(orgId, paramsResult.data.id, stripNulls(bodyResult.data), userId);
+        const finding = await governanceService.updateFinding(
+          orgId,
+          paramsResult.data.id,
+          stripNulls(bodyResult.data),
+          userId
+        );
         return reply.send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
@@ -773,7 +890,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governanceFindingIdParamSchema.safeParse(request.params);
+        const paramsResult = governanceFindingIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -781,7 +900,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const bodyResult = acknowledgeFindingRequestSchema.safeParse(request.body || {});
+        const bodyResult = acknowledgeFindingRequestSchema.safeParse(
+          request.body || {}
+        );
         const finding = await governanceService.acknowledgeFinding(
           orgId,
           paramsResult.data.id,
@@ -818,7 +939,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governanceFindingIdParamSchema.safeParse(request.params);
+        const paramsResult = governanceFindingIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -830,7 +953,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Resolution notes are required' },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Resolution notes are required',
+            },
           });
         }
 
@@ -871,7 +997,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governanceFindingIdParamSchema.safeParse(request.params);
+        const paramsResult = governanceFindingIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -883,7 +1011,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Dismissal reason is required' },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Dismissal reason is required',
+            },
           });
         }
 
@@ -923,7 +1054,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const paramsResult = governanceFindingIdParamSchema.safeParse(request.params);
+        const paramsResult = governanceFindingIdParamSchema.safeParse(
+          request.params
+        );
         if (!paramsResult.success) {
           return reply.code(400).send({
             success: false,
@@ -935,7 +1068,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         if (!bodyResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Escalation target is required' },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Escalation target is required',
+            },
           });
         }
 
@@ -980,15 +1116,24 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceRiskScoresQuerySchema.safeParse(request.query);
+        const parseResult = governanceRiskScoresQuerySchema.safeParse(
+          request.query
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await governanceService.listRiskScores(orgId, parseResult.data);
+        const result = await governanceService.listRiskScores(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -1020,15 +1165,24 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = upsertGovernanceRiskScoreInputSchema.safeParse(request.body);
+        const parseResult = upsertGovernanceRiskScoreInputSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const riskScore = await governanceService.upsertRiskScore(orgId, parseResult.data);
+        const riskScore = await governanceService.upsertRiskScore(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: riskScore });
       } catch (err) {
         const error = err as Error;
@@ -1060,11 +1214,17 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = recalculateRiskScoreRequestSchema.safeParse(request.body);
+        const parseResult = recalculateRiskScoreRequestSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 
@@ -1101,7 +1261,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: riskScore });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to recalculate risk score', { error });
+        console.error('[Governance] Failed to recalculate risk score', {
+          error,
+        });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1133,15 +1295,24 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceAuditInsightsQuerySchema.safeParse(request.query);
+        const parseResult = governanceAuditInsightsQuerySchema.safeParse(
+          request.query
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid query parameters',
+              details: parseResult.error.errors,
+            },
           });
         }
 
-        const result = await governanceService.listAuditInsights(orgId, parseResult.data);
+        const result = await governanceService.listAuditInsights(
+          orgId,
+          parseResult.data
+        );
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
@@ -1173,11 +1344,17 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = generateGovernanceInsightRequestSchema.safeParse(request.body);
+        const parseResult = generateGovernanceInsightRequestSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 
@@ -1185,26 +1362,32 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         const summary = await governanceService.getDashboardSummary(orgId);
 
         // Create insight
-        const insight = await governanceService.createAuditInsight(orgId, {
-          timeWindowStart: parseResult.data.timeWindowStart,
-          timeWindowEnd: parseResult.data.timeWindowEnd,
-          scope: parseResult.data.scope,
-          insightType: parseResult.data.insightType,
-          title: `Governance Report: ${parseResult.data.timeWindowStart.toISOString().split('T')[0]} - ${parseResult.data.timeWindowEnd.toISOString().split('T')[0]}`,
-          summary: `Total findings: ${summary.totalFindings}, Open: ${summary.openFindings}, High risk entities: ${summary.highRiskEntities}`,
-          topRisks: summary.topRisks,
-          metricsSnapshot: {
-            totalPolicies: summary.totalPolicies,
-            activePolicies: summary.activePolicies,
-            totalRules: summary.totalRules,
-            activeRules: summary.activeRules,
-            totalFindings: summary.totalFindings,
-            openFindings: summary.openFindings,
-            avgRiskScore: summary.avgRiskScore,
+        const insight = await governanceService.createAuditInsight(
+          orgId,
+          {
+            timeWindowStart: parseResult.data.timeWindowStart,
+            timeWindowEnd: parseResult.data.timeWindowEnd,
+            scope: parseResult.data.scope,
+            insightType: parseResult.data.insightType,
+            title: `Governance Report: ${parseResult.data.timeWindowStart.toISOString().split('T')[0]} - ${parseResult.data.timeWindowEnd.toISOString().split('T')[0]}`,
+            summary: `Total findings: ${summary.totalFindings}, Open: ${summary.openFindings}, High risk entities: ${summary.highRiskEntities}`,
+            topRisks: summary.topRisks,
+            metricsSnapshot: {
+              totalPolicies: summary.totalPolicies,
+              activePolicies: summary.activePolicies,
+              totalRules: summary.totalRules,
+              activeRules: summary.activeRules,
+              totalFindings: summary.totalFindings,
+              openFindings: summary.openFindings,
+              avgRiskScore: summary.avgRiskScore,
+            },
+            generatedBy: parseResult.data.useLlm
+              ? 'llm_assisted'
+              : 'rule_based',
+            llmModel: parseResult.data.llmModel,
           },
-          generatedBy: parseResult.data.useLlm ? 'llm_assisted' : 'rule_based',
-          llmModel: parseResult.data.llmModel,
-        }, userId);
+          userId
+        );
 
         return reply.code(201).send({ success: true, data: insight });
       } catch (err) {
@@ -1237,7 +1420,9 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = governanceInsightIdParamSchema.safeParse(request.params);
+        const parseResult = governanceInsightIdParamSchema.safeParse(
+          request.params
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
@@ -1245,7 +1430,10 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const insight = await governanceService.getAuditInsight(orgId, parseResult.data.id);
+        const insight = await governanceService.getAuditInsight(
+          orgId,
+          parseResult.data.id
+        );
         if (!insight) {
           return reply.code(404).send({
             success: false,
@@ -1321,11 +1509,16 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         }
 
         const days = request.query.days ? parseInt(request.query.days, 10) : 30;
-        const metrics = await governanceService.getComplianceMetrics(orgId, days);
+        const metrics = await governanceService.getComplianceMetrics(
+          orgId,
+          days
+        );
         return reply.send({ success: true, data: metrics });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get compliance metrics', { error });
+        console.error('[Governance] Failed to get compliance metrics', {
+          error,
+        });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1389,11 +1582,17 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const parseResult = batchEvaluationRequestSchema.safeParse(request.body);
+        const parseResult = batchEvaluationRequestSchema.safeParse(
+          request.body
+        );
         if (!parseResult.success) {
           return reply.code(400).send({
             success: false,
-            error: { code: 'VALIDATION_ERROR', message: 'Invalid request body', details: parseResult.error.errors },
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: parseResult.error.errors,
+            },
           });
         }
 

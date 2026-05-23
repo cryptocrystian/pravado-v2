@@ -5,16 +5,6 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SeverityBadge } from './SeverityBadge';
-import { StatusBadge } from './StatusBadge';
-import type {
-  GovernanceFinding,
-  GovernanceFindingsQuery,
-  GovernanceFindingStatus,
-} from '@/lib/governanceApi';
-import { formatRelativeTime, getTargetSystemLabel } from '@/lib/governanceApi';
 import {
   Eye,
   CheckCircle,
@@ -24,6 +14,18 @@ import {
   ChevronRight,
   Filter,
 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type {
+  GovernanceFinding,
+  GovernanceFindingsQuery,
+  GovernanceFindingStatus,
+} from '@/lib/governanceApi';
+import { formatRelativeTime, getTargetSystemLabel } from '@/lib/governanceApi';
+
+import { SeverityBadge } from './SeverityBadge';
+import { StatusBadge } from './StatusBadge';
 
 interface FindingsListProps {
   findings: GovernanceFinding[];
@@ -39,7 +41,10 @@ interface FindingsListProps {
   onEscalateClick?: (finding: GovernanceFinding) => void;
 }
 
-const statusFilters: { value: GovernanceFindingStatus | 'all'; label: string }[] = [
+const statusFilters: {
+  value: GovernanceFindingStatus | 'all';
+  label: string;
+}[] = [
   { value: 'all', label: 'All' },
   { value: 'open', label: 'Open' },
   { value: 'acknowledged', label: 'Acknowledged' },
@@ -104,7 +109,9 @@ export function FindingsList({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold">Compliance Findings</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Compliance Findings
+          </CardTitle>
           <div className="flex items-center gap-1">
             <Filter className="h-4 w-4 text-gray-400 mr-2" />
             {statusFilters.map((filter) => (
@@ -127,7 +134,9 @@ export function FindingsList({
           <div className="p-8 text-center">
             <p className="text-gray-500">No findings found</p>
             <p className="text-sm text-gray-400 mt-1">
-              {query.status ? 'Try changing the status filter' : 'No compliance issues detected'}
+              {query.status
+                ? 'Try changing the status filter'
+                : 'No compliance issues detected'}
             </p>
           </div>
         ) : (
@@ -169,7 +178,9 @@ export function FindingsList({
                             {finding.summary}
                           </div>
                           {finding.details && (
-                            <div className="text-xs text-gray-500 truncate">{finding.details}</div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {finding.details}
+                            </div>
                           )}
                         </div>
                       </td>
@@ -231,7 +242,8 @@ export function FindingsList({
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
                             )}
-                          {(finding.status === 'open' || finding.status === 'acknowledged') &&
+                          {(finding.status === 'open' ||
+                            finding.status === 'acknowledged') &&
                             onEscalateClick && (
                               <Button
                                 variant="ghost"
@@ -273,7 +285,8 @@ export function FindingsList({
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
               <div className="text-sm text-gray-500">
-                Showing {offset + 1} - {Math.min(offset + findings.length, total)} of {total}
+                Showing {offset + 1} -{' '}
+                {Math.min(offset + findings.length, total)} of {total}
               </div>
               <div className="flex items-center gap-2">
                 <Button

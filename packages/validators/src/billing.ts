@@ -8,7 +8,12 @@ import { z } from 'zod';
 /**
  * Billing status enum
  */
-export const billingStatusSchema = z.enum(['trial', 'active', 'past_due', 'canceled']);
+export const billingStatusSchema = z.enum([
+  'trial',
+  'active',
+  'past_due',
+  'canceled',
+]);
 
 /**
  * Billing Plan schema
@@ -130,7 +135,11 @@ export const setPlanRequestSchema = z.object({
 /**
  * Overage Metric Type schema
  */
-export const overageMetricTypeSchema = z.enum(['tokens', 'playbook_runs', 'seats']);
+export const overageMetricTypeSchema = z.enum([
+  'tokens',
+  'playbook_runs',
+  'seats',
+]);
 
 /**
  * Billing Period schema
@@ -219,7 +228,11 @@ export const billingAlertTypeSchema = z.enum([
 /**
  * Billing Alert Severity schema
  */
-export const billingAlertSeveritySchema = z.enum(['info', 'warning', 'critical']);
+export const billingAlertSeveritySchema = z.enum([
+  'info',
+  'warning',
+  'critical',
+]);
 
 /**
  * Billing Alert Record schema

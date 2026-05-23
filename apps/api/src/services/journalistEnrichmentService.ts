@@ -13,7 +13,6 @@
  * - Batch enrichment processing
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   CreateEnrichmentJobInput,
   CreateEnrichmentLinkInput,
@@ -36,6 +35,7 @@ import type {
   MergeSuggestionsResponse,
 } from '@pravado/types';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('journalist-enrichment-service');
 
@@ -67,7 +67,10 @@ export class JournalistEnrichmentService {
     input: CreateEnrichmentRecordInput,
     userId?: string
   ): Promise<JournalistEnrichmentRecord> {
-    logger.info('Creating enrichment record', { orgId, sourceType: input.sourceType });
+    logger.info('Creating enrichment record', {
+      orgId,
+      sourceType: input.sourceType,
+    });
 
     // Validate required fields
     if (!input.sourceType) {
@@ -78,7 +81,10 @@ export class JournalistEnrichmentService {
     if (input.email) {
       const duplicates = await this.findDuplicatesByEmail(orgId, input.email);
       if (duplicates.length > 0) {
-        logger.warn('Potential duplicate enrichment detected', { email: input.email, duplicateCount: duplicates.length });
+        logger.warn('Potential duplicate enrichment detected', {
+          email: input.email,
+          duplicateCount: duplicates.length,
+        });
       }
     }
 
@@ -143,7 +149,10 @@ export class JournalistEnrichmentService {
   /**
    * Get enrichment record by ID
    */
-  async getRecord(orgId: string, recordId: string): Promise<JournalistEnrichmentRecord> {
+  async getRecord(
+    orgId: string,
+    recordId: string
+  ): Promise<JournalistEnrichmentRecord> {
     const { data, error } = await this.supabase
       .from('journalist_enrichment_records')
       .select('*')
@@ -161,7 +170,10 @@ export class JournalistEnrichmentService {
   /**
    * List enrichment records with filtering
    */
-  async listRecords(orgId: string, query: EnrichmentRecordsQuery = {}): Promise<EnrichmentRecordsListResponse> {
+  async listRecords(
+    orgId: string,
+    query: EnrichmentRecordsQuery = {}
+  ): Promise<EnrichmentRecordsListResponse> {
     const {
       sourceTypes,
       status,
@@ -197,15 +209,24 @@ export class JournalistEnrichmentService {
     }
 
     if (minConfidenceScore !== undefined) {
-      queryBuilder = queryBuilder.gte('overall_confidence_score', minConfidenceScore);
+      queryBuilder = queryBuilder.gte(
+        'overall_confidence_score',
+        minConfidenceScore
+      );
     }
 
     if (maxConfidenceScore !== undefined) {
-      queryBuilder = queryBuilder.lte('overall_confidence_score', maxConfidenceScore);
+      queryBuilder = queryBuilder.lte(
+        'overall_confidence_score',
+        maxConfidenceScore
+      );
     }
 
     if (minCompletenessScore !== undefined) {
-      queryBuilder = queryBuilder.gte('completeness_score', minCompletenessScore);
+      queryBuilder = queryBuilder.gte(
+        'completeness_score',
+        minCompletenessScore
+      );
     }
 
     if (emailVerified !== undefined) {
@@ -253,7 +274,9 @@ export class JournalistEnrichmentService {
     }
 
     // Sorting
-    queryBuilder = queryBuilder.order(sortBy, { ascending: sortOrder === 'asc' });
+    queryBuilder = queryBuilder.order(sortBy, {
+      ascending: sortOrder === 'asc',
+    });
 
     // Pagination
     queryBuilder = queryBuilder.range(offset, offset + limit - 1);
@@ -290,20 +313,29 @@ export class JournalistEnrichmentService {
     const updateData: any = {};
 
     if (input.email !== undefined) updateData.email = input.email;
-    if (input.emailVerified !== undefined) updateData.email_verified = input.emailVerified;
-    if (input.emailConfidence !== undefined) updateData.email_confidence = input.emailConfidence;
+    if (input.emailVerified !== undefined)
+      updateData.email_verified = input.emailVerified;
+    if (input.emailConfidence !== undefined)
+      updateData.email_confidence = input.emailConfidence;
 
     if (input.phone !== undefined) updateData.phone = input.phone;
-    if (input.phoneVerified !== undefined) updateData.phone_verified = input.phoneVerified;
-    if (input.phoneConfidence !== undefined) updateData.phone_confidence = input.phoneConfidence;
+    if (input.phoneVerified !== undefined)
+      updateData.phone_verified = input.phoneVerified;
+    if (input.phoneConfidence !== undefined)
+      updateData.phone_confidence = input.phoneConfidence;
 
-    if (input.socialProfiles !== undefined) updateData.social_profiles = input.socialProfiles;
-    if (input.socialProfilesVerified !== undefined) updateData.social_profiles_verified = input.socialProfilesVerified;
-    if (input.socialProfilesConfidence !== undefined) updateData.social_profiles_confidence = input.socialProfilesConfidence;
+    if (input.socialProfiles !== undefined)
+      updateData.social_profiles = input.socialProfiles;
+    if (input.socialProfilesVerified !== undefined)
+      updateData.social_profiles_verified = input.socialProfilesVerified;
+    if (input.socialProfilesConfidence !== undefined)
+      updateData.social_profiles_confidence = input.socialProfilesConfidence;
 
     if (input.outlet !== undefined) updateData.outlet = input.outlet;
-    if (input.outletVerified !== undefined) updateData.outlet_verified = input.outletVerified;
-    if (input.outletAuthorityScore !== undefined) updateData.outlet_authority_score = input.outletAuthorityScore;
+    if (input.outletVerified !== undefined)
+      updateData.outlet_verified = input.outletVerified;
+    if (input.outletAuthorityScore !== undefined)
+      updateData.outlet_authority_score = input.outletAuthorityScore;
 
     if (input.jobTitle !== undefined) updateData.job_title = input.jobTitle;
     if (input.beat !== undefined) updateData.beat = input.beat;
@@ -311,7 +343,8 @@ export class JournalistEnrichmentService {
     if (input.bio !== undefined) updateData.bio = input.bio;
 
     if (input.status !== undefined) updateData.status = input.status;
-    if (input.qualityFlags !== undefined) updateData.quality_flags = input.qualityFlags;
+    if (input.qualityFlags !== undefined)
+      updateData.quality_flags = input.qualityFlags;
 
     const { data, error } = await this.supabase
       .from('journalist_enrichment_records')
@@ -375,18 +408,30 @@ export class JournalistEnrichmentService {
     const domain = email.split('@')[1];
 
     // Check for free email providers
-    const freeEmailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com'];
+    const freeEmailDomains = [
+      'gmail.com',
+      'yahoo.com',
+      'hotmail.com',
+      'outlook.com',
+      'aol.com',
+    ];
     const isFreeEmail = freeEmailDomains.includes(domain.toLowerCase());
 
     // Check for disposable email domains (simplified)
-    const disposableDomains = ['tempmail.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com'];
+    const disposableDomains = [
+      'tempmail.com',
+      '10minutemail.com',
+      'guerrillamail.com',
+      'mailinator.com',
+    ];
     const isDisposable = disposableDomains.includes(domain.toLowerCase());
 
     // In production, this would do DNS MX record lookup or SMTP verification
     // For now, we'll use a simplified heuristic
     const isDeliverable = !isDisposable;
 
-    const confidence = isDeliverable && !isFreeEmail ? 0.8 : isDeliverable ? 0.6 : 0.3;
+    const confidence =
+      isDeliverable && !isFreeEmail ? 0.8 : isDeliverable ? 0.6 : 0.3;
 
     return {
       email,
@@ -415,13 +460,14 @@ export class JournalistEnrichmentService {
     const hostname = url.hostname.toLowerCase();
 
     let platform = 'unknown';
-    if (hostname.includes('twitter.com') || hostname.includes('x.com')) platform = 'twitter';
+    if (hostname.includes('twitter.com') || hostname.includes('x.com'))
+      platform = 'twitter';
     else if (hostname.includes('linkedin.com')) platform = 'linkedin';
     else if (hostname.includes('mastodon')) platform = 'mastodon';
     else if (hostname.includes('bsky.social')) platform = 'bluesky';
 
     // Extract username from URL (simplified)
-    const pathParts = url.pathname.split('/').filter(p => p);
+    const pathParts = url.pathname.split('/').filter((p) => p);
     const username = pathParts.length > 0 ? pathParts[0] : 'unknown';
 
     // In production, this would use real scraping/API integration
@@ -442,7 +488,10 @@ export class JournalistEnrichmentService {
   /**
    * Calculate outlet authority score
    */
-  async calculateOutletAuthority(outlet: string, domain?: string): Promise<OutletAuthorityResult> {
+  async calculateOutletAuthority(
+    outlet: string,
+    domain?: string
+  ): Promise<OutletAuthorityResult> {
     logger.info('Calculating outlet authority', { outlet, domain });
 
     // Extract domain if not provided
@@ -454,15 +503,26 @@ export class JournalistEnrichmentService {
     // In production, this would integrate with Moz, SEMrush, Ahrefs, etc.
     // For now, use a heuristic based on well-known outlets
     const premiumOutlets = [
-      'new york times', 'washington post', 'wall street journal',
-      'the guardian', 'bbc', 'cnn', 'reuters', 'bloomberg',
-      'forbes', 'techcrunch', 'wired', 'the verge'
+      'new york times',
+      'washington post',
+      'wall street journal',
+      'the guardian',
+      'bbc',
+      'cnn',
+      'reuters',
+      'bloomberg',
+      'forbes',
+      'techcrunch',
+      'wired',
+      'the verge',
     ];
 
     const outletLower = outlet.toLowerCase();
-    const isPremium = premiumOutlets.some(p => outletLower.includes(p));
+    const isPremium = premiumOutlets.some((p) => outletLower.includes(p));
 
-    const authorityScore = isPremium ? 85 + Math.random() * 15 : 40 + Math.random() * 40;
+    const authorityScore = isPremium
+      ? 85 + Math.random() * 15
+      : 40 + Math.random() * 40;
 
     return {
       outlet,
@@ -470,7 +530,9 @@ export class JournalistEnrichmentService {
       authorityScore: Math.round(authorityScore),
       metrics: {
         mozDomainAuthority: Math.round(authorityScore * 0.9),
-        monthlyVisitors: isPremium ? 10000000 + Math.random() * 50000000 : 100000 + Math.random() * 1000000,
+        monthlyVisitors: isPremium
+          ? 10000000 + Math.random() * 50000000
+          : 100000 + Math.random() * 1000000,
         category: 'News & Media',
       },
       confidence: isPremium ? 0.9 : 0.6,
@@ -486,7 +548,11 @@ export class JournalistEnrichmentService {
   /**
    * Find duplicate enrichment records by email
    */
-  async findDuplicatesByEmail(orgId: string, email: string, excludeId?: string): Promise<JournalistEnrichmentRecord[]> {
+  async findDuplicatesByEmail(
+    orgId: string,
+    email: string,
+    excludeId?: string
+  ): Promise<JournalistEnrichmentRecord[]> {
     let queryBuilder = this.supabase
       .from('journalist_enrichment_records')
       .select('*')
@@ -511,19 +577,24 @@ export class JournalistEnrichmentService {
   /**
    * Find all duplicates for a record
    */
-  async findDuplicates(orgId: string, recordId: string): Promise<FindDuplicatesResponse> {
+  async findDuplicates(
+    orgId: string,
+    recordId: string
+  ): Promise<FindDuplicatesResponse> {
     // Get the record
     const record = await this.getRecord(orgId, recordId);
 
     // Use PostgreSQL function to find duplicates
-    const { data, error } = await this.supabase
-      .rpc('find_duplicate_enrichments', {
+    const { data, error } = await this.supabase.rpc(
+      'find_duplicate_enrichments',
+      {
         p_org_id: orgId,
         p_email: record.email,
         p_phone: record.phone,
         p_social_profiles: record.socialProfiles,
         p_exclude_id: recordId,
-      });
+      }
+    );
 
     if (error) {
       logger.error('Failed to find duplicates', { error });
@@ -559,8 +630,8 @@ export class JournalistEnrichmentService {
     const duplicates = await this.findDuplicates(orgId, recordId);
 
     const suggestions: MergeSuggestion[] = duplicates.duplicates
-      .filter(dup => dup.matchScore > 0.5)
-      .map(dup => ({
+      .filter((dup) => dup.matchScore > 0.5)
+      .map((dup) => ({
         targetId: dup.enrichmentId,
         confidence: dup.matchScore,
         reason: `Matched on: ${dup.matchFields.join(', ')}`,
@@ -569,9 +640,11 @@ export class JournalistEnrichmentService {
         matchFields: dup.matchFields,
       }));
 
-    const avgConfidence = suggestions.length > 0
-      ? suggestions.reduce((sum, s) => sum + s.confidence, 0) / suggestions.length
-      : 0;
+    const avgConfidence =
+      suggestions.length > 0
+        ? suggestions.reduce((sum, s) => sum + s.confidence, 0) /
+          suggestions.length
+        : 0;
 
     let recommendedAction: 'merge' | 'review' | 'ignore' = 'ignore';
     if (avgConfidence > 0.8) recommendedAction = 'merge';
@@ -601,7 +674,8 @@ export class JournalistEnrichmentService {
 
     // Calculate total items
     let totalItems = 0;
-    if (input.inputData.journalistIds) totalItems += input.inputData.journalistIds.length;
+    if (input.inputData.journalistIds)
+      totalItems += input.inputData.journalistIds.length;
     if (input.inputData.emails) totalItems += input.inputData.emails.length;
     if (input.inputData.csvData) totalItems += input.inputData.csvData.length;
 
@@ -609,7 +683,11 @@ export class JournalistEnrichmentService {
       org_id: orgId,
       job_type: input.jobType,
       input_data: input.inputData,
-      enrichment_sources: input.enrichmentSources || ['email_verification', 'social_scraping', 'outlet_authority'],
+      enrichment_sources: input.enrichmentSources || [
+        'email_verification',
+        'social_scraping',
+        'outlet_authority',
+      ],
       total_items: totalItems,
       max_retries: input.maxRetries || 3,
       created_by: userId,
@@ -681,10 +759,15 @@ export class JournalistEnrichmentService {
     }
 
     if (minProgressPercentage !== undefined) {
-      queryBuilder = queryBuilder.gte('progress_percentage', minProgressPercentage);
+      queryBuilder = queryBuilder.gte(
+        'progress_percentage',
+        minProgressPercentage
+      );
     }
 
-    queryBuilder = queryBuilder.order(sortBy, { ascending: sortOrder === 'asc' });
+    queryBuilder = queryBuilder.order(sortBy, {
+      ascending: sortOrder === 'asc',
+    });
     queryBuilder = queryBuilder.range(offset, offset + limit - 1);
 
     const { data, error, count } = await queryBuilder;
@@ -711,7 +794,10 @@ export class JournalistEnrichmentService {
   /**
    * Process enrichment job (simplified)
    */
-  async processJob(orgId: string, jobId: string): Promise<JournalistEnrichmentJob> {
+  async processJob(
+    orgId: string,
+    jobId: string
+  ): Promise<JournalistEnrichmentJob> {
     logger.info('Processing enrichment job', { orgId, jobId });
 
     // Get job
@@ -739,17 +825,31 @@ export class JournalistEnrichmentService {
           enrichmentRecordIds.push(record.id);
 
           // Update progress
-          await this.updateJobProgress(orgId, jobId, enrichmentRecordIds.length);
+          await this.updateJobProgress(
+            orgId,
+            jobId,
+            enrichmentRecordIds.length
+          );
         }
       }
 
       // Update job as completed
-      await this.updateJobCompletion(orgId, jobId, enrichmentRecordIds, 'completed');
+      await this.updateJobCompletion(
+        orgId,
+        jobId,
+        enrichmentRecordIds,
+        'completed'
+      );
 
       return await this.getJob(orgId, jobId);
     } catch (error: any) {
       logger.error('Job processing failed', { jobId, error });
-      await this.updateJobCompletion(orgId, jobId, enrichmentRecordIds, 'failed');
+      await this.updateJobCompletion(
+        orgId,
+        jobId,
+        enrichmentRecordIds,
+        'failed'
+      );
       throw error;
     }
   }
@@ -776,7 +876,11 @@ export class JournalistEnrichmentService {
   /**
    * Update job progress
    */
-  private async updateJobProgress(orgId: string, jobId: string, processedItems: number) {
+  private async updateJobProgress(
+    orgId: string,
+    jobId: string,
+    processedItems: number
+  ) {
     await this.supabase
       .from('journalist_enrichment_jobs')
       .update({
@@ -868,7 +972,10 @@ export class JournalistEnrichmentService {
     }
 
     if (enrichmentRecordId) {
-      queryBuilder = queryBuilder.eq('enrichment_record_id', enrichmentRecordId);
+      queryBuilder = queryBuilder.eq(
+        'enrichment_record_id',
+        enrichmentRecordId
+      );
     }
 
     if (linkType && linkType.length > 0) {
@@ -879,7 +986,9 @@ export class JournalistEnrichmentService {
       queryBuilder = queryBuilder.eq('is_merged', isMerged);
     }
 
-    queryBuilder = queryBuilder.order(sortBy, { ascending: sortOrder === 'asc' });
+    queryBuilder = queryBuilder.order(sortBy, {
+      ascending: sortOrder === 'asc',
+    });
     queryBuilder = queryBuilder.range(offset, offset + limit - 1);
 
     const { data, error, count } = await queryBuilder;
@@ -911,7 +1020,10 @@ export class JournalistEnrichmentService {
     input: MergeEnrichmentInput,
     userId?: string
   ): Promise<void> {
-    logger.info('Merging enrichment', { journalistId: input.journalistId, enrichmentRecordId: input.enrichmentRecordId });
+    logger.info('Merging enrichment', {
+      journalistId: input.journalistId,
+      enrichmentRecordId: input.enrichmentRecordId,
+    });
 
     // Get enrichment record
     const enrichment = await this.getRecord(orgId, input.enrichmentRecordId);
@@ -941,12 +1053,16 @@ export class JournalistEnrichmentService {
         .eq('id', linkExists.data.id);
     } else {
       // Create new link
-      await this.createLink(orgId, {
-        journalistId: input.journalistId,
-        enrichmentRecordId: input.enrichmentRecordId,
-        linkType: 'primary',
-        linkConfidence: enrichment.overallConfidenceScore / 100,
-      }, userId);
+      await this.createLink(
+        orgId,
+        {
+          journalistId: input.journalistId,
+          enrichmentRecordId: input.enrichmentRecordId,
+          linkType: 'primary',
+          linkConfidence: enrichment.overallConfidenceScore / 100,
+        },
+        userId
+      );
 
       await this.supabase
         .from('journalist_enrichment_links')
@@ -979,20 +1095,27 @@ export class JournalistEnrichmentService {
     request: BatchEnrichmentRequest,
     userId?: string
   ) {
-    logger.info('Starting batch enrichment', { orgId, itemCount: request.items.length });
+    logger.info('Starting batch enrichment', {
+      orgId,
+      itemCount: request.items.length,
+    });
 
     // Create job
-    const job = await this.createJob(orgId, {
-      jobType: 'batch_enrichment',
-      inputData: {
-        csvData: request.items,
+    const job = await this.createJob(
+      orgId,
+      {
+        jobType: 'batch_enrichment',
+        inputData: {
+          csvData: request.items,
+        },
+        enrichmentSources: request.sources,
       },
-      enrichmentSources: request.sources,
-    }, userId);
+      userId
+    );
 
     // Process asynchronously (in production, this would be queued)
     setImmediate(() => {
-      this.processJob(orgId, job.id).catch(err => {
+      this.processJob(orgId, job.id).catch((err) => {
         logger.error('Batch enrichment failed', { jobId: job.id, error: err });
       });
     });
@@ -1018,7 +1141,9 @@ export class JournalistEnrichmentService {
       email: data.email,
       emailVerified: data.email_verified,
       emailConfidence: data.email_confidence,
-      emailVerificationDate: data.email_verification_date ? new Date(data.email_verification_date) : undefined,
+      emailVerificationDate: data.email_verification_date
+        ? new Date(data.email_verification_date)
+        : undefined,
       emailVerificationMethod: data.email_verification_method,
       phone: data.phone,
       phoneVerified: data.phone_verified,
@@ -1051,7 +1176,9 @@ export class JournalistEnrichmentService {
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
       enrichedAt: data.enriched_at ? new Date(data.enriched_at) : undefined,
-      lastVerifiedAt: data.last_verified_at ? new Date(data.last_verified_at) : undefined,
+      lastVerifiedAt: data.last_verified_at
+        ? new Date(data.last_verified_at)
+        : undefined,
     };
   }
 
@@ -1073,8 +1200,12 @@ export class JournalistEnrichmentService {
       resultSummary: data.result_summary || {},
       retryCount: data.retry_count,
       maxRetries: data.max_retries,
-      lastRetryAt: data.last_retry_at ? new Date(data.last_retry_at) : undefined,
-      nextRetryAt: data.next_retry_at ? new Date(data.next_retry_at) : undefined,
+      lastRetryAt: data.last_retry_at
+        ? new Date(data.last_retry_at)
+        : undefined,
+      nextRetryAt: data.next_retry_at
+        ? new Date(data.next_retry_at)
+        : undefined,
       startedAt: data.started_at ? new Date(data.started_at) : undefined,
       completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
       processingTimeSeconds: data.processing_time_seconds,

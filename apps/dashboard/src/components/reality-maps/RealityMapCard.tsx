@@ -6,10 +6,8 @@
  */
 
 import type { RealityMap } from '@pravado/types';
-import {
-  STATUS_LABELS,
-  getStatusBadgeClass,
-} from '../../lib/realityMapApi';
+
+import { STATUS_LABELS, getStatusBadgeClass } from '../../lib/realityMapApi';
 
 interface RealityMapCardProps {
   map: RealityMap;
@@ -27,8 +25,12 @@ export function RealityMapCard({
   onDelete,
 }: RealityMapCardProps) {
   const statusClass = getStatusBadgeClass(map.status);
-  const canGenerate = map.status === 'draft' || map.status === 'completed' || map.status === 'failed';
-  const isGenerating = map.status === 'generating' || map.status === 'analyzing';
+  const canGenerate =
+    map.status === 'draft' ||
+    map.status === 'completed' ||
+    map.status === 'failed';
+  const isGenerating =
+    map.status === 'generating' || map.status === 'analyzing';
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
@@ -44,7 +46,9 @@ export function RealityMapCard({
             </p>
           )}
         </div>
-        <span className={`ml-3 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
+        <span
+          className={`ml-3 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}
+        >
           {STATUS_LABELS[map.status]}
         </span>
       </div>
@@ -52,21 +56,51 @@ export function RealityMapCard({
       {/* Stats */}
       <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
         <div className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+            />
           </svg>
           <span>{map.totalNodes} nodes</span>
         </div>
         <div className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+            />
           </svg>
           <span>{map.totalPaths} paths</span>
         </div>
         {map.maxDepthReached > 0 && (
           <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+              />
             </svg>
             <span>Depth {map.maxDepthReached}</span>
           </div>
@@ -94,10 +128,23 @@ export function RealityMapCard({
       {isGenerating && (
         <div className="mb-4 flex items-center gap-2 text-sm text-blue-600">
           <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
           </svg>
-          {map.status === 'generating' ? 'Generating reality map...' : 'Running analysis...'}
+          {map.status === 'generating'
+            ? 'Generating reality map...'
+            : 'Running analysis...'}
         </div>
       )}
 

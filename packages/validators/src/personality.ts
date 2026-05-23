@@ -19,7 +19,11 @@ export type RiskTolerance = z.infer<typeof riskToleranceSchema>;
 /**
  * Collaboration style schema
  */
-export const collaborationStyleSchema = z.enum(['assertive', 'supportive', 'balanced']);
+export const collaborationStyleSchema = z.enum([
+  'assertive',
+  'supportive',
+  'balanced',
+]);
 
 export type CollaborationStyle = z.infer<typeof collaborationStyleSchema>;
 
@@ -70,9 +74,13 @@ export type AgentPersonality = z.infer<typeof agentPersonalitySchema>;
  * Create personality schema
  */
 export const createPersonalitySchema = z.object({
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, {
-    message: 'Slug must be lowercase letters, numbers, and hyphens only',
-  }),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9-]+$/, {
+      message: 'Slug must be lowercase letters, numbers, and hyphens only',
+    }),
   name: z.string().min(1).max(255),
   description: z.string().optional().default(''),
   configuration: personalityProfileSchema,
@@ -109,4 +117,6 @@ export const listPersonalitiesQuerySchema = z.object({
   offset: z.number().int().nonnegative().optional().default(0),
 });
 
-export type ListPersonalitiesQuery = z.infer<typeof listPersonalitiesQuerySchema>;
+export type ListPersonalitiesQuery = z.infer<
+  typeof listPersonalitiesQuerySchema
+>;

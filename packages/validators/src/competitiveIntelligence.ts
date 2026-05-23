@@ -11,7 +11,12 @@ import { z } from 'zod';
 // ENUM VALIDATORS
 // ============================================================================
 
-export const competitorTierSchema = z.enum(['tier_1', 'tier_2', 'tier_3', 'tier_4']);
+export const competitorTierSchema = z.enum([
+  'tier_1',
+  'tier_2',
+  'tier_3',
+  'tier_4',
+]);
 
 export const ciMetricTypeSchema = z.enum([
   'mention_volume',
@@ -58,12 +63,14 @@ export const snapshotPeriodSchema = z.enum(['daily', 'weekly', 'monthly']);
 // NESTED OBJECT VALIDATORS
 // ============================================================================
 
-export const socialHandlesSchema = z.object({
-  twitter: z.string().optional(),
-  linkedin: z.string().optional(),
-  facebook: z.string().optional(),
-  instagram: z.string().optional(),
-}).passthrough();
+export const socialHandlesSchema = z
+  .object({
+    twitter: z.string().optional(),
+    linkedin: z.string().optional(),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+  })
+  .passthrough();
 
 export const ciSentimentDistributionSchema = z.object({
   positive: z.number().int().min(0),
@@ -258,15 +265,24 @@ export const timeWindowQuerySchema = z.object({
 // COMPOSITE VALIDATORS
 // ============================================================================
 
-export const getCompetitorsQuerySchema = competitorFiltersSchema.merge(ciPaginationQuerySchema);
+export const getCompetitorsQuerySchema = competitorFiltersSchema.merge(
+  ciPaginationQuerySchema
+);
 
-export const getCompetitorMentionsQuerySchema = competitorMentionFiltersSchema.merge(ciPaginationQuerySchema);
+export const getCompetitorMentionsQuerySchema =
+  competitorMentionFiltersSchema.merge(ciPaginationQuerySchema);
 
-export const getSnapshotsQuerySchema = snapshotFiltersSchema.merge(ciPaginationQuerySchema);
+export const getSnapshotsQuerySchema = snapshotFiltersSchema.merge(
+  ciPaginationQuerySchema
+);
 
-export const getInsightsQuerySchema = ciInsightFiltersSchema.merge(ciPaginationQuerySchema);
+export const getInsightsQuerySchema = ciInsightFiltersSchema.merge(
+  ciPaginationQuerySchema
+);
 
-export const getOverlapQuerySchema = overlapFiltersSchema.merge(ciPaginationQuerySchema);
+export const getOverlapQuerySchema = overlapFiltersSchema.merge(
+  ciPaginationQuerySchema
+);
 
 export const evaluateCompetitorRequestSchema = z.object({
   competitorId: z.string().uuid(),

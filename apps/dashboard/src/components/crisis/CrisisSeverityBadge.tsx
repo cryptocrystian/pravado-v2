@@ -7,7 +7,11 @@
 
 'use client';
 
-import React from 'react';
+import type {
+  CrisisSeverity,
+  CrisisTrajectory,
+  CrisisPropagationLevel,
+} from '@pravado/types';
 import {
   AlertTriangle,
   AlertCircle,
@@ -21,13 +25,8 @@ import {
   Zap,
   Flame,
 } from 'lucide-react';
-import type {
-  CrisisSeverity,
-  CrisisTrajectory,
-  CrisisPropagationLevel,
-} from '@pravado/types';
-import { SEVERITY_COLORS, TRAJECTORY_COLORS, PROPAGATION_COLORS } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
@@ -35,6 +34,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  SEVERITY_COLORS,
+  TRAJECTORY_COLORS,
+  PROPAGATION_COLORS,
+} from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisSeverityBadgeProps {
   severity: CrisisSeverity;
@@ -88,7 +93,9 @@ export function CrisisSeverityBadge({
 }: CrisisSeverityBadgeProps) {
   const severityColors = SEVERITY_COLORS[severity];
   const trajectoryColors = trajectory ? TRAJECTORY_COLORS[trajectory] : null;
-  const propagationColors = propagation ? PROPAGATION_COLORS[propagation] : null;
+  const propagationColors = propagation
+    ? PROPAGATION_COLORS[propagation]
+    : null;
 
   return (
     <TooltipProvider>

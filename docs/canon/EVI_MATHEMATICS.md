@@ -68,14 +68,15 @@ Where i ∈ {AI, SERP, Press, Snippets}
 
 **Sub-Component Formulas:**
 
-| Component | Formula | Weight |
-|-----------|---------|--------|
-| AI Presence | `AI = (cited_queries / relevant_queries) × 100` | 0.35 |
-| Press Coverage | `PC = Σ(mentions × tier_weight)` normalized to 0-100 | 0.25 |
-| SERP Coverage | `SC = (top10_keywords / tracked_keywords) × 100` | 0.25 |
-| Snippets | `SN = (owned_snippets / available_snippets) × 100` | 0.15 |
+| Component      | Formula                                              | Weight |
+| -------------- | ---------------------------------------------------- | ------ |
+| AI Presence    | `AI = (cited_queries / relevant_queries) × 100`      | 0.35   |
+| Press Coverage | `PC = Σ(mentions × tier_weight)` normalized to 0-100 | 0.25   |
+| SERP Coverage  | `SC = (top10_keywords / tracked_keywords) × 100`     | 0.25   |
+| Snippets       | `SN = (owned_snippets / available_snippets) × 100`   | 0.15   |
 
 **Visibility Calculation:**
+
 ```
 V(t) = (AI × 0.35) + (PC × 0.25) + (SC × 0.25) + (SN × 0.15)
 ```
@@ -99,15 +100,16 @@ Where j ∈ {Citation, Domain, Journalist, Schema, EEAT}
 
 **Sub-Component Formulas:**
 
-| Component | Formula | Weight |
-|-----------|---------|--------|
-| Citation Quality | `CQ = avg(citing_source_authority)` | 0.30 |
-| Domain Authority | `DA = weighted_avg(referring_domain_scores)` | 0.25 |
-| Journalist Match | `JM = avg(relevance_score)` for covering journalists | 0.20 |
-| Schema Coverage | `SC = (valid_schema_pages / total_pages) × 100` | 0.15 |
-| E-E-A-T Density | `EE = presence_score(EEAT_markers)` | 0.10 |
+| Component        | Formula                                              | Weight |
+| ---------------- | ---------------------------------------------------- | ------ |
+| Citation Quality | `CQ = avg(citing_source_authority)`                  | 0.30   |
+| Domain Authority | `DA = weighted_avg(referring_domain_scores)`         | 0.25   |
+| Journalist Match | `JM = avg(relevance_score)` for covering journalists | 0.20   |
+| Schema Coverage  | `SC = (valid_schema_pages / total_pages) × 100`      | 0.15   |
+| E-E-A-T Density  | `EE = presence_score(EEAT_markers)`                  | 0.10   |
 
 **Authority Calculation:**
+
 ```
 A(t) = (CQ × 0.30) + (DA × 0.25) + (JM × 0.20) + (SC × 0.15) + (EE × 0.10)
 ```
@@ -124,15 +126,16 @@ Where k ∈ {Citation, SOV, Content, Topic, Ranking}
 
 **Sub-Component Formulas:**
 
-| Component | Formula | Weight |
-|-----------|---------|--------|
-| Citation Velocity | `CV = (citations(t) - citations(t-7)) / citations(t-7) × 100` | 0.30 |
-| SOV Change | `ΔSoV = SoV(t) - SoV(t-30)` normalized | 0.25 |
-| Content Velocity | `CoV = content_published / competitor_avg` | 0.20 |
-| Topic Growth | `TG = Σ(coverage_in_emerging_topics)` normalized | 0.15 |
-| Ranking Trajectory | `RT = avg(position_change)` inverted and normalized | 0.10 |
+| Component          | Formula                                                       | Weight |
+| ------------------ | ------------------------------------------------------------- | ------ |
+| Citation Velocity  | `CV = (citations(t) - citations(t-7)) / citations(t-7) × 100` | 0.30   |
+| SOV Change         | `ΔSoV = SoV(t) - SoV(t-30)` normalized                        | 0.25   |
+| Content Velocity   | `CoV = content_published / competitor_avg`                    | 0.20   |
+| Topic Growth       | `TG = Σ(coverage_in_emerging_topics)` normalized              | 0.15   |
+| Ranking Trajectory | `RT = avg(position_change)` inverted and normalized           | 0.10   |
 
 **Momentum Calculation:**
+
 ```
 M(t) = (CV × 0.30) + (ΔSoV × 0.25) + (CoV × 0.20) + (TG × 0.15) + (RT × 0.10)
 ```
@@ -144,6 +147,7 @@ M(t) = (CV × 0.30) + (ΔSoV × 0.25) + (CoV × 0.20) + (TG × 0.15) + (RT × 0.
 ### 3.1 Decay Principle
 
 Without reinforcing activity, all EVI components decay over time. This models real-world dynamics where:
+
 - AI models retrain on newer content
 - Search rankings erode without fresh signals
 - Media relationships cool without engagement
@@ -157,14 +161,14 @@ Each component decays at different rates:
 Component(t) = Component(t₀) × e^(-λ × Δt)
 ```
 
-| Component | λ (decay constant) | Half-Life | Interpretation |
-|-----------|-------------------|-----------|----------------|
-| **Visibility.AI** | 0.025/week | 28 weeks | AI systems retrain slowly |
-| **Visibility.Press** | 0.10/week | 7 weeks | News cycle moves fast |
-| **Visibility.SERP** | 0.05/week | 14 weeks | Rankings erode moderately |
-| **Authority.Citation** | 0.015/week | 46 weeks | Citations persist |
-| **Authority.Domain** | 0.008/week | 87 weeks | DA changes slowly |
-| **Momentum.All** | 0.20/week | 3.5 weeks | Velocity requires activity |
+| Component              | λ (decay constant) | Half-Life | Interpretation             |
+| ---------------------- | ------------------ | --------- | -------------------------- |
+| **Visibility.AI**      | 0.025/week         | 28 weeks  | AI systems retrain slowly  |
+| **Visibility.Press**   | 0.10/week          | 7 weeks   | News cycle moves fast      |
+| **Visibility.SERP**    | 0.05/week          | 14 weeks  | Rankings erode moderately  |
+| **Authority.Citation** | 0.015/week         | 46 weeks  | Citations persist          |
+| **Authority.Domain**   | 0.008/week         | 87 weeks  | DA changes slowly          |
+| **Momentum.All**       | 0.20/week          | 3.5 weeks | Velocity requires activity |
 
 ### 3.3 Aggregate EVI Decay
 
@@ -181,24 +185,24 @@ EVI_decay(t) = EVI(t₀) × [
 **Decay Scenarios (no activity):**
 
 | Weeks | Visibility | Authority | Momentum | **Total EVI** |
-|-------|------------|-----------|----------|---------------|
-| 0 | 100% | 100% | 100% | 100% |
-| 2 | 89% | 96% | 67% | 87% |
-| 4 | 79% | 92% | 45% | 75% |
-| 8 | 62% | 85% | 20% | 60% |
-| 12 | 49% | 79% | 9% | 49% |
-| 26 | 21% | 60% | 0.5% | 29% |
+| ----- | ---------- | --------- | -------- | ------------- |
+| 0     | 100%       | 100%      | 100%     | 100%          |
+| 2     | 89%        | 96%       | 67%      | 87%           |
+| 4     | 79%        | 92%       | 45%      | 75%           |
+| 8     | 62%        | 85%       | 20%      | 60%           |
+| 12    | 49%        | 79%       | 9%       | 49%           |
+| 26    | 21%        | 60%       | 0.5%     | 29%           |
 
 ### 3.4 Decay Protection
 
 Certain actions "reset" decay timers:
 
-| Action | Resets Decay For |
-|--------|------------------|
+| Action               | Resets Decay For                     |
+| -------------------- | ------------------------------------ |
 | PR placement (T1/T2) | Visibility.Press, Authority.Citation |
-| Content publication | Visibility.SERP, Authority.Domain |
-| SEO implementation | Visibility.SERP, Authority.Schema |
-| AI citation detected | Visibility.AI |
+| Content publication  | Visibility.SERP, Authority.Domain    |
+| SEO implementation   | Visibility.SERP, Authority.Schema    |
+| AI citation detected | Visibility.AI                        |
 
 ---
 
@@ -222,17 +226,18 @@ Where:
 ### 4.3 Activity Impact Curves
 
 **Visibility Reinforcement:**
+
 ```
 ΔV = 2.5 × ln(1 + (PR_actions × 0.4 + Content_actions × 0.3 + SEO_actions × 0.3))
 ```
 
 | Weekly Actions | ΔV Gain | Cumulative (12 weeks) |
-|----------------|---------|----------------------|
-| 1 | +0.84 | +10.1 |
-| 3 | +1.73 | +20.8 |
-| 5 | +2.24 | +26.9 |
-| 10 | +2.89 | +34.7 |
-| 20 | +3.53 | +42.4 |
+| -------------- | ------- | --------------------- |
+| 1              | +0.84   | +10.1                 |
+| 3              | +1.73   | +20.8                 |
+| 5              | +2.24   | +26.9                 |
+| 10             | +2.89   | +34.7                 |
+| 20             | +3.53   | +42.4                 |
 
 **Diminishing returns**: Doubling activity from 10→20/week only adds 22% more gain.
 
@@ -245,10 +250,10 @@ Cross_Bonus = Base_Effect × (1 + 0.15 × pillars_touched)
 ```
 
 | Pillars Touched | Bonus Multiplier |
-|-----------------|------------------|
-| 1 | 1.00 (no bonus) |
-| 2 | 1.15 |
-| 3 | 1.30 |
+| --------------- | ---------------- |
+| 1               | 1.00 (no bonus)  |
+| 2               | 1.15             |
+| 3               | 1.30             |
 
 Example: A PR placement (pillar 1) that generates a backlink (pillar 2) and triggers content (pillar 3) receives 1.30× the base EVI impact.
 
@@ -261,11 +266,11 @@ Consistency_Mult = 1 + 0.1 × min(streak_weeks, 12)
 ```
 
 | Consistent Weeks | Multiplier |
-|------------------|------------|
-| 0 | 1.00 |
-| 4 | 1.40 |
-| 8 | 1.80 |
-| 12+ | 2.20 (max) |
+| ---------------- | ---------- |
+| 0                | 1.00       |
+| 4                | 1.40       |
+| 8                | 1.80       |
+| 12+              | 2.20 (max) |
 
 Breaking the streak resets the multiplier to 1.00.
 
@@ -292,11 +297,11 @@ In words: Three consecutive down periods where each decline is larger than the p
 
 When negative momentum is detected:
 
-| Effect | Magnitude | Duration |
-|--------|-----------|----------|
-| Decay rate increases | +50% | Until momentum reverses |
-| Visibility recovery harder | 1.5× effort required | 2 weeks after reversal |
-| Authority erosion risk | +25% decay if crisis-triggered | Until crisis resolved |
+| Effect                     | Magnitude                      | Duration                |
+| -------------------------- | ------------------------------ | ----------------------- |
+| Decay rate increases       | +50%                           | Until momentum reverses |
+| Visibility recovery harder | 1.5× effort required           | 2 weeks after reversal  |
+| Authority erosion risk     | +25% decay if crisis-triggered | Until crisis resolved   |
 
 ### 5.4 Negative Momentum Reversal
 
@@ -307,11 +312,11 @@ Reversal_Effort = Normal_Effort × (1 + 0.2 × weeks_in_decline)
 ```
 
 | Weeks in Decline | Effort Multiplier | Typical Recovery Time |
-|------------------|-------------------|----------------------|
-| 2 | 1.4× | 1-2 weeks |
-| 4 | 1.8× | 3-4 weeks |
-| 8 | 2.6× | 6-8 weeks |
-| 12 | 3.4× | 10-14 weeks |
+| ---------------- | ----------------- | --------------------- |
+| 2                | 1.4×              | 1-2 weeks             |
+| 4                | 1.8×              | 3-4 weeks             |
+| 8                | 2.6×              | 6-8 weeks             |
+| 12               | 3.4×              | 10-14 weeks           |
 
 ---
 
@@ -323,18 +328,19 @@ Shock events are discrete occurrences that cause immediate, significant EVI chan
 
 ### 6.2 Shock Event Categories
 
-| Category | Direction | Typical Magnitude | Decay Behavior |
-|----------|-----------|-------------------|----------------|
-| **T1 Media Win** | Positive | +3 to +8 points | Slow decay (10 weeks) |
-| **Viral Coverage** | Positive | +5 to +15 points | Fast decay (3 weeks) |
-| **AI Citation Breakout** | Positive | +2 to +6 points | Very slow decay (20 weeks) |
-| **Crisis Event** | Negative | -5 to -25 points | Fast impact, slow recovery |
-| **Algorithm Update** | Variable | ±2 to ±15 points | Permanent shift |
-| **Competitor Move** | Negative | -1 to -8 points | Gradual if unaddressed |
+| Category                 | Direction | Typical Magnitude | Decay Behavior             |
+| ------------------------ | --------- | ----------------- | -------------------------- |
+| **T1 Media Win**         | Positive  | +3 to +8 points   | Slow decay (10 weeks)      |
+| **Viral Coverage**       | Positive  | +5 to +15 points  | Fast decay (3 weeks)       |
+| **AI Citation Breakout** | Positive  | +2 to +6 points   | Very slow decay (20 weeks) |
+| **Crisis Event**         | Negative  | -5 to -25 points  | Fast impact, slow recovery |
+| **Algorithm Update**     | Variable  | ±2 to ±15 points  | Permanent shift            |
+| **Competitor Move**      | Negative  | -1 to -8 points   | Gradual if unaddressed     |
 
 ### 6.3 Shock Event Formulas
 
 **Positive Shock:**
+
 ```
 EVI_shock(t) = EVI_base(t) + S_magnitude × e^(-λₛ × days_since_shock)
 
@@ -344,6 +350,7 @@ Where:
 ```
 
 **Negative Shock (Crisis):**
+
 ```
 EVI_shock(t) = EVI_base(t) - S_magnitude × (1 - recovery_rate)^days
 
@@ -356,6 +363,7 @@ Where:
 ### 6.4 Shock Event Examples
 
 **Example 1: TechCrunch Feature (Positive)**
+
 ```
 Initial Impact: +6.2 points to Visibility
   Day 1: EVI increases from 67 → 73.2
@@ -366,6 +374,7 @@ Initial Impact: +6.2 points to Visibility
 ```
 
 **Example 2: Data Breach Crisis (Negative)**
+
 ```
 Initial Impact: -15 points to Authority
   Day 1: EVI drops from 67 → 52
@@ -385,6 +394,7 @@ Initial Impact: -15 points to Authority
 ### 7.1 Forecasting Model
 
 EVI forecasting projects future scores based on:
+
 1. Current EVI and component values
 2. Planned activities in the pipeline
 3. Historical patterns
@@ -416,11 +426,11 @@ Action_Impact = Expected_Effect × Confidence × P(Execution)
 
 The system generates three forecast bands:
 
-| Band | Assumptions | Use Case |
-|------|-------------|----------|
-| **Conservative (Low)** | Only confirmed activities, high decay | Risk planning |
-| **Expected** | Planned activities at historical success rates | Default forecast |
-| **Optimistic (High)** | All opportunities convert, minimal decay | Opportunity sizing |
+| Band                   | Assumptions                                    | Use Case           |
+| ---------------------- | ---------------------------------------------- | ------------------ |
+| **Conservative (Low)** | Only confirmed activities, high decay          | Risk planning      |
+| **Expected**           | Planned activities at historical success rates | Default forecast   |
+| **Optimistic (High)**  | All opportunities convert, minimal decay       | Opportunity sizing |
 
 ```
 EVI_low(t+30) = EVI(t) × 0.85 + Σ(confirmed_actions × 0.7)
@@ -437,6 +447,7 @@ Scenario_Impact = Σⱼ (Actionⱼ × Driver_Weightⱼ × Success_Probⱼ)
 ```
 
 Example: "Deploy schema on 12 pages"
+
 ```
 Action: Schema deployment
 Driver: Authority (weight 0.35)
@@ -453,27 +464,30 @@ With 90% confidence: +1.01 expected EVI
 
 EVI is designed to resist manipulation through:
 
-| Mechanism | How It Works |
-|-----------|--------------|
-| **Multi-Source Verification** | Each component requires multiple independent signals |
-| **Temporal Requirements** | Benefits require sustained activity, not spikes |
-| **Quality Weights** | Low-quality inputs are weighted proportionally lower |
-| **Competitive Relativity** | Many metrics are relative to competitors, not absolute |
-| **Decay Reality** | Artificial inflation decays quickly without real support |
+| Mechanism                     | How It Works                                             |
+| ----------------------------- | -------------------------------------------------------- |
+| **Multi-Source Verification** | Each component requires multiple independent signals     |
+| **Temporal Requirements**     | Benefits require sustained activity, not spikes          |
+| **Quality Weights**           | Low-quality inputs are weighted proportionally lower     |
+| **Competitive Relativity**    | Many metrics are relative to competitors, not absolute   |
+| **Decay Reality**             | Artificial inflation decays quickly without real support |
 
 ### 8.2 Gaming Resistance by Component
 
 **Visibility:**
+
 - AI Presence requires actual citations (not controllable)
 - Press Coverage requires verified publications (not self-published)
 - SERP Coverage requires ranking (not indexing)
 
 **Authority:**
+
 - Citation Quality weights source authority (low-quality links = low impact)
 - Domain Authority changes slowly and requires genuine backlinks
 - E-E-A-T signals must be verified (not just claimed)
 
 **Momentum:**
+
 - Velocity metrics compare to baselines (spiking is detected)
 - SOV is competitive (gaming requires outpacing competitors)
 - Consistency requirements penalize sporadic activity
@@ -482,12 +496,12 @@ EVI is designed to resist manipulation through:
 
 The system flags potential gaming attempts:
 
-| Pattern | Detection | Response |
-|---------|-----------|----------|
-| Sudden backlink spike | >200% increase in 7 days | Quarantine links, manual review |
-| Press mention surge | >300% without corresponding event | Verify sources |
-| Keyword stuffing | Content quality score drops | Reduce Authority contribution |
-| Citation manipulation | Source diversity drops | Apply diversity penalty |
+| Pattern               | Detection                         | Response                        |
+| --------------------- | --------------------------------- | ------------------------------- |
+| Sudden backlink spike | >200% increase in 7 days          | Quarantine links, manual review |
+| Press mention surge   | >300% without corresponding event | Verify sources                  |
+| Keyword stuffing      | Content quality score drops       | Reduce Authority contribution   |
+| Citation manipulation | Source diversity drops            | Apply diversity penalty         |
 
 ### 8.4 Gaming Penalty
 
@@ -509,7 +523,7 @@ Penalties persist for 90 days and require clean activity to lift.
 
 ```typescript
 export const EVI_WEIGHTS = {
-  visibility: 0.40,
+  visibility: 0.4,
   authority: 0.35,
   momentum: 0.25,
 } as const;
@@ -522,19 +536,19 @@ export const VISIBILITY_WEIGHTS = {
 } as const;
 
 export const AUTHORITY_WEIGHTS = {
-  citation_quality: 0.30,
+  citation_quality: 0.3,
   domain_authority: 0.25,
-  journalist_match: 0.20,
+  journalist_match: 0.2,
   schema_coverage: 0.15,
-  eeat_density: 0.10,
+  eeat_density: 0.1,
 } as const;
 
 export const MOMENTUM_WEIGHTS = {
-  citation_velocity: 0.30,
+  citation_velocity: 0.3,
   sov_change: 0.25,
-  content_velocity: 0.20,
+  content_velocity: 0.2,
   topic_growth: 0.15,
-  ranking_trajectory: 0.10,
+  ranking_trajectory: 0.1,
 } as const;
 ```
 
@@ -542,12 +556,12 @@ export const MOMENTUM_WEIGHTS = {
 
 ```typescript
 export const DECAY_CONSTANTS = {
-  visibility_ai: 0.025,       // per week
-  visibility_press: 0.10,     // per week
-  visibility_serp: 0.05,      // per week
-  authority_citation: 0.015,  // per week
-  authority_domain: 0.008,    // per week
-  momentum_all: 0.20,         // per week
+  visibility_ai: 0.025, // per week
+  visibility_press: 0.1, // per week
+  visibility_serp: 0.05, // per week
+  authority_citation: 0.015, // per week
+  authority_domain: 0.008, // per week
+  momentum_all: 0.2, // per week
 } as const;
 ```
 
@@ -569,6 +583,7 @@ export const EVI_BANDS = {
 ### 10.1 Formula Immutability
 
 The EVI formula and weights are **canonical**. Changes require:
+
 1. Product leadership approval
 2. Customer communication (weights affect comparisons)
 3. Historical recalculation or versioning decision
@@ -577,6 +592,7 @@ The EVI formula and weights are **canonical**. Changes require:
 ### 10.2 Calculation Verification
 
 EVI calculations must be:
+
 - Reproducible given the same inputs
 - Auditable with full input logging
 - Versioned for backward compatibility
@@ -584,6 +600,7 @@ EVI calculations must be:
 ### 10.3 Testing Requirements
 
 Mathematical implementations must pass:
+
 - Unit tests for each component formula
 - Integration tests for composite calculation
 - Decay tests over simulated time periods
@@ -593,6 +610,6 @@ Mathematical implementations must pass:
 
 ## 11. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-13 | 1.0 | Initial mathematical specification |
+| Date       | Version | Change                             |
+| ---------- | ------- | ---------------------------------- |
+| 2026-01-13 | 1.0     | Initial mathematical specification |

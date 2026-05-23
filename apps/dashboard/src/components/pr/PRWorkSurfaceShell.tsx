@@ -17,9 +17,6 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import { useState, useRef, useEffect, type ReactNode } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   Tray,
   Users,
@@ -36,9 +33,16 @@ import {
   MegaphoneSimple,
   Plus,
 } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 
-import { PRModeContext, type AutomationMode as PRAutomationMode } from './PRModeContext';
 import { modeTokens } from '@/components/content/tokens';
+
+import {
+  PRModeContext,
+  type AutomationMode as PRAutomationMode,
+} from './PRModeContext';
 
 // ============================================
 // TAB CONFIG
@@ -94,8 +98,10 @@ const PR_TABS: PRTabConfig[] = [
 // ============================================
 
 function ModeIcon({ mode }: { mode: PRAutomationMode }) {
-  if (mode === 'manual') return <Lock className="w-3.5 h-3.5" weight="regular" />;
-  if (mode === 'copilot') return <User className="w-3.5 h-3.5" weight="regular" />;
+  if (mode === 'manual')
+    return <Lock className="w-3.5 h-3.5" weight="regular" />;
+  if (mode === 'copilot')
+    return <User className="w-3.5 h-3.5" weight="regular" />;
   return <Lightning className="w-3.5 h-3.5" weight="regular" />;
 }
 
@@ -118,7 +124,10 @@ export function PRWorkSurfaceShell({ children }: PRWorkSurfaceShellProps) {
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (modeDropdownRef.current && !modeDropdownRef.current.contains(e.target as Node)) {
+      if (
+        modeDropdownRef.current &&
+        !modeDropdownRef.current.contains(e.target as Node)
+      ) {
         setIsModeDropdownOpen(false);
       }
     }
@@ -140,30 +149,39 @@ export function PRWorkSurfaceShell({ children }: PRWorkSurfaceShellProps) {
     <PRModeContext.Provider value={{ mode, setMode }}>
       {/* Chrome bar — 48px, DS v3.1 */}
       <div className="flex items-center h-12 px-4 border-b border-border-subtle bg-slate-1 shrink-0 relative z-[60]">
-
         {/* Left cluster: pillar icon + title + divider + tabs */}
-        <MegaphoneSimple className="w-5 h-5 text-brand-cyan shrink-0" weight="regular" />
-        <span className="text-sm font-semibold text-white/80 ml-2 shrink-0">PR Hub</span>
+        <MegaphoneSimple
+          className="w-5 h-5 text-brand-cyan shrink-0"
+          weight="regular"
+        />
+        <span className="text-sm font-semibold text-white/80 ml-2 shrink-0">
+          PR Hub
+        </span>
         <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
 
         {/* Route-based tabs */}
         {visibleTabs.map((tab) => {
           const active = isActive(tab.href);
-          const label = mode === 'autopilot' && tab.autopilotLabel
-            ? tab.autopilotLabel
-            : tab.label;
+          const label =
+            mode === 'autopilot' && tab.autopilotLabel
+              ? tab.autopilotLabel
+              : tab.label;
 
           return (
             <Link
               key={tab.key}
               href={tab.href}
               className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative ${
-                active
-                  ? 'text-white/95'
-                  : 'text-white/50 hover:text-white/80'
+                active ? 'text-white/95' : 'text-white/50 hover:text-white/80'
               }`}
             >
-              <span className={active ? 'text-brand-cyan' : 'text-white/40 group-hover:text-white/60'}>
+              <span
+                className={
+                  active
+                    ? 'text-brand-cyan'
+                    : 'text-white/40 group-hover:text-white/60'
+                }
+              >
                 {tab.icon}
               </span>
               {label}
@@ -175,35 +193,44 @@ export function PRWorkSurfaceShell({ children }: PRWorkSurfaceShellProps) {
         })}
 
         {/* Activity Log tab — Autopilot only */}
-        {mode === 'autopilot' && (() => {
-          const active = pathname?.startsWith('/app/pr/activity');
-          return (
-            <Link
-              href="/app/pr/activity"
-              className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative ${
-                active ? 'text-white/95' : 'text-white/50 hover:text-white/80'
-              }`}
-            >
-              <span className={active ? 'text-brand-cyan' : 'text-white/40 group-hover:text-white/60'}>
-                <ClockCounterClockwise className="w-4 h-4" weight="regular" />
-              </span>
-              Activity Log
-              {active && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-cyan rounded-t shadow-[0_0_8px_rgba(0,212,255,0.4)]" />
-              )}
-            </Link>
-          );
-        })()}
+        {mode === 'autopilot' &&
+          (() => {
+            const active = pathname?.startsWith('/app/pr/activity');
+            return (
+              <Link
+                href="/app/pr/activity"
+                className={`group flex items-center gap-1.5 px-3 h-full text-sm font-medium transition-all relative ${
+                  active ? 'text-white/95' : 'text-white/50 hover:text-white/80'
+                }`}
+              >
+                <span
+                  className={
+                    active
+                      ? 'text-brand-cyan'
+                      : 'text-white/40 group-hover:text-white/60'
+                  }
+                >
+                  <ClockCounterClockwise className="w-4 h-4" weight="regular" />
+                </span>
+                Activity Log
+                {active && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-cyan rounded-t shadow-[0_0_8px_rgba(0,212,255,0.4)]" />
+                )}
+              </Link>
+            );
+          })()}
 
         {/* Spacer */}
         <div className="flex-1" />
 
         {/* Right cluster: SAGE tag + EVI + Mode + Create */}
         <div className="flex items-center gap-2 shrink-0">
-
           {/* SAGE opportunity tag */}
           <div className="flex items-center gap-1.5">
-            <Lightning className="w-3.5 h-3.5 text-brand-cyan shrink-0" weight="fill" />
+            <Lightning
+              className="w-3.5 h-3.5 text-brand-cyan shrink-0"
+              weight="fill"
+            />
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan max-w-[220px] truncate">
               Earned media opportunity: AI citation coverage
             </span>
@@ -212,8 +239,12 @@ export function PRWorkSurfaceShell({ children }: PRWorkSurfaceShellProps) {
 
           {/* EVI indicator */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">EVI</span>
-            <span className="text-sm font-bold tabular-nums text-brand-cyan">42.7</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">
+              EVI
+            </span>
+            <span className="text-sm font-bold tabular-nums text-brand-cyan">
+              42.7
+            </span>
             <span className="text-xs text-semantic-success flex items-center gap-0.5">
               <TrendUp className="w-3 h-3" weight="bold" />
               +2.4
@@ -235,34 +266,40 @@ export function PRWorkSurfaceShell({ children }: PRWorkSurfaceShellProps) {
 
             {isModeDropdownOpen && (
               <div className="absolute right-0 top-full mt-1 w-48 bg-slate-2 border border-slate-4 rounded-lg shadow-elev-3 py-1 z-[200]">
-                {(['manual', 'copilot', 'autopilot'] as PRAutomationMode[]).map((m) => {
-                  const tokens = modeTokens[m];
-                  return (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => {
-                        setMode(m);
-                        setIsModeDropdownOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/5 transition-colors ${
-                        m === mode ? tokens.text : 'text-white/70'
-                      }`}
-                    >
-                      <ModeIcon mode={m} />
-                      <span className="font-medium">{tokens.label}</span>
-                      {m === mode && (
-                        <CheckCircle className="w-4 h-4 ml-auto" weight="fill" />
-                      )}
-                    </button>
-                  );
-                })}
+                {(['manual', 'copilot', 'autopilot'] as PRAutomationMode[]).map(
+                  (m) => {
+                    const tokens = modeTokens[m];
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setMode(m);
+                          setIsModeDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/5 transition-colors ${
+                          m === mode ? tokens.text : 'text-white/70'
+                        }`}
+                      >
+                        <ModeIcon mode={m} />
+                        <span className="font-medium">{tokens.label}</span>
+                        {m === mode && (
+                          <CheckCircle
+                            className="w-4 h-4 ml-auto"
+                            weight="fill"
+                          />
+                        )}
+                      </button>
+                    );
+                  }
+                )}
               </div>
             )}
           </div>
 
           {/* Create pitch — Manual always, Copilot outside action-queue */}
-          {(mode === 'manual' || (mode === 'copilot' && !isActive('/app/pr') )) && (
+          {(mode === 'manual' ||
+            (mode === 'copilot' && !isActive('/app/pr'))) && (
             <Link
               href="/app/pr/pitches/new"
               className={`flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold rounded-lg transition-all duration-150 ${

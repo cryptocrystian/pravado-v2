@@ -5,12 +5,21 @@
 
 'use client';
 
+import {
+  Users,
+  Plus,
+  Mail,
+  Eye,
+  MessageSquare,
+  CheckCircle,
+  Trash2,
+  Send,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +28,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -34,16 +45,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
-import {
-  Users,
-  Plus,
-  Mail,
-  Eye,
-  MessageSquare,
-  CheckCircle,
-  Trash2,
-  Send,
-} from 'lucide-react';
 
 interface BoardReportAudienceListProps {
   audience: ExecBoardReportAudience[];
@@ -104,7 +105,11 @@ export function BoardReportAudienceList({
             Audience ({audience.length})
           </CardTitle>
           {onAdd && (
-            <Button variant="outline" size="sm" onClick={() => setAddDialogOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAddDialogOpen(true)}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Member
             </Button>
@@ -122,7 +127,10 @@ export function BoardReportAudienceList({
           ) : (
             <div className="divide-y">
               {audience.map((member) => (
-                <div key={member.id} className="py-3 flex items-center justify-between">
+                <div
+                  key={member.id}
+                  className="py-3 flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
                     <div
                       className={cn(
@@ -146,7 +154,9 @@ export function BoardReportAudienceList({
                         </span>
                         <Badge variant="outline" className="text-xs">
                           {getAccessIcon(member.accessLevel)}
-                          <span className="ml-1">{getAccessLevelLabel(member.accessLevel)}</span>
+                          <span className="ml-1">
+                            {getAccessLevelLabel(member.accessLevel)}
+                          </span>
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -174,7 +184,9 @@ export function BoardReportAudienceList({
                     )}
                     <Switch
                       checked={member.isActive}
-                      onCheckedChange={(checked) => onToggleActive?.(member.id, checked)}
+                      onCheckedChange={(checked) =>
+                        onToggleActive?.(member.id, checked)
+                      }
                     />
                     <Button
                       variant="ghost"
@@ -210,7 +222,9 @@ export function BoardReportAudienceList({
                 type="email"
                 placeholder="executive@company.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
               />
             </div>
 
@@ -220,7 +234,9 @@ export function BoardReportAudienceList({
                 id="name"
                 placeholder="John Smith"
                 value={formData.name || ''}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
               />
             </div>
 
@@ -230,7 +246,9 @@ export function BoardReportAudienceList({
                 id="role"
                 placeholder="CEO, CFO, Board Member..."
                 value={formData.role || ''}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value })
+                }
               />
             </div>
 
@@ -261,7 +279,10 @@ export function BoardReportAudienceList({
             <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddSubmit} disabled={isSubmitting || !formData.email}>
+            <Button
+              onClick={handleAddSubmit}
+              disabled={isSubmitting || !formData.email}
+            >
               {isSubmitting ? 'Adding...' : 'Add Member'}
             </Button>
           </DialogFooter>

@@ -48,7 +48,9 @@ async function fetchApi<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    const error = await response
+      .json()
+      .catch(() => ({ error: 'Request failed' }));
     throw new Error(error?.error?.message || error?.error || 'Request failed');
   }
 
@@ -74,9 +76,11 @@ export async function listOutreachSequences(
 ): Promise<OutreachSequenceListResponse> {
   const query = new URLSearchParams();
 
-  if (params?.isActive !== undefined) query.append('isActive', String(params.isActive));
+  if (params?.isActive !== undefined)
+    query.append('isActive', String(params.isActive));
   if (params?.pitchId) query.append('pitchId', params.pitchId);
-  if (params?.pressReleaseId) query.append('pressReleaseId', params.pressReleaseId);
+  if (params?.pressReleaseId)
+    query.append('pressReleaseId', params.pressReleaseId);
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
 
@@ -86,12 +90,18 @@ export async function listOutreachSequences(
   );
 }
 
-export async function getOutreachSequence(id: string): Promise<OutreachSequence> {
+export async function getOutreachSequence(
+  id: string
+): Promise<OutreachSequence> {
   return fetchApi<OutreachSequence>(`/api/pr/outreach/sequences/${id}`);
 }
 
-export async function getOutreachSequenceWithSteps(id: string): Promise<OutreachSequenceWithSteps> {
-  return fetchApi<OutreachSequenceWithSteps>(`/api/pr/outreach/sequences/${id}/with-steps`);
+export async function getOutreachSequenceWithSteps(
+  id: string
+): Promise<OutreachSequenceWithSteps> {
+  return fetchApi<OutreachSequenceWithSteps>(
+    `/api/pr/outreach/sequences/${id}/with-steps`
+  );
 }
 
 export async function updateOutreachSequence(
@@ -118,10 +128,13 @@ export async function createOutreachStep(
   sequenceId: string,
   input: CreateOutreachStepInput
 ): Promise<OutreachSequenceStep> {
-  return fetchApi<OutreachSequenceStep>(`/api/pr/outreach/sequences/${sequenceId}/steps`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  return fetchApi<OutreachSequenceStep>(
+    `/api/pr/outreach/sequences/${sequenceId}/steps`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
 }
 
 export async function updateOutreachStep(
@@ -147,14 +160,19 @@ export async function deleteOutreachStep(id: string): Promise<void> {
 export async function startSequenceRuns(
   sequenceId: string,
   input: Omit<StartSequenceRunsInput, 'sequenceId'>
-): Promise<{ runsCreated: number; runs: OutreachRun[]; skippedJournalists: string[] }> {
-  return fetchApi<{ runsCreated: number; runs: OutreachRun[]; skippedJournalists: string[] }>(
-    `/api/pr/outreach/sequences/${sequenceId}/start`,
-    {
-      method: 'POST',
-      body: JSON.stringify(input),
-    }
-  );
+): Promise<{
+  runsCreated: number;
+  runs: OutreachRun[];
+  skippedJournalists: string[];
+}> {
+  return fetchApi<{
+    runsCreated: number;
+    runs: OutreachRun[];
+    skippedJournalists: string[];
+  }>(`/api/pr/outreach/sequences/${sequenceId}/start`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
 }
 
 export async function listOutreachRuns(
@@ -174,7 +192,9 @@ export async function listOutreachRuns(
   );
 }
 
-export async function getOutreachRun(id: string): Promise<OutreachRunWithDetails> {
+export async function getOutreachRun(
+  id: string
+): Promise<OutreachRunWithDetails> {
   return fetchApi<OutreachRunWithDetails>(`/api/pr/outreach/runs/${id}`);
 }
 
@@ -212,7 +232,9 @@ export async function advanceOutreachRun(
 // Events
 // =============================================
 
-export async function createOutreachEvent(input: CreateOutreachEventInput): Promise<OutreachEvent> {
+export async function createOutreachEvent(
+  input: CreateOutreachEventInput
+): Promise<OutreachEvent> {
   return fetchApi<OutreachEvent>('/api/pr/outreach/events', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -227,7 +249,8 @@ export async function listOutreachEvents(
   if (params?.runId) query.append('runId', params.runId);
   if (params?.sequenceId) query.append('sequenceId', params.sequenceId);
   if (params?.eventType) query.append('eventType', params.eventType);
-  if (params?.startDate) query.append('startDate', params.startDate.toISOString());
+  if (params?.startDate)
+    query.append('startDate', params.startDate.toISOString());
   if (params?.endDate) query.append('endDate', params.endDate.toISOString());
   if (params?.limit) query.append('limit', String(params.limit));
   if (params?.offset) query.append('offset', String(params.offset));
@@ -242,13 +265,17 @@ export async function listOutreachEvents(
 // Targeting & Stats
 // =============================================
 
-export async function previewTargeting(sequenceId: string): Promise<TargetingPreview> {
+export async function previewTargeting(
+  sequenceId: string
+): Promise<TargetingPreview> {
   return fetchApi<TargetingPreview>(
     `/api/pr/outreach/sequences/${sequenceId}/preview-targeting`
   );
 }
 
-export async function getOutreachStats(sequenceId?: string): Promise<OutreachStats> {
+export async function getOutreachStats(
+  sequenceId?: string
+): Promise<OutreachStats> {
   const query = new URLSearchParams();
   if (sequenceId) query.append('sequenceId', sequenceId);
 
@@ -286,7 +313,9 @@ export interface SendPitchResponse {
   };
 }
 
-export async function sendPitch(input: SendPitchInput): Promise<SendPitchResponse> {
+export async function sendPitch(
+  input: SendPitchInput
+): Promise<SendPitchResponse> {
   return fetchApi<SendPitchResponse>('/api/pr/outreach/send-pitch', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -348,7 +377,9 @@ export interface GeneratedDraft {
   };
 }
 
-export async function generateDraft(input: GenerateDraftInput): Promise<GeneratedDraft> {
+export async function generateDraft(
+  input: GenerateDraftInput
+): Promise<GeneratedDraft> {
   return fetchApi<GeneratedDraft>('/api/pr/outreach/generate-draft', {
     method: 'POST',
     body: JSON.stringify(input),

@@ -322,7 +322,9 @@ function mapAuditLogRecord(record: AuditLogRecord): InvestorPackAuditLog {
 // Default Sections by Format
 // ============================================================================
 
-function getDefaultSectionsForFormat(format: InvestorPackFormat): InvestorSectionType[] {
+function getDefaultSectionsForFormat(
+  format: InvestorPackFormat
+): InvestorSectionType[] {
   switch (format) {
     case 'quarterly_earnings':
       return DEFAULT_QUARTERLY_EARNINGS_SECTIONS;
@@ -384,7 +386,9 @@ function getDefaultSectionsForFormat(format: InvestorPackFormat): InvestorSectio
 // Service Factory
 // ============================================================================
 
-export function createInvestorRelationsService(config: InvestorRelationsServiceConfig) {
+export function createInvestorRelationsService(
+  config: InvestorRelationsServiceConfig
+) {
   const db = config.supabase as SupabaseClient;
   const openaiApiKey = config.openaiApiKey;
   const openai = new OpenAI({ apiKey: openaiApiKey });
@@ -440,7 +444,8 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
     input: CreateInvestorPackRequest
   ): Promise<InvestorPack> {
     const format = input.format || 'quarterly_earnings';
-    const sectionTypes = input.sectionTypes || getDefaultSectionsForFormat(format);
+    const sectionTypes =
+      input.sectionTypes || getDefaultSectionsForFormat(format);
 
     const { data, error } = await db
       .from('investor_packs')
@@ -487,10 +492,15 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
       .insert(sectionsToInsert);
 
     if (sectionsError) {
-      logger.warn('Failed to create initial sections', { error: sectionsError, packId: data.id });
+      logger.warn('Failed to create initial sections', {
+        error: sectionsError,
+        packId: data.id,
+      });
     }
 
-    await logPackAction(orgId, data.id, userId, userEmail, 'created', { input });
+    await logPackAction(orgId, data.id, userId, userEmail, 'created', {
+      input,
+    });
 
     return mapPackRecord(data);
   }
@@ -535,12 +545,16 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
       .order('created_at', { ascending: false });
 
     if (query.status) {
-      const statuses = Array.isArray(query.status) ? query.status : [query.status];
+      const statuses = Array.isArray(query.status)
+        ? query.status
+        : [query.status];
       dbQuery = dbQuery.in('status', statuses);
     }
 
     if (query.format) {
-      const formats = Array.isArray(query.format) ? query.format : [query.format];
+      const formats = Array.isArray(query.format)
+        ? query.format
+        : [query.format];
       dbQuery = dbQuery.in('format', formats);
     }
 
@@ -588,17 +602,24 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
     const updateData: Record<string, unknown> = {};
 
     if (input.title !== undefined) updateData.title = input.title;
-    if (input.description !== undefined) updateData.description = input.description;
+    if (input.description !== undefined)
+      updateData.description = input.description;
     if (input.format !== undefined) updateData.format = input.format;
-    if (input.primaryAudience !== undefined) updateData.primary_audience = input.primaryAudience;
-    if (input.periodStart !== undefined) updateData.period_start = input.periodStart;
+    if (input.primaryAudience !== undefined)
+      updateData.primary_audience = input.primaryAudience;
+    if (input.periodStart !== undefined)
+      updateData.period_start = input.periodStart;
     if (input.periodEnd !== undefined) updateData.period_end = input.periodEnd;
-    if (input.fiscalQuarter !== undefined) updateData.fiscal_quarter = input.fiscalQuarter;
-    if (input.fiscalYear !== undefined) updateData.fiscal_year = input.fiscalYear;
-    if (input.sectionTypes !== undefined) updateData.section_types = input.sectionTypes;
+    if (input.fiscalQuarter !== undefined)
+      updateData.fiscal_quarter = input.fiscalQuarter;
+    if (input.fiscalYear !== undefined)
+      updateData.fiscal_year = input.fiscalYear;
+    if (input.sectionTypes !== undefined)
+      updateData.section_types = input.sectionTypes;
     if (input.llmModel !== undefined) updateData.llm_model = input.llmModel;
     if (input.tone !== undefined) updateData.tone = input.tone;
-    if (input.targetLength !== undefined) updateData.target_length = input.targetLength;
+    if (input.targetLength !== undefined)
+      updateData.target_length = input.targetLength;
     if (input.meta !== undefined) updateData.meta = input.meta;
 
     if (Object.keys(updateData).length === 0) {
@@ -642,7 +663,9 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
     }
 
     // Log to audit (pack_id will be null since pack is deleted, but we can still log)
-    await logPackAction(orgId, null, userId, userEmail, 'archived', { deletedPackId: packId });
+    await logPackAction(orgId, null, userId, userEmail, 'archived', {
+      deletedPackId: packId,
+    });
 
     return true;
   }
@@ -670,7 +693,9 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
       return null;
     }
 
-    await logPackAction(orgId, packId, userId, userEmail, 'archived', { reason: input.reason });
+    await logPackAction(orgId, packId, userId, userEmail, 'archived', {
+      reason: input.reason,
+    });
 
     return mapPackRecord(data);
   }
@@ -711,7 +736,11 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
       const sectionsToGenerate = input.regenerateSections || pack.sectionTypes;
 
       // Aggregate upstream data
-      const aggregatedData = await aggregateUpstreamData(orgId, pack.periodStart, pack.periodEnd);
+      const aggregatedData = await aggregateUpstreamData(
+        orgId,
+        pack.periodStart,
+        pack.periodEnd
+      );
 
       // Store sources
       const sources = await storeSources(orgId, packId, aggregatedData);
@@ -753,11 +782,19 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
         .select()
         .single();
 
-      await logPackAction(orgId, packId, userId, userEmail, 'section_generated', {
-        sectionsGenerated: sectionsToGenerate,
-        tokensUsed: totalTokensUsed,
-        durationMs,
-      }, { tokensUsed: totalTokensUsed, durationMs });
+      await logPackAction(
+        orgId,
+        packId,
+        userId,
+        userEmail,
+        'section_generated',
+        {
+          sectionsGenerated: sectionsToGenerate,
+          tokensUsed: totalTokensUsed,
+          durationMs,
+        },
+        { tokensUsed: totalTokensUsed, durationMs }
+      );
 
       return {
         pack: mapPackRecord(updatedPack),
@@ -767,7 +804,8 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
         tokensUsed: totalTokensUsed,
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       await db
         .from('investor_packs')
         .update({
@@ -873,7 +911,8 @@ export function createInvestorRelationsService(config: InvestorRelationsServiceC
     const sources: InvestorPackSource[] = [];
 
     for (const [system, dataItems] of Object.entries(aggregatedData)) {
-      if (!dataItems || !Array.isArray(dataItems) || dataItems.length === 0) continue;
+      if (!dataItems || !Array.isArray(dataItems) || dataItems.length === 0)
+        continue;
 
       const { data, error } = await db
         .from('investor_pack_sources')
@@ -982,16 +1021,24 @@ Format your response in clear, professional Markdown.`,
         return null;
       }
 
-      await logPackAction(orgId, packId, userId, userEmail, 'section_generated', {
-        sectionType,
-        tokensUsed,
-        durationMs,
-      }, {
-        model: pack.llmModel,
-        tokensUsed,
-        durationMs,
-        sectionId: data.id,
-      });
+      await logPackAction(
+        orgId,
+        packId,
+        userId,
+        userEmail,
+        'section_generated',
+        {
+          sectionType,
+          tokensUsed,
+          durationMs,
+        },
+        {
+          model: pack.llmModel,
+          tokensUsed,
+          durationMs,
+          sectionId: data.id,
+        }
+      );
 
       return {
         section: mapSectionRecord(data),
@@ -1008,7 +1055,8 @@ Format your response in clear, professional Markdown.`,
     pack: InvestorPackWithSections,
     aggregatedData: Record<InvestorSourceSystem, unknown>
   ): string {
-    const periodLabel = `${pack.fiscalQuarter || ''} ${pack.fiscalYear || ''} (${pack.periodStart} to ${pack.periodEnd})`.trim();
+    const periodLabel =
+      `${pack.fiscalQuarter || ''} ${pack.fiscalYear || ''} (${pack.periodStart} to ${pack.periodEnd})`.trim();
     const dataContext = JSON.stringify(aggregatedData, null, 2).slice(0, 5000);
 
     const sectionPrompts: Record<InvestorSectionType, string> = {
@@ -1074,8 +1122,12 @@ Generate professional investor-ready content.`;
     const lowlights = sections.find((s) => s.sectionType === 'lowlights');
 
     return {
-      highlightsCount: highlights?.contentMd?.split('\n').filter((l) => l.startsWith('-')).length || 0,
-      lowlightsCount: lowlights?.contentMd?.split('\n').filter((l) => l.startsWith('-')).length || 0,
+      highlightsCount:
+        highlights?.contentMd?.split('\n').filter((l) => l.startsWith('-'))
+          .length || 0,
+      lowlightsCount:
+        lowlights?.contentMd?.split('\n').filter((l) => l.startsWith('-'))
+          .length || 0,
       keyMetrics: [],
     };
   }
@@ -1130,10 +1182,18 @@ Generate professional investor-ready content.`;
 
     if (error || !data) return null;
 
-    await logPackAction(orgId, packId, userId, userEmail, 'section_edited', {
-      sectionId,
-      changes: Object.keys(updateData),
-    }, { sectionId });
+    await logPackAction(
+      orgId,
+      packId,
+      userId,
+      userEmail,
+      'section_edited',
+      {
+        sectionId,
+        changes: Object.keys(updateData),
+      },
+      { sectionId }
+    );
 
     return mapSectionRecord(data);
   }
@@ -1152,7 +1212,11 @@ Generate professional investor-ready content.`;
     const section = pack.sections.find((s) => s.id === sectionId);
     if (!section) return null;
 
-    const aggregatedData = await aggregateUpstreamData(orgId, pack.periodStart, pack.periodEnd);
+    const aggregatedData = await aggregateUpstreamData(
+      orgId,
+      pack.periodStart,
+      pack.periodEnd
+    );
 
     let prompt = buildSectionPrompt(section.sectionType, pack, aggregatedData);
     if (input.customPrompt) {
@@ -1203,17 +1267,25 @@ Generate professional investor-ready content.`;
 
       if (error || !data) return null;
 
-      await logPackAction(orgId, packId, userId, userEmail, 'section_regenerated', {
-        sectionId,
-        sectionType: section.sectionType,
-        tokensUsed,
-        durationMs,
-      }, {
-        model: pack.llmModel,
-        tokensUsed,
-        durationMs,
-        sectionId,
-      });
+      await logPackAction(
+        orgId,
+        packId,
+        userId,
+        userEmail,
+        'section_regenerated',
+        {
+          sectionId,
+          sectionType: section.sectionType,
+          tokensUsed,
+          durationMs,
+        },
+        {
+          model: pack.llmModel,
+          tokensUsed,
+          durationMs,
+          sectionId,
+        }
+      );
 
       // Update pack token count
       await db
@@ -1294,9 +1366,17 @@ Generate professional investor-ready content.`;
       throw new Error(`Failed to create Q&A: ${error.message}`);
     }
 
-    await logPackAction(orgId, input.packId || null, userId, userEmail, 'qna_created', {
-      qnaId: data.id,
-    }, { qnaId: data.id });
+    await logPackAction(
+      orgId,
+      input.packId || null,
+      userId,
+      userEmail,
+      'qna_created',
+      {
+        qnaId: data.id,
+      },
+      { qnaId: data.id }
+    );
 
     return mapQnARecord(data);
   }
@@ -1313,16 +1393,22 @@ Generate professional investor-ready content.`;
     }
 
     const startTime = Date.now();
-    const categories = input.categories || Object.values([
-      'financials',
-      'strategy',
-      'competition',
-      'product',
-      'risk',
-    ]);
+    const categories =
+      input.categories ||
+      Object.values([
+        'financials',
+        'strategy',
+        'competition',
+        'product',
+        'risk',
+      ]);
     const count = input.count || 5;
 
-    const aggregatedData = await aggregateUpstreamData(orgId, pack.periodStart, pack.periodEnd);
+    const aggregatedData = await aggregateUpstreamData(
+      orgId,
+      pack.periodStart,
+      pack.periodEnd
+    );
 
     const prompt = `Generate ${count} investor Q&A pairs for ${pack.primaryAudience}.
 Period: ${pack.fiscalQuarter || ''} ${pack.fiscalYear || ''} (${pack.periodStart} to ${pack.periodEnd})
@@ -1343,7 +1429,8 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
         messages: [
           {
             role: 'system',
-            content: 'You are an expert investor relations professional. Generate realistic Q&A pairs that investors might ask.',
+            content:
+              'You are an expert investor relations professional. Generate realistic Q&A pairs that investors might ask.',
           },
           { role: 'user', content: prompt },
         ],
@@ -1356,9 +1443,21 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
       const tokensUsed = response.usage?.total_tokens || 0;
       const durationMs = Date.now() - startTime;
 
-      let parsedQnAs: Array<{ question: string; answer: string; category: string; confidence: number }> = [];
+      let parsedQnAs: Array<{
+        question: string;
+        answer: string;
+        category: string;
+        confidence: number;
+      }> = [];
       try {
-        const parsed = JSON.parse(content) as { qnas?: Array<{ question: string; answer: string; category: string; confidence: number }> };
+        const parsed = JSON.parse(content) as {
+          qnas?: Array<{
+            question: string;
+            answer: string;
+            category: string;
+            confidence: number;
+          }>;
+        };
         parsedQnAs = parsed.qnas || [];
       } catch {
         logger.warn('Failed to parse Q&A response', { content });
@@ -1386,12 +1485,20 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
         }
       }
 
-      await logPackAction(orgId, input.packId, userId, userEmail, 'qna_generated', {
-        count: createdQnAs.length,
-        categories,
-        tokensUsed,
-        durationMs,
-      }, { tokensUsed, durationMs });
+      await logPackAction(
+        orgId,
+        input.packId,
+        userId,
+        userEmail,
+        'qna_generated',
+        {
+          count: createdQnAs.length,
+          categories,
+          tokensUsed,
+          durationMs,
+        },
+        { tokensUsed, durationMs }
+      );
 
       return {
         qnas: createdQnAs,
@@ -1419,7 +1526,9 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
     }
 
     if (query.category) {
-      const categories = Array.isArray(query.category) ? query.category : [query.category];
+      const categories = Array.isArray(query.category)
+        ? query.category
+        : [query.category];
       dbQuery = dbQuery.in('category', categories);
     }
 
@@ -1432,7 +1541,9 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
     }
 
     if (query.searchTerm) {
-      dbQuery = dbQuery.or(`question.ilike.%${query.searchTerm}%,answer_md.ilike.%${query.searchTerm}%`);
+      dbQuery = dbQuery.or(
+        `question.ilike.%${query.searchTerm}%,answer_md.ilike.%${query.searchTerm}%`
+      );
     }
 
     const limit = query.limit || 20;
@@ -1465,7 +1576,8 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
     if (input.answerMd !== undefined) updateData.answer_md = input.answerMd;
     if (input.category !== undefined) updateData.category = input.category;
     if (input.tags !== undefined) updateData.tags = input.tags;
-    if (input.confidence !== undefined) updateData.confidence = input.confidence;
+    if (input.confidence !== undefined)
+      updateData.confidence = input.confidence;
     if (input.status !== undefined) updateData.status = input.status;
 
     if (input.status === 'approved') {
@@ -1483,18 +1595,23 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
 
     if (error || !data) return null;
 
-    await logPackAction(orgId, data.pack_id, userId, userEmail, 'updated', {
-      qnaId,
-      changes: Object.keys(updateData),
-    }, { qnaId });
+    await logPackAction(
+      orgId,
+      data.pack_id,
+      userId,
+      userEmail,
+      'updated',
+      {
+        qnaId,
+        changes: Object.keys(updateData),
+      },
+      { qnaId }
+    );
 
     return mapQnARecord(data);
   }
 
-  async function deleteQnA(
-    orgId: string,
-    qnaId: string
-  ): Promise<boolean> {
+  async function deleteQnA(orgId: string, qnaId: string): Promise<boolean> {
     const { error } = await db
       .from('investor_qna')
       .delete()
@@ -1623,13 +1740,19 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
         durationCount++;
       }
 
-      if (pack.published_at && (!lastPublished || pack.published_at > lastPublished)) {
+      if (
+        pack.published_at &&
+        (!lastPublished || pack.published_at > lastPublished)
+      ) {
         lastPublished = pack.published_at;
       }
 
       const createdDate = new Date(pack.created_at);
       const packQuarter = Math.floor((createdDate.getMonth() + 3) / 3);
-      if (createdDate.getFullYear() === currentYear && packQuarter === currentQuarter) {
+      if (
+        createdDate.getFullYear() === currentYear &&
+        packQuarter === currentQuarter
+      ) {
         packsThisQuarter++;
       }
     }
@@ -1658,7 +1781,10 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
 
     // Get recent packs (last 5)
     const recentPacks = packsList
-      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      )
       .slice(0, 5)
       .map(mapPackRecord);
 
@@ -1674,7 +1800,8 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
       totalQnAs: qnaCount || 0,
       approvedQnAs: approvedQnACount || 0,
       totalTokensUsed: totalTokens,
-      averageGenerationTimeMs: durationCount > 0 ? Math.round(totalDuration / durationCount) : 0,
+      averageGenerationTimeMs:
+        durationCount > 0 ? Math.round(totalDuration / durationCount) : 0,
       packsThisQuarter,
       lastPublishedAt: lastPublished,
       byStatus: statusCounts as Record<InvestorPackStatus, number>,
@@ -1702,7 +1829,9 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
     }
 
     if (query.eventType) {
-      const eventTypes = Array.isArray(query.eventType) ? query.eventType : [query.eventType];
+      const eventTypes = Array.isArray(query.eventType)
+        ? query.eventType
+        : [query.eventType];
       dbQuery = dbQuery.in('event_type', eventTypes);
     }
 
@@ -1775,4 +1904,6 @@ Respond with a JSON array of objects with: question, answer, category, confidenc
   };
 }
 
-export type InvestorRelationsService = ReturnType<typeof createInvestorRelationsService>;
+export type InvestorRelationsService = ReturnType<
+  typeof createInvestorRelationsService
+>;

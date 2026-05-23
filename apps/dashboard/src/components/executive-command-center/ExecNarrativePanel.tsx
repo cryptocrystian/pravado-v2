@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 /**
  * Executive Narrative Panel Component (Sprint S61)
  * Displays the latest LLM-generated narrative with risks, opportunities, storyline
@@ -5,15 +6,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  type ExecDashboardNarrative,
-  formatRelativeTime,
-} from '@/lib/executiveCommandCenterApi';
-import { cn } from '@/lib/utils';
 import {
   FileText,
   RefreshCw,
@@ -26,6 +18,16 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  type ExecDashboardNarrative,
+  formatRelativeTime,
+} from '@/lib/executiveCommandCenterApi';
+import { cn } from '@/lib/utils';
 
 interface ExecNarrativePanelProps {
   narrative: ExecDashboardNarrative | null;
@@ -146,7 +148,10 @@ export function ExecNarrativePanel({
             <FileText className="h-4 w-4" />
             This Week's Narrative
             {narrative.isCurrent && (
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
                 Current
               </Badge>
             )}
@@ -187,18 +192,25 @@ export function ExecNarrativePanel({
         {/* Collapsible Sections */}
         {sections.map((section) => {
           const sectionKey = section.title.toLowerCase().replace(' ', '_');
-          const isExpanded = expandedSections.has(sectionKey.split('_')[1] || sectionKey);
+          const isExpanded = expandedSections.has(
+            sectionKey.split('_')[1] || sectionKey
+          );
 
           if (!section.content) return null;
 
           return (
             <div
               key={section.title}
-              className={cn('rounded-lg border overflow-hidden', section.colorClass)}
+              className={cn(
+                'rounded-lg border overflow-hidden',
+                section.colorClass
+              )}
             >
               <button
                 className="w-full flex items-center justify-between p-3 hover:bg-opacity-50 transition-colors"
-                onClick={() => toggleSection(sectionKey.split('_')[1] || sectionKey)}
+                onClick={() =>
+                  toggleSection(sectionKey.split('_')[1] || sectionKey)
+                }
               >
                 <div className="flex items-center gap-2 font-medium">
                   {section.icon}
@@ -220,7 +232,6 @@ export function ExecNarrativePanel({
             </div>
           );
         })}
-
       </CardContent>
     </Card>
   );

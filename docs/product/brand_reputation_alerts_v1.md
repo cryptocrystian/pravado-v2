@@ -17,6 +17,7 @@ The Brand Reputation Alerts & Executive Reporting feature extends S56 Brand Repu
 ### Database Schema
 
 **Tables:**
+
 - `brand_reputation_alert_rules` - Alert rule definitions with threshold conditions
 - `brand_reputation_alert_events` - Triggered alert instances with lifecycle tracking
 - `brand_reputation_reports` - Executive report metadata and snapshots
@@ -24,6 +25,7 @@ The Brand Reputation Alerts & Executive Reporting feature extends S56 Brand Repu
 - `brand_reputation_report_recipients` - Report delivery targets
 
 **Key Enums:**
+
 - `reputation_alert_channel`: in_app, email, slack, webhook
 - `reputation_alert_status`: new, acknowledged, muted, resolved
 - `reputation_report_frequency`: ad_hoc, weekly, monthly, quarterly
@@ -33,6 +35,7 @@ The Brand Reputation Alerts & Executive Reporting feature extends S56 Brand Repu
 ### API Endpoints
 
 **Alert Rules:**
+
 ```
 POST   /api/v1/reputation-alerts/alert-rules           # Create rule
 GET    /api/v1/reputation-alerts/alert-rules           # List rules
@@ -42,6 +45,7 @@ DELETE /api/v1/reputation-alerts/alert-rules/:id       # Delete rule
 ```
 
 **Alert Events:**
+
 ```
 GET    /api/v1/reputation-alerts/alert-events          # List events
 GET    /api/v1/reputation-alerts/alert-events/:id      # Get event
@@ -51,6 +55,7 @@ POST   /api/v1/reputation-alerts/alert-events/:id/mute         # Mute
 ```
 
 **Reports:**
+
 ```
 POST   /api/v1/reputation-alerts/reports              # Create draft report
 GET    /api/v1/reputation-alerts/reports              # List reports
@@ -60,6 +65,7 @@ POST   /api/v1/reputation-alerts/reports/:id/sections/:sectionId/regenerate  # R
 ```
 
 **Insights:**
+
 ```
 GET    /api/v1/reputation-alerts/insights             # Dashboard insights
 ```
@@ -67,39 +73,51 @@ GET    /api/v1/reputation-alerts/insights             # Dashboard insights
 ## Alert Rule Types
 
 ### 1. Overall Score Threshold
+
 Alert when overall reputation score crosses thresholds:
+
 - `minOverallScore`: Alert if score drops below this value
 - `maxOverallScore`: Alert if score rises above this value
 
 ### 2. Score Delta Threshold
+
 Alert on significant score changes:
+
 - `minDeltaOverallScore`: Alert if score change exceeds negative threshold
 - `maxDeltaOverallScore`: Alert if score change exceeds positive threshold
 
 ### 3. Component Score Threshold
+
 Alert on specific component drops:
+
 - `componentKey`: sentiment, coverage, crisis_impact, competitive_position, engagement
 - `minComponentScore`: Alert if component score drops below this value
 
 ### 4. Competitor Gap Threshold
+
 Alert on competitive positioning changes:
+
 - `competitorSlug`: Target competitor identifier
 - `minCompetitorGap`: Alert if gap drops below threshold
 - `maxCompetitorGap`: Alert if gap exceeds threshold
 
 ### 5. Crisis Integration
+
 Alert on crisis incidents:
+
 - `linkCrisisIncidents`: Enable crisis-linked alerts
 - `minIncidentSeverity`: Minimum severity (1-5) to trigger
 
 ## Alert Evaluation Engine
 
 The evaluation engine runs when:
+
 1. New reputation snapshots are created (S56)
 2. Crisis incidents are detected/updated (S55)
 3. Manual evaluation is triggered
 
 **Cooldown Logic:**
+
 - Each rule has a `cooldownMinutes` setting
 - After triggering, rule won't fire again until cooldown expires
 - Prevents alert fatigue from repeated threshold crossings
@@ -109,12 +127,14 @@ The evaluation engine runs when:
 ### Report Structure
 
 **Key Metrics:**
+
 - Overall score and trend
 - Component score breakdown
 - Alert summary
 - Crisis count
 
 **Sections:**
+
 1. **Overview** - Executive summary of reputation status
 2. **Highlights** - Key positive developments
 3. **Risks** - Areas of concern
@@ -135,6 +155,7 @@ The evaluation engine runs when:
 ## Frontend Components
 
 **Dashboard:**
+
 - `InsightsSummaryCard` - Reputation score with trend and alert counts
 - `AlertRulesList` - Manage alert rules with toggle/edit/delete
 - `AlertEventsTable` - View and action alert events
@@ -146,7 +167,7 @@ The evaluation engine runs when:
 ## Feature Flag
 
 ```typescript
-FLAGS.ENABLE_BRAND_REPUTATION_ALERTS // true by default
+FLAGS.ENABLE_BRAND_REPUTATION_ALERTS; // true by default
 ```
 
 ## Integration Points
@@ -208,6 +229,7 @@ const insights = await getReputationInsights({
 Backend tests: `apps/api/tests/brandReputationAlertsService.test.ts`
 
 Run tests:
+
 ```bash
 pnpm --filter @pravado/api test
 ```
@@ -217,6 +239,7 @@ pnpm --filter @pravado/api test
 Migration file: `apps/api/supabase/migrations/62_create_brand_reputation_alerts_schema.sql`
 
 Apply migration:
+
 ```bash
 supabase db push
 ```

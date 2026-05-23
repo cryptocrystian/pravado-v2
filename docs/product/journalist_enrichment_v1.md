@@ -12,6 +12,7 @@ The Smart Media Contact Enrichment Engine is Pravado's multi-source data enrichm
 ## Product Vision
 
 Media relations professionals waste hours manually researching and verifying journalist contact information across multiple sources. They struggle with:
+
 - **Incomplete Contact Data**: Missing emails, phones, or social profiles
 - **Verification Burden**: Uncertainty about contact accuracy
 - **Duplicate Records**: Same journalist with conflicting information across sources
@@ -19,6 +20,7 @@ Media relations professionals waste hours manually researching and verifying jou
 - **Manual Data Entry**: Time-consuming copy-paste workflows
 
 The Smart Media Contact Enrichment Engine solves this by automatically:
+
 1. **Multi-Source Aggregation**: Pulling contact data from 8+ enrichment sources
 2. **Intelligent Verification**: Validating emails, phones, and social profiles
 3. **Confidence Scoring**: Assigning 0-100 scores to every data point
@@ -30,6 +32,7 @@ The Smart Media Contact Enrichment Engine solves this by automatically:
 ### 1. Multi-Source Enrichment
 
 **Supported Sources:**
+
 - **Email Verification**: Syntax validation, DNS checks, deliverability testing
 - **Social Media Scraping**: Twitter/X, LinkedIn, Mastodon, Bluesky profile extraction
 - **Outlet Authority Scoring**: Domain authority, traffic metrics, media rankings
@@ -40,6 +43,7 @@ The Smart Media Contact Enrichment Engine solves this by automatically:
 - **Contact Import**: CSV/spreadsheet uploads
 
 **Enrichment Coverage:**
+
 - Primary email (verified/unverified)
 - Phone number (verified/unverified)
 - Social media profiles (9 platforms)
@@ -55,6 +59,7 @@ Every enrichment record receives three quality scores:
 
 **Overall Confidence Score (0-100)**
 Weighted average of:
+
 - Email confidence (30% weight)
 - Phone confidence (15% weight)
 - Social profiles confidence (20% weight)
@@ -63,6 +68,7 @@ Weighted average of:
 
 **Data Completeness Score (0-100)**
 Percentage of critical fields populated:
+
 - Email: 20 points
 - Phone: 15 points
 - Social profiles: 20 points
@@ -74,6 +80,7 @@ Percentage of critical fields populated:
 
 **Data Freshness Score (0-100)**
 Time-based decay from enrichment/verification dates:
+
 - 0-30 days: 100 points
 - 31-90 days: 80 points
 - 91-180 days: 60 points
@@ -83,6 +90,7 @@ Time-based decay from enrichment/verification dates:
 ### 3. Email Verification
 
 **Multi-Level Verification:**
+
 1. **Syntax Validation**: RFC 5322 compliance
 2. **DNS Checks**: MX record validation
 3. **Free Email Detection**: Gmail, Yahoo, Hotmail, etc.
@@ -90,6 +98,7 @@ Time-based decay from enrichment/verification dates:
 5. **Deliverability Testing**: SMTP handshake (future)
 
 **Confidence Scoring:**
+
 - Professional email (e.g., @nytimes.com): 0.8
 - Free email but deliverable: 0.6
 - Disposable email: 0.3
@@ -98,6 +107,7 @@ Time-based decay from enrichment/verification dates:
 ### 4. Outlet Authority Scoring
 
 **Premium Outlets (85-100 Authority Score):**
+
 - The New York Times
 - The Washington Post
 - The Wall Street Journal
@@ -115,10 +125,12 @@ Time-based decay from enrichment/verification dates:
 - Wired
 
 **Scoring Heuristics:**
+
 - Premium outlets: 85-100 (confidence: 0.9)
 - Non-premium outlets: 40-80 (confidence: 0.6)
 
 **Future Enhancements:**
+
 - Alexa rank integration
 - Moz Domain Authority API
 - SimilarWeb traffic data
@@ -127,6 +139,7 @@ Time-based decay from enrichment/verification dates:
 ### 5. Social Profile Scraping
 
 **Supported Platforms:**
+
 - Twitter/X
 - LinkedIn
 - Mastodon
@@ -138,6 +151,7 @@ Time-based decay from enrichment/verification dates:
 - Threads
 
 **Extracted Data:**
+
 - Username
 - Display name
 - Bio/description
@@ -150,6 +164,7 @@ Time-based decay from enrichment/verification dates:
 - Last active date
 
 **Implementation Status:**
+
 - S50: Stubbed implementation (parses URL, returns platform/username)
 - S51+: Full scraping implementation planned
 
@@ -157,11 +172,13 @@ Time-based decay from enrichment/verification dates:
 
 **Duplicate Detection:**
 PostgreSQL function `find_duplicate_enrichments()` matches records by:
+
 - Email exact match (0.5 weight)
 - Phone exact match (0.3 weight)
 - Social profile overlap (0.2 weight)
 
 **Match Score Calculation:**
+
 ```
 match_score =
   (email_match ? 0.5 : 0) +
@@ -170,6 +187,7 @@ match_score =
 ```
 
 **Merge Suggestion Fields:**
+
 - Target journalist ID
 - Confidence score (0-1)
 - Reason for suggestion
@@ -179,6 +197,7 @@ match_score =
 - Potential conflicts (field, current value, new value)
 
 **Merge Strategies:**
+
 - **Overwrite**: Replace existing values
 - **Append**: Add to existing arrays (social profiles, beat)
 - **Keep Existing**: Preserve current values, discard new
@@ -186,6 +205,7 @@ match_score =
 ### 7. Batch Enrichment
 
 **Supported Operations:**
+
 - Single enrichment (1 contact)
 - Batch enrichment (1-1,000 contacts)
 - Email verification batch
@@ -195,6 +215,7 @@ match_score =
 - Auto-merge duplicates
 
 **Job Processing:**
+
 - Async job queue (BullMQ planned for S51+)
 - Progress tracking (0-100%)
 - Retry logic (max 10 retries)
@@ -202,6 +223,7 @@ match_score =
 - Error reporting per record
 
 **Batch Limits:**
+
 - Min batch size: 1 contact
 - Max batch size: 1,000 contacts
 - Max retries per job: 10
@@ -209,6 +231,7 @@ match_score =
 ### 8. Quality Flags
 
 System automatically detects and flags quality issues:
+
 - **stale_data**: Last verified >180 days ago
 - **low_confidence**: Overall confidence <40%
 - **missing_critical_fields**: Email and phone both missing
@@ -225,6 +248,7 @@ System automatically detects and flags quality issues:
 
 **Table: journalist_enrichment_records**
 Primary enrichment data storage
+
 - Source metadata (type, ID, URL)
 - Contact info (email, phone, social)
 - Professional data (outlet, job title, beat, location)
@@ -234,6 +258,7 @@ Primary enrichment data storage
 
 **Table: journalist_enrichment_jobs**
 Async job tracking
+
 - Job type + status
 - Input/output record counts
 - Progress percentage
@@ -243,6 +268,7 @@ Async job tracking
 
 **Table: journalist_enrichment_links**
 Record-to-profile associations
+
 - Link type (primary, alternate, suggested, etc.)
 - Merge tracking
 - Confidence scoring
@@ -252,6 +278,7 @@ Record-to-profile associations
 
 **JournalistEnrichmentService** (961 lines)
 30+ methods covering:
+
 - Record CRUD operations
 - Email verification
 - Social profile scraping
@@ -293,6 +320,7 @@ GET    /api/v1/journalist-enrichment/links
 **Route:** `/app/pr/enrichment`
 
 **Three-Panel Layout:**
+
 - **Left:** Enrichment generator form
 - **Center:** Enrichment records list with filtering
 - **Right:** Tabbed panel (Details | Suggestions | Jobs)
@@ -383,24 +411,28 @@ GET    /api/v1/journalist-enrichment/links
 ## Future Enhancements
 
 ### Sprint S51: Enhanced Verification
+
 - SMTP email verification
 - Phone number validation API
 - Social profile verification badges
 - Real-time data freshness monitoring
 
 ### Sprint S52: Advanced Scraping
+
 - Full social profile scraping implementation
 - Author page content extraction
 - Staff directory automation
 - Byline article analysis
 
 ### Sprint S53: Third-Party Integrations
+
 - Clearbit Enrichment API
 - Hunter.io email finder
 - Muck Rack journalist database
 - Cision media contacts
 
 ### Sprint S54: AI-Powered Insights
+
 - Topic modeling for beat extraction
 - Sentiment analysis of journalist articles
 - Coverage pattern recognition
@@ -411,18 +443,21 @@ GET    /api/v1/journalist-enrichment/links
 ### Key Metrics
 
 **Enrichment Health:**
+
 - Total enrichment records
 - New enrichments per day
 - Average confidence score
 - Quality flag distribution
 
 **Job Performance:**
+
 - Jobs created per day
 - Average job completion time
 - Success/failure rates
 - Retry frequency
 
 **Merge Activity:**
+
 - Merge suggestions generated
 - Merge suggestions accepted/rejected
 - Duplicate reduction rate
@@ -431,6 +466,7 @@ GET    /api/v1/journalist-enrichment/links
 ### Logging & Debugging
 
 All enrichment operations logged with:
+
 - Org ID + User ID
 - Source type + source URL
 - Confidence scores
@@ -465,6 +501,7 @@ All enrichment operations logged with:
 ## Success Criteria
 
 **Sprint S50 Completion (Achieved):**
+
 - ✅ Migration 55 created (3 tables)
 - ✅ Service layer (961 lines)
 - ✅ 12 REST API endpoints
@@ -477,6 +514,7 @@ All enrichment operations logged with:
 - ✅ Completion report
 
 **Adoption Goals (6 Months):**
+
 - 10,000+ enrichment records created
 - 85%+ average confidence score
 - 75%+ merge suggestion acceptance rate

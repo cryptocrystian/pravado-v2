@@ -69,7 +69,10 @@ describe('OutreachDeliverabilityService', () => {
 
   beforeEach(() => {
     supabase = createMockSupabase();
-    service = createOutreachDeliverabilityService({ supabase, providerConfig: stubProviderConfig });
+    service = createOutreachDeliverabilityService({
+      supabase,
+      providerConfig: stubProviderConfig,
+    });
   });
 
   describe('Email Message Management', () => {
@@ -101,7 +104,9 @@ describe('OutreachDeliverabilityService', () => {
       vi.spyOn(supabase, 'from').mockReturnValue({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: mockMessage, error: null }),
+            single: vi
+              .fn()
+              .mockResolvedValue({ data: mockMessage, error: null }),
           }),
         }),
       } as any);
@@ -135,7 +140,9 @@ describe('OutreachDeliverabilityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: mockMessage, error: null }),
+              single: vi
+                .fn()
+                .mockResolvedValue({ data: mockMessage, error: null }),
             }),
           }),
         }),
@@ -197,7 +204,9 @@ describe('OutreachDeliverabilityService', () => {
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               select: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: mockUpdatedMessage, error: null }),
+                single: vi
+                  .fn()
+                  .mockResolvedValue({ data: mockUpdatedMessage, error: null }),
               }),
             }),
           }),
@@ -223,7 +232,9 @@ describe('OutreachDeliverabilityService', () => {
         }),
       } as any);
 
-      await expect(service.deleteEmailMessage(messageId, orgId)).resolves.not.toThrow();
+      await expect(
+        service.deleteEmailMessage(messageId, orgId)
+      ).resolves.not.toThrow();
     });
   });
 
@@ -248,7 +259,9 @@ describe('OutreachDeliverabilityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({ data: mockMetrics, error: null }),
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: mockMetrics, error: null }),
             }),
           }),
         }),
@@ -319,8 +332,12 @@ describe('OutreachDeliverabilityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn()
-                .mockResolvedValueOnce({ data: { ...mockMetrics, engagement_score: 0.45 }, error: null })
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValueOnce({
+                  data: { ...mockMetrics, engagement_score: 0.45 },
+                  error: null,
+                })
                 .mockResolvedValueOnce({ data: mockMetrics, error: null }),
             }),
           }),
@@ -372,7 +389,9 @@ describe('OutreachDeliverabilityService', () => {
     });
 
     it('should fail when no provider configured', async () => {
-      const serviceWithoutProvider = createOutreachDeliverabilityService({ supabase });
+      const serviceWithoutProvider = createOutreachDeliverabilityService({
+        supabase,
+      });
 
       const result = await serviceWithoutProvider.sendEmail({
         to: 'test@example.com',
@@ -402,7 +421,9 @@ describe('OutreachDeliverabilityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({ data: mockMessage, error: null }),
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: mockMessage, error: null }),
             }),
           }),
         }),
@@ -410,7 +431,9 @@ describe('OutreachDeliverabilityService', () => {
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               select: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: mockMessage, error: null }),
+                single: vi
+                  .fn()
+                  .mockResolvedValue({ data: mockMessage, error: null }),
               }),
             }),
           }),
@@ -440,7 +463,9 @@ describe('OutreachDeliverabilityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: null, error: null }),
             }),
           }),
         }),
@@ -479,7 +504,10 @@ describe('OutreachDeliverabilityService', () => {
         bounce_rate: 0.05,
       };
 
-      vi.spyOn(supabase, 'rpc').mockResolvedValue({ data: mockSummary, error: null });
+      vi.spyOn(supabase, 'rpc').mockResolvedValue({
+        data: mockSummary,
+        error: null,
+      });
 
       const result = await service.getDeliverabilitySummary(orgId);
 
@@ -547,7 +575,9 @@ describe('OutreachDeliverabilityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({ data: mockEngagement, error: null }),
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: mockEngagement, error: null }),
             }),
           }),
         }),

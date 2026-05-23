@@ -81,11 +81,17 @@ export class ContentRewriteService {
     // 2. Fetch personality if provided
     let personality: AgentPersonality | null = null;
     if (input.personalityId) {
-      personality = await this.personalityStore.getPersonality(orgId, input.personalityId);
+      personality = await this.personalityStore.getPersonality(
+        orgId,
+        input.personalityId
+      );
     }
 
     // 3. Analyze quality before rewrite (S14 integration)
-    const qualityAnalysis = await this.qualityService.analyzeQuality(orgId, input.contentItemId);
+    const qualityAnalysis = await this.qualityService.analyzeQuality(
+      orgId,
+      input.contentItemId
+    );
     const qualityBefore = qualityAnalysis.score.score;
     const readabilityBefore = qualityAnalysis.score.readability || 50;
 
@@ -112,7 +118,8 @@ export class ContentRewriteService {
     const reasoning = this.generateReasoning(context, improvements);
 
     // 9. Compute quality after rewrite
-    const readabilityAfter = this.qualityService.computeReadability(rewrittenText);
+    const readabilityAfter =
+      this.qualityService.computeReadability(rewrittenText);
     const qualityAfter = qualityBefore + 10; // Stub: always improve by 10 points
 
     // 10. Save rewrite to database
@@ -146,7 +153,10 @@ export class ContentRewriteService {
   /**
    * Get a single rewrite by ID
    */
-  async getRewrite(orgId: string, rewriteId: string): Promise<ContentRewrite | null> {
+  async getRewrite(
+    orgId: string,
+    rewriteId: string
+  ): Promise<ContentRewrite | null> {
     const { data, error } = await this.supabase
       .from('content_rewrites')
       .select('*')
@@ -244,7 +254,9 @@ Return only the rewritten content, no explanations or metadata.`;
         temperature: 0.7,
       });
 
-      logger.info('Generated rewrite using LLM', { provider: response.provider });
+      logger.info('Generated rewrite using LLM', {
+        provider: response.provider,
+      });
       return response.completion;
     } catch (error) {
       logger.warn('Failed to rewrite with LLM, will use stub', { error });
@@ -283,7 +295,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
    * Deterministic stub rewrite (V1)
    * Updated in S16 to try LLM first, with fallback to stub
    */
-  private async stubRewrite(originalText: string, context: RewriteContext): Promise<string> {
+  private async stubRewrite(
+    originalText: string,
+    context: RewriteContext
+  ): Promise<string> {
     // Try LLM first
     const llmRewrite = await this.rewriteWithLLM(originalText, context);
     if (llmRewrite) {
@@ -301,7 +316,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
 
     // 2. Apply personality-based transformations
     if (context.personality) {
-      modifiedSentences = this.applyPersonalityTransforms(modifiedSentences, context.personality);
+      modifiedSentences = this.applyPersonalityTransforms(
+        modifiedSentences,
+        context.personality
+      );
     }
 
     // 3. Improve readability by splitting long sentences
@@ -309,7 +327,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
 
     // 4. Inject keyword if provided and not present
     if (context.targetKeyword) {
-      modifiedSentences = this.injectKeyword(modifiedSentences, context.targetKeyword);
+      modifiedSentences = this.injectKeyword(
+        modifiedSentences,
+        context.targetKeyword
+      );
     }
 
     // 5. Add subheadings if text is long
@@ -336,7 +357,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
   /**
    * Compute semantic diff between original and rewritten text
    */
-  private computeSemanticDiff(original: string, rewritten: string): Record<string, unknown> {
+  private computeSemanticDiff(
+    original: string,
+    rewritten: string
+  ): Record<string, unknown> {
     const originalSentences = this.splitIntoSentences(original);
     const rewrittenSentences = this.splitIntoSentences(rewritten);
 
@@ -391,13 +415,18 @@ Important: Return only the rewritten content. Do not include explanations, metad
   /**
    * Extract improvements applied during rewrite
    */
-  private extractImprovements(context: RewriteContext, diff: Record<string, unknown>): string[] {
+  private extractImprovements(
+    context: RewriteContext,
+    diff: Record<string, unknown>
+  ): string[] {
     const improvements: string[] = [];
 
     const summary = (diff as any).summary || {};
 
     if (summary.added > 0) {
-      improvements.push(`Added ${summary.added} new sentence(s) to improve clarity`);
+      improvements.push(
+        `Added ${summary.added} new sentence(s) to improve clarity`
+      );
     }
 
     if (summary.removed > 0) {
@@ -405,7 +434,9 @@ Important: Return only the rewritten content. Do not include explanations, metad
     }
 
     if (context.personality) {
-      improvements.push(`Applied ${context.personality.configuration.tone} tone`);
+      improvements.push(
+        `Applied ${context.personality.configuration.tone} tone`
+      );
     }
 
     if (context.targetKeyword) {
@@ -422,7 +453,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
   /**
    * Generate reasoning metadata for the rewrite
    */
-  private generateReasoning(context: RewriteContext, improvements: string[]): Record<string, unknown> {
+  private generateReasoning(
+    context: RewriteContext,
+    improvements: string[]
+  ): Record<string, unknown> {
     return {
       qualityScoreBefore: context.qualityBefore,
       readabilityBefore: context.readabilityBefore,
@@ -474,7 +508,9 @@ Important: Return only the rewritten content. Do not include explanations, metad
       .single();
 
     if (error || !savedData) {
-      throw new Error(`Failed to save rewrite: ${error?.message || 'Unknown error'}`);
+      throw new Error(
+        `Failed to save rewrite: ${error?.message || 'Unknown error'}`
+      );
     }
 
     return this.mapRewriteFromDb(savedData);
@@ -483,7 +519,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
   /**
    * Get content item by ID
    */
-  private async getContentItem(orgId: string, contentItemId: string): Promise<ContentItem | null> {
+  private async getContentItem(
+    orgId: string,
+    contentItemId: string
+  ): Promise<ContentItem | null> {
     const { data, error } = await this.supabase
       .from('content_items')
       .select('*')
@@ -571,7 +610,10 @@ Important: Return only the rewritten content. Do not include explanations, metad
   /**
    * Apply personality-based transformations
    */
-  private applyPersonalityTransforms(sentences: string[], personality: AgentPersonality): string[] {
+  private applyPersonalityTransforms(
+    sentences: string[],
+    personality: AgentPersonality
+  ): string[] {
     const tone = personality.configuration.tone;
 
     if (tone === 'assertive') {

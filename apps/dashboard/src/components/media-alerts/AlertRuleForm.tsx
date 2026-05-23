@@ -3,7 +3,11 @@
  * Create and edit alert rules with dynamic field visibility
  */
 
-import type { MediaAlertRule, MediaAlertType, CreateMediaAlertRuleInput } from '@pravado/types';
+import type {
+  MediaAlertRule,
+  MediaAlertType,
+  CreateMediaAlertRuleInput,
+} from '@pravado/types';
 import { useState } from 'react';
 
 import { createAlertRule, updateAlertRule } from '@/lib/mediaAlertsApi';
@@ -17,14 +21,28 @@ interface AlertRuleFormProps {
 export function AlertRuleForm({ rule, onClose, onSave }: AlertRuleFormProps) {
   const [name, setName] = useState(rule?.name || '');
   const [description, setDescription] = useState(rule?.description || '');
-  const [alertType, setAlertType] = useState<MediaAlertType>(rule?.alertType || 'mention_match');
+  const [alertType, setAlertType] = useState<MediaAlertType>(
+    rule?.alertType || 'mention_match'
+  );
   const [isActive, setIsActive] = useState(rule?.isActive ?? true);
-  const [brandTerms, setBrandTerms] = useState(rule?.brandTerms?.join(', ') || '');
-  const [competitorTerms, setCompetitorTerms] = useState(rule?.competitorTerms?.join(', ') || '');
-  const [minMentions, setMinMentions] = useState(rule?.minMentions?.toString() || '');
-  const [timeWindowMinutes, setTimeWindowMinutes] = useState(rule?.timeWindowMinutes?.toString() || '');
-  const [minSentiment, setMinSentiment] = useState(rule?.minSentiment?.toString() || '');
-  const [maxSentiment, setMaxSentiment] = useState(rule?.maxSentiment?.toString() || '');
+  const [brandTerms, setBrandTerms] = useState(
+    rule?.brandTerms?.join(', ') || ''
+  );
+  const [competitorTerms, setCompetitorTerms] = useState(
+    rule?.competitorTerms?.join(', ') || ''
+  );
+  const [minMentions, setMinMentions] = useState(
+    rule?.minMentions?.toString() || ''
+  );
+  const [timeWindowMinutes, setTimeWindowMinutes] = useState(
+    rule?.timeWindowMinutes?.toString() || ''
+  );
+  const [minSentiment, setMinSentiment] = useState(
+    rule?.minSentiment?.toString() || ''
+  );
+  const [maxSentiment, setMaxSentiment] = useState(
+    rule?.maxSentiment?.toString() || ''
+  );
 
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,10 +58,22 @@ export function AlertRuleForm({ rule, onClose, onSave }: AlertRuleFormProps) {
         description: description || undefined,
         alertType,
         isActive,
-        brandTerms: brandTerms ? brandTerms.split(',').map((t) => t.trim()).filter(Boolean) : undefined,
-        competitorTerms: competitorTerms ? competitorTerms.split(',').map((t) => t.trim()).filter(Boolean) : undefined,
+        brandTerms: brandTerms
+          ? brandTerms
+              .split(',')
+              .map((t) => t.trim())
+              .filter(Boolean)
+          : undefined,
+        competitorTerms: competitorTerms
+          ? competitorTerms
+              .split(',')
+              .map((t) => t.trim())
+              .filter(Boolean)
+          : undefined,
         minMentions: minMentions ? parseInt(minMentions, 10) : undefined,
-        timeWindowMinutes: timeWindowMinutes ? parseInt(timeWindowMinutes, 10) : undefined,
+        timeWindowMinutes: timeWindowMinutes
+          ? parseInt(timeWindowMinutes, 10)
+          : undefined,
         minSentiment: minSentiment ? parseFloat(minSentiment) : undefined,
         maxSentiment: maxSentiment ? parseFloat(maxSentiment) : undefined,
       };
@@ -163,7 +193,8 @@ export function AlertRuleForm({ rule, onClose, onSave }: AlertRuleFormProps) {
             </div>
           )}
 
-          {(alertType === 'mention_match' || alertType === 'sentiment_shift') && (
+          {(alertType === 'mention_match' ||
+            alertType === 'sentiment_shift') && (
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

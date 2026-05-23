@@ -11,11 +11,15 @@ test.describe('Journalist Intelligence Dashboard', () => {
 
   test('should display page title and description', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('Journalist Intelligence');
-    await expect(page.locator('text=Unified contact intelligence')).toBeVisible();
+    await expect(
+      page.locator('text=Unified contact intelligence')
+    ).toBeVisible();
   });
 
   test('should display search input', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder*="Search journalists"]');
+    const searchInput = page.locator(
+      'input[placeholder*="Search journalists"]'
+    );
     await expect(searchInput).toBeVisible();
   });
 
@@ -28,16 +32,20 @@ test.describe('Journalist Intelligence Dashboard', () => {
   });
 
   test('should handle search', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder*="Search journalists"]');
+    const searchInput = page.locator(
+      'input[placeholder*="Search journalists"]'
+    );
     await searchInput.fill('tech');
     await searchInput.press('Enter');
 
     await expect(page.locator('table')).toBeVisible();
   });
 
-  test('should display engagement scores as progress bars', async ({ page }) => {
+  test('should display engagement scores as progress bars', async ({
+    page,
+  }) => {
     const progressBars = page.locator('.bg-blue-600');
-    if (await progressBars.count() > 0) {
+    if ((await progressBars.count()) > 0) {
       await expect(progressBars.first()).toBeVisible();
     }
   });
@@ -46,7 +54,10 @@ test.describe('Journalist Intelligence Dashboard', () => {
     await page.route('**/api/v1/journalist-graph/**', (route) => {
       route.fulfill({
         status: 500,
-        body: JSON.stringify({ success: false, error: { message: 'Server error' } }),
+        body: JSON.stringify({
+          success: false,
+          error: { message: 'Server error' },
+        }),
       });
     });
 

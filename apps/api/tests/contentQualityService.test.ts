@@ -30,7 +30,8 @@ describe('ContentQualityService', () => {
 
   describe('detectThinContent', () => {
     it('should detect thin content (< 300 words)', () => {
-      const thinText = 'This is a very short article. It has only a few words. Not enough for quality content.';
+      const thinText =
+        'This is a very short article. It has only a few words. Not enough for quality content.';
       const result = service.detectThinContent(thinText);
       expect(result).toBe(true);
     });
@@ -74,7 +75,8 @@ describe('ContentQualityService', () => {
     });
 
     it('should compute readability for simple text (high score)', () => {
-      const simpleText = 'The cat sat on the mat. It was a nice day. The sun was warm.';
+      const simpleText =
+        'The cat sat on the mat. It was a nice day. The sun was warm.';
       const score = service.computeReadability(simpleText);
       expect(score).toBeGreaterThan(60); // Simple text should be readable
       expect(score).toBeLessThanOrEqual(100);
@@ -155,7 +157,9 @@ describe('ContentQualityService', () => {
     it('should return 50 when keyword only in first 200 words', () => {
       const item: Partial<ContentItem> = {
         title: 'SEO Best Practices',
-        body: 'Content quality is crucial for online success. ' + 'Additional content here. '.repeat(50),
+        body:
+          'Content quality is crucial for online success. ' +
+          'Additional content here. '.repeat(50),
         metadata: {
           targetKeyword: 'content quality',
         },
@@ -167,7 +171,8 @@ describe('ContentQualityService', () => {
     it('should return 0 when keyword not found', () => {
       const item: Partial<ContentItem> = {
         title: 'SEO Best Practices',
-        body: 'This article covers various topics. ' + 'More content. '.repeat(50),
+        body:
+          'This article covers various topics. ' + 'More content. '.repeat(50),
         metadata: {
           targetKeyword: 'content quality',
         },
@@ -284,7 +289,9 @@ describe('ContentQualityService', () => {
   describe('calculateOverallScore', () => {
     it('should calculate score with all metrics available', () => {
       // Use reflection to access private method for testing
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 80,
@@ -299,7 +306,9 @@ describe('ContentQualityService', () => {
     });
 
     it('should redistribute topic weight when topic alignment is null', () => {
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 80,
@@ -314,7 +323,9 @@ describe('ContentQualityService', () => {
     });
 
     it('should apply thin content penalty (-20)', () => {
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 80,
@@ -329,7 +340,9 @@ describe('ContentQualityService', () => {
     });
 
     it('should apply duplicate penalty (-30)', () => {
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 80,
@@ -344,7 +357,9 @@ describe('ContentQualityService', () => {
     });
 
     it('should apply both penalties', () => {
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 80,
@@ -359,7 +374,9 @@ describe('ContentQualityService', () => {
     });
 
     it('should clamp score to minimum 0', () => {
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 10,
@@ -374,7 +391,9 @@ describe('ContentQualityService', () => {
     });
 
     it('should calculate maximum achievable score (80)', () => {
-      const calculateScore = (service as any).calculateOverallScore.bind(service);
+      const calculateScore = (service as any).calculateOverallScore.bind(
+        service
+      );
 
       const score = calculateScore({
         readability: 100,
@@ -506,7 +525,9 @@ describe('ContentQualityService', () => {
 
   describe('generateImprovements', () => {
     it('should suggest expanding thin content', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 80,
@@ -518,12 +539,18 @@ describe('ContentQualityService', () => {
         similarItems: [],
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('Expand content'));
-      expect(improvements).toContainEqual(expect.stringContaining('800–1200 words'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('Expand content')
+      );
+      expect(improvements).toContainEqual(
+        expect.stringContaining('800–1200 words')
+      );
     });
 
     it('should suggest adding keyword to title or intro', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 80,
@@ -535,12 +562,18 @@ describe('ContentQualityService', () => {
         similarItems: [],
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('primary keyword'));
-      expect(improvements).toContainEqual(expect.stringContaining('title or introduction'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('primary keyword')
+      );
+      expect(improvements).toContainEqual(
+        expect.stringContaining('title or introduction')
+      );
     });
 
     it('should suggest differentiation from similar content', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const similarItems = [
         {
@@ -560,12 +593,18 @@ describe('ContentQualityService', () => {
         similarItems,
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('Similar Article Title'));
-      expect(improvements).toContainEqual(expect.stringContaining('Differentiate'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('Similar Article Title')
+      );
+      expect(improvements).toContainEqual(
+        expect.stringContaining('Differentiate')
+      );
     });
 
     it('should suggest improving readability when score < 40', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 35,
@@ -577,12 +616,18 @@ describe('ContentQualityService', () => {
         similarItems: [],
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('Rewrite sentences'));
-      expect(improvements).toContainEqual(expect.stringContaining('clarity and readability'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('Rewrite sentences')
+      );
+      expect(improvements).toContainEqual(
+        expect.stringContaining('clarity and readability')
+      );
     });
 
     it('should suggest strengthening topic alignment when score < 60', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 80,
@@ -594,12 +639,18 @@ describe('ContentQualityService', () => {
         similarItems: [],
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('Strengthen alignment'));
-      expect(improvements).toContainEqual(expect.stringContaining('primary topic'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('Strengthen alignment')
+      );
+      expect(improvements).toContainEqual(
+        expect.stringContaining('primary topic')
+      );
     });
 
     it('should suggest breaking up very long content', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 80,
@@ -611,11 +662,15 @@ describe('ContentQualityService', () => {
         similarItems: [],
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('breaking this into multiple pieces'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('breaking this into multiple pieces')
+      );
     });
 
     it('should return positive message for high-quality content', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 80,
@@ -627,12 +682,16 @@ describe('ContentQualityService', () => {
         similarItems: [],
       });
 
-      expect(improvements).toContainEqual(expect.stringContaining('Content quality is good'));
+      expect(improvements).toContainEqual(
+        expect.stringContaining('Content quality is good')
+      );
       expect(improvements).toHaveLength(1);
     });
 
     it('should provide multiple suggestions for low-quality content', () => {
-      const generateImprovements = (service as any).generateImprovements.bind(service);
+      const generateImprovements = (service as any).generateImprovements.bind(
+        service
+      );
 
       const improvements = generateImprovements({
         readability: 35,
@@ -659,7 +718,10 @@ describe('ContentQualityService', () => {
         embeddings: null,
       };
 
-      const similar = await service.detectSimilarContent('org-id', item as ContentItem);
+      const similar = await service.detectSimilarContent(
+        'org-id',
+        item as ContentItem
+      );
       expect(similar).toEqual([]);
     });
 
@@ -671,7 +733,10 @@ describe('ContentQualityService', () => {
         embeddings: Array(1536).fill(0.1),
       };
 
-      const similar = await service.detectSimilarContent('org-id', item as ContentItem);
+      const similar = await service.detectSimilarContent(
+        'org-id',
+        item as ContentItem
+      );
       expect(similar).toEqual([]);
     });
 
@@ -726,14 +791,20 @@ describe('ContentQualityService', () => {
         },
       ];
 
-      mockSupabase.rpc.mockResolvedValue({ data: mockSimilarData, error: null });
+      mockSupabase.rpc.mockResolvedValue({
+        data: mockSimilarData,
+        error: null,
+      });
 
       const item: Partial<ContentItem> = {
         id: 'test-id',
         embeddings: Array(1536).fill(0.1),
       };
 
-      const similar = await service.detectSimilarContent('org-id', item as ContentItem);
+      const similar = await service.detectSimilarContent(
+        'org-id',
+        item as ContentItem
+      );
 
       expect(similar).toHaveLength(1);
       expect(similar[0].id).toBe('similar-1');
@@ -751,15 +822,18 @@ describe('ContentQualityService', () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: { message: 'Not found' } }),
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Not found' },
+              }),
             }),
           }),
         }),
       });
 
-      await expect(service.analyzeQuality('org-id', 'content-id')).rejects.toThrow(
-        'Content item not found'
-      );
+      await expect(
+        service.analyzeQuality('org-id', 'content-id')
+      ).rejects.toThrow('Content item not found');
     });
 
     it('should perform complete analysis for valid content', async () => {
@@ -791,7 +865,9 @@ describe('ContentQualityService', () => {
             select: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
                 eq: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({ data: mockContent, error: null }),
+                  single: vi
+                    .fn()
+                    .mockResolvedValue({ data: mockContent, error: null }),
                 }),
               }),
             }),
@@ -801,7 +877,9 @@ describe('ContentQualityService', () => {
           return {
             select: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: { id: 'topic-id' }, error: null }),
+                single: vi
+                  .fn()
+                  .mockResolvedValue({ data: { id: 'topic-id' }, error: null }),
               }),
             }),
           };

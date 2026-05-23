@@ -9,7 +9,12 @@ import type {
   ListRewritesResponse,
 } from '@pravado/types';
 import { LlmRouter } from '@pravado/utils';
-import { rewriteRequestSchema, listRewritesSchema, validateEnv, apiEnvSchema } from '@pravado/validators';
+import {
+  rewriteRequestSchema,
+  listRewritesSchema,
+  validateEnv,
+  apiEnvSchema,
+} from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
@@ -20,7 +25,10 @@ import { ContentRewriteService } from '../../services/contentRewriteService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -33,15 +41,25 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function contentRewriteRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // S28+S29: Initialize billing service
-  const billingService = new BillingService(supabase, env.BILLING_DEFAULT_PLAN_SLUG);
+  const billingService = new BillingService(
+    supabase,
+    env.BILLING_DEFAULT_PLAN_SLUG
+  );
 
   // S16: Initialize LLM router from environment
   const llmRouter = LlmRouter.fromEnv(env);
 
-  const rewriteService = new ContentRewriteService(supabase, billingService, llmRouter);
+  const rewriteService = new ContentRewriteService(
+    supabase,
+    billingService,
+    llmRouter
+  );
 
   // ========================================
   // POST /api/v1/content/rewrites
@@ -96,7 +114,10 @@ export async function contentRewriteRoutes(server: FastifyInstance) {
       }
 
       try {
-        const result = await rewriteService.generateRewrite(orgId, validation.data);
+        const result = await rewriteService.generateRewrite(
+          orgId,
+          validation.data
+        );
 
         return reply.code(201).send({
           success: true,
@@ -155,7 +176,9 @@ export async function contentRewriteRoutes(server: FastifyInstance) {
 
       // Parse query params
       const page = request.query.page ? parseInt(request.query.page, 10) : 1;
-      const pageSize = request.query.pageSize ? parseInt(request.query.pageSize, 10) : 20;
+      const pageSize = request.query.pageSize
+        ? parseInt(request.query.pageSize, 10)
+        : 20;
       const contentItemId = request.query.contentItemId;
 
       // Validate params
@@ -176,7 +199,10 @@ export async function contentRewriteRoutes(server: FastifyInstance) {
       }
 
       try {
-        const { rewrites, total } = await rewriteService.listRewrites(orgId, validation.data);
+        const { rewrites, total } = await rewriteService.listRewrites(
+          orgId,
+          validation.data
+        );
 
         return reply.code(200).send({
           success: true,

@@ -5,13 +5,15 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Radar, Clock, TrendingUp, CheckCircle2 } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { RiskLevelBadge } from './RiskLevelBadge';
+import { Card, CardContent } from '@/components/ui/card';
 import type { RiskRadarSnapshot } from '@/lib/riskRadarApi';
 import { formatRelativeTime } from '@/lib/riskRadarApi';
-import { Radar, Clock, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+import { RiskLevelBadge } from './RiskLevelBadge';
 
 interface RiskRadarCardProps {
   snapshot: RiskRadarSnapshot;
@@ -48,8 +50,14 @@ function getRiskBgColor(level: string): string {
   }
 }
 
-export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskRadarCardProps) {
-  const hasEmergingRisks = snapshot.emergingRisks && snapshot.emergingRisks.length > 0;
+export function RiskRadarCard({
+  snapshot,
+  isActive,
+  onSelect,
+  className,
+}: RiskRadarCardProps) {
+  const hasEmergingRisks =
+    snapshot.emergingRisks && snapshot.emergingRisks.length > 0;
   const concernsCount = snapshot.keyConcerns?.length || 0;
 
   return (
@@ -66,8 +74,15 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
         {/* Header with Risk Index */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn('p-2 rounded-full', snapshot.riskLevel === 'critical' ? 'bg-red-100' : 'bg-gray-100')}>
-              <Radar className={cn('h-5 w-5', getRiskColor(snapshot.riskLevel))} />
+            <div
+              className={cn(
+                'p-2 rounded-full',
+                snapshot.riskLevel === 'critical' ? 'bg-red-100' : 'bg-gray-100'
+              )}
+            >
+              <Radar
+                className={cn('h-5 w-5', getRiskColor(snapshot.riskLevel))}
+              />
             </div>
             <div>
               <div className="font-semibold text-gray-900">
@@ -80,7 +95,12 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
             </div>
           </div>
           <div className="text-right">
-            <div className={cn('text-2xl font-bold', getRiskColor(snapshot.riskLevel))}>
+            <div
+              className={cn(
+                'text-2xl font-bold',
+                getRiskColor(snapshot.riskLevel)
+              )}
+            >
               {snapshot.overallRiskIndex}
             </div>
             <div className="text-xs text-gray-500">/ 100</div>
@@ -91,13 +111,19 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
         <div className="flex items-center gap-2">
           <RiskLevelBadge level={snapshot.riskLevel} />
           {snapshot.isActive && (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge
+              variant="outline"
+              className="bg-blue-50 text-blue-700 border-blue-200"
+            >
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Active
             </Badge>
           )}
           {hasEmergingRisks && (
-            <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+            <Badge
+              variant="outline"
+              className="bg-purple-50 text-purple-700 border-purple-200"
+            >
               <TrendingUp className="h-3 w-3 mr-1" />
               Emerging
             </Badge>
@@ -109,7 +135,14 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
           {snapshot.sentimentScore !== undefined && (
             <div className="text-center p-1 rounded bg-white/50">
               <div className="text-gray-500">Sentiment</div>
-              <div className={cn('font-medium', snapshot.sentimentScore > 60 ? 'text-red-600' : 'text-green-600')}>
+              <div
+                className={cn(
+                  'font-medium',
+                  snapshot.sentimentScore > 60
+                    ? 'text-red-600'
+                    : 'text-green-600'
+                )}
+              >
                 {snapshot.sentimentScore}
               </div>
             </div>
@@ -117,7 +150,12 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
           {snapshot.alertScore !== undefined && (
             <div className="text-center p-1 rounded bg-white/50">
               <div className="text-gray-500">Alerts</div>
-              <div className={cn('font-medium', snapshot.alertScore > 60 ? 'text-red-600' : 'text-green-600')}>
+              <div
+                className={cn(
+                  'font-medium',
+                  snapshot.alertScore > 60 ? 'text-red-600' : 'text-green-600'
+                )}
+              >
                 {snapshot.alertScore}
               </div>
             </div>
@@ -125,7 +163,14 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
           {snapshot.governanceScore !== undefined && (
             <div className="text-center p-1 rounded bg-white/50">
               <div className="text-gray-500">Governance</div>
-              <div className={cn('font-medium', snapshot.governanceScore > 60 ? 'text-red-600' : 'text-green-600')}>
+              <div
+                className={cn(
+                  'font-medium',
+                  snapshot.governanceScore > 60
+                    ? 'text-red-600'
+                    : 'text-green-600'
+                )}
+              >
                 {snapshot.governanceScore}
               </div>
             </div>
@@ -135,7 +180,8 @@ export function RiskRadarCard({ snapshot, isActive, onSelect, className }: RiskR
         {/* Concerns Count */}
         {concernsCount > 0 && (
           <div className="text-xs text-gray-600 pt-1 border-t border-gray-200">
-            {concernsCount} key concern{concernsCount !== 1 ? 's' : ''} identified
+            {concernsCount} key concern{concernsCount !== 1 ? 's' : ''}{' '}
+            identified
           </div>
         )}
       </CardContent>

@@ -149,18 +149,19 @@ export interface UserActivityPayload {
 /**
  * Helper type for typed event payloads
  */
-export type EditorEventPayload<T extends EditorEventType> = T extends 'presence.join'
-  ? PresenceJoinPayload
-  : T extends 'presence.leave'
-  ? PresenceLeavePayload
-  : T extends 'cursor.update'
-  ? CursorUpdatePayload
-  : T extends 'selection.update'
-  ? SelectionUpdatePayload
-  : T extends 'graph.patch'
-  ? GraphPatchPayload
-  : T extends 'graph.replace'
-  ? GraphReplacePayload
-  : T extends 'user.activity'
-  ? UserActivityPayload
-  : Record<string, unknown>;
+export type EditorEventPayload<T extends EditorEventType> =
+  T extends 'presence.join'
+    ? PresenceJoinPayload
+    : T extends 'presence.leave'
+      ? PresenceLeavePayload
+      : T extends 'cursor.update'
+        ? CursorUpdatePayload
+        : T extends 'selection.update'
+          ? SelectionUpdatePayload
+          : T extends 'graph.patch'
+            ? GraphPatchPayload
+            : T extends 'graph.replace'
+              ? GraphReplacePayload
+              : T extends 'user.activity'
+                ? UserActivityPayload
+                : Record<string, unknown>;

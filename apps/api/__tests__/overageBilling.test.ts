@@ -68,7 +68,9 @@ const createMockSupabaseForOverages = () => {
             eq: (column: string, value: any) => ({
               eq: (col2: string, val2: any) => ({
                 single: async () => ({
-                  data: mockData.plans.find((p: any) => p[column] === value && p[col2] === val2),
+                  data: mockData.plans.find(
+                    (p: any) => p[column] === value && p[col2] === val2
+                  ),
                   error: null,
                 }),
               }),
@@ -207,7 +209,8 @@ describe('Overage Billing (S31)', () => {
     });
 
     it('should return null when org has no plan', async () => {
-      const result = await billingService.calculateOveragesForOrg('org-no-plan');
+      const result =
+        await billingService.calculateOveragesForOrg('org-no-plan');
 
       expect(result).toBeNull();
     });
@@ -295,7 +298,8 @@ describe('Overage Billing (S31)', () => {
 
   describe('getOverageSummaryForOrg', () => {
     it('should return null when no billing period exists', async () => {
-      const result = await billingService.getOverageSummaryForOrg('org-no-period');
+      const result =
+        await billingService.getOverageSummaryForOrg('org-no-period');
 
       expect(result).toBeNull();
     });
@@ -332,7 +336,8 @@ describe('Overage Billing (S31)', () => {
   describe('Integration: Calculate + Record + Retrieve', () => {
     it('should handle full overage lifecycle', async () => {
       // 1. Calculate overages
-      const calculation = await billingService.calculateOveragesForOrg('org-123');
+      const calculation =
+        await billingService.calculateOveragesForOrg('org-123');
       expect(calculation).toBeDefined();
       expect(calculation?.totalCost).toBeGreaterThan(0);
 

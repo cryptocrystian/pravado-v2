@@ -36,6 +36,7 @@ Any editor or workbench MUST be composed of two distinct vertical regions:
 ### 3.1 Editor Body (Scrollable)
 
 Contains:
+
 - Text content
 - Rich editor UI
 - Inline suggestions
@@ -52,6 +53,7 @@ Contains:
 - Always visible without scrolling
 
 Contains:
+
 - Primary CTA (singular)
 - Secondary actions (Save Draft, Cancel, etc.)
 
@@ -89,13 +91,13 @@ Contains:
 
 ## 5. Prohibited Patterns (Hard Violations)
 
-| Pattern | Status |
-|---------|--------|
-| Primary CTA only visible after scrolling | **VIOLATION** |
+| Pattern                                            | Status        |
+| -------------------------------------------------- | ------------- |
+| Primary CTA only visible after scrolling           | **VIOLATION** |
 | Action buttons embedded inside content scroll area | **VIOLATION** |
-| Full-height editors that push actions below fold | **VIOLATION** |
-| "Runway" footers that require hunting for actions | **VIOLATION** |
-| Mode transitions that change CTA location | **VIOLATION** |
+| Full-height editors that push actions below fold   | **VIOLATION** |
+| "Runway" footers that require hunting for actions  | **VIOLATION** |
+| Mode transitions that change CTA location          | **VIOLATION** |
 
 Any of the above constitutes a **Canon Violation**, not a UX preference.
 
@@ -104,11 +106,13 @@ Any of the above constitutes a **Canon Violation**, not a UX preference.
 ## 6. Canon Hierarchy
 
 This canon **overrides**:
+
 - Layout aesthetics
 - Visual balance preferences
 - Editor dominance heuristics
 
 It is **subordinate only to**:
+
 - `AUTOMATION_MODE_CONTRACTS_CANON.md`
 - `ACTION_GRAVITY_CTA_CANON.md` (complementary)
 

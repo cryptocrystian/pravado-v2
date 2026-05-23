@@ -20,16 +20,17 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
+
 import {
   HealthStrip,
   CTACluster,
   computeCiteMindIssueCount,
   type ContentModeViewProps,
 } from './shared';
-import { ManualWorkbench } from '../work-queue';
+import { CiteMindPublishGate } from '../components/CiteMindPublishGate';
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
-import { CiteMindPublishGate } from '../components/CiteMindPublishGate';
+import { ManualWorkbench } from '../work-queue';
 
 export function ManualModeView({
   signals,
@@ -51,10 +52,17 @@ export function ManualModeView({
 
   // CiteMind publish gate state
   const [publishGateOpen, setPublishGateOpen] = useState(false);
-  const [publishGateAsset, setPublishGateAsset] = useState<{ id: string; title: string; aeoScore: number } | null>(null);
+  const [publishGateAsset, setPublishGateAsset] = useState<{
+    id: string;
+    title: string;
+    aeoScore: number;
+  } | null>(null);
 
   // Derived data
-  const citeMindIssueCount = useMemo(() => computeCiteMindIssueCount(assets), [assets]);
+  const citeMindIssueCount = useMemo(
+    () => computeCiteMindIssueCount(assets),
+    [assets]
+  );
 
   const selectedAsset = useMemo(
     () => assets.find((a) => a.id === selectedDocId) || null,
@@ -69,14 +77,17 @@ export function ManualModeView({
     void data;
   }, []);
 
-  const handlePublish = useCallback((assetId: string) => {
-    const asset = assets.find((a) => a.id === assetId);
-    if (!asset) return;
+  const handlePublish = useCallback(
+    (assetId: string) => {
+      const asset = assets.find((a) => a.id === assetId);
+      if (!asset) return;
 
-    const aeoScore = asset.authoritySignals?.aiIngestionLikelihood ?? 35;
-    setPublishGateAsset({ id: asset.id, title: asset.title, aeoScore });
-    setPublishGateOpen(true);
-  }, [assets]);
+      const aeoScore = asset.authoritySignals?.aiIngestionLikelihood ?? 35;
+      setPublishGateAsset({ id: asset.id, title: asset.title, aeoScore });
+      setPublishGateOpen(true);
+    },
+    [assets]
+  );
 
   const handlePublishConfirm = useCallback(() => {
     setPublishGateOpen(false);
@@ -117,7 +128,9 @@ export function ManualModeView({
     return (
       <div className="p-4">
         <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
-          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load content</h4>
+          <h4 className="text-sm font-semibold text-semantic-danger">
+            Failed to load content
+          </h4>
           <p className="text-xs text-white/55 mt-1">{error.message}</p>
         </div>
       </div>
@@ -125,7 +138,12 @@ export function ManualModeView({
   }
 
   // Empty state — no data at all
-  const hasData = signals || clusters.length > 0 || gaps.length > 0 || briefs.length > 0 || assets.length > 0;
+  const hasData =
+    signals ||
+    clusters.length > 0 ||
+    gaps.length > 0 ||
+    briefs.length > 0 ||
+    assets.length > 0;
   if (!hasData) {
     return (
       <ContentEmptyState
@@ -142,7 +160,10 @@ export function ManualModeView({
       <div className="px-4 py-3 border-b border-slate-4 shrink-0">
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
+            <HealthStrip
+              signals={signals}
+              citeMindIssueCount={citeMindIssueCount}
+            />
           </div>
           <CTACluster
             mode="manual"
@@ -161,7 +182,9 @@ export function ManualModeView({
           documents={assets}
           selectedId={selectedDocId}
           onSelect={handleSelectDoc}
-          onCreateNew={onCreateContent ? () => onCreateContent('article') : () => {}}
+          onCreateNew={
+            onCreateContent ? () => onCreateContent('article') : () => {}
+          }
           onSave={handleSave}
           onPublish={handlePublish}
           isLoading={isLoading}

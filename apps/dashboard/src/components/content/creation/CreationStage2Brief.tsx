@@ -9,7 +9,6 @@
  * @see /docs/skills/PRAVADO_DESIGN_SKILL.md
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react';
 import {
   Article,
@@ -19,6 +18,8 @@ import {
   Megaphone,
   Lightning,
 } from '@phosphor-icons/react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import type { AutomationMode, CreationContentType } from '../types';
 import { CREATION_TYPE_CONFIG } from '../types';
 
@@ -42,9 +43,11 @@ function computeCiteMindScore(formData: Record<string, string>): number {
   let score = 55;
   if ((formData.topic?.length || 0) > 20) score += 10;
   if (formData.targetKeyword?.length) score += 8;
-  const filledPoints = [formData.keyPoint1, formData.keyPoint2, formData.keyPoint3].filter(
-    (p) => p && p.length > 0
-  ).length;
+  const filledPoints = [
+    formData.keyPoint1,
+    formData.keyPoint2,
+    formData.keyPoint3,
+  ].filter((p) => p && p.length > 0).length;
   if (filledPoints >= 2) score += 5;
   if (formData.audience && formData.audience !== '') score += 6;
   return Math.min(score, 89);
@@ -107,15 +110,21 @@ function FormSelect({
 }) {
   return (
     <div>
-      <label className="block text-[13px] font-medium text-white/70 mb-1.5">{label}</label>
+      <label className="block text-[13px] font-medium text-white/70 mb-1.5">
+        {label}
+      </label>
       <select
         value={value}
         onChange={(e) => onChange(name, e.target.value)}
         className="w-full bg-white/5 border border-border-subtle rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-brand-iris/40 transition-colors appearance-none"
       >
-        <option value="" className="bg-slate-2 text-white">Select...</option>
+        <option value="" className="bg-slate-2 text-white">
+          Select...
+        </option>
         {options.map((opt) => (
-          <option key={opt} value={opt} className="bg-slate-2 text-white">{opt}</option>
+          <option key={opt} value={opt} className="bg-slate-2 text-white">
+            {opt}
+          </option>
         ))}
       </select>
     </div>
@@ -137,7 +146,9 @@ function FormTextarea({
 }) {
   return (
     <div>
-      <label className="block text-[13px] font-medium text-white/70 mb-1.5">{label}</label>
+      <label className="block text-[13px] font-medium text-white/70 mb-1.5">
+        {label}
+      </label>
       <textarea
         value={value}
         onChange={(e) => onChange(name, e.target.value)}
@@ -204,13 +215,22 @@ export function CreationStage2Brief({
 
   const f = (name: string) => briefFormData[name] || '';
 
-  const copilotSuggestions = mode === 'copilot'
-    ? [
-        { field: 'targetKeyword', label: 'Keyword', value: 'enterprise AEO strategy' },
-        { field: 'audience', label: 'Audience', value: 'Enterprise CMO' },
-        { field: 'keyPoint1', label: 'Angle', value: 'Why traditional SEO underestimates AI citation impact' },
-      ]
-    : [];
+  const copilotSuggestions =
+    mode === 'copilot'
+      ? [
+          {
+            field: 'targetKeyword',
+            label: 'Keyword',
+            value: 'enterprise AEO strategy',
+          },
+          { field: 'audience', label: 'Audience', value: 'Enterprise CMO' },
+          {
+            field: 'keyPoint1',
+            label: 'Angle',
+            value: 'Why traditional SEO underestimates AI citation impact',
+          },
+        ]
+      : [];
 
   return (
     <div className="px-8 py-6 flex gap-0 h-full">
@@ -219,9 +239,14 @@ export function CreationStage2Brief({
         {/* Header */}
         <div className="flex items-center gap-2 mb-1">
           {IconComponent && (
-            <IconComponent className="w-5 h-5 text-brand-iris" weight="regular" />
+            <IconComponent
+              className="w-5 h-5 text-brand-iris"
+              weight="regular"
+            />
           )}
-          <span className="text-base font-semibold text-white/90">{typeConfig.label}</span>
+          <span className="text-base font-semibold text-white/90">
+            {typeConfig.label}
+          </span>
         </div>
         <p className="text-[13px] text-white/50 mb-6">
           Fill in the brief. AI will generate a structured first draft.
@@ -255,29 +280,48 @@ export function CreationStage2Brief({
           <FormSelect
             label="Target Audience"
             name="audience"
-            options={['Enterprise CMO', 'Marketing Manager', 'SEO Specialist', 'PR Manager', 'Founder/CEO', 'General Business']}
+            options={[
+              'Enterprise CMO',
+              'Marketing Manager',
+              'SEO Specialist',
+              'PR Manager',
+              'Founder/CEO',
+              'General Business',
+            ]}
             value={f('audience')}
             onChange={handleFieldChange}
           />
           <FormSelect
             label="Tone"
             name="tone"
-            options={['Authoritative', 'Conversational', 'Educational', 'Thought Leadership', 'Neutral']}
+            options={[
+              'Authoritative',
+              'Conversational',
+              'Educational',
+              'Thought Leadership',
+              'Neutral',
+            ]}
             value={f('tone')}
             onChange={handleFieldChange}
           />
 
           {/* Key Points */}
           <div>
-            <label className="block text-[13px] font-medium text-white/70 mb-1.5">Key Points to Cover</label>
+            <label className="block text-[13px] font-medium text-white/70 mb-1.5">
+              Key Points to Cover
+            </label>
             <div className="space-y-2">
               {[1, 2, 3].map((n) => (
                 <div key={n}>
-                  <span className="text-[11px] text-white/40 block mb-1">Point {n}</span>
+                  <span className="text-[11px] text-white/40 block mb-1">
+                    Point {n}
+                  </span>
                   <input
                     type="text"
                     value={f(`keyPoint${n}`)}
-                    onChange={(e) => handleFieldChange(`keyPoint${n}`, e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange(`keyPoint${n}`, e.target.value)
+                    }
                     placeholder="Main argument, claim, or section you want included"
                     className="w-full bg-white/5 border border-border-subtle rounded-lg px-3 py-2 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:border-brand-iris/40 transition-colors"
                   />
@@ -300,28 +344,99 @@ export function CreationStage2Brief({
           )}
           {effectiveType === 'long_form_article' && (
             <>
-              <FormInput label="Author Name" name="author" placeholder="Byline author" value={f('author')} onChange={handleFieldChange} />
-              <FormSelect label="Target Word Count" name="wordCount" options={['2000', '2500', '3000', '4000+']} value={f('wordCount')} onChange={handleFieldChange} />
+              <FormInput
+                label="Author Name"
+                name="author"
+                placeholder="Byline author"
+                value={f('author')}
+                onChange={handleFieldChange}
+              />
+              <FormSelect
+                label="Target Word Count"
+                name="wordCount"
+                options={['2000', '2500', '3000', '4000+']}
+                value={f('wordCount')}
+                onChange={handleFieldChange}
+              />
             </>
           )}
           {effectiveType === 'newsletter' && (
             <>
-              <FormInput label="Newsletter Name / Series" name="newsletterName" placeholder="e.g. The Authority Brief" value={f('newsletterName')} onChange={handleFieldChange} />
-              <FormInput label="Issue Number / Date" name="issueNumber" placeholder="e.g. Issue #12 or March 2026" value={f('issueNumber')} onChange={handleFieldChange} />
-              <FormInput label="Primary CTA" name="primaryCta" placeholder="What action should readers take?" value={f('primaryCta')} onChange={handleFieldChange} />
+              <FormInput
+                label="Newsletter Name / Series"
+                name="newsletterName"
+                placeholder="e.g. The Authority Brief"
+                value={f('newsletterName')}
+                onChange={handleFieldChange}
+              />
+              <FormInput
+                label="Issue Number / Date"
+                name="issueNumber"
+                placeholder="e.g. Issue #12 or March 2026"
+                value={f('issueNumber')}
+                onChange={handleFieldChange}
+              />
+              <FormInput
+                label="Primary CTA"
+                name="primaryCta"
+                placeholder="What action should readers take?"
+                value={f('primaryCta')}
+                onChange={handleFieldChange}
+              />
             </>
           )}
           {effectiveType === 'social_series' && (
             <>
-              <FormSelect label="Platform" name="platform" options={['LinkedIn', 'X/Twitter', 'Instagram', 'Multi-platform']} value={f('platform')} onChange={handleFieldChange} />
-              <FormSelect label="Number of Posts" name="postCount" options={['3', '5', '7', '10']} value={f('postCount')} onChange={handleFieldChange} />
+              <FormSelect
+                label="Platform"
+                name="platform"
+                options={[
+                  'LinkedIn',
+                  'X/Twitter',
+                  'Instagram',
+                  'Multi-platform',
+                ]}
+                value={f('platform')}
+                onChange={handleFieldChange}
+              />
+              <FormSelect
+                label="Number of Posts"
+                name="postCount"
+                options={['3', '5', '7', '10']}
+                value={f('postCount')}
+                onChange={handleFieldChange}
+              />
             </>
           )}
           {effectiveType === 'press_release' && (
             <>
-              <FormSelect label="Announcement Type" name="announcementType" options={['Product Launch', 'Partnership', 'Milestone', 'Event', 'Award']} value={f('announcementType')} onChange={handleFieldChange} />
-              <FormInput label="Quote Attribution" name="quoteAttribution" placeholder="Name and title of person quoted" value={f('quoteAttribution')} onChange={handleFieldChange} />
-              <FormTextarea label="Boilerplate" name="boilerplate" placeholder="Standard company description paragraph" value={f('boilerplate')} onChange={handleFieldChange} />
+              <FormSelect
+                label="Announcement Type"
+                name="announcementType"
+                options={[
+                  'Product Launch',
+                  'Partnership',
+                  'Milestone',
+                  'Event',
+                  'Award',
+                ]}
+                value={f('announcementType')}
+                onChange={handleFieldChange}
+              />
+              <FormInput
+                label="Quote Attribution"
+                name="quoteAttribution"
+                placeholder="Name and title of person quoted"
+                value={f('quoteAttribution')}
+                onChange={handleFieldChange}
+              />
+              <FormTextarea
+                label="Boilerplate"
+                name="boilerplate"
+                placeholder="Standard company description paragraph"
+                value={f('boilerplate')}
+                onChange={handleFieldChange}
+              />
             </>
           )}
         </div>
@@ -352,7 +467,9 @@ export function CreationStage2Brief({
           {/* Copilot pre-fill suggestions */}
           {copilotSuggestions.length > 0 && (
             <div className="mb-4 pb-4 border-b border-border-subtle">
-              <p className="text-[13px] text-white/60 mb-2">SAGE suggests for this brief:</p>
+              <p className="text-[13px] text-white/60 mb-2">
+                SAGE suggests for this brief:
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {copilotSuggestions.map((s) => (
                   <button
@@ -376,12 +493,16 @@ export function CreationStage2Brief({
             {!f('topic') ? (
               <>
                 <span className="text-2xl font-bold text-white/20">—</span>
-                <p className="text-[13px] text-white/40 mt-1">Fill in topic to see citation potential</p>
+                <p className="text-[13px] text-white/40 mt-1">
+                  Fill in topic to see citation potential
+                </p>
               </>
             ) : (
               <>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-3xl font-bold tabular-nums ${getCiteColor(citeMindScore)}`}>
+                  <span
+                    className={`text-3xl font-bold tabular-nums ${getCiteColor(citeMindScore)}`}
+                  >
                     {citeMindScore}
                   </span>
                   <span className="text-lg text-white/30">/100</span>
@@ -400,16 +521,20 @@ export function CreationStage2Brief({
           </div>
 
           {/* SECTION B — SAGE Context */}
-          {(selectedSageBriefId || (f('topic').length > 15)) && (
+          {(selectedSageBriefId || f('topic').length > 15) && (
             <div className="bg-brand-iris/5 border border-brand-iris/20 rounded-lg p-3 mt-4">
               <div className="flex items-center gap-1.5 mb-1">
-                <Lightning className="w-3.5 h-3.5 text-brand-iris" weight="fill" />
+                <Lightning
+                  className="w-3.5 h-3.5 text-brand-iris"
+                  weight="fill"
+                />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris">
                   SAGE has context
                 </span>
               </div>
               <p className="text-[13px] text-white/70 mb-2">
-                A competitor has a guide on this topic frequently cited on ChatGPT.
+                A competitor has a guide on this topic frequently cited on
+                ChatGPT.
               </p>
               <button
                 type="button"
@@ -424,7 +549,10 @@ export function CreationStage2Brief({
           {effectiveType === 'press_release' && (
             <div className="bg-brand-magenta/5 border border-brand-magenta/20 rounded-lg p-3 mt-4">
               <div className="flex items-center gap-1.5 mb-1">
-                <Megaphone className="w-3.5 h-3.5 text-brand-magenta" weight="regular" />
+                <Megaphone
+                  className="w-3.5 h-3.5 text-brand-magenta"
+                  weight="regular"
+                />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-magenta">
                   PR Surface Sync
                 </span>

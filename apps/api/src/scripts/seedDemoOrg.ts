@@ -133,7 +133,9 @@ async function seedUsers(
         full_name: user.name,
       });
       if (error) {
-        console.log(`   ⚠ Could not create user (may need auth): ${user.email}`);
+        console.log(
+          `   ⚠ Could not create user (may need auth): ${user.email}`
+        );
         continue;
       }
       console.log(`   ✓ Created user: ${user.email}`);
@@ -165,7 +167,11 @@ async function seedPRAndMedia(ctx: SeedContext): Promise<void> {
   const sources = [
     { name: 'TechCrunch', url: 'https://techcrunch.com', source_type: 'news' },
     { name: 'Reuters', url: 'https://reuters.com', source_type: 'wire' },
-    { name: 'Industry Blog', url: 'https://blog.example.com', source_type: 'blog' },
+    {
+      name: 'Industry Blog',
+      url: 'https://blog.example.com',
+      source_type: 'blog',
+    },
   ];
 
   for (const source of sources) {
@@ -254,7 +260,8 @@ async function seedCrisisData(ctx: SeedContext): Promise<void> {
       severity: 'high',
       status: 'active',
       incident_type: 'security',
-      description: 'Potential customer data exposure through vendor compromise.',
+      description:
+        'Potential customer data exposure through vendor compromise.',
     },
     {
       title: 'Negative Social Media Campaign',
@@ -304,7 +311,9 @@ async function seedBrandReputation(ctx: SeedContext): Promise<void> {
       id: reportId,
       org_id: orgId,
       ...report,
-      period_start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      period_start: new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       period_end: new Date().toISOString(),
     });
     ctx.createdIds.reputationReports.push(reportId);
@@ -322,7 +331,8 @@ async function seedExecutiveIntelligence(ctx: SeedContext): Promise<void> {
       title: 'Strategic Intelligence Brief - Q4 2024',
       report_type: 'quarterly',
       status: 'published',
-      executive_summary: 'Market position remains strong with growth in key verticals.',
+      executive_summary:
+        'Market position remains strong with growth in key verticals.',
     },
   ];
 
@@ -332,7 +342,9 @@ async function seedExecutiveIntelligence(ctx: SeedContext): Promise<void> {
       id: reportId,
       org_id: orgId,
       ...report,
-      period_start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      period_start: new Date(
+        Date.now() - 90 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       period_end: new Date().toISOString(),
     });
     ctx.createdIds.strategicReports.push(reportId);
@@ -345,7 +357,11 @@ async function seedExecutiveIntelligence(ctx: SeedContext): Promise<void> {
       title: 'Weekly Executive Digest - Week 48',
       digest_type: 'weekly',
       status: 'published',
-      key_insights: ['Revenue up 12% YoY', 'New market expansion on track', 'Crisis contained'],
+      key_insights: [
+        'Revenue up 12% YoY',
+        'New market expansion on track',
+        'Crisis contained',
+      ],
     },
   ];
 
@@ -355,7 +371,9 @@ async function seedExecutiveIntelligence(ctx: SeedContext): Promise<void> {
       id: digestId,
       org_id: orgId,
       ...digest,
-      period_start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      period_start: new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       period_end: new Date().toISOString(),
     });
     ctx.createdIds.digests.push(digestId);
@@ -368,7 +386,8 @@ async function seedExecutiveIntelligence(ctx: SeedContext): Promise<void> {
       title: 'Board Report - Q4 2024',
       report_type: 'quarterly',
       status: 'draft',
-      executive_summary: 'Strong quarter with key milestones achieved across all business units.',
+      executive_summary:
+        'Strong quarter with key milestones achieved across all business units.',
     },
   ];
 
@@ -378,7 +397,9 @@ async function seedExecutiveIntelligence(ctx: SeedContext): Promise<void> {
       id: reportId,
       org_id: orgId,
       ...report,
-      period_start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      period_start: new Date(
+        Date.now() - 90 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       period_end: new Date().toISOString(),
     });
     ctx.createdIds.boardReports.push(reportId);
@@ -415,7 +436,9 @@ async function seedUnifiedNarratives(ctx: SeedContext): Promise<void> {
       id: narrativeId,
       org_id: orgId,
       ...narrative,
-      period_start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      period_start: new Date(
+        Date.now() - 90 * 24 * 60 * 60 * 1000
+      ).toISOString(),
       period_end: new Date().toISOString(),
       source_systems: ['pr', 'crisis', 'reputation', 'strategy'],
     });
@@ -517,7 +540,8 @@ async function seedScenarios(ctx: SeedContext): Promise<void> {
       simulation_id: scenarioId,
       status: scenario.status === 'running' ? 'in_progress' : 'completed',
       started_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      completed_at: scenario.status === 'completed' ? new Date().toISOString() : null,
+      completed_at:
+        scenario.status === 'completed' ? new Date().toISOString() : null,
     });
     ctx.createdIds.scenarioRuns.push(runId);
   }
@@ -558,7 +582,8 @@ async function seedOrchestrationSuites(ctx: SeedContext): Promise<void> {
       suite_id: suiteId,
       status: suite.status === 'running' ? 'in_progress' : 'completed',
       started_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-      completed_at: suite.status === 'completed' ? new Date().toISOString() : null,
+      completed_at:
+        suite.status === 'completed' ? new Date().toISOString() : null,
     });
     ctx.createdIds.suiteRuns.push(runId);
   }
@@ -747,7 +772,9 @@ export async function runSeed(): Promise<void> {
   console.log('  Created Records:');
   console.log(`    • Playbooks: ${ctx.createdIds.playbooks.length}`);
   console.log(`    • Playbook Runs: ${ctx.createdIds.playbookRuns.length}`);
-  console.log(`    • Crisis Incidents: ${ctx.createdIds.crisisIncidents.length}`);
+  console.log(
+    `    • Crisis Incidents: ${ctx.createdIds.crisisIncidents.length}`
+  );
   console.log(`    • Scenarios: ${ctx.createdIds.scenarios.length}`);
   console.log(`    • Scenario Runs: ${ctx.createdIds.scenarioRuns.length}`);
   console.log(`    • Orchestration Suites: ${ctx.createdIds.suites.length}`);
@@ -757,10 +784,16 @@ export async function runSeed(): Promise<void> {
   console.log(`    • Unified Narratives: ${ctx.createdIds.narratives.length}`);
   console.log(`    • Exec Digests: ${ctx.createdIds.digests.length}`);
   console.log(`    • Board Reports: ${ctx.createdIds.boardReports.length}`);
-  console.log(`    • Strategic Reports: ${ctx.createdIds.strategicReports.length}`);
-  console.log(`    • Reputation Reports: ${ctx.createdIds.reputationReports.length}`);
+  console.log(
+    `    • Strategic Reports: ${ctx.createdIds.strategicReports.length}`
+  );
+  console.log(
+    `    • Reputation Reports: ${ctx.createdIds.reputationReports.length}`
+  );
   console.log(`    • Press Releases: ${ctx.createdIds.pressReleases.length}`);
-  console.log(`    • Media Sources: ${ctx.createdIds.mediaMonitoringSources.length}`);
+  console.log(
+    `    • Media Sources: ${ctx.createdIds.mediaMonitoringSources.length}`
+  );
   console.log(`    • Earned Mentions: ${ctx.createdIds.earnedMentions.length}`);
   console.log('');
   console.log('  Next steps:');

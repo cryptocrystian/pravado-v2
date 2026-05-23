@@ -189,12 +189,22 @@ export type PlaybookStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED' | 'DEPRECATED';
 /**
  * Playbook run status enum
  */
-export type PlaybookRunStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED';
+export type PlaybookRunStatus =
+  | 'PENDING'
+  | 'RUNNING'
+  | 'SUCCEEDED'
+  | 'FAILED'
+  | 'CANCELLED';
 
 /**
  * Playbook step run status enum
  */
-export type PlaybookStepRunStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'SKIPPED';
+export type PlaybookStepRunStatus =
+  | 'PENDING'
+  | 'RUNNING'
+  | 'SUCCEEDED'
+  | 'FAILED'
+  | 'SKIPPED';
 
 /**
  * Playbook step type enum

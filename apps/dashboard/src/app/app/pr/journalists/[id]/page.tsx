@@ -5,9 +5,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
 import * as journalistGraphApi from '@/lib/journalistGraphApi';
 import {
   getJournalistOutreachHistory,
@@ -53,7 +54,8 @@ export default function JournalistDetailPage() {
 
   const [profile, setProfile] = useState<JournalistProfile | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [outreachHistory, setOutreachHistory] = useState<JournalistOutreachHistory | null>(null);
+  const [outreachHistory, setOutreachHistory] =
+    useState<JournalistOutreachHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,7 +107,8 @@ export default function JournalistDetailPage() {
         console.log('Could not load outreach history');
       }
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load profile';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to load profile';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -135,7 +138,9 @@ export default function JournalistDetailPage() {
     <div className="space-y-1">
       <div className="flex justify-between text-sm">
         <span className="text-slate-400">{label}</span>
-        <span className="text-white font-medium">{Math.round(value * 100)}%</span>
+        <span className="text-white font-medium">
+          {Math.round(value * 100)}%
+        </span>
       </div>
       <div className="w-full bg-slate-700 rounded-full h-2">
         <div
@@ -164,7 +169,8 @@ export default function JournalistDetailPage() {
       setEditedSubject(draft.subject);
       setEditedBody(draft.bodyText);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to generate draft';
+      const message =
+        err instanceof Error ? err.message : 'Failed to generate draft';
       setDraftError(message);
     } finally {
       setDraftLoading(false);
@@ -182,7 +188,7 @@ export default function JournalistDetailPage() {
       // Convert plain text to HTML for bodyHtml
       const bodyHtml = editedBody
         .split('\n')
-        .map(line => line.trim() ? `<p>${line}</p>` : '')
+        .map((line) => (line.trim() ? `<p>${line}</p>` : ''))
         .filter(Boolean)
         .join('\n');
 
@@ -205,7 +211,8 @@ export default function JournalistDetailPage() {
         setSendSuccess(false);
       }, 2000);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to send pitch';
+      const message =
+        err instanceof Error ? err.message : 'Failed to send pitch';
       setDraftError(message);
     } finally {
       setSendingPitch(false);
@@ -249,7 +256,7 @@ export default function JournalistDetailPage() {
     );
   }
 
-  const metadata = profile.metadata as Record<string, unknown> || {};
+  const metadata = (profile.metadata as Record<string, unknown>) || {};
   const topics = (metadata.topics as string[]) || [];
   const articlesCount = (metadata.articles_count as number) || 0;
 
@@ -262,18 +269,35 @@ export default function JournalistDetailPage() {
             href="/app/pr/journalists"
             className="text-slate-400 hover:text-white text-sm mb-4 inline-flex items-center gap-1"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back to Journalists
           </Link>
 
           <div className="flex items-start justify-between mt-4">
             <div>
-              <h1 className="text-3xl font-bold text-white">{profile.fullName}</h1>
+              <h1 className="text-3xl font-bold text-white">
+                {profile.fullName}
+              </h1>
               <p className="text-slate-300 mt-1">
                 {profile.primaryOutlet && <span>{profile.primaryOutlet}</span>}
-                {profile.beat && <span className="text-slate-400"> &middot; {profile.beat}</span>}
+                {profile.beat && (
+                  <span className="text-slate-400">
+                    {' '}
+                    &middot; {profile.beat}
+                  </span>
+                )}
               </p>
             </div>
 
@@ -283,8 +307,18 @@ export default function JournalistDetailPage() {
                 disabled={draftLoading}
                 className="px-4 py-2 bg-brand-iris text-white rounded-lg hover:bg-brand-iris/80 transition-colors flex items-center gap-2 disabled:opacity-50"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
                 AI Create Pitch
               </button>
@@ -293,8 +327,18 @@ export default function JournalistDetailPage() {
                 disabled={draftLoading}
                 className="px-4 py-2 bg-slate-3 text-white rounded-lg hover:bg-slate-4 transition-colors border border-border-subtle flex items-center gap-2 disabled:opacity-50"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                  />
                 </svg>
                 Draft Response
               </button>
@@ -310,16 +354,29 @@ export default function JournalistDetailPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-brand-iris/20 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <svg
+                    className="w-5 h-5 text-brand-iris"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">AI-Generated Draft</h3>
+                  <h3 className="text-lg font-semibold text-white">
+                    AI-Generated Draft
+                  </h3>
                   {currentDraft && (
                     <p className="text-sm text-slate-400">
                       Generated for {currentDraft.journalist.name}
-                      {currentDraft.journalist.outlet && ` at ${currentDraft.journalist.outlet}`}
+                      {currentDraft.journalist.outlet &&
+                        ` at ${currentDraft.journalist.outlet}`}
                     </p>
                   )}
                 </div>
@@ -328,8 +385,18 @@ export default function JournalistDetailPage() {
                 onClick={handleCloseDraftEditor}
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-3 rounded-lg transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -338,7 +405,9 @@ export default function JournalistDetailPage() {
               <div className="flex items-center justify-center py-12">
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-8 h-8 border-2 border-brand-iris border-t-transparent rounded-full animate-spin" />
-                  <p className="text-slate-400">Generating personalized draft...</p>
+                  <p className="text-slate-400">
+                    Generating personalized draft...
+                  </p>
                 </div>
               </div>
             )}
@@ -352,8 +421,18 @@ export default function JournalistDetailPage() {
             {sendSuccess && (
               <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mb-4">
                 <p className="text-green-400 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   Pitch sent successfully!
                 </p>
@@ -366,14 +445,17 @@ export default function JournalistDetailPage() {
                 {currentDraft.reasoning && (
                   <div className="bg-brand-iris/5 border border-brand-iris/20 rounded-lg p-3">
                     <p className="text-sm text-brand-iris/80">
-                      <span className="font-medium">AI Approach:</span> {currentDraft.reasoning}
+                      <span className="font-medium">AI Approach:</span>{' '}
+                      {currentDraft.reasoning}
                     </p>
                   </div>
                 )}
 
                 {/* Subject Line */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-2">Subject</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                    Subject
+                  </label>
                   <input
                     type="text"
                     value={editedSubject}
@@ -385,7 +467,9 @@ export default function JournalistDetailPage() {
 
                 {/* Email Body */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-2">Message</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                    Message
+                  </label>
                   <textarea
                     value={editedBody}
                     onChange={(e) => setEditedBody(e.target.value)}
@@ -398,12 +482,24 @@ export default function JournalistDetailPage() {
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-2">
                   <button
-                    onClick={() => handleGenerateDraft(currentDraft ? 'pitch' : 'pitch')}
+                    onClick={() =>
+                      handleGenerateDraft(currentDraft ? 'pitch' : 'pitch')
+                    }
                     disabled={draftLoading}
                     className="px-4 py-2 text-slate-400 hover:text-white transition-colors flex items-center gap-2"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                     Regenerate
                   </button>
@@ -416,7 +512,11 @@ export default function JournalistDetailPage() {
                     </button>
                     <button
                       onClick={handleSendPitch}
-                      disabled={sendingPitch || !editedSubject.trim() || !editedBody.trim()}
+                      disabled={
+                        sendingPitch ||
+                        !editedSubject.trim() ||
+                        !editedBody.trim()
+                      }
                       className="px-6 py-2 bg-brand-iris text-white rounded-lg hover:bg-brand-iris/80 transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
                       {sendingPitch ? (
@@ -426,8 +526,18 @@ export default function JournalistDetailPage() {
                         </>
                       ) : (
                         <>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                            />
                           </svg>
                           Send Pitch
                         </>
@@ -447,11 +557,17 @@ export default function JournalistDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Contact Information */}
             <div className="bg-slate-2 rounded-xl border border-border-subtle p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Contact Information</h2>
+              <h2 className="text-lg font-semibold text-white mb-4">
+                Contact Information
+              </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-slate-400 text-sm">Primary Email</label>
-                  <p className="text-white font-medium">{profile.primaryEmail}</p>
+                  <label className="text-slate-400 text-sm">
+                    Primary Email
+                  </label>
+                  <p className="text-white font-medium">
+                    {profile.primaryEmail}
+                  </p>
                 </div>
                 {profile.twitterHandle && (
                   <div>
@@ -479,19 +595,26 @@ export default function JournalistDetailPage() {
                     </a>
                   </div>
                 )}
-                {profile.secondaryEmails && profile.secondaryEmails.length > 0 && (
-                  <div>
-                    <label className="text-slate-400 text-sm">Secondary Emails</label>
-                    <p className="text-slate-300">{profile.secondaryEmails.join(', ')}</p>
-                  </div>
-                )}
+                {profile.secondaryEmails &&
+                  profile.secondaryEmails.length > 0 && (
+                    <div>
+                      <label className="text-slate-400 text-sm">
+                        Secondary Emails
+                      </label>
+                      <p className="text-slate-300">
+                        {profile.secondaryEmails.join(', ')}
+                      </p>
+                    </div>
+                  )}
               </div>
             </div>
 
             {/* Topics / Beats */}
             {topics.length > 0 && (
               <div className="bg-slate-2 rounded-xl border border-border-subtle p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Coverage Topics</h2>
+                <h2 className="text-lg font-semibold text-white mb-4">
+                  Coverage Topics
+                </h2>
                 <div className="flex flex-wrap gap-2">
                   {topics.map((topic) => (
                     <span
@@ -507,9 +630,13 @@ export default function JournalistDetailPage() {
 
             {/* Activity Timeline */}
             <div className="bg-slate-2 rounded-xl border border-border-subtle p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Relationship Timeline</h2>
+              <h2 className="text-lg font-semibold text-white mb-4">
+                Relationship Timeline
+              </h2>
               {activities.length === 0 ? (
-                <p className="text-slate-400 text-center py-8">No activity recorded yet</p>
+                <p className="text-slate-400 text-center py-8">
+                  No activity recorded yet
+                </p>
               ) : (
                 <div className="space-y-4">
                   {activities.map((activity) => (
@@ -523,29 +650,57 @@ export default function JournalistDetailPage() {
                           <span className="font-medium text-white">
                             {formatActivityType(activity.activityType)}
                           </span>
-                          <span className={`text-sm ${getSentimentColor(activity.sentiment)}`}>
+                          <span
+                            className={`text-sm ${getSentimentColor(activity.sentiment)}`}
+                          >
                             {activity.sentiment || 'neutral'}
                           </span>
                         </div>
                         <p className="text-slate-400 text-sm mt-1">
-                          {new Date(activity.occurredAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {new Date(activity.occurredAt).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }
+                          )}
                         </p>
-                        {activity.activityData && Object.keys(activity.activityData).length > 0 && (
-                          <div className="mt-2 text-sm text-slate-300">
-                            {(activity.activityData as Record<string, string>).article_title && (
-                              <p>Article: {(activity.activityData as Record<string, string>).article_title}</p>
-                            )}
-                            {(activity.activityData as Record<string, string>).pitch_subject && (
-                              <p>Subject: {(activity.activityData as Record<string, string>).pitch_subject}</p>
-                            )}
-                          </div>
-                        )}
+                        {activity.activityData &&
+                          Object.keys(activity.activityData).length > 0 && (
+                            <div className="mt-2 text-sm text-slate-300">
+                              {(activity.activityData as Record<string, string>)
+                                .article_title && (
+                                <p>
+                                  Article:{' '}
+                                  {
+                                    (
+                                      activity.activityData as Record<
+                                        string,
+                                        string
+                                      >
+                                    ).article_title
+                                  }
+                                </p>
+                              )}
+                              {(activity.activityData as Record<string, string>)
+                                .pitch_subject && (
+                                <p>
+                                  Subject:{' '}
+                                  {
+                                    (
+                                      activity.activityData as Record<
+                                        string,
+                                        string
+                                      >
+                                    ).pitch_subject
+                                  }
+                                </p>
+                              )}
+                            </div>
+                          )}
                       </div>
                     </div>
                   ))}
@@ -556,11 +711,14 @@ export default function JournalistDetailPage() {
             {/* Outreach History (S98) */}
             <div className="bg-slate-2 rounded-xl border border-border-subtle p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Outreach History</h2>
+                <h2 className="text-lg font-semibold text-white">
+                  Outreach History
+                </h2>
                 {outreachHistory?.engagement && (
                   <div className="flex gap-3 text-sm">
                     <span className="text-green-400">
-                      {outreachHistory.engagement.totalOpened}/{outreachHistory.engagement.totalSent} opened
+                      {outreachHistory.engagement.totalOpened}/
+                      {outreachHistory.engagement.totalSent} opened
                     </span>
                     <span className="text-brand-cyan">
                       {outreachHistory.engagement.totalReplied} replies
@@ -589,34 +747,75 @@ export default function JournalistDetailPage() {
                       <div className="flex-shrink-0">
                         {message.repliedAt ? (
                           <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            <svg
+                              className="w-4 h-4 text-green-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                              />
                             </svg>
                           </div>
                         ) : message.openedAt ? (
                           <div className="w-8 h-8 rounded-full bg-brand-cyan/20 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            <svg
+                              className="w-4 h-4 text-brand-cyan"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
                             </svg>
                           </div>
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-slate-4/50 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            <svg
+                              className="w-4 h-4 text-slate-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                              />
                             </svg>
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-medium truncate">{message.subject}</p>
+                        <p className="text-white font-medium truncate">
+                          {message.subject}
+                        </p>
                         <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
                           {message.sentAt && (
                             <span>
-                              Sent {new Date(message.sentAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                              })}
+                              Sent{' '}
+                              {new Date(message.sentAt).toLocaleDateString(
+                                'en-US',
+                                {
+                                  month: 'short',
+                                  day: 'numeric',
+                                }
+                              )}
                             </span>
                           )}
                           {message.openedAt && (
@@ -641,21 +840,30 @@ export default function JournalistDetailPage() {
           <div className="space-y-6">
             {/* Engagement Scores */}
             <div className="bg-slate-2 rounded-xl border border-border-subtle p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Engagement Scores</h2>
+              <h2 className="text-lg font-semibold text-white mb-4">
+                Engagement Scores
+              </h2>
               <div className="space-y-4">
                 <ScoreBar label="Engagement" value={profile.engagementScore} />
-                <ScoreBar label="Responsiveness" value={profile.responsivenessScore} />
+                <ScoreBar
+                  label="Responsiveness"
+                  value={profile.responsivenessScore}
+                />
                 <ScoreBar label="Relevance" value={profile.relevanceScore} />
               </div>
             </div>
 
             {/* Quick Stats */}
             <div className="bg-slate-2 rounded-xl border border-border-subtle p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Quick Stats</h2>
+              <h2 className="text-lg font-semibold text-white mb-4">
+                Quick Stats
+              </h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Articles Written</span>
-                  <span className="text-white font-medium">{articlesCount}</span>
+                  <span className="text-white font-medium">
+                    {articlesCount}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Last Activity</span>

@@ -5,11 +5,11 @@
  * scored signals to the sage_signals table.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { ingestPRSignals } from './sagePRSignalIngestor';
 import { ingestContentSignals } from './sageContentSignalIngestor';
+import { ingestPRSignals } from './sagePRSignalIngestor';
 import { ingestSEOSignals } from './sageSEOSignalIngestor';
 
 const logger = createLogger('sage:ingestor');
@@ -53,7 +53,8 @@ export async function runSignalScan(
     ingestSEOSignals(supabase, orgId),
   ]);
 
-  const allSignals: Array<RawSignal & { pillar: 'PR' | 'Content' | 'SEO' }> = [];
+  const allSignals: Array<RawSignal & { pillar: 'PR' | 'Content' | 'SEO' }> =
+    [];
 
   if (prSignals.status === 'fulfilled') {
     for (const s of prSignals.value) {
@@ -72,7 +73,10 @@ export async function runSignalScan(
     byPillar.Content = contentSignals.value.length;
   } else {
     errors.push(`Content ingestor error: ${contentSignals.reason}`);
-    logger.error(`Content ingestor failed for org ${orgId}:`, contentSignals.reason);
+    logger.error(
+      `Content ingestor failed for org ${orgId}:`,
+      contentSignals.reason
+    );
   }
 
   if (seoSignals.status === 'fulfilled') {
@@ -116,13 +120,13 @@ export async function runSignalScan(
       expires_at: s.expires_at,
     }));
 
-    const { error, count } = await supabase
-      .from('sage_signals')
-      .insert(rows);
+    const { error, count } = await supabase.from('sage_signals').insert(rows);
 
     if (error) {
       errors.push(`Write error: ${error.message}`);
-      logger.error(`Failed to write signals for org ${orgId}: ${error.message}`);
+      logger.error(
+        `Failed to write signals for org ${orgId}: ${error.message}`
+      );
     } else {
       signalsWritten = count ?? rows.length;
     }
@@ -152,7 +156,9 @@ async function deduplicateSignals<T extends RawSignal>(
   signals: T[]
 ): Promise<T[]> {
   // Get existing signals for dedup (last 7 days to avoid stale matches)
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const sevenDaysAgo = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000
+  ).toISOString();
   const { data: existing } = await supabase
     .from('sage_signals')
     .select('signal_type, source_table, source_id')
@@ -163,8 +169,11 @@ async function deduplicateSignals<T extends RawSignal>(
 
   const existingKeys = new Set(
     existing.map(
-      (e: { signal_type: string; source_table: string; source_id: string | null }) =>
-        `${e.signal_type}:${e.source_table}:${e.source_id}`
+      (e: {
+        signal_type: string;
+        source_table: string;
+        source_id: string | null;
+      }) => `${e.signal_type}:${e.source_table}:${e.source_id}`
     )
   );
 

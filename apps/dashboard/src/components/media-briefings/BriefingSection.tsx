@@ -6,9 +6,22 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { RefreshCw, Copy, Check, ChevronDown, ChevronUp, Edit2, Sparkles } from 'lucide-react';
 import type { BriefingSection as BriefingSectionType } from '@pravado/types';
+import {
+  RefreshCw,
+  Copy,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Edit2,
+  Sparkles,
+} from 'lucide-react';
+import React, { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import {
   getSectionTypeLabel,
   getSectionTypeIcon,
@@ -16,14 +29,13 @@ import {
   formatDuration,
 } from '@/lib/mediaBriefingApi';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 
 interface BriefingSectionProps {
   section: BriefingSectionType;
-  onRegenerate?: (sectionId: string, customInstructions?: string) => Promise<void>;
+  onRegenerate?: (
+    sectionId: string,
+    customInstructions?: string
+  ) => Promise<void>;
   onUpdate?: (sectionId: string, content: string) => Promise<void>;
   isRegenerating?: boolean;
   className?: string;
@@ -75,22 +87,36 @@ export default function BriefingSection({
   };
 
   return (
-    <Card className={cn('transition-all', isRegenerating && 'opacity-70', className)}>
+    <Card
+      className={cn(
+        'transition-all',
+        isRegenerating && 'opacity-70',
+        className
+      )}
+    >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">{getSectionTypeIcon(section.sectionType)}</span>
+            <span className="text-lg">
+              {getSectionTypeIcon(section.sectionType)}
+            </span>
             <CardTitle className="text-base">
               {section.title || getSectionTypeLabel(section.sectionType)}
             </CardTitle>
             {section.isGenerated && (
-              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
+              <Badge
+                variant="outline"
+                className="text-xs bg-purple-50 text-purple-700"
+              >
                 <Sparkles className="h-3 w-3 mr-1" />
                 AI Generated
               </Badge>
             )}
             {section.isManuallyEdited && (
-              <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700">
+              <Badge
+                variant="outline"
+                className="text-xs bg-yellow-50 text-yellow-700"
+              >
                 <Edit2 className="h-3 w-3 mr-1" />
                 Edited
               </Badge>
@@ -120,7 +146,9 @@ export default function BriefingSection({
                 disabled={isRegenerating}
                 className="h-8 w-8 p-0"
               >
-                <RefreshCw className={cn('h-4 w-4', isRegenerating && 'animate-spin')} />
+                <RefreshCw
+                  className={cn('h-4 w-4', isRegenerating && 'animate-spin')}
+                />
               </Button>
             )}
 
@@ -143,9 +171,13 @@ export default function BriefingSection({
         {section.isGenerated && (section.llmModel || section.tokensUsed) && (
           <div className="flex items-center gap-3 mt-2 text-xs text-white/50">
             {section.llmModel && <span>Model: {section.llmModel}</span>}
-            {section.tokensUsed && <span>Tokens: {formatTokens(section.tokensUsed)}</span>}
+            {section.tokensUsed && (
+              <span>Tokens: {formatTokens(section.tokensUsed)}</span>
+            )}
             {section.generationDurationMs && (
-              <span>Duration: {formatDuration(section.generationDurationMs)}</span>
+              <span>
+                Duration: {formatDuration(section.generationDurationMs)}
+              </span>
             )}
           </div>
         )}
@@ -156,7 +188,9 @@ export default function BriefingSection({
           {isRegenerating ? (
             <div className="flex items-center justify-center py-8">
               <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
-              <span className="ml-2 text-white/50">Regenerating section...</span>
+              <span className="ml-2 text-white/50">
+                Regenerating section...
+              </span>
             </div>
           ) : isEditing ? (
             <div className="space-y-3">
@@ -168,7 +202,12 @@ export default function BriefingSection({
                 placeholder="Enter section content..."
               />
               <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCancel}
+                  disabled={isSaving}
+                >
                   Cancel
                 </Button>
                 <Button size="sm" onClick={handleSave} disabled={isSaving}>
@@ -194,7 +233,11 @@ export default function BriefingSection({
                 <div className="text-center py-6 text-white/50">
                   No content generated yet.
                   {onRegenerate && (
-                    <Button variant="link" onClick={handleRegenerate} className="ml-1">
+                    <Button
+                      variant="link"
+                      onClick={handleRegenerate}
+                      className="ml-1"
+                    >
                       Generate now
                     </Button>
                   )}
@@ -204,14 +247,22 @@ export default function BriefingSection({
               {/* Bullet Points */}
               {section.bulletPoints && section.bulletPoints.length > 0 && (
                 <div className="mt-4 pt-4 border-t">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Key Points</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Key Points
+                  </h4>
                   <ul className="space-y-1">
                     {section.bulletPoints.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                      <li
+                        key={idx}
+                        className="flex items-start gap-2 text-sm text-gray-600"
+                      >
                         <span className="text-blue-500 mt-1">•</span>
                         <span>{point.text}</span>
                         {point.importance === 'high' && (
-                          <Badge variant="outline" className="text-xs bg-red-50 text-red-600 ml-auto">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-red-50 text-red-600 ml-auto"
+                          >
                             High
                           </Badge>
                         )}
@@ -224,8 +275,12 @@ export default function BriefingSection({
               {/* Source Summary */}
               {section.sourceSummary && (
                 <div className="mt-4 pt-4 border-t">
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Sources</h4>
-                  <p className="text-xs text-white/50">{section.sourceSummary}</p>
+                  <h4 className="text-sm font-medium text-gray-700 mb-1">
+                    Sources
+                  </h4>
+                  <p className="text-xs text-white/50">
+                    {section.sourceSummary}
+                  </p>
                 </div>
               )}
             </>

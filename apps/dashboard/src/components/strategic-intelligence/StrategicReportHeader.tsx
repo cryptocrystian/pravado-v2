@@ -5,22 +5,6 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  type StrategicIntelligenceReport,
-  getFormatLabel,
-  getStatusLabel,
-  getAudienceLabel,
-  formatPeriodRange,
-  formatFiscalQuarter,
-  formatScore,
-  getScoreColor,
-  canGenerate,
-  canApprove,
-  canPublish,
-  canArchive,
-} from '@/lib/strategicIntelligenceApi';
 import {
   ArrowLeft,
   Play,
@@ -41,6 +25,23 @@ import {
   Shield,
 } from 'lucide-react';
 import Link from 'next/link';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  type StrategicIntelligenceReport,
+  getFormatLabel,
+  getStatusLabel,
+  getAudienceLabel,
+  formatPeriodRange,
+  formatFiscalQuarter,
+  formatScore,
+  getScoreColor,
+  canGenerate,
+  canApprove,
+  canPublish,
+  canArchive,
+} from '@/lib/strategicIntelligenceApi';
 
 interface StrategicReportHeaderProps {
   report: StrategicIntelligenceReport;
@@ -67,7 +68,11 @@ export function StrategicReportHeader({
   isApproving = false,
   isPublishing = false,
 }: StrategicReportHeaderProps) {
-  const getStatusBadgeVariant = (): 'default' | 'secondary' | 'destructive' | 'outline' => {
+  const getStatusBadgeVariant = ():
+    | 'default'
+    | 'secondary'
+    | 'destructive'
+    | 'outline' => {
     switch (report.status) {
       case 'published':
         return 'default';
@@ -188,7 +193,10 @@ export function StrategicReportHeader({
         </div>
         {report.fiscalQuarter && report.fiscalYear && (
           <Badge variant="outline">
-            {formatFiscalQuarter(report.fiscalYear, parseInt(report.fiscalQuarter.replace(/\D/g, ''), 10) || 1)}
+            {formatFiscalQuarter(
+              report.fiscalYear,
+              parseInt(report.fiscalQuarter.replace(/\D/g, ''), 10) || 1
+            )}
           </Badge>
         )}
       </div>
@@ -238,7 +246,8 @@ interface ScoreCardProps {
 
 function ScoreCard({ icon: Icon, label, score }: ScoreCardProps) {
   const scoreColor = getScoreColor(score);
-  const colorClass = score !== null ? `text-${scoreColor}-600` : 'text-white/50';
+  const colorClass =
+    score !== null ? `text-${scoreColor}-600` : 'text-white/50';
 
   return (
     <div className="p-4 border rounded-lg">

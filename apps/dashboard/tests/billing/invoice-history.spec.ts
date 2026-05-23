@@ -39,7 +39,9 @@ test.describe('Billing History Page', () => {
     });
   });
 
-  test('should display billing history page with invoice table', async ({ page }) => {
+  test('should display billing history page with invoice table', async ({
+    page,
+  }) => {
     await page.goto('/app/billing/history');
 
     await expect(page.locator('h1')).toContainText('Billing History');

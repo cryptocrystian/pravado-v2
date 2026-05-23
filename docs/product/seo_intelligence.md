@@ -1,5 +1,3 @@
-
-
 # SEO Intelligence - Implementation Guide
 
 **Sprint**: S4
@@ -28,23 +26,27 @@ Pravado's SEO Intelligence pillar provides a comprehensive keyword tracking, SER
 #### Core Tables
 
 **seo_keywords** (from S3)
+
 - Primary keyword tracking table
 - Fields: keyword, search_volume, difficulty_score, current_position, target_position, tracked_url, status, **intent** (new in S4)
 - RLS-protected, org-scoped
 
 **seo_keyword_metrics** (new in S4)
+
 - Multi-source keyword intelligence
 - Fields: keyword_id, source, search_volume, difficulty, cpc, click_through_rate, priority_score, last_refreshed_at
 - Sources: 'gsc', 'llm_estimate', 'external_api', 'manual'
 - Enables hybrid data approach: mix Google Search Console data, external APIs, and LLM estimates
 
 **seo_serp_results** (new in S4)
+
 - SERP position tracking
 - Fields: keyword_id, url, title, snippet, rank, is_competitor, competitor_id, snapshot_id, last_seen_at
 - Tracks both our pages and competitor pages
 - Historical snapshots via snapshot_id linkage
 
 **seo_keyword_intent enum** (new in S4)
+
 - Keyword classification: 'informational', 'navigational', 'commercial', 'transactional'
 - Helps prioritize content strategy based on search intent
 
@@ -60,38 +62,50 @@ Pravado's SEO Intelligence pillar provides a comprehensive keyword tracking, SER
 #### 1. KeywordService (`seoKeywordService.ts`)
 
 **Responsibilities**:
+
 - List keywords with pagination, search, and filtering
 - Fetch individual keywords with latest metrics
 - Enrich keywords using provider abstraction
 - Generate recommendations based on priority scores
 
 **Provider Abstraction**:
+
 ```typescript
 interface KeywordProvider {
-  enrichKeyword(orgId: string, keyword: SEOKeyword): Promise<SEOKeywordMetric | null>;
-  batchEnrichKeywords(orgId: string, keywords: SEOKeyword[]): Promise<SEOKeywordMetric[]>;
+  enrichKeyword(
+    orgId: string,
+    keyword: SEOKeyword
+  ): Promise<SEOKeywordMetric | null>;
+  batchEnrichKeywords(
+    orgId: string,
+    keywords: SEOKeyword[]
+  ): Promise<SEOKeywordMetric[]>;
 }
 ```
 
 **Current Implementation**:
+
 - `StubKeywordProvider`: S4 uses heuristic-based estimates
 - Future S5+: Plug in real APIs (Ahrefs, SEMrush, Google Search Console)
 
 **Priority Score Calculation**:
+
 ```typescript
 // Higher search volume + lower difficulty = higher priority
-priorityScore = (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6
+priorityScore = (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6;
 ```
 
 #### 2. SerpService (`seoSerpService.ts`)
 
 **Responsibilities**:
+
 - Get SERP snapshot for a keyword
 - Compare our rankings vs competitors
 - Generate gap analysis
 - Upsert SERP results (for future scraping integration)
 
 **Gap Analysis**:
+
 - Identifies top 5 competitors
 - Calculates position gaps
 - Generates human-readable explanations
@@ -100,6 +114,7 @@ priorityScore = (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6
 #### 3. OpportunityService (`seoOpportunityService.ts`)
 
 **Responsibilities**:
+
 - Detect SEO opportunities across the org's keyword portfolio
 - Classify opportunity types
 - Generate actionable recommendations
@@ -136,6 +151,7 @@ priorityScore = (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6
 List keywords with metrics, supports search and filtering.
 
 **Query Parameters**:
+
 - `q` (string, optional): Search query (filters by keyword text)
 - `page` (number, optional): Page number (default: 1)
 - `pageSize` (number, optional): Items per page (default: 20, max: 100)
@@ -145,6 +161,7 @@ List keywords with metrics, supports search and filtering.
 - `sortOrder` (enum, optional): 'asc' | 'desc' (default: 'desc')
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -181,9 +198,11 @@ List keywords with metrics, supports search and filtering.
 Get SERP snapshot for a specific keyword.
 
 **Query Parameters**:
+
 - `keywordId` (UUID, required): Keyword ID to fetch SERP data for
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -218,6 +237,7 @@ Get SERP snapshot for a specific keyword.
 List SEO opportunities with AI-generated recommendations.
 
 **Query Parameters**:
+
 - `limit` (number, optional): Max items (default: 20, max: 100)
 - `offset` (number, optional): Skip items (default: 0)
 - `opportunityType` (enum, optional): 'keyword_gap' | 'content_refresh' | 'broken_link' | 'missing_meta' | 'low_content'
@@ -226,6 +246,7 @@ List SEO opportunities with AI-generated recommendations.
 - `minPriorityScore` (number, optional): Minimum priority score (0-100)
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -338,36 +359,42 @@ The SEO dashboard (`/app/seo`) features a three-section layout:
 ### Sprint S5+ Roadmap
 
 **External Provider Integration**:
+
 - Ahrefs API integration for real keyword data
 - SEMrush API for competitive intelligence
 - Google Search Console integration for actual performance data
 - Combine multiple sources for "hybrid intelligence"
 
 **SERP Scraping**:
+
 - Automated SERP scraping service
 - Daily rank tracking for target keywords
 - Historical trend analysis
 - SERP feature detection (featured snippets, PAA, local packs)
 
 **On-Page Optimization**:
+
 - Automated page crawling
 - Content quality scoring
 - Technical SEO audits (speed, mobile-friendliness, schema)
 - Internal linking recommendations
 
 **Backlink Intelligence**:
+
 - Backlink discovery and tracking
 - Referring domain authority scoring
 - Toxic link detection
 - Link building opportunity identification
 
 **Advanced Analytics**:
+
 - Keyword grouping and clustering
 - Topic authority scoring
 - Content gap analysis across entire site
 - Competitive visibility benchmarking
 
 **Automation**:
+
 - Auto-enrich keywords on creation
 - Scheduled SERP snapshots
 - Automated opportunity refreshes
@@ -380,18 +407,21 @@ The SEO dashboard (`/app/seo`) features a three-section layout:
 ### Manual Testing Checklist
 
 **Keywords Endpoint**:
+
 - [ ] GET /api/v1/seo/keywords returns paginated data
 - [ ] Search query filters keywords correctly
 - [ ] Sorting by priority score works
 - [ ] Metrics are properly joined
 
 **SERP Endpoint**:
+
 - [ ] GET /api/v1/seo/serp returns snapshot for valid keyword
 - [ ] Top competitors are correctly identified
 - [ ] Our rank is calculated accurately
 - [ ] Returns 404 for invalid keyword ID
 
 **Opportunities Endpoint**:
+
 - [ ] GET /api/v1/seo/opportunities returns DTOs
 - [ ] Opportunity types are correctly classified
 - [ ] Gap summaries are human-readable
@@ -399,6 +429,7 @@ The SEO dashboard (`/app/seo`) features a three-section layout:
 - [ ] Priority scores are calculated correctly
 
 **Dashboard**:
+
 - [ ] Keywords table loads and displays metrics
 - [ ] Search filters keywords in real-time
 - [ ] Clicking keyword loads SERP snapshot
@@ -408,11 +439,13 @@ The SEO dashboard (`/app/seo`) features a three-section layout:
 ### Automated Testing (S4.1)
 
 API tests to be added in `apps/api/src/services/__tests__/`:
+
 - `seoKeywordService.test.ts`
 - `seoSerpService.test.ts`
 - `seoOpportunityService.test.ts`
 
 Dashboard tests to be added in `apps/dashboard/e2e/`:
+
 - `seo-dashboard.spec.ts`
 
 ---
@@ -422,6 +455,7 @@ Dashboard tests to be added in `apps/dashboard/e2e/`:
 ### RLS Enforcement
 
 All SEO tables enforce org-level RLS:
+
 - Users can only access data from their org(s)
 - Policies check `user_orgs` table for membership
 - Enforced at database level (cannot be bypassed)
@@ -429,16 +463,19 @@ All SEO tables enforce org-level RLS:
 ### Performance Optimizations
 
 **Database**:
+
 - Indexes on org_id, keyword_id, priority_score
 - Composite indexes for common query patterns
 - Pagination to limit result sets
 
 **API**:
+
 - Service-level caching (future)
 - Batch operations for metrics enrichment
 - Lazy loading of SERP snapshots (only on keyword select)
 
 **Dashboard**:
+
 - Client-side state management
 - Conditional SERP loading
 - Debounced search input

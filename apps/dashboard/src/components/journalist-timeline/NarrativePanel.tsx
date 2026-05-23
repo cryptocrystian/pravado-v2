@@ -87,8 +87,18 @@ export function NarrativePanel({
               onClick={onRegenerate}
               className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Regenerate
             </button>
@@ -102,7 +112,8 @@ export function NarrativePanel({
 
         {/* Generated Date */}
         <div className="text-xs text-gray-500 mt-3">
-          Generated {new Date(narrative.generatedAt).toLocaleString()} • Timeframe: {narrative.timeframe.replace(/_/g, ' ')}
+          Generated {new Date(narrative.generatedAt).toLocaleString()} •
+          Timeframe: {narrative.timeframe.replace(/_/g, ' ')}
         </div>
       </div>
 
@@ -120,7 +131,9 @@ export function NarrativePanel({
           {/* Overall Sentiment */}
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="text-xs text-gray-500 mb-1">Overall Sentiment</div>
-            <div className={`text-sm font-semibold ${sentimentDisplay.color} flex items-center gap-1`}>
+            <div
+              className={`text-sm font-semibold ${sentimentDisplay.color} flex items-center gap-1`}
+            >
               <span>{sentimentDisplay.icon}</span>
               <span className="capitalize">{narrative.overallSentiment}</span>
             </div>
@@ -129,11 +142,17 @@ export function NarrativePanel({
           {/* Health Score */}
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="text-xs text-gray-500 mb-1">Health Score</div>
-            <div className={`text-sm font-semibold ${
-              narrative.healthScore >= 70 ? 'text-green-600' :
-              narrative.healthScore >= 50 ? 'text-blue-600' :
-              narrative.healthScore >= 30 ? 'text-yellow-600' : 'text-red-600'
-            }`}>
+            <div
+              className={`text-sm font-semibold ${
+                narrative.healthScore >= 70
+                  ? 'text-green-600'
+                  : narrative.healthScore >= 50
+                    ? 'text-blue-600'
+                    : narrative.healthScore >= 30
+                      ? 'text-yellow-600'
+                      : 'text-red-600'
+              }`}
+            >
               {Math.round(narrative.healthScore)}/100
             </div>
           </div>
@@ -161,12 +180,20 @@ export function NarrativePanel({
           </p>
           <div className="flex items-center gap-2 text-sm">
             <span className="text-gray-600">Trend:</span>
-            <span className={`font-medium capitalize ${
-              narrative.sentimentTrend === 'improving' ? 'text-green-600' :
-              narrative.sentimentTrend === 'declining' ? 'text-red-600' : 'text-gray-600'
-            }`}>
-              {narrative.sentimentTrend === 'improving' ? '📈' :
-               narrative.sentimentTrend === 'declining' ? '📉' : '➡️'}{' '}
+            <span
+              className={`font-medium capitalize ${
+                narrative.sentimentTrend === 'improving'
+                  ? 'text-green-600'
+                  : narrative.sentimentTrend === 'declining'
+                    ? 'text-red-600'
+                    : 'text-gray-600'
+              }`}
+            >
+              {narrative.sentimentTrend === 'improving'
+                ? '📈'
+                : narrative.sentimentTrend === 'declining'
+                  ? '📉'
+                  : '➡️'}{' '}
               {narrative.sentimentTrend}
             </span>
           </div>
@@ -234,7 +261,8 @@ export function NarrativePanel({
             </p>
             {narrative.lastCoverageDate && (
               <div className="text-xs text-green-700">
-                Most recent: {new Date(narrative.lastCoverageDate).toLocaleDateString()}
+                Most recent:{' '}
+                {new Date(narrative.lastCoverageDate).toLocaleDateString()}
               </div>
             )}
           </div>
@@ -262,13 +290,15 @@ export function NarrativePanel({
                     <div className="font-medium text-gray-900 text-sm">
                       {highlight.title}
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      highlight.importance === 'high'
-                        ? 'bg-red-100 text-red-700'
-                        : highlight.importance === 'medium'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-blue-100 text-blue-700'
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded ${
+                        highlight.importance === 'high'
+                          ? 'bg-red-100 text-red-700'
+                          : highlight.importance === 'medium'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-blue-100 text-blue-700'
+                      }`}
+                    >
                       {highlight.importance}
                     </span>
                   </div>
@@ -298,7 +328,11 @@ export function NarrativePanel({
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-xl">
-                      {rec.type === 'action' ? '🎯' : rec.type === 'warning' ? '⚠️' : '💡'}
+                      {rec.type === 'action'
+                        ? '🎯'
+                        : rec.type === 'warning'
+                          ? '⚠️'
+                          : '💡'}
                     </span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -307,9 +341,7 @@ export function NarrativePanel({
                           {rec.priority} priority
                         </span>
                       </div>
-                      <p className="text-sm opacity-90">
-                        {rec.description}
-                      </p>
+                      <p className="text-sm opacity-90">{rec.description}</p>
                       {rec.suggestedAction && (
                         <div className="mt-2 text-sm font-medium">
                           → {rec.suggestedAction}

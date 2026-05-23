@@ -9,27 +9,33 @@
  * - POST /schema/:contentItemId/generate  — generate/regenerate JSON-LD schema
  */
 
-import type { FastifyInstance } from 'fastify';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { FLAGS } from '@pravado/feature-flags';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
 
-import { requireUser } from '../../middleware/requireUser';
 import { getSupabaseClient } from '../../lib/supabase';
-import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
+import { requireUser } from '../../middleware/requireUser';
+import {
+  enforcePlanLimit,
+  PlanLimitExceededError,
+} from '../../services/billing/planLimitsService';
+import { monitorCitations } from '../../services/citeMind/citationMonitor';
 import {
   checkGate,
   acknowledgeGate,
   getLatestScore,
   listScoresForOrg,
 } from '../../services/citeMind/citeMindPublishGateService';
+import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
 import { generateSchema } from '../../services/citeMind/citeMindSchemaGenerator';
-import { monitorCitations } from '../../services/citeMind/citationMonitor';
-import { enforcePlanLimit, PlanLimitExceededError } from '../../services/billing/planLimitsService';
 
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: SupabaseClient
+): Promise<string | null> {
   const { data } = await supabase
     .from('org_members')
     .select('org_id')
@@ -49,30 +55,51 @@ export async function citeMindRoutes(server: FastifyInstance) {
 
   server.post<{ Params: { contentItemId: string } }>(
     '/score/:contentItemId',
-    { preHandler: requireUser, config: { rateLimit: { max: 20, timeWindow: '1 hour' } } },
+    {
+      preHandler: requireUser,
+      config: { rateLimit: { max: 20, timeWindow: '1 hour' } },
+    },
     async (request, reply) => {
       if (!FLAGS.ENABLE_CITEMIND) {
-        return reply.code(404).send({ success: false, error: { message: 'CiteMind is not enabled' } });
+        return reply.code(404).send({
+          success: false,
+          error: { message: 'CiteMind is not enabled' },
+        });
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
       try {
         // S-INT-09: Enforce CiteMind scoring plan limits
         await enforcePlanLimit(supabase, orgId, 'citemindScoresPerMonth');
 
-        const result = await scoreAndPersist(supabase, request.params.contentItemId, orgId);
+        const result = await scoreAndPersist(
+          supabase,
+          request.params.contentItemId,
+          orgId
+        );
 
         // Emit SAGE signal if score < 55 (blocked)
         if (result.gate_status === 'blocked') {
-          await emitCiteMindSignal(supabase, orgId, request.params.contentItemId, result);
+          await emitCiteMindSignal(
+            supabase,
+            orgId,
+            request.params.contentItemId,
+            result
+          );
         }
 
         return reply.send({ success: true, data: result });
@@ -90,7 +117,9 @@ export async function citeMindRoutes(server: FastifyInstance) {
           });
         }
         const msg = error instanceof Error ? error.message : 'Scoring failed';
-        return reply.code(500).send({ success: false, error: { message: msg } });
+        return reply
+          .code(500)
+          .send({ success: false, error: { message: msg } });
       }
     }
   );
@@ -104,19 +133,32 @@ export async function citeMindRoutes(server: FastifyInstance) {
     { preHandler: requireUser },
     async (request, reply) => {
       if (!FLAGS.ENABLE_CITEMIND) {
-        return reply.code(404).send({ success: false, error: { message: 'CiteMind is not enabled' } });
+        return reply.code(404).send({
+          success: false,
+          error: { message: 'CiteMind is not enabled' },
+        });
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
-      const score = await getLatestScore(supabase, request.params.contentItemId, orgId);
+      const score = await getLatestScore(
+        supabase,
+        request.params.contentItemId,
+        orgId
+      );
 
       if (!score) {
         return reply.send({
@@ -139,31 +181,37 @@ export async function citeMindRoutes(server: FastifyInstance) {
 
   server.get<{
     Querystring: { gate_status?: string; limit?: string };
-  }>(
-    '/scores',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      if (!FLAGS.ENABLE_CITEMIND) {
-        return reply.code(404).send({ success: false, error: { message: 'CiteMind is not enabled' } });
-      }
-
-      if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
-      }
-
-      const orgId = await getUserOrgId(request.user.id, supabase);
-      if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
-      }
-
-      const scores = await listScoresForOrg(supabase, orgId, {
-        gate_status: request.query.gate_status,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
+  }>('/scores', { preHandler: requireUser }, async (request, reply) => {
+    if (!FLAGS.ENABLE_CITEMIND) {
+      return reply.code(404).send({
+        success: false,
+        error: { message: 'CiteMind is not enabled' },
       });
-
-      return reply.send({ success: true, data: { items: scores } });
     }
-  );
+
+    if (!request.user) {
+      return reply.code(401).send({
+        success: false,
+        error: { message: 'Authentication required' },
+      });
+    }
+
+    const orgId = await getUserOrgId(request.user.id, supabase);
+    if (!orgId) {
+      return reply
+        .code(403)
+        .send({ success: false, error: { message: 'No organization found' } });
+    }
+
+    const scores = await listScoresForOrg(supabase, orgId, {
+      gate_status: request.query.gate_status,
+      limit: request.query.limit
+        ? parseInt(request.query.limit, 10)
+        : undefined,
+    });
+
+    return reply.send({ success: true, data: { items: scores } });
+  });
 
   // ========================================
   // POST /gate/:contentItemId/acknowledge — Override warning gate
@@ -174,16 +222,28 @@ export async function citeMindRoutes(server: FastifyInstance) {
     { preHandler: requireUser },
     async (request, reply) => {
       if (!FLAGS.ENABLE_CITEMIND) {
-        return reply.send({ success: true, data: { acknowledged: true, content_item_id: request.params.contentItemId } });
+        return reply.send({
+          success: true,
+          data: {
+            acknowledged: true,
+            content_item_id: request.params.contentItemId,
+          },
+        });
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
       const result = await acknowledgeGate(
@@ -206,24 +266,40 @@ export async function citeMindRoutes(server: FastifyInstance) {
     { preHandler: requireUser },
     async (request, reply) => {
       if (!FLAGS.ENABLE_CITEMIND) {
-        return reply.code(404).send({ success: false, error: { message: 'CiteMind is not enabled' } });
+        return reply.code(404).send({
+          success: false,
+          error: { message: 'CiteMind is not enabled' },
+        });
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
       try {
-        const result = await generateSchema(supabase, request.params.contentItemId, orgId);
+        const result = await generateSchema(
+          supabase,
+          request.params.contentItemId,
+          orgId
+        );
         return reply.send({ success: true, data: result });
       } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Schema generation failed';
-        return reply.code(500).send({ success: false, error: { message: msg } });
+        const msg =
+          error instanceof Error ? error.message : 'Schema generation failed';
+        return reply
+          .code(500)
+          .send({ success: false, error: { message: msg } });
       }
     }
   );
@@ -239,20 +315,35 @@ export async function citeMindRoutes(server: FastifyInstance) {
       if (!FLAGS.ENABLE_CITEMIND) {
         return reply.send({
           success: true,
-          data: { allowed: true, score: null, gate_status: 'passed', recommendations: [] },
+          data: {
+            allowed: true,
+            score: null,
+            gate_status: 'passed',
+            recommendations: [],
+          },
         });
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
-      const result = await checkGate(supabase, request.params.contentItemId, orgId);
+      const result = await checkGate(
+        supabase,
+        request.params.contentItemId,
+        orgId
+      );
       return reply.send({ success: true, data: result });
     }
   );
@@ -270,12 +361,18 @@ export async function citeMindRoutes(server: FastifyInstance) {
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
       const { data: summary } = await supabase
@@ -294,7 +391,13 @@ export async function citeMindRoutes(server: FastifyInstance) {
   // ========================================
 
   server.get<{
-    Querystring: { engine?: string; days?: string; mentioned_only?: string; limit?: string; offset?: string };
+    Querystring: {
+      engine?: string;
+      days?: string;
+      mentioned_only?: string;
+      limit?: string;
+      offset?: string;
+    };
   }>(
     '/monitor/results',
     { preHandler: requireUser },
@@ -304,12 +407,18 @@ export async function citeMindRoutes(server: FastifyInstance) {
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
       let query = supabase
@@ -324,7 +433,9 @@ export async function citeMindRoutes(server: FastifyInstance) {
 
       if (request.query.days) {
         const days = parseInt(request.query.days, 10);
-        const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+        const cutoff = new Date(
+          Date.now() - days * 24 * 60 * 60 * 1000
+        ).toISOString();
         query = query.gte('monitored_at', cutoff);
       }
 
@@ -332,14 +443,20 @@ export async function citeMindRoutes(server: FastifyInstance) {
         query = query.eq('brand_mentioned', true);
       }
 
-      const limit = request.query.limit ? parseInt(request.query.limit, 10) : 50;
-      const offset = request.query.offset ? parseInt(request.query.offset, 10) : 0;
+      const limit = request.query.limit
+        ? parseInt(request.query.limit, 10)
+        : 50;
+      const offset = request.query.offset
+        ? parseInt(request.query.offset, 10)
+        : 0;
       query = query.range(offset, offset + limit - 1);
 
       const { data, error } = await query;
 
       if (error) {
-        return reply.code(500).send({ success: false, error: { message: error.message } });
+        return reply
+          .code(500)
+          .send({ success: false, error: { message: error.message } });
       }
 
       return reply.send({ success: true, data: { items: data ?? [] } });
@@ -352,27 +469,42 @@ export async function citeMindRoutes(server: FastifyInstance) {
 
   server.post(
     '/monitor/run',
-    { preHandler: requireUser, config: { rateLimit: { max: 3, timeWindow: '1 hour' } } },
+    {
+      preHandler: requireUser,
+      config: { rateLimit: { max: 3, timeWindow: '1 hour' } },
+    },
     async (request, reply) => {
       if (!FLAGS.ENABLE_CITEMIND) {
-        return reply.code(404).send({ success: false, error: { message: 'CiteMind is not enabled' } });
+        return reply.code(404).send({
+          success: false,
+          error: { message: 'CiteMind is not enabled' },
+        });
       }
 
       if (!request.user) {
-        return reply.code(401).send({ success: false, error: { message: 'Authentication required' } });
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
       }
 
       const orgId = await getUserOrgId(request.user.id, supabase);
       if (!orgId) {
-        return reply.code(403).send({ success: false, error: { message: 'No organization found' } });
+        return reply.code(403).send({
+          success: false,
+          error: { message: 'No organization found' },
+        });
       }
 
       try {
         const result = await monitorCitations(supabase, orgId);
         return reply.send({ success: true, data: result });
       } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Monitor run failed';
-        return reply.code(500).send({ success: false, error: { message: msg } });
+        const msg =
+          error instanceof Error ? error.message : 'Monitor run failed';
+        return reply
+          .code(500)
+          .send({ success: false, error: { message: msg } });
       }
     }
   );
@@ -389,14 +521,23 @@ async function emitCiteMindSignal(
   supabase: SupabaseClient,
   orgId: string,
   contentItemId: string,
-  scoreResult: { overall_score: number; recommendations: string[]; gate_status: string }
+  scoreResult: {
+    overall_score: number;
+    recommendations: string[];
+    gate_status: string;
+  }
 ): Promise<void> {
   // Find lowest-scoring factor from recommendations
-  const lowestFactor = scoreResult.recommendations[0] || 'Overall score below threshold';
+  const lowestFactor =
+    scoreResult.recommendations[0] || 'Overall score below threshold';
 
   try {
     // Use type assertion since supabase client doesn't have sage_signals typed
-    await (supabase.from('sage_signals') as unknown as { insert: (data: Record<string, unknown>) => Promise<unknown> }).insert({
+    await (
+      supabase.from('sage_signals') as unknown as {
+        insert: (data: Record<string, unknown>) => Promise<unknown>;
+      }
+    ).insert({
       org_id: orgId,
       signal_type: 'content_low_citemind',
       pillar: 'Content',

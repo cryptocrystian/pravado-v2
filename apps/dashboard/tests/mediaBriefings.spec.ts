@@ -22,7 +22,9 @@ test.describe('Media Briefings', () => {
 
       await expect(page).toHaveTitle(/Pravado/);
       await expect(page.locator('h1')).toContainText('Media Briefings');
-      await expect(page.locator('text=AI-powered executive briefings')).toBeVisible();
+      await expect(
+        page.locator('text=AI-powered executive briefings')
+      ).toBeVisible();
     });
 
     test.skip('should show three-panel layout', async ({ page }) => {
@@ -41,7 +43,9 @@ test.describe('Media Briefings', () => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/media-briefings');
 
-      await expect(page.locator('button:has-text("New Briefing")')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("New Briefing")')
+      ).toBeVisible();
     });
 
     test.skip('should open briefing creation modal', async ({ page }) => {
@@ -51,7 +55,9 @@ test.describe('Media Briefings', () => {
       await page.click('button:has-text("New Briefing")');
 
       // Should show modal with form
-      await expect(page.locator('h2:has-text("Create New Briefing")')).toBeVisible();
+      await expect(
+        page.locator('h2:has-text("Create New Briefing")')
+      ).toBeVisible();
       await expect(page.locator('label:has-text("Title")')).toBeVisible();
       await expect(page.locator('text=Briefing Format')).toBeVisible();
       await expect(page.locator('text=Tone & Style')).toBeVisible();
@@ -71,7 +77,9 @@ test.describe('Media Briefings', () => {
       await expect(page.locator('text=Interview Prep')).toBeVisible();
     });
 
-    test.skip('should validate required fields in creation form', async ({ page }) => {
+    test.skip('should validate required fields in creation form', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/media-briefings');
       await page.click('button:has-text("New Briefing")');
@@ -97,11 +105,17 @@ test.describe('Media Briefings', () => {
       await page.click('button:has-text("Create Briefing")');
 
       // Should close modal and show new briefing in list
-      await expect(page.locator('h2:has-text("Create New Briefing")')).not.toBeVisible();
-      await expect(page.locator('text=Q4 Product Launch Brief')).toBeVisible({ timeout: 5000 });
+      await expect(
+        page.locator('h2:has-text("Create New Briefing")')
+      ).not.toBeVisible();
+      await expect(page.locator('text=Q4 Product Launch Brief')).toBeVisible({
+        timeout: 5000,
+      });
     });
 
-    test.skip('should display briefing list with status badges', async ({ page }) => {
+    test.skip('should display briefing list with status badges', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user with existing briefings
       await page.goto('/app/media-briefings');
 
@@ -144,7 +158,10 @@ test.describe('Media Briefings', () => {
       await page.goto('/app/media-briefings');
 
       // Enter search query
-      await page.fill('input[placeholder="Search briefings..."]', 'Product Launch');
+      await page.fill(
+        'input[placeholder="Search briefings..."]',
+        'Product Launch'
+      );
 
       // Should filter results
       await expect(page.locator('text=Product Launch')).toBeVisible();
@@ -179,7 +196,9 @@ test.describe('Media Briefings', () => {
       await expect(page.locator('text=Tokens Used')).toBeVisible();
     });
 
-    test.skip('should show Generate button for draft briefings', async ({ page }) => {
+    test.skip('should show Generate button for draft briefings', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user with draft briefing
       await page.goto('/app/media-briefings');
 
@@ -201,7 +220,9 @@ test.describe('Media Briefings', () => {
       await expect(page.locator('text=Generating...')).toBeVisible();
 
       // Should update status after generation
-      await expect(page.locator('text=Generated')).toBeVisible({ timeout: 30000 });
+      await expect(page.locator('text=Generated')).toBeVisible({
+        timeout: 30000,
+      });
     });
 
     test.skip('should display sections tab content', async ({ page }) => {
@@ -276,7 +297,9 @@ test.describe('Media Briefings', () => {
       await page.locator('button[aria-label="Regenerate"]').first().click();
 
       // Should show loading state
-      await expect(page.locator('[class*="animate-spin"]').first()).toBeVisible();
+      await expect(
+        page.locator('[class*="animate-spin"]').first()
+      ).toBeVisible();
     });
 
     test.skip('should approve talking point', async ({ page }) => {
@@ -365,11 +388,16 @@ test.describe('Media Briefings', () => {
       await page.fill('input#title', 'Test Briefing');
 
       // Add focus area
-      await page.fill('input[placeholder="Add a focus area..."]', 'AI Innovation');
+      await page.fill(
+        'input[placeholder="Add a focus area..."]',
+        'AI Innovation'
+      );
       await page.click('button:has([class*="Plus"])');
 
       // Should show focus area badge
-      await expect(page.locator('span:has-text("AI Innovation")')).toBeVisible();
+      await expect(
+        page.locator('span:has-text("AI Innovation")')
+      ).toBeVisible();
     });
 
     test.skip('should add excluded topics', async ({ page }) => {
@@ -381,19 +409,28 @@ test.describe('Media Briefings', () => {
       await page.fill('input#title', 'Test Briefing');
 
       // Add excluded topic
-      await page.fill('input[placeholder="Add a topic to exclude..."]', 'Layoffs');
+      await page.fill(
+        'input[placeholder="Add a topic to exclude..."]',
+        'Layoffs'
+      );
       await page.locator('button:has([class*="Plus"])').last().click();
 
       // Should show excluded topic badge with red styling
-      await expect(page.locator('span.bg-red-50:has-text("Layoffs")')).toBeVisible();
+      await expect(
+        page.locator('span.bg-red-50:has-text("Layoffs")')
+      ).toBeVisible();
     });
 
-    test.skip('should display empty state when no briefings exist', async ({ page }) => {
+    test.skip('should display empty state when no briefings exist', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user with no briefings
       await page.goto('/app/media-briefings');
 
       await expect(page.locator('text=No briefings found')).toBeVisible();
-      await expect(page.locator('text=Create your first briefing')).toBeVisible();
+      await expect(
+        page.locator('text=Create your first briefing')
+      ).toBeVisible();
     });
 
     test.skip('should show pagination controls', async ({ page }) => {
@@ -440,7 +477,11 @@ test.describe('Media Briefings', () => {
       await generatedBriefing.click();
 
       // Should show insights panel if insights exist
-      await expect(page.locator('h3:has-text("Insights")').or(page.locator('text=No insights'))).toBeVisible();
+      await expect(
+        page
+          .locator('h3:has-text("Insights")')
+          .or(page.locator('text=No insights'))
+      ).toBeVisible();
     });
 
     test.skip('should edit briefing title inline', async ({ page }) => {
@@ -479,7 +520,9 @@ test.describe('Media Briefings', () => {
       // Should show settings content
       await expect(page.locator('h4:has-text("Focus Areas")')).toBeVisible();
       await expect(page.locator('h4:has-text("Key Messages")')).toBeVisible();
-      await expect(page.locator('h4:has-text("Topics to Avoid")')).toBeVisible();
+      await expect(
+        page.locator('h4:has-text("Topics to Avoid")')
+      ).toBeVisible();
     });
   });
 });

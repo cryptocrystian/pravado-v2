@@ -9,6 +9,7 @@
 ## Overview
 
 Playbook Version Control adds Git-like branching, committing, and merging capabilities to the playbook editor. This enables:
+
 - Safe experimentation with playbook changes on feature branches
 - Version history with commit DAG visualization
 - 3-way merge with automatic conflict detection
@@ -39,6 +40,7 @@ CREATE TABLE playbook_branches (
 ```
 
 **Key Concepts:**
+
 - Each playbook can have multiple branches
 - Branches are named (e.g., "main", "feature-x")
 - "main" branch is created automatically and marked protected
@@ -46,6 +48,7 @@ CREATE TABLE playbook_branches (
 - Protected branches cannot be committed to directly (merge-only)
 
 **Service:** `playbookBranchService.ts`
+
 - `createBranch(playbookId, name, userId, parentBranchId?)`
 - `listBranches(playbookId)`
 - `getBranch(branchId)`
@@ -77,6 +80,7 @@ CREATE TABLE playbook_commits (
 ```
 
 **Key Concepts:**
+
 - Commits are immutable snapshots of playbook graphs
 - Each commit stores: graph (nodes/edges), compiled playbook JSON, message
 - Version numbers are per-branch (v1, v2, v3...)
@@ -84,6 +88,7 @@ CREATE TABLE playbook_commits (
 - Merge commits have two parents (one from each branch)
 
 **Service:** `playbookCommitService.ts`
+
 - `createCommit(branchId, graph, playbookJson, message, userId)`
 - `getCommit(commitId)`
 - `listCommits(branchId, limit, offset)`
@@ -109,6 +114,7 @@ interface GraphDiff {
 ```
 
 **Diff Computation:**
+
 - Node-level: Added, removed, modified (checks label, type, config, position)
 - Edge-level: Added, removed (by source-target pair)
 
@@ -119,11 +125,13 @@ interface GraphDiff {
 **3-Way Merge Algorithm:**
 
 **Inputs:**
+
 - **Base:** Common ancestor commit
 - **Ours:** Target branch tip (e.g., main)
 - **Theirs:** Source branch tip (e.g., feature-x)
 
 **Process:**
+
 1. Find common ancestor using `findCommonAncestor(commit1, commit2)`
 2. Build node/edge maps for base, ours, theirs
 3. For each node/edge:
@@ -137,6 +145,7 @@ interface GraphDiff {
 5. If no conflicts (or all resolved), create merge commit
 
 **Conflict Resolution:**
+
 ```typescript
 interface MergeConflict {
   nodeId?: string;
@@ -155,6 +164,7 @@ interface MergeResult {
 ```
 
 **Service:** `playbookMergeService.ts`
+
 - `mergeBranches(sourceBranchId, targetBranchId, userId, message?, resolutions?)`
 - `findCommonAncestor(commitId1, commitId2)`
 - `runThreeWayMerge(base, ours, theirs, resolutions?)`
@@ -166,48 +176,58 @@ interface MergeResult {
 ### Branches
 
 **GET** `/api/v1/playbooks/:id/branches`
+
 - List all branches for a playbook
 - Returns: `{ branches: PlaybookBranchWithCommit[] }`
 
 **POST** `/api/v1/playbooks/:id/branches`
+
 - Create a new branch
 - Body: `{ name: string, parentBranchId?: string }`
 - Returns: `{ branch: PlaybookBranchWithCommit }`
 
 **GET** `/api/v1/playbooks/:id/branches/:branchId`
+
 - Get branch details
 
 **POST** `/api/v1/playbooks/:id/branches/:branchId/switch`
+
 - Switch playbook to a different branch
 - Updates `playbooks.current_branch_id`
 
 **DELETE** `/api/v1/playbooks/:id/branches/:branchId`
+
 - Delete a branch (fails if protected or currently active)
 
 ### Commits
 
 **POST** `/api/v1/playbooks/:id/branches/:branchId/commits`
+
 - Create a commit on a branch
 - Body: `{ message: string, graph: PlaybookGraph, playbookJson: object }`
 - Returns: `{ commit: PlaybookCommitWithBranch }`
 - **Note:** Fails if branch is protected
 
 **GET** `/api/v1/playbooks/:id/branches/:branchId/commits`
+
 - List commits for a branch
 - Query params: `limit`, `offset`
 - Returns: `{ commits: PlaybookCommitWithBranch[] }`
 
 **GET** `/api/v1/playbooks/:id/commits/:commitId/diff`
+
 - Get diff between a commit and its parent
 - Returns: `{ diff: GraphDiff }`
 
 **GET** `/api/v1/playbooks/:id/commits/dag`
+
 - Get commit DAG for visualization
 - Returns: `{ dag: CommitDAGNode[] }`
 
 ### Merge
 
 **POST** `/api/v1/playbooks/:id/merge`
+
 - Merge two branches
 - Body: `{ sourceBranchId: string, targetBranchId: string, message?: string, resolveConflicts?: Array<...> }`
 - Returns:
@@ -223,6 +243,7 @@ interface MergeResult {
 **Location:** `apps/dashboard/src/app/app/playbooks/editor/components/BranchSelector.tsx`
 
 **Features:**
+
 - Dropdown showing all branches
 - Current branch highlighted
 - Lock icon for protected branches (e.g., main)
@@ -230,6 +251,7 @@ interface MergeResult {
 - Branch switching via API
 
 **Usage:**
+
 ```tsx
 <BranchSelector
   playbookId={playbookId}
@@ -244,11 +266,13 @@ interface MergeResult {
 **Location:** `apps/dashboard/src/app/app/playbooks/editor/components/CommitModal.tsx`
 
 **Features:**
+
 - Commit message input (required, 1-500 chars)
 - Shows current branch name
 - "Commit" button (disabled if no changes or branch is protected)
 
 **Workflow:**
+
 1. User clicks "Commit" in toolbar
 2. Modal opens with commit message input
 3. User enters message, clicks "Commit"
@@ -260,6 +284,7 @@ interface MergeResult {
 **Location:** `apps/dashboard/src/app/app/playbooks/editor/components/VersionGraph.tsx`
 
 **Features:**
+
 - SVG-based DAG visualization
 - Commits as nodes (shows branch, message, version, timestamp)
 - Edges show parent relationships
@@ -267,6 +292,7 @@ interface MergeResult {
 - Clickable nodes for commit details
 
 **Layout Algorithm:**
+
 - Horizontal: Chronological (left to right)
 - Vertical: Branch lanes (separate lanes per branch)
 
@@ -275,6 +301,7 @@ interface MergeResult {
 **Location:** `apps/dashboard/src/app/app/playbooks/editor/components/VersionHistoryDrawer.tsx`
 
 **Features:**
+
 - Drawer showing commit list
 - Displays: message, branch, version, author, timestamp
 - Click commit to view diff
@@ -284,6 +311,7 @@ interface MergeResult {
 **Location:** `apps/dashboard/src/app/app/playbooks/editor/components/VersionDiffViewer.tsx`
 
 **Features:**
+
 - Side-by-side or unified diff view
 - Color-coded changes:
   - Green: Added nodes/edges
@@ -295,6 +323,7 @@ interface MergeResult {
 **Location:** `apps/dashboard/src/app/app/playbooks/editor/components/MergeModal.tsx`
 
 **Features:**
+
 - Source branch selector
 - Target branch display (current branch)
 - Merge message input (optional)
@@ -304,6 +333,7 @@ interface MergeResult {
   - Merge button disabled until all conflicts resolved
 
 **Workflow:**
+
 1. User clicks "Merge" in toolbar
 2. Modal opens with branch selector
 3. User selects source branch, clicks "Merge"
@@ -323,6 +353,7 @@ interface MergeResult {
 - Deletion blocked
 
 **Enforcement:**
+
 - Backend: `playbookCommitService.createCommit()` checks `is_protected`
 - Frontend: Commit button disabled when on protected branch
 
@@ -333,17 +364,20 @@ interface MergeResult {
 **SSE/Editor Streaming:**
 
 When a user switches branches or commits:
+
 1. Editor page calls `switchBranch()` or `createCommit()`
 2. New graph loaded from branch's latest commit
 3. Editor broadcasts `graph.replace` event to collaborators
 4. Remote users see branch switch notification
 
 **Avoiding Stomping:**
+
 - Only one user should commit at a time per branch
 - Protected main branch forces merge workflow (reduces direct conflicts)
 - Collaboration events include `branchId` for context
 
 **Future (S24+):**
+
 - Branch-aware presence (show which branch each user is on)
 - Merge conflict UI with live collaboration
 
@@ -413,15 +447,18 @@ playbook_versions (S20, still used for pre-S23 history)
 ## Performance Considerations
 
 **Commit DAG Queries:**
+
 - Index on `(playbook_id, created_at)` for chronological DAG fetch
 - Index on `(branch_id, version DESC)` for latest commit lookup
 
 **Merge Performance:**
+
 - In-memory graph comparison (no DB joins)
 - Handles up to ~1000 nodes/edges efficiently
 - For larger graphs: Consider incremental diff or chunked merge
 
 **Branch Switching:**
+
 - Loads full graph from commit JSONB (fast)
 - SSE broadcast to collaborators (< 100ms latency)
 
@@ -430,11 +467,13 @@ playbook_versions (S20, still used for pre-S23 history)
 ## Security & Permissions
 
 **RLS Policies:**
+
 - All branch/commit tables have `org_id` isolation
 - Users can only access branches/commits for playbooks in their orgs
 - Protected branch checks in service layer (not RLS)
 
 **Future (S24+):**
+
 - Role-based branch permissions (who can merge to main)
 - Audit log for branch/commit actions
 
@@ -443,10 +482,12 @@ playbook_versions (S20, still used for pre-S23 history)
 ## Testing
 
 **Backend:**
+
 - Unit tests: `playbookGraphService.test.ts` (graph diff, merge logic)
 - Integration tests: Branch CRUD, commit creation, merge scenarios
 
 **Frontend:**
+
 - Component tests: BranchSelector, CommitModal, MergeModal
 - E2E tests: Full branch workflow (Playwright)
 
@@ -455,6 +496,7 @@ playbook_versions (S20, still used for pre-S23 history)
 ## Limitations
 
 **Current (V1):**
+
 - No branch permissions (all org members can create/merge branches)
 - Merge conflicts are all-or-nothing (no partial merge)
 - No rebase or cherry-pick operations
@@ -462,6 +504,7 @@ playbook_versions (S20, still used for pre-S23 history)
 - No branch comparison UI (diff between branch tips)
 
 **Future Enhancements (S24+):**
+
 - Branch permissions (who can merge to main)
 - Rebase operations
 - Conflict resolution in-editor (visual graph merge)
@@ -475,6 +518,7 @@ playbook_versions (S20, still used for pre-S23 history)
 **From S20 Versioning to S23 Branching:**
 
 Migration 32 includes seed data logic:
+
 1. For each existing playbook, creates "main" branch
 2. Migrates all `playbook_versions` → `playbook_commits` on main branch
 3. Sets `parent_commit_id` to link commits in order
@@ -489,6 +533,7 @@ Migration 32 includes seed data logic:
 Sprint S23 delivers a complete Git-like version control system for playbooks, enabling safe collaboration, experimentation, and merge workflows. The system integrates seamlessly with S22's live editor collaboration and provides a foundation for advanced workflows in future sprints.
 
 **Key Achievements:**
+
 - ✅ Branch model with protected main branch
 - ✅ Commit DAG with parent tracking
 - ✅ 3-way merge with automatic conflict detection
@@ -496,6 +541,7 @@ Sprint S23 delivers a complete Git-like version control system for playbooks, en
 - ✅ Collaboration-aware version control
 
 **Next Steps (S24+):**
+
 - Branch permissions
 - Rebase/cherry-pick
 - Visual conflict resolution in editor

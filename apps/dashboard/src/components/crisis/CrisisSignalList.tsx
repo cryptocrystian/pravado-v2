@@ -7,7 +7,11 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisSignal,
+  CrisisSeverity,
+  CrisisSourceSystem,
+} from '@pravado/types';
 import {
   Bell,
   CheckCircle2,
@@ -21,13 +25,11 @@ import {
   RefreshCw,
   Zap,
 } from 'lucide-react';
-import type { CrisisSignal, CrisisSeverity, CrisisSourceSystem } from '@pravado/types';
-import { SEVERITY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -36,11 +38,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { SEVERITY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisSignalListProps {
   signals: CrisisSignal[];
   isLoading?: boolean;
-  onAcknowledge?: (signal: CrisisSignal, linkToIncident?: string) => Promise<void>;
+  onAcknowledge?: (
+    signal: CrisisSignal,
+    linkToIncident?: string
+  ) => Promise<void>;
   onCreateIncident?: (signal: CrisisSignal) => void;
   onViewDetails?: (signal: CrisisSignal) => void;
   onRefresh?: () => void;
@@ -78,7 +86,10 @@ export default function CrisisSignalList({
 
   const filteredSignals = signals.filter((signal) => {
     if (showActiveOnly && !signal.isActive) return false;
-    if (filterSeverity.length > 0 && !filterSeverity.includes(signal.severity)) {
+    if (
+      filterSeverity.length > 0 &&
+      !filterSeverity.includes(signal.severity)
+    ) {
       return false;
     }
     return true;
@@ -138,17 +149,23 @@ export default function CrisisSignalList({
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>Severity</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {(['severe', 'critical', 'high', 'medium', 'low'] as CrisisSeverity[]).map(
-                  (severity) => (
-                    <DropdownMenuCheckboxItem
-                      key={severity}
-                      checked={filterSeverity.includes(severity)}
-                      onCheckedChange={() => toggleSeverityFilter(severity)}
-                    >
-                      <span className="capitalize">{severity}</span>
-                    </DropdownMenuCheckboxItem>
-                  )
-                )}
+                {(
+                  [
+                    'severe',
+                    'critical',
+                    'high',
+                    'medium',
+                    'low',
+                  ] as CrisisSeverity[]
+                ).map((severity) => (
+                  <DropdownMenuCheckboxItem
+                    key={severity}
+                    checked={filterSeverity.includes(severity)}
+                    onCheckedChange={() => toggleSeverityFilter(severity)}
+                  >
+                    <span className="capitalize">{severity}</span>
+                  </DropdownMenuCheckboxItem>
+                ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
                   checked={showActiveOnly}
@@ -221,7 +238,10 @@ export default function CrisisSignalList({
                           <Clock className="h-3 w-3" />
                           <span>{formatTimeAgo(signal.createdAt)}</span>
                           <span className="text-gray-300">|</span>
-                          <span>Confidence: {(signal.confidenceScore * 100).toFixed(0)}%</span>
+                          <span>
+                            Confidence:{' '}
+                            {(signal.confidenceScore * 100).toFixed(0)}%
+                          </span>
                         </div>
                       </div>
 

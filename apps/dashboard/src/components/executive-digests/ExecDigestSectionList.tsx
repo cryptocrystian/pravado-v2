@@ -5,22 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import {
-  type ExecDigestSection,
-  getSectionTypeLabel,
-  getSectionTypeIcon,
-  formatRelativeTime,
-} from '@/lib/executiveDigestApi';
-import { cn } from '@/lib/utils';
 import {
   FileText,
   BarChart2,
@@ -41,6 +25,23 @@ import {
   Clock,
   Cpu,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
+  type ExecDigestSection,
+  getSectionTypeLabel,
+  getSectionTypeIcon,
+  formatRelativeTime,
+} from '@/lib/executiveDigestApi';
+import { cn } from '@/lib/utils';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   'file-text': FileText,
@@ -175,7 +176,10 @@ export function ExecDigestSectionList({
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onToggleVisibility?.(section.id, !section.isVisible);
+                            onToggleVisibility?.(
+                              section.id,
+                              !section.isVisible
+                            );
                           }}
                         >
                           {section.isVisible ? (
@@ -199,7 +203,9 @@ export function ExecDigestSectionList({
                       {section.content || 'No content available.'}
                     </div>
                     <div className="flex items-center gap-4 mt-4 pt-3 border-t text-xs text-gray-500">
-                      <span>Generated: {formatRelativeTime(section.createdAt)}</span>
+                      <span>
+                        Generated: {formatRelativeTime(section.createdAt)}
+                      </span>
                       {section.modelName && (
                         <span>Model: {section.modelName}</span>
                       )}

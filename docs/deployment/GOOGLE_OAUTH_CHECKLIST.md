@@ -26,10 +26,12 @@ https://pravado-dashboard.vercel.app/auth/callback
 ## Verify
 
 After saving, the full list of authorized origins should include:
+
 - `http://localhost:3000` (development)
 - `https://pravado-dashboard.vercel.app` (production)
 
 And redirect URIs should include:
+
 - `http://localhost:3000/auth/callback` (development)
 - `https://pravado-dashboard.vercel.app/auth/callback` (production)
 

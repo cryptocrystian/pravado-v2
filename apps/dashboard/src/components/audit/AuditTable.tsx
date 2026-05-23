@@ -7,6 +7,7 @@
 
 import type { AuditLogEntry } from '@/lib/auditApi';
 import { formatRelativeTime, getActorTypeDisplay } from '@/lib/auditApi';
+
 import { AuditEventTypeBadge } from './AuditEventTypeBadge';
 import { AuditSeverityBadge } from './AuditSeverityBadge';
 
@@ -16,7 +17,11 @@ interface AuditTableProps {
   onEntryClick?: (entry: AuditLogEntry) => void;
 }
 
-export function AuditTable({ entries, loading, onEntryClick }: AuditTableProps) {
+export function AuditTable({
+  entries,
+  loading,
+  onEntryClick,
+}: AuditTableProps) {
   if (loading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">

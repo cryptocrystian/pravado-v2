@@ -9,8 +9,8 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 // Types
 interface PillarStatus {
@@ -41,7 +41,13 @@ interface OrchestrationOverview {
 }
 
 // AI Dot
-function AIDot({ status = 'idle', size = 'sm' }: { status?: 'idle' | 'active' | 'processing'; size?: 'sm' | 'md' }) {
+function AIDot({
+  status = 'idle',
+  size = 'sm',
+}: {
+  status?: 'idle' | 'active' | 'processing';
+  size?: 'sm' | 'md';
+}) {
   const sizeClasses = size === 'md' ? 'w-3 h-3' : 'w-2 h-2';
   const baseClasses = `${sizeClasses} rounded-full`;
 
@@ -55,12 +61,35 @@ function AIDot({ status = 'idle', size = 'sm' }: { status?: 'idle' | 'active' | 
 }
 
 // Pillar colors
-const pillarColors: Record<string, { bg: string; text: string; border: string }> = {
-  pr: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/20' },
-  content: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan/20' },
-  seo: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/20' },
-  exec: { bg: 'bg-brand-amber/10', text: 'text-brand-amber', border: 'border-brand-amber/20' },
-  crisis: { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', border: 'border-semantic-danger/20' },
+const pillarColors: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  pr: {
+    bg: 'bg-brand-iris/10',
+    text: 'text-brand-iris',
+    border: 'border-brand-iris/20',
+  },
+  content: {
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+    border: 'border-brand-cyan/20',
+  },
+  seo: {
+    bg: 'bg-brand-magenta/10',
+    text: 'text-brand-magenta',
+    border: 'border-brand-magenta/20',
+  },
+  exec: {
+    bg: 'bg-brand-amber/10',
+    text: 'text-brand-amber',
+    border: 'border-brand-amber/20',
+  },
+  crisis: {
+    bg: 'bg-semantic-danger/10',
+    text: 'text-semantic-danger',
+    border: 'border-semantic-danger/20',
+  },
 };
 
 // Pillar Status Badge
@@ -68,11 +97,15 @@ function PillarBadge({ pillar }: { pillar: PillarStatus }) {
   const colors = pillarColors[pillar.pillar] || pillarColors.pr;
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${colors.bg} ${colors.border}`}>
+    <div
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${colors.bg} ${colors.border}`}
+    >
       <AIDot status={pillar.status} />
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-medium ${colors.text}`}>{pillar.name}</p>
-        <p className="text-xs text-white/55">{pillar.activeStreams} active streams</p>
+        <p className="text-xs text-white/55">
+          {pillar.activeStreams} active streams
+        </p>
       </div>
     </div>
   );
@@ -85,14 +118,30 @@ function ConnectionLine({ connection }: { connection: ConnectionFlow }) {
 
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className={`px-2 py-0.5 rounded ${fromColors.bg} ${fromColors.text}`}>
+      <span
+        className={`px-2 py-0.5 rounded ${fromColors.bg} ${fromColors.text}`}
+      >
         {connection.from}
       </span>
-      <span className={`flex items-center gap-1 ${connection.isActive ? 'text-brand-cyan' : 'text-white/55'}`}>
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      <span
+        className={`flex items-center gap-1 ${connection.isActive ? 'text-brand-cyan' : 'text-white/55'}`}
+      >
+        <svg
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
         </svg>
-        <span className="text-xs uppercase tracking-wider">{connection.type}</span>
+        <span className="text-xs uppercase tracking-wider">
+          {connection.type}
+        </span>
       </span>
       <span className={`px-2 py-0.5 rounded ${toColors.bg} ${toColors.text}`}>
         {connection.to}
@@ -113,7 +162,9 @@ export function OrchestrationSummaryCard() {
 
   // Load orchestration state based on user context
   useEffect(() => {
-    const onboardingContext = localStorage.getItem('pravado_onboarding_context');
+    const onboardingContext = localStorage.getItem(
+      'pravado_onboarding_context'
+    );
     let goals: string[] = [];
 
     if (onboardingContext) {
@@ -190,7 +241,10 @@ export function OrchestrationSummaryCard() {
     }
 
     // Executive Pillar
-    if (goals.includes('executive_strategy') || goals.includes('investor_relations')) {
+    if (
+      goals.includes('executive_strategy') ||
+      goals.includes('investor_relations')
+    ) {
       pillars.push({
         id: 'exec',
         name: 'Executive Hub',
@@ -233,7 +287,9 @@ export function OrchestrationSummaryCard() {
             <AIDot status="active" size="md" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white/95">AI Orchestration</h3>
+            <h3 className="text-sm font-semibold text-white/95">
+              AI Orchestration
+            </h3>
             <p className="text-xs text-white/55">System Overview</p>
           </div>
         </div>
@@ -247,7 +303,9 @@ export function OrchestrationSummaryCard() {
                   : 'bg-semantic-danger/10 text-semantic-danger'
             }`}
           >
-            {overview.systemHealth === 'healthy' ? 'All Systems Active' : overview.systemHealth}
+            {overview.systemHealth === 'healthy'
+              ? 'All Systems Active'
+              : overview.systemHealth}
           </span>
         </div>
       </div>
@@ -255,22 +313,30 @@ export function OrchestrationSummaryCard() {
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="text-center p-2 bg-slate-3/50 rounded-lg">
-          <p className="text-lg font-semibold text-white/95">{overview.pillars.length}</p>
+          <p className="text-lg font-semibold text-white/95">
+            {overview.pillars.length}
+          </p>
           <p className="text-xs text-white/55">Pillars</p>
         </div>
         <div className="text-center p-2 bg-slate-3/50 rounded-lg">
-          <p className="text-lg font-semibold text-brand-cyan">{overview.totalStreams}</p>
+          <p className="text-lg font-semibold text-brand-cyan">
+            {overview.totalStreams}
+          </p>
           <p className="text-xs text-white/55">Streams</p>
         </div>
         <div className="text-center p-2 bg-slate-3/50 rounded-lg">
-          <p className="text-lg font-semibold text-brand-iris">{overview.activeConnections}</p>
+          <p className="text-lg font-semibold text-brand-iris">
+            {overview.activeConnections}
+          </p>
           <p className="text-xs text-white/55">Connections</p>
         </div>
       </div>
 
       {/* Active Pillars */}
       <div className="mb-4">
-        <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">Active Pillars</h4>
+        <h4 className="text-xs font-medium text-white/55 uppercase tracking-wider mb-2">
+          Active Pillars
+        </h4>
         <div className="grid grid-cols-2 gap-2">
           {overview.pillars.slice(0, 4).map((pillar) => (
             <PillarBadge key={pillar.id} pillar={pillar} />
@@ -297,7 +363,10 @@ export function OrchestrationSummaryCard() {
         <span className="text-xs text-white/55">
           AI monitoring {overview.totalStreams} intelligence streams
         </span>
-        <Link href="/app/scenarios" className="text-xs text-brand-cyan hover:underline">
+        <Link
+          href="/app/scenarios"
+          className="text-xs text-brand-cyan hover:underline"
+        >
           View Simulations
         </Link>
       </div>

@@ -86,7 +86,11 @@ const mockReport = {
   period_end: '2025-03-31T23:59:59.999Z',
   fiscal_quarter: 'Q1',
   fiscal_year: 2025,
-  section_types: ['executive_summary', 'strategic_outlook', 'competitive_positioning'],
+  section_types: [
+    'executive_summary',
+    'strategic_outlook',
+    'competitive_positioning',
+  ],
   kpis_snapshot: {},
   overall_strategic_score: null,
   risk_posture_score: null,
@@ -193,10 +197,14 @@ describe('Strategic Intelligence Service', () => {
     describe('createReport', () => {
       it('should create a new strategic intelligence report', async () => {
         mockSupabase.data = mockReport;
-        mockSupabase.single = vi.fn().mockReturnValue({ data: mockReport, error: null });
+        mockSupabase.single = vi
+          .fn()
+          .mockReturnValue({ data: mockReport, error: null });
 
         // Import after mocks are set up
-        const { createReport } = await import('../src/services/strategicIntelligenceService');
+        const { createReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const input = {
           title: 'Q1 2025 Strategic Review',
@@ -207,7 +215,11 @@ describe('Strategic Intelligence Service', () => {
           periodEnd: '2025-03-31T23:59:59.999Z',
           fiscalQuarter: 'Q1',
           fiscalYear: 2025,
-          sectionTypes: ['executive_summary', 'strategic_outlook', 'competitive_positioning'] as const,
+          sectionTypes: [
+            'executive_summary',
+            'strategic_outlook',
+            'competitive_positioning',
+          ] as const,
           tone: 'executive' as const,
           targetLength: 'comprehensive' as const,
           includeCharts: true,
@@ -216,7 +228,9 @@ describe('Strategic Intelligence Service', () => {
 
         const result = await createReport(createContext(), input);
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('strategic_intelligence_reports');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'strategic_intelligence_reports'
+        );
         expect(mockSupabase.insert).toHaveBeenCalled();
         expect(result).toBeDefined();
         expect(result.title).toBe(mockReport.title);
@@ -225,7 +239,8 @@ describe('Strategic Intelligence Service', () => {
 
     describe('getReport', () => {
       it('should get a report with sections and sources', async () => {
-        mockSupabase.single = vi.fn()
+        mockSupabase.single = vi
+          .fn()
           .mockReturnValueOnce({ data: mockReport, error: null })
           .mockReturnValue({ data: null, error: null });
         mockSupabase.order = vi.fn().mockReturnValue({
@@ -233,26 +248,34 @@ describe('Strategic Intelligence Service', () => {
           error: null,
         });
 
-        const { getReport } = await import('../src/services/strategicIntelligenceService');
+        const { getReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         // Reset mock to return arrays for sections and sources
         mockSupabase.from = vi.fn((table) => {
           if (table === 'strategic_intelligence_reports') {
             return {
               ...mockSupabase,
-              single: vi.fn().mockReturnValue({ data: mockReport, error: null }),
+              single: vi
+                .fn()
+                .mockReturnValue({ data: mockReport, error: null }),
             };
           }
           if (table === 'strategic_intelligence_sections') {
             return {
               ...mockSupabase,
-              order: vi.fn().mockReturnValue({ data: [mockSection], error: null }),
+              order: vi
+                .fn()
+                .mockReturnValue({ data: [mockSection], error: null }),
             };
           }
           if (table === 'strategic_intelligence_sources') {
             return {
               ...mockSupabase,
-              order: vi.fn().mockReturnValue({ data: [mockSource], error: null }),
+              order: vi
+                .fn()
+                .mockReturnValue({ data: [mockSource], error: null }),
             };
           }
           return mockSupabase;
@@ -273,7 +296,9 @@ describe('Strategic Intelligence Service', () => {
           count: 1,
         });
 
-        const { listReports } = await import('../src/services/strategicIntelligenceService');
+        const { listReports } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await listReports(createContext(), {
           limit: 20,
@@ -282,7 +307,9 @@ describe('Strategic Intelligence Service', () => {
           sortOrder: 'desc',
         });
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('strategic_intelligence_reports');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'strategic_intelligence_reports'
+        );
         expect(result).toBeDefined();
       });
 
@@ -293,7 +320,9 @@ describe('Strategic Intelligence Service', () => {
           count: 1,
         });
 
-        const { listReports } = await import('../src/services/strategicIntelligenceService');
+        const { listReports } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         await listReports(createContext(), {
           limit: 20,
@@ -310,9 +339,13 @@ describe('Strategic Intelligence Service', () => {
     describe('updateReport', () => {
       it('should update report fields', async () => {
         const updatedReport = { ...mockReport, title: 'Updated Title' };
-        mockSupabase.single = vi.fn().mockReturnValue({ data: updatedReport, error: null });
+        mockSupabase.single = vi
+          .fn()
+          .mockReturnValue({ data: updatedReport, error: null });
 
-        const { updateReport } = await import('../src/services/strategicIntelligenceService');
+        const { updateReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await updateReport(createContext(), TEST_REPORT_ID, {
           title: 'Updated Title',
@@ -327,11 +360,15 @@ describe('Strategic Intelligence Service', () => {
       it('should delete a report', async () => {
         mockSupabase.delete = vi.fn().mockReturnValue({ error: null });
 
-        const { deleteReport } = await import('../src/services/strategicIntelligenceService');
+        const { deleteReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         await deleteReport(createContext(), TEST_REPORT_ID);
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('strategic_intelligence_reports');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'strategic_intelligence_reports'
+        );
         expect(mockSupabase.delete).toHaveBeenCalled();
       });
     });
@@ -350,7 +387,10 @@ describe('Strategic Intelligence Service', () => {
               }),
             };
           }
-          if (table === 'strategic_intelligence_sections' || table === 'strategic_intelligence_sources') {
+          if (
+            table === 'strategic_intelligence_sections' ||
+            table === 'strategic_intelligence_sources'
+          ) {
             return {
               ...mockSupabase,
               select: vi.fn().mockReturnValue({
@@ -362,7 +402,9 @@ describe('Strategic Intelligence Service', () => {
           return mockSupabase;
         });
 
-        const { getStats } = await import('../src/services/strategicIntelligenceService');
+        const { getStats } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await getStats(createContext());
 
@@ -378,11 +420,14 @@ describe('Strategic Intelligence Service', () => {
     describe('approveReport', () => {
       it('should approve a report in review status', async () => {
         const approvedReport = { ...mockReport, status: 'approved' };
-        mockSupabase.single = vi.fn()
+        mockSupabase.single = vi
+          .fn()
           .mockReturnValueOnce({ data: { status: 'review' }, error: null })
           .mockReturnValueOnce({ data: approvedReport, error: null });
 
-        const { approveReport } = await import('../src/services/strategicIntelligenceService');
+        const { approveReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await approveReport(createContext(), TEST_REPORT_ID, {});
 
@@ -399,11 +444,14 @@ describe('Strategic Intelligence Service', () => {
           published_at: new Date().toISOString(),
           pdf_storage_path: '/reports/report-789/report.pdf',
         };
-        mockSupabase.single = vi.fn()
+        mockSupabase.single = vi
+          .fn()
           .mockReturnValueOnce({ data: { status: 'approved' }, error: null })
           .mockReturnValueOnce({ data: publishedReport, error: null });
 
-        const { publishReport } = await import('../src/services/strategicIntelligenceService');
+        const { publishReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await publishReport(createContext(), TEST_REPORT_ID, {
           generatePdf: true,
@@ -417,11 +465,14 @@ describe('Strategic Intelligence Service', () => {
     describe('archiveReport', () => {
       it('should archive a published report', async () => {
         const archivedReport = { ...mockReport, status: 'archived' };
-        mockSupabase.single = vi.fn()
+        mockSupabase.single = vi
+          .fn()
           .mockReturnValueOnce({ data: { status: 'published' }, error: null })
           .mockReturnValueOnce({ data: archivedReport, error: null });
 
-        const { archiveReport } = await import('../src/services/strategicIntelligenceService');
+        const { archiveReport } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await archiveReport(createContext(), TEST_REPORT_ID, {});
 
@@ -439,9 +490,13 @@ describe('Strategic Intelligence Service', () => {
           content_md: '# Updated Content',
           is_edited: true,
         };
-        mockSupabase.single = vi.fn().mockReturnValue({ data: updatedSection, error: null });
+        mockSupabase.single = vi
+          .fn()
+          .mockReturnValue({ data: updatedSection, error: null });
 
-        const { updateSection } = await import('../src/services/strategicIntelligenceService');
+        const { updateSection } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await updateSection(
           createContext(),
@@ -463,12 +518,12 @@ describe('Strategic Intelligence Service', () => {
           error: null,
         });
 
-        const { reorderSections } = await import('../src/services/strategicIntelligenceService');
+        const { reorderSections } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await reorderSections(createContext(), TEST_REPORT_ID, {
-          sectionOrder: [
-            { sectionId: TEST_SECTION_ID, orderIndex: 0 },
-          ],
+          sectionOrder: [{ sectionId: TEST_SECTION_ID, orderIndex: 0 }],
         });
 
         expect(result).toBeDefined();
@@ -480,9 +535,13 @@ describe('Strategic Intelligence Service', () => {
   describe('Source Operations', () => {
     describe('addSource', () => {
       it('should add a data source to a report', async () => {
-        mockSupabase.single = vi.fn().mockReturnValue({ data: mockSource, error: null });
+        mockSupabase.single = vi
+          .fn()
+          .mockReturnValue({ data: mockSource, error: null });
 
-        const { addSource } = await import('../src/services/strategicIntelligenceService');
+        const { addSource } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await addSource(createContext(), TEST_REPORT_ID, {
           sourceSystem: 'media_performance',
@@ -507,7 +566,9 @@ describe('Strategic Intelligence Service', () => {
           count: 1,
         });
 
-        const { listSources } = await import('../src/services/strategicIntelligenceService');
+        const { listSources } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await listSources(createContext(), {
           reportId: TEST_REPORT_ID,
@@ -524,7 +585,9 @@ describe('Strategic Intelligence Service', () => {
       it('should delete a source', async () => {
         mockSupabase.delete = vi.fn().mockReturnValue({ error: null });
 
-        const { deleteSource } = await import('../src/services/strategicIntelligenceService');
+        const { deleteSource } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         await deleteSource(createContext(), TEST_REPORT_ID, TEST_SOURCE_ID);
 
@@ -542,7 +605,9 @@ describe('Strategic Intelligence Service', () => {
           count: 1,
         });
 
-        const { listAuditLogs } = await import('../src/services/strategicIntelligenceService');
+        const { listAuditLogs } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await listAuditLogs(createContext(), {
           reportId: TEST_REPORT_ID,
@@ -571,11 +636,14 @@ describe('Strategic Intelligence Service', () => {
           risk_posture_score: 80,
         };
 
-        mockSupabase.single = vi.fn()
+        mockSupabase.single = vi
+          .fn()
           .mockReturnValueOnce({ data: currentReport, error: null })
           .mockReturnValueOnce({ data: previousReport, error: null });
 
-        const { comparePeriods } = await import('../src/services/strategicIntelligenceService');
+        const { comparePeriods } = await import(
+          '../src/services/strategicIntelligenceService'
+        );
 
         const result = await comparePeriods(createContext(), {
           currentReportId: TEST_REPORT_ID,
@@ -638,13 +706,27 @@ describe('Strategic Intelligence Validation', () => {
   });
 
   it('should validate report status enum values', () => {
-    const validStatuses = ['draft', 'generating', 'review', 'approved', 'published', 'archived'];
+    const validStatuses = [
+      'draft',
+      'generating',
+      'review',
+      'approved',
+      'published',
+      'archived',
+    ];
 
     expect(validStatuses).toContain(mockReport.status);
   });
 
   it('should validate audience enum values', () => {
-    const validAudiences = ['ceo', 'c_suite', 'board', 'investors', 'senior_leadership', 'all_executives'];
+    const validAudiences = [
+      'ceo',
+      'c_suite',
+      'board',
+      'investors',
+      'senior_leadership',
+      'all_executives',
+    ];
 
     expect(validAudiences).toContain(mockReport.audience);
   });

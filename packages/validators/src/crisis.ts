@@ -179,7 +179,9 @@ export const listIncidentsSchema = z.object({
   escalationLevelGte: z.number().int().min(0).max(5).optional(),
   dateFrom: z.string().datetime().optional(),
   dateTo: z.string().datetime().optional(),
-  sortBy: z.enum(['createdAt', 'updatedAt', 'severity', 'riskScore', 'mentionCount']).optional(),
+  sortBy: z
+    .enum(['createdAt', 'updatedAt', 'severity', 'riskScore', 'mentionCount'])
+    .optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
   limit: z.number().int().min(1).max(100).optional(),
   offset: z.number().int().min(0).optional(),
@@ -244,7 +246,13 @@ export const escalationConditionsSchema = z.object({
 });
 
 export const escalationActionSchema = z.object({
-  type: z.enum(['notify', 'create_incident', 'generate_brief', 'webhook', 'update_severity']),
+  type: z.enum([
+    'notify',
+    'create_incident',
+    'generate_brief',
+    'webhook',
+    'update_severity',
+  ]),
   channel: z.string().optional(),
   recipients: z.array(z.string()).optional(),
   severity: crisisSeveritySchema.optional(),
@@ -331,17 +339,23 @@ export const updateSectionSchema = z.object({
   title: z.string().max(500).optional(),
   content: z.string().max(10000).optional(),
   summary: z.string().max(1000).optional(),
-  bulletPoints: z.array(z.object({
-    text: z.string(),
-    subPoints: z.array(z.string()).optional(),
-    importance: z.enum(['high', 'medium', 'low']).optional(),
-  })).optional(),
+  bulletPoints: z
+    .array(
+      z.object({
+        text: z.string(),
+        subPoints: z.array(z.string()).optional(),
+        importance: z.enum(['high', 'medium', 'low']).optional(),
+      })
+    )
+    .optional(),
 });
 
 export const listBriefsSchema = z.object({
   incidentId: z.string().uuid().optional(),
   format: z.array(crisisBriefFormatSchema).optional(),
-  status: z.array(z.enum(['draft', 'generated', 'reviewed', 'approved'])).optional(),
+  status: z
+    .array(z.enum(['draft', 'generated', 'reviewed', 'approved']))
+    .optional(),
   isCurrent: z.boolean().optional(),
   sortBy: z.enum(['createdAt', 'version']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
@@ -370,15 +384,27 @@ export type ListIncidentsInput = z.infer<typeof listIncidentsSchema>;
 export type CreateActionInput = z.infer<typeof createActionSchema>;
 export type UpdateActionInput = z.infer<typeof updateActionSchema>;
 export type ListActionsInput = z.infer<typeof listActionsSchema>;
-export type CreateEscalationRuleInput = z.infer<typeof createEscalationRuleSchema>;
-export type UpdateEscalationRuleInput = z.infer<typeof updateEscalationRuleSchema>;
-export type ListEscalationRulesInput = z.infer<typeof listEscalationRulesSchema>;
+export type CreateEscalationRuleInput = z.infer<
+  typeof createEscalationRuleSchema
+>;
+export type UpdateEscalationRuleInput = z.infer<
+  typeof updateEscalationRuleSchema
+>;
+export type ListEscalationRulesInput = z.infer<
+  typeof listEscalationRulesSchema
+>;
 export type ListSignalsInput = z.infer<typeof listSignalsSchema>;
 export type AcknowledgeSignalInput = z.infer<typeof acknowledgeSignalSchema>;
-export type GenerateCrisisBriefInput = z.infer<typeof generateCrisisBriefSchema>;
-export type CrisisRegenerateSectionInput = z.infer<typeof regenerateSectionSchema>;
+export type GenerateCrisisBriefInput = z.infer<
+  typeof generateCrisisBriefSchema
+>;
+export type CrisisRegenerateSectionInput = z.infer<
+  typeof regenerateSectionSchema
+>;
 export type CrisisUpdateSectionInput = z.infer<typeof updateSectionSchema>;
 export type ListBriefsInput = z.infer<typeof listBriefsSchema>;
 export type TriggerDetectionInput = z.infer<typeof triggerDetectionSchema>;
-export type EscalationConditionsInput = z.infer<typeof escalationConditionsSchema>;
+export type EscalationConditionsInput = z.infer<
+  typeof escalationConditionsSchema
+>;
 export type EscalationActionInput = z.infer<typeof escalationActionSchema>;

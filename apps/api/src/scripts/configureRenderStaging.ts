@@ -17,10 +17,7 @@ import { join } from 'path';
 function loadEnvFile(): void {
   // Try to load .env.local from repo root
   const repoRoot = join(import.meta.dirname, '../../../../');
-  const envPaths = [
-    join(repoRoot, '.env.local'),
-    join(repoRoot, '.env'),
-  ];
+  const envPaths = [join(repoRoot, '.env.local'), join(repoRoot, '.env')];
 
   for (const envPath of envPaths) {
     if (existsSync(envPath)) {
@@ -34,8 +31,10 @@ function loadEnvFile(): void {
         const key = trimmed.slice(0, eqIndex).trim();
         let value = trimmed.slice(eqIndex + 1).trim();
         // Remove quotes if present
-        if ((value.startsWith('"') && value.endsWith('"')) ||
-            (value.startsWith("'") && value.endsWith("'"))) {
+        if (
+          (value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))
+        ) {
           value = value.slice(1, -1);
         }
         if (!process.env[key]) {
@@ -97,33 +96,82 @@ function getEnvVarsToSet(): EnvVarConfig[] {
 
     // Required - from local env
     { key: 'SUPABASE_URL', value: process.env.SUPABASE_URL, required: true },
-    { key: 'SUPABASE_ANON_KEY', value: process.env.SUPABASE_ANON_KEY, required: true },
-    { key: 'SUPABASE_SERVICE_ROLE_KEY', value: process.env.SUPABASE_SERVICE_ROLE_KEY, required: true },
+    {
+      key: 'SUPABASE_ANON_KEY',
+      value: process.env.SUPABASE_ANON_KEY,
+      required: true,
+    },
+    {
+      key: 'SUPABASE_SERVICE_ROLE_KEY',
+      value: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      required: true,
+    },
 
     // CORS - default to localhost, user can update later
-    { key: 'CORS_ORIGIN', value: process.env.CORS_ORIGIN || 'http://localhost:3000', required: true },
-    { key: 'DASHBOARD_URL', value: process.env.DASHBOARD_URL || 'http://localhost:3000', required: true },
+    {
+      key: 'CORS_ORIGIN',
+      value: process.env.CORS_ORIGIN || 'http://localhost:3000',
+      required: true,
+    },
+    {
+      key: 'DASHBOARD_URL',
+      value: process.env.DASHBOARD_URL || 'http://localhost:3000',
+      required: true,
+    },
 
     // Cookie secret - generate if not present
-    { key: 'COOKIE_SECRET', value: process.env.COOKIE_SECRET || generateCookieSecret(), required: true },
+    {
+      key: 'COOKIE_SECRET',
+      value: process.env.COOKIE_SECRET || generateCookieSecret(),
+      required: true,
+    },
 
     // Recommended - only set if present locally
     { key: 'LLM_PROVIDER', value: process.env.LLM_PROVIDER, required: false },
-    { key: 'LLM_ANTHROPIC_API_KEY', value: process.env.LLM_ANTHROPIC_API_KEY, required: false },
-    { key: 'LLM_OPENAI_API_KEY', value: process.env.LLM_OPENAI_API_KEY, required: false },
-    { key: 'PLATFORM_FREEZE', value: process.env.PLATFORM_FREEZE || 'false', required: false },
+    {
+      key: 'LLM_ANTHROPIC_API_KEY',
+      value: process.env.LLM_ANTHROPIC_API_KEY,
+      required: false,
+    },
+    {
+      key: 'LLM_OPENAI_API_KEY',
+      value: process.env.LLM_OPENAI_API_KEY,
+      required: false,
+    },
+    {
+      key: 'PLATFORM_FREEZE',
+      value: process.env.PLATFORM_FREEZE || 'false',
+      required: false,
+    },
 
     // Optional integrations
-    { key: 'STRIPE_SECRET_KEY', value: process.env.STRIPE_SECRET_KEY, required: false },
-    { key: 'STRIPE_WEBHOOK_SECRET', value: process.env.STRIPE_WEBHOOK_SECRET, required: false },
-    { key: 'MAILGUN_API_KEY', value: process.env.MAILGUN_API_KEY, required: false },
-    { key: 'MAILGUN_DOMAIN', value: process.env.MAILGUN_DOMAIN, required: false },
+    {
+      key: 'STRIPE_SECRET_KEY',
+      value: process.env.STRIPE_SECRET_KEY,
+      required: false,
+    },
+    {
+      key: 'STRIPE_WEBHOOK_SECRET',
+      value: process.env.STRIPE_WEBHOOK_SECRET,
+      required: false,
+    },
+    {
+      key: 'MAILGUN_API_KEY',
+      value: process.env.MAILGUN_API_KEY,
+      required: false,
+    },
+    {
+      key: 'MAILGUN_DOMAIN',
+      value: process.env.MAILGUN_DOMAIN,
+      required: false,
+    },
   ];
 }
 
 function generateCookieSecret(): string {
   // Simple random string for cookie secret
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < 32; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -183,7 +231,7 @@ async function renderFetch(
   const response = await fetch(url, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -198,7 +246,9 @@ async function listServices(): Promise<RenderService[]> {
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Failed to list services: ${response.status} ${response.statusText}\n${body}`);
+    throw new Error(
+      `Failed to list services: ${response.status} ${response.statusText}\n${body}`
+    );
   }
 
   const data = (await response.json()) as RenderServiceWrapper[];
@@ -221,12 +271,16 @@ async function updateServiceEnvVars(
   // Render API expects PUT with array of env var objects
   const response = await renderFetch(`/services/${serviceId}/env-vars`, {
     method: 'PUT',
-    body: JSON.stringify(envVars.map((ev) => ({ key: ev.key, value: ev.value }))),
+    body: JSON.stringify(
+      envVars.map((ev) => ({ key: ev.key, value: ev.value }))
+    ),
   });
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Failed to update env vars: ${response.status} ${response.statusText}\n${body}`);
+    throw new Error(
+      `Failed to update env vars: ${response.status} ${response.statusText}\n${body}`
+    );
   }
 
   console.log('Environment variables updated successfully');
@@ -245,7 +299,9 @@ async function updateService(
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Failed to update service: ${response.status} ${response.statusText}\n${body}`);
+    throw new Error(
+      `Failed to update service: ${response.status} ${response.statusText}\n${body}`
+    );
   }
 
   console.log('Service configuration updated successfully');
@@ -285,7 +341,9 @@ async function createService(
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Failed to create service: ${response.status} ${response.statusText}\n${body}`);
+    throw new Error(
+      `Failed to create service: ${response.status} ${response.statusText}\n${body}`
+    );
   }
 
   const data = (await response.json()) as RenderServiceWrapper;
@@ -299,7 +357,9 @@ async function getOwnerInfo(): Promise<RenderOwner> {
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Failed to get owner info: ${response.status} ${response.statusText}\n${body}`);
+    throw new Error(
+      `Failed to get owner info: ${response.status} ${response.statusText}\n${body}`
+    );
   }
 
   const data = (await response.json()) as RenderOwnerWrapper[];
@@ -375,7 +435,9 @@ async function main(): Promise<void> {
 
   if (existingService) {
     // Service exists - update it
-    console.log(`\n✓ Found existing service: ${existingService.name} (${existingService.id})`);
+    console.log(
+      `\n✓ Found existing service: ${existingService.name} (${existingService.id})`
+    );
     console.log('  Updating configuration...\n');
 
     // Update service settings
@@ -392,7 +454,9 @@ async function main(): Promise<void> {
     // Update env vars
     await updateServiceEnvVars(existingService.id, envVarsWithValues);
 
-    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log(
+      '\n═══════════════════════════════════════════════════════════'
+    );
     console.log('  UPDATE COMPLETE');
     console.log(`  Service ID: ${existingService.id}`);
     console.log(`  Service URL: https://${existingService.slug}.onrender.com`);
@@ -410,9 +474,15 @@ async function main(): Promise<void> {
     const repoUrl = process.env.RENDER_REPO_URL;
     if (!repoUrl) {
       console.log('\n⚠️  RENDER_REPO_URL not set.');
-      console.log('   To create a new service, add RENDER_REPO_URL to your .env.local');
-      console.log('   Example: RENDER_REPO_URL=https://github.com/your-org/pravado-v2');
-      console.log('\n   Alternatively, create the service manually in Render Dashboard:');
+      console.log(
+        '   To create a new service, add RENDER_REPO_URL to your .env.local'
+      );
+      console.log(
+        '   Example: RENDER_REPO_URL=https://github.com/your-org/pravado-v2'
+      );
+      console.log(
+        '\n   Alternatively, create the service manually in Render Dashboard:'
+      );
       console.log('   1. Go to https://dashboard.render.com');
       console.log('   2. Click New > Web Service');
       console.log('   3. Connect your repo and name it "pravado-api-staging"');
@@ -426,7 +496,9 @@ async function main(): Promise<void> {
     // Set env vars on the new service
     await updateServiceEnvVars(newService.id, envVarsWithValues);
 
-    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log(
+      '\n═══════════════════════════════════════════════════════════'
+    );
     console.log('  SERVICE CREATED');
     console.log(`  Service ID: ${newService.id}`);
     console.log(`  Service URL: https://${newService.slug}.onrender.com`);
@@ -436,7 +508,9 @@ async function main(): Promise<void> {
 
   console.log('\nNext steps:');
   console.log('  1. Check Render Dashboard for deploy status');
-  console.log('  2. Once deployed, verify: curl https://<service>.onrender.com/health/ready');
+  console.log(
+    '  2. Once deployed, verify: curl https://<service>.onrender.com/health/ready'
+  );
   console.log('  3. Update CORS_ORIGIN to your Vercel dashboard URL');
   console.log('  4. Re-run this script to apply CORS update\n');
 }

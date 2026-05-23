@@ -5,22 +5,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PerformanceScoreCard } from '@/components/media-performance/PerformanceScoreCard';
-import { SentimentTrendChart } from '@/components/media-performance/SentimentTrendChart';
-import { CoverageVelocityChart } from '@/components/media-performance/CoverageVelocityChart';
-import { TierDistributionPie } from '@/components/media-performance/TierDistributionPie';
-import { JournalistImpactTable } from '@/components/media-performance/JournalistImpactTable';
-import { CampaignHeatmap } from '@/components/media-performance/CampaignHeatmap';
-import { InsightNarrativePanel } from '@/components/media-performance/InsightNarrativePanel';
-import {
-  getOverview,
-  getTrend,
-  getInsights,
-} from '@/lib/mediaPerformanceApi';
 import type {
   GetOverviewResponse,
   GetTrendResponse,
@@ -37,6 +21,25 @@ import {
   Calendar,
   AlertTriangle,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+import { CampaignHeatmap } from '@/components/media-performance/CampaignHeatmap';
+import { CoverageVelocityChart } from '@/components/media-performance/CoverageVelocityChart';
+import { InsightNarrativePanel } from '@/components/media-performance/InsightNarrativePanel';
+import { JournalistImpactTable } from '@/components/media-performance/JournalistImpactTable';
+import { PerformanceScoreCard } from '@/components/media-performance/PerformanceScoreCard';
+import { SentimentTrendChart } from '@/components/media-performance/SentimentTrendChart';
+import { TierDistributionPie } from '@/components/media-performance/TierDistributionPie';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { getOverview, getTrend, getInsights } from '@/lib/mediaPerformanceApi';
 
 export default function MediaPerformancePage() {
   // State
@@ -44,8 +47,12 @@ export default function MediaPerformancePage() {
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('30d');
   const [overview, setOverview] = useState<GetOverviewResponse | null>(null);
-  const [sentimentTrend, setSentimentTrend] = useState<GetTrendResponse | null>(null);
-  const [velocityTrend, setVelocityTrend] = useState<GetTrendResponse | null>(null);
+  const [sentimentTrend, setSentimentTrend] = useState<GetTrendResponse | null>(
+    null
+  );
+  const [velocityTrend, setVelocityTrend] = useState<GetTrendResponse | null>(
+    null
+  );
   const [insights, setInsights] = useState<MediaPerformanceInsight[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -147,7 +154,9 @@ export default function MediaPerformancePage() {
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-red-900 mb-1">Error Loading Data</h3>
+                <h3 className="font-semibold text-red-900 mb-1">
+                  Error Loading Data
+                </h3>
                 <p className="text-sm text-red-700">{error}</p>
                 <Button onClick={handleRefresh} className="mt-3" size="sm">
                   Retry
@@ -173,7 +182,9 @@ export default function MediaPerformancePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Media Performance</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Media Performance
+          </h1>
           <p className="text-sm text-gray-600 mt-1">
             Unified analytics across all PR campaigns and media coverage
           </p>
@@ -181,7 +192,10 @@ export default function MediaPerformancePage() {
 
         <div className="flex items-center gap-3">
           {/* Date Range Selector */}
-          <Select value={dateRange} onValueChange={(v) => setDateRange(v as any)}>
+          <Select
+            value={dateRange}
+            onValueChange={(v) => setDateRange(v as any)}
+          >
             <SelectTrigger className="w-32">
               <Calendar className="h-4 w-4 mr-2" />
               <SelectValue />
@@ -213,9 +227,15 @@ export default function MediaPerformancePage() {
         <PerformanceScoreCard
           title="Visibility Score"
           score={overview?.summary.avgVisibilityScore}
-          trend={overview?.trends.visibilityTrend !== undefined
-            ? overview.trends.visibilityTrend > 0 ? 'up' : overview.trends.visibilityTrend < 0 ? 'down' : 'stable'
-            : 'stable'}
+          trend={
+            overview?.trends.visibilityTrend !== undefined
+              ? overview.trends.visibilityTrend > 0
+                ? 'up'
+                : overview.trends.visibilityTrend < 0
+                  ? 'down'
+                  : 'stable'
+              : 'stable'
+          }
           changePct={overview?.trends.visibilityTrend}
           description="Overall media reach and exposure"
           icon={<TrendingUp className="h-4 w-4" />}
@@ -224,9 +244,15 @@ export default function MediaPerformancePage() {
         <PerformanceScoreCard
           title="EVI Score"
           score={overview?.summary.avgEviScore}
-          trend={overview?.trends.eviTrend !== undefined
-            ? overview.trends.eviTrend > 0 ? 'up' : overview.trends.eviTrend < 0 ? 'down' : 'stable'
-            : 'stable'}
+          trend={
+            overview?.trends.eviTrend !== undefined
+              ? overview.trends.eviTrend > 0
+                ? 'up'
+                : overview.trends.eviTrend < 0
+                  ? 'down'
+                  : 'stable'
+              : 'stable'
+          }
           changePct={overview?.trends.eviTrend}
           description="Earned Visibility Index composite"
           icon={<Activity className="h-4 w-4" />}
@@ -234,12 +260,20 @@ export default function MediaPerformancePage() {
 
         <PerformanceScoreCard
           title="Avg Sentiment"
-          score={overview?.summary.avgSentiment !== undefined
-            ? (overview.summary.avgSentiment + 1) * 50
-            : undefined}
-          trend={overview?.trends.sentimentTrend !== undefined
-            ? overview.trends.sentimentTrend > 0 ? 'up' : overview.trends.sentimentTrend < 0 ? 'down' : 'stable'
-            : 'stable'}
+          score={
+            overview?.summary.avgSentiment !== undefined
+              ? (overview.summary.avgSentiment + 1) * 50
+              : undefined
+          }
+          trend={
+            overview?.trends.sentimentTrend !== undefined
+              ? overview.trends.sentimentTrend > 0
+                ? 'up'
+                : overview.trends.sentimentTrend < 0
+                  ? 'down'
+                  : 'stable'
+              : 'stable'
+          }
           changePct={overview?.trends.sentimentTrend}
           description="Media sentiment quality"
           icon={<BarChart3 className="h-4 w-4" />}
@@ -249,7 +283,9 @@ export default function MediaPerformancePage() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
               <Users className="h-4 w-4 text-gray-600" />
-              <h3 className="text-sm font-medium text-gray-600">Coverage Stats</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Coverage Stats
+              </h3>
             </div>
             <div className="space-y-2">
               <div className="flex items-baseline gap-2">
@@ -283,44 +319,58 @@ export default function MediaPerformancePage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Sentiment Trend */}
           <SentimentTrendChart
-            data={sentimentTrend?.dataPoints.map(dp => ({
-              timestamp: new Date(dp.timestamp),
-              value: dp.value,
-            })) || []}
+            data={
+              sentimentTrend?.dataPoints.map((dp) => ({
+                timestamp: new Date(dp.timestamp),
+                value: dp.value,
+              })) || []
+            }
             currentSentiment={overview?.summary.avgSentiment}
-            trendDirection={overview?.trends.sentimentTrend !== undefined
-              ? overview.trends.sentimentTrend > 0 ? 'up' : overview.trends.sentimentTrend < 0 ? 'down' : 'stable'
-              : 'stable'}
+            trendDirection={
+              overview?.trends.sentimentTrend !== undefined
+                ? overview.trends.sentimentTrend > 0
+                  ? 'up'
+                  : overview.trends.sentimentTrend < 0
+                    ? 'down'
+                    : 'stable'
+                : 'stable'
+            }
             changePct={overview?.trends.sentimentTrend}
           />
 
           {/* Coverage Velocity */}
           <CoverageVelocityChart
-            data={velocityTrend?.dataPoints.map(dp => ({
-              timestamp: new Date(dp.timestamp),
-              mentionCount: dp.value,
-            })) || []}
+            data={
+              velocityTrend?.dataPoints.map((dp) => ({
+                timestamp: new Date(dp.timestamp),
+                mentionCount: dp.value,
+              })) || []
+            }
             currentVelocity={velocityTrend?.summary.currentValue}
             momentumScore={undefined}
           />
 
           {/* Campaign Heatmap */}
           <CampaignHeatmap
-            data={velocityTrend?.dataPoints.map(dp => ({
-              date: new Date(dp.timestamp),
-              value: dp.value,
-            })) || []}
+            data={
+              velocityTrend?.dataPoints.map((dp) => ({
+                date: new Date(dp.timestamp),
+                value: dp.value,
+              })) || []
+            }
           />
 
           {/* Journalist Impact Table */}
           <JournalistImpactTable
-            journalists={overview?.topPerformers.journalists.map(p => ({
-              journalistId: p.id,
-              journalistName: p.name,
-              mentionCount: p.value,
-              avgSentiment: 0.5,
-              impactScore: 75,
-            })) || []}
+            journalists={
+              overview?.topPerformers.journalists.map((p) => ({
+                journalistId: p.id,
+                journalistName: p.name,
+                mentionCount: p.value,
+                avgSentiment: 0.5,
+                impactScore: 75,
+              })) || []
+            }
           />
         </div>
 

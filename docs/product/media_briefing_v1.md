@@ -44,6 +44,7 @@ The Media Briefing & Executive Talking Points Generator is an AI-powered system 
 ### Intelligence Integration
 
 The generator aggregates context from:
+
 - Press Releases (S38)
 - PR Pitches (S39)
 - Media Monitoring mentions (S40-S41)
@@ -139,24 +140,31 @@ GET    /api/v1/media-briefings/briefings/:id/sources  Get source references
 ## Frontend Components
 
 ### BriefingCard
+
 Displays briefing summary in list/grid view with format icon, status badge, section/point counts, and confidence score.
 
 ### BriefingSection
+
 Renders individual section with expand/collapse, inline editing, regeneration, and copy functionality.
 
 ### TalkingPointCard
+
 Shows talking point with category badge, content, supporting facts, and approve/copy actions.
 
 ### BriefingEditor
+
 Central editor with tabs for sections, talking points, and settings. Handles all editing operations.
 
 ### InsightPanel
+
 Sidebar panel displaying grouped insights by strength with filtering and expansion.
 
 ### BriefingGenerationForm
+
 Multi-step form for briefing creation with format selection, source linking, and configuration.
 
 ### BriefingDetailDrawer
+
 Full-screen drawer for detailed briefing view with all functionality.
 
 ## Usage
@@ -203,7 +211,7 @@ Full-screen drawer for detailed briefing view with all functionality.
 ### Feature Flag
 
 ```typescript
-FLAGS.ENABLE_MEDIA_BRIEFINGS = true
+FLAGS.ENABLE_MEDIA_BRIEFINGS = true;
 ```
 
 ### Environment Variables

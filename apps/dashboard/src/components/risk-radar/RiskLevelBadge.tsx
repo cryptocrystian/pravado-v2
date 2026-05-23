@@ -6,8 +6,8 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { RiskRadarLevel } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
 
 interface RiskLevelBadgeProps {
   level: RiskRadarLevel;
@@ -15,7 +15,10 @@ interface RiskLevelBadgeProps {
   className?: string;
 }
 
-const levelConfig: Record<RiskRadarLevel, { label: string; className: string }> = {
+const levelConfig: Record<
+  RiskRadarLevel,
+  { label: string; className: string }
+> = {
   low: {
     label: 'Low',
     className: 'bg-green-100 text-green-800 border-green-200',
@@ -40,7 +43,11 @@ const sizeClasses = {
   lg: 'text-base px-3 py-1',
 };
 
-export function RiskLevelBadge({ level, size = 'md', className }: RiskLevelBadgeProps) {
+export function RiskLevelBadge({
+  level,
+  size = 'md',
+  className,
+}: RiskLevelBadgeProps) {
   const config = levelConfig[level] || levelConfig.medium;
 
   return (

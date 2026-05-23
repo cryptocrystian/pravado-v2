@@ -31,11 +31,19 @@ export interface TopicCluster {
   lastUpdated: string;
   engines: { engine: string; score: number }[];
   competitors: { name: string; score: number; isYou?: boolean }[];
-  trackedPrompts: { prompt: string; results: Record<string, 'cited' | 'partial' | 'not_cited'> }[];
+  trackedPrompts: {
+    prompt: string;
+    results: Record<string, 'cited' | 'partial' | 'not_cited'>;
+  }[];
   ownedCitations: { url: string; count: number }[];
   earnedCitations: { source: string; count: number }[];
   coverageGap?: string;
-  recommendations: { type: 'success' | 'warning' | 'idea'; text: string; cta?: string; ctaHref?: string }[];
+  recommendations: {
+    type: 'success' | 'warning' | 'idea';
+    text: string;
+    cta?: string;
+    ctaHref?: string;
+  }[];
 }
 
 export interface SuggestedCluster {
@@ -196,9 +204,22 @@ export const mockClusters: TopicCluster[] = [
       { name: 'CompetitorZ', score: 44 },
     ],
     trackedPrompts: [
-      { prompt: 'What are the best AI marketing tools?', results: { ChatGPT: 'cited', Perplexity: 'cited', Gemini: 'cited' } },
-      { prompt: 'How do AI tools improve marketing productivity?', results: { ChatGPT: 'cited', Perplexity: 'partial', Gemini: 'cited' } },
-      { prompt: 'AI marketing platform comparison', results: { ChatGPT: 'not_cited', Perplexity: 'not_cited', Gemini: 'cited' } },
+      {
+        prompt: 'What are the best AI marketing tools?',
+        results: { ChatGPT: 'cited', Perplexity: 'cited', Gemini: 'cited' },
+      },
+      {
+        prompt: 'How do AI tools improve marketing productivity?',
+        results: { ChatGPT: 'cited', Perplexity: 'partial', Gemini: 'cited' },
+      },
+      {
+        prompt: 'AI marketing platform comparison',
+        results: {
+          ChatGPT: 'not_cited',
+          Perplexity: 'not_cited',
+          Gemini: 'cited',
+        },
+      },
     ],
     ownedCitations: [
       { url: '/guide/ai-marketing-tools', count: 34 },
@@ -207,11 +228,24 @@ export const mockClusters: TopicCluster[] = [
     earnedCitations: [
       { source: "TechCrunch: 'AI Tools Landscape'", count: 18 },
     ],
-    coverageGap: 'No citations from /product or /pricing pages despite high traffic intent',
+    coverageGap:
+      'No citations from /product or /pricing pages despite high traffic intent',
     recommendations: [
-      { type: 'success', text: 'Strong coverage — maintain publishing cadence' },
-      { type: 'warning', text: 'Gemini gap: Add structured FAQ schema to /guide/ai-marketing-tools page', cta: 'View Fix' },
-      { type: 'idea', text: "'AI marketing ROI' sub-topic has 0 coverage — high search intent detected", cta: 'Create targeted article', ctaHref: '/app/content/new' },
+      {
+        type: 'success',
+        text: 'Strong coverage — maintain publishing cadence',
+      },
+      {
+        type: 'warning',
+        text: 'Gemini gap: Add structured FAQ schema to /guide/ai-marketing-tools page',
+        cta: 'View Fix',
+      },
+      {
+        type: 'idea',
+        text: "'AI marketing ROI' sub-topic has 0 coverage — high search intent detected",
+        cta: 'Create targeted article',
+        ctaHref: '/app/content/new',
+      },
     ],
   },
   {
@@ -228,18 +262,28 @@ export const mockClusters: TopicCluster[] = [
       { engine: 'Gemini', score: 65 },
     ],
     competitors: [
-      { name: 'CompetitorX', score: 83, },
+      { name: 'CompetitorX', score: 83 },
       { name: 'Pravado', score: 74, isYou: true },
       { name: 'CompetitorY', score: 58 },
       { name: 'CompetitorZ', score: 41 },
     ],
     trackedPrompts: [
-      { prompt: 'Best PR technology platforms', results: { ChatGPT: 'cited', Perplexity: 'partial', Gemini: 'not_cited' } },
+      {
+        prompt: 'Best PR technology platforms',
+        results: {
+          ChatGPT: 'cited',
+          Perplexity: 'partial',
+          Gemini: 'not_cited',
+        },
+      },
     ],
     ownedCitations: [{ url: '/blog/pr-technology-guide', count: 12 }],
     earnedCitations: [{ source: "Forbes: 'PR Tech Stack'", count: 9 }],
     recommendations: [
-      { type: 'warning', text: 'CompetitorX leads by 9 points — increase publishing frequency' },
+      {
+        type: 'warning',
+        text: 'CompetitorX leads by 9 points — increase publishing frequency',
+      },
     ],
   },
   {
@@ -262,7 +306,10 @@ export const mockClusters: TopicCluster[] = [
       { name: 'CompetitorZ', score: 38 },
     ],
     trackedPrompts: [
-      { prompt: 'How to improve AI visibility', results: { ChatGPT: 'cited', Perplexity: 'cited', Gemini: 'partial' } },
+      {
+        prompt: 'How to improve AI visibility',
+        results: { ChatGPT: 'cited', Perplexity: 'cited', Gemini: 'partial' },
+      },
     ],
     ownedCitations: [{ url: '/guide/ai-visibility', count: 15 }],
     earnedCitations: [],
@@ -290,13 +337,26 @@ export const mockClusters: TopicCluster[] = [
       { name: 'Pravado', score: 23, isYou: true },
     ],
     trackedPrompts: [
-      { prompt: 'Enterprise AEO strategy', results: { ChatGPT: 'not_cited', Perplexity: 'not_cited', Gemini: 'not_cited' } },
+      {
+        prompt: 'Enterprise AEO strategy',
+        results: {
+          ChatGPT: 'not_cited',
+          Perplexity: 'not_cited',
+          Gemini: 'not_cited',
+        },
+      },
     ],
     ownedCitations: [],
     earnedCitations: [],
-    coverageGap: 'Zero owned content for this cluster — CompetitorX dominates with 134 citations/week',
+    coverageGap:
+      'Zero owned content for this cluster — CompetitorX dominates with 134 citations/week',
     recommendations: [
-      { type: 'idea', text: "Create a comprehensive 'Enterprise AEO Guide' — estimated +8-12 EVI pts", cta: 'Create Content', ctaHref: '/app/content/new' },
+      {
+        type: 'idea',
+        text: "Create a comprehensive 'Enterprise AEO Guide' — estimated +8-12 EVI pts",
+        cta: 'Create Content',
+        ctaHref: '/app/content/new',
+      },
     ],
   },
   {
@@ -319,12 +379,22 @@ export const mockClusters: TopicCluster[] = [
       { name: 'CompetitorZ', score: 35 },
     ],
     trackedPrompts: [
-      { prompt: 'AI brand monitoring tools', results: { ChatGPT: 'partial', Perplexity: 'not_cited', Gemini: 'not_cited' } },
+      {
+        prompt: 'AI brand monitoring tools',
+        results: {
+          ChatGPT: 'partial',
+          Perplexity: 'not_cited',
+          Gemini: 'not_cited',
+        },
+      },
     ],
     ownedCitations: [{ url: '/product/citemind', count: 4 }],
     earnedCitations: [],
     recommendations: [
-      { type: 'warning', text: 'Score declining — publish dedicated brand monitoring guide' },
+      {
+        type: 'warning',
+        text: 'Score declining — publish dedicated brand monitoring guide',
+      },
     ],
   },
   {
@@ -442,17 +512,59 @@ export const mockCompetitorXProfile: CompetitorProfile = {
 };
 
 export const mockTopicComparisons: TopicComparison[] = [
-  { topic: 'AI Marketing Tools', yourScore: 88, competitorScore: 79, delta: 9, status: 'winning' },
-  { topic: 'PR Technology', yourScore: 74, competitorScore: 83, delta: -9, status: 'narrow' },
-  { topic: 'AI Visibility Strat.', yourScore: 71, competitorScore: 77, delta: -6, status: 'narrow' },
-  { topic: 'Enterprise AEO', yourScore: 23, competitorScore: 71, delta: -48, status: 'critical' },
-  { topic: 'Brand Monitoring', yourScore: 54, competitorScore: 61, delta: -7, status: 'narrow' },
+  {
+    topic: 'AI Marketing Tools',
+    yourScore: 88,
+    competitorScore: 79,
+    delta: 9,
+    status: 'winning',
+  },
+  {
+    topic: 'PR Technology',
+    yourScore: 74,
+    competitorScore: 83,
+    delta: -9,
+    status: 'narrow',
+  },
+  {
+    topic: 'AI Visibility Strat.',
+    yourScore: 71,
+    competitorScore: 77,
+    delta: -6,
+    status: 'narrow',
+  },
+  {
+    topic: 'Enterprise AEO',
+    yourScore: 23,
+    competitorScore: 71,
+    delta: -48,
+    status: 'critical',
+  },
+  {
+    topic: 'Brand Monitoring',
+    yourScore: 54,
+    competitorScore: 61,
+    delta: -7,
+    status: 'narrow',
+  },
 ];
 
 export const mockCompetitorContent: CompetitorContent[] = [
-  { title: 'Enterprise guide to AEO', citationsPerWeek: 134, engine: 'ChatGPT' },
-  { title: 'AI visibility ROI calculator', citationsPerWeek: 89, engine: 'Perplexity' },
-  { title: 'B2B AI marketing benchmark report', citationsPerWeek: 67, engine: 'Gemini' },
+  {
+    title: 'Enterprise guide to AEO',
+    citationsPerWeek: 134,
+    engine: 'ChatGPT',
+  },
+  {
+    title: 'AI visibility ROI calculator',
+    citationsPerWeek: 89,
+    engine: 'Perplexity',
+  },
+  {
+    title: 'B2B AI marketing benchmark report',
+    citationsPerWeek: 67,
+    engine: 'Gemini',
+  },
 ];
 
 // ============================================
@@ -472,9 +584,18 @@ export const mockCitations: CitationRow[] = [
     lastSeen: 'Today',
     detail: {
       startDate: 'Feb 1, 2026',
-      engineBreakdown: [{ engine: 'ChatGPT', count: 34 }, { engine: 'Perplexity', count: 28 }, { engine: 'Gemini', count: 12 }],
-      triggerPrompts: ['What are the best AI marketing tools?', 'AI marketing platform comparison', 'How to choose AI marketing software'],
-      recommendation: 'Adding FAQ schema would increase citation frequency by ~40%',
+      engineBreakdown: [
+        { engine: 'ChatGPT', count: 34 },
+        { engine: 'Perplexity', count: 28 },
+        { engine: 'Gemini', count: 12 },
+      ],
+      triggerPrompts: [
+        'What are the best AI marketing tools?',
+        'AI marketing platform comparison',
+        'How to choose AI marketing software',
+      ],
+      recommendation:
+        'Adding FAQ schema would increase citation frequency by ~40%',
       recommendationCta: 'Apply',
     },
   },
@@ -491,8 +612,12 @@ export const mockCitations: CitationRow[] = [
     detail: {
       startDate: 'Feb 3, 2026',
       engineBreakdown: [{ engine: 'Perplexity', count: 28 }],
-      triggerPrompts: ['Best AI tools for marketers', 'AI marketing platform reviews'],
-      recommendation: 'Update with 2026 data to maintain Perplexity recency preference',
+      triggerPrompts: [
+        'Best AI tools for marketers',
+        'AI marketing platform reviews',
+      ],
+      recommendation:
+        'Update with 2026 data to maintain Perplexity recency preference',
       recommendationCta: 'Open in Editor',
     },
   },
@@ -508,9 +633,16 @@ export const mockCitations: CitationRow[] = [
     lastSeen: 'Feb 14',
     detail: {
       startDate: 'Jan 20, 2026',
-      engineBreakdown: [{ engine: 'ChatGPT', count: 18 }, { engine: 'Perplexity', count: 5 }],
-      triggerPrompts: ['AI marketing landscape overview', 'Latest trends in marketing AI'],
-      recommendation: 'Pitch author for an updated mention with Pravado product data',
+      engineBreakdown: [
+        { engine: 'ChatGPT', count: 18 },
+        { engine: 'Perplexity', count: 5 },
+      ],
+      triggerPrompts: [
+        'AI marketing landscape overview',
+        'Latest trends in marketing AI',
+      ],
+      recommendation:
+        'Pitch author for an updated mention with Pravado product data',
       recommendationCta: 'Create Pitch',
     },
   },
@@ -526,9 +658,17 @@ export const mockCitations: CitationRow[] = [
     lastSeen: 'Today',
     detail: {
       startDate: 'Feb 10, 2026',
-      engineBreakdown: [{ engine: 'Gemini', count: 12 }, { engine: 'ChatGPT', count: 6 }],
-      triggerPrompts: ['What is AEO?', 'How to optimize for AI engines', 'AEO guide 2026'],
-      recommendation: 'Strong performance — add cross-links from PR Technology cluster',
+      engineBreakdown: [
+        { engine: 'Gemini', count: 12 },
+        { engine: 'ChatGPT', count: 6 },
+      ],
+      triggerPrompts: [
+        'What is AEO?',
+        'How to optimize for AI engines',
+        'AEO guide 2026',
+      ],
+      recommendation:
+        'Strong performance — add cross-links from PR Technology cluster',
       recommendationCta: 'View Cluster',
     },
   },
@@ -544,9 +684,16 @@ export const mockCitations: CitationRow[] = [
     lastSeen: 'Feb 10',
     detail: {
       startDate: 'Feb 5, 2026',
-      engineBreakdown: [{ engine: 'Perplexity', count: 9 }, { engine: 'ChatGPT', count: 3 }],
-      triggerPrompts: ['AI PR technology trends', 'How AI is changing public relations'],
-      recommendation: 'Leverage this earned placement — create derivative content',
+      engineBreakdown: [
+        { engine: 'Perplexity', count: 9 },
+        { engine: 'ChatGPT', count: 3 },
+      ],
+      triggerPrompts: [
+        'AI PR technology trends',
+        'How AI is changing public relations',
+      ],
+      recommendation:
+        'Leverage this earned placement — create derivative content',
       recommendationCta: 'Create Content',
     },
   },
@@ -564,7 +711,8 @@ export const mockCitations: CitationRow[] = [
       startDate: 'Jan 28, 2026',
       engineBreakdown: [{ engine: 'ChatGPT', count: 4 }],
       triggerPrompts: ['AI brand monitoring tools', 'CiteMind AI'],
-      recommendation: 'Low citation count — add detailed feature comparison table',
+      recommendation:
+        'Low citation count — add detailed feature comparison table',
       recommendationCta: 'Open in Editor',
     },
   },
@@ -600,7 +748,8 @@ export const mockCitations: CitationRow[] = [
       startDate: 'Feb 8, 2026',
       engineBreakdown: [{ engine: 'Claude', count: 3 }],
       triggerPrompts: ['SAGE protocol AI', 'AI strategy frameworks'],
-      recommendation: 'Expand Claude-specific optimization — add structured data',
+      recommendation:
+        'Expand Claude-specific optimization — add structured data',
       recommendationCta: 'View Fix',
     },
   },
@@ -620,7 +769,8 @@ export const mockRecommendations: Recommendation[] = [
     meta: '+8\u201312 EVI pts \u00B7 High effort \u00B7 2\u20133 weeks',
     why: "This topic cluster scores 23 vs CompetitorX's 71. Their guide is cited 134x/week on ChatGPT. Closing this gap would be your highest single-impact action.",
     primaryCta: 'Create Content \u2192',
-    primaryCtaHref: '/app/content/new?title=Enterprise+AEO+Guide&topic=Enterprise+AEO+Strategy&source=seo',
+    primaryCtaHref:
+      '/app/content/new?title=Enterprise+AEO+Guide&topic=Enterprise+AEO+Strategy&source=seo',
   },
   {
     id: 'rec-2',
@@ -652,7 +802,8 @@ export const mockRecommendations: Recommendation[] = [
     meta: '+2\u20134 EVI pts \u00B7 Medium effort \u00B7 3\u20134 hours',
     why: 'Perplexity weights recency strongly. Your guide was last updated Oct 2025. Both CompetitorX and CompetitorY updated theirs in Jan 2026.',
     primaryCta: 'Open in Editor \u2192',
-    primaryCtaHref: '/app/content/new?title=AI+Marketing+Tools+Guide+2026&topic=AI+Marketing+Tools&source=seo',
+    primaryCtaHref:
+      '/app/content/new?title=AI+Marketing+Tools+Guide+2026&topic=AI+Marketing+Tools&source=seo',
   },
   {
     id: 'rec-5',
@@ -660,10 +811,11 @@ export const mockRecommendations: Recommendation[] = [
     icon: 'warning',
     title: "Create 'AI Visibility ROI Calculator'",
     badge: 'HIGH',
-    meta: "+3\u20135 EVI pts \u00B7 High effort \u00B7 1\u20132 weeks",
+    meta: '+3\u20135 EVI pts \u00B7 High effort \u00B7 1\u20132 weeks',
     why: "Interactive tools have 3x citation rate of guides on Perplexity. CompetitorY has one. You don't.",
     primaryCta: 'Create Content \u2192',
-    primaryCtaHref: '/app/content/new?title=AI+Visibility+ROI+Calculator&topic=AI+Visibility+ROI&source=seo',
+    primaryCtaHref:
+      '/app/content/new?title=AI+Visibility+ROI+Calculator&topic=AI+Visibility+ROI&source=seo',
   },
 ];
 

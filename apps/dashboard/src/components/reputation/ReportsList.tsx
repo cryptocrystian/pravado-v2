@@ -6,8 +6,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import type { BrandReputationReport } from '@pravado/types';
+import { useState, useEffect, useCallback } from 'react';
+
 import {
   listReports,
   getReportStatusLabel,
@@ -111,13 +112,18 @@ export function ReportsList({
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-3">
-                    <span className="text-xl">{getReportStatusIcon(report.status)}</span>
+                    <span className="text-xl">
+                      {getReportStatusIcon(report.status)}
+                    </span>
                     <div>
                       <h3 className="text-sm font-medium text-gray-900 truncate">
                         {report.title}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {formatReportPeriod(report.reportPeriodStart, report.reportPeriodEnd)}
+                        {formatReportPeriod(
+                          report.reportPeriodStart,
+                          report.reportPeriodEnd
+                        )}
                       </p>
                     </div>
                   </div>
@@ -172,14 +178,28 @@ export function ReportsList({
                       <div className="flex items-center">
                         <span className="text-gray-500 mr-1">Alerts:</span>
                         <span className="font-medium">
-                          {String((report.keyMetrics as unknown as Record<string, unknown>)?.alertsTriggered ?? 0)}
+                          {String(
+                            (
+                              report.keyMetrics as unknown as Record<
+                                string,
+                                unknown
+                              >
+                            )?.alertsTriggered ?? 0
+                          )}
                         </span>
                       </div>
                       <div className="text-gray-300">|</div>
                       <div className="flex items-center">
                         <span className="text-gray-500 mr-1">Crises:</span>
                         <span className="font-medium">
-                          {String((report.keyMetrics as unknown as Record<string, unknown>)?.crisisCount ?? 0)}
+                          {String(
+                            (
+                              report.keyMetrics as unknown as Record<
+                                string,
+                                unknown
+                              >
+                            )?.crisisCount ?? 0
+                          )}
                         </span>
                       </div>
                     </>

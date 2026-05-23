@@ -58,9 +58,15 @@ export class CollaborationCoordinator {
    * Handle escalation message
    */
   private handleEscalationMessage(message: AgentCollaborationMessage): void {
-    const payload = message.payload as { level?: EscalationLevel; reason?: string };
+    const payload = message.payload as {
+      level?: EscalationLevel;
+      reason?: string;
+    };
     if (payload?.level) {
-      this.escalate(payload.level, payload.reason || 'Unknown escalation reason');
+      this.escalate(
+        payload.level,
+        payload.reason || 'Unknown escalation reason'
+      );
     }
   }
 
@@ -79,7 +85,8 @@ export class CollaborationCoordinator {
     // S11: Apply personality escalation sensitivity
     // Higher escalationSensitivity (0-1) makes escalation more likely
     // Lower sensitivity means the agent is more self-reliant
-    const shouldEscalate = levelPriority[level] > levelPriority[this.escalationLevel];
+    const shouldEscalate =
+      levelPriority[level] > levelPriority[this.escalationLevel];
 
     if (this.personality && shouldEscalate) {
       const sensitivity = this.personality.escalationSensitivity || 0.5;
@@ -88,13 +95,14 @@ export class CollaborationCoordinator {
       // Risk tolerance modifiers
       // low risk tolerance → more likely to escalate
       // high risk tolerance → less likely to escalate
-      const riskModifier = riskTolerance === 'low' ? 1.3 :
-                          riskTolerance === 'high' ? 0.7 : 1.0;
+      const riskModifier =
+        riskTolerance === 'low' ? 1.3 : riskTolerance === 'high' ? 0.7 : 1.0;
 
       // Combine sensitivity and risk tolerance
       // If sensitivity is low or risk tolerance is high, agent may skip escalation
       const escalationThreshold = 0.5; // Base threshold
-      const effectiveThreshold = escalationThreshold * (1 / (sensitivity * riskModifier));
+      const effectiveThreshold =
+        escalationThreshold * (1 / (sensitivity * riskModifier));
 
       // For now, we always escalate if requested, but log the personality influence
       // In production, this could probabilistically skip escalation based on personality
@@ -117,7 +125,9 @@ export class CollaborationCoordinator {
       this.escalationLevel = level;
 
       if (this.debugMode) {
-        console.log(`[CollaborationCoordinator] Escalated to ${level}: ${reason}`);
+        console.log(
+          `[CollaborationCoordinator] Escalated to ${level}: ${reason}`
+        );
       }
 
       // Record the escalation as a message
@@ -156,7 +166,10 @@ export class CollaborationCoordinator {
    * Determine next step based on current step and collaboration context
    * S11: Collaboration style influences delegation behavior
    */
-  determineNextStep(currentStep: PlaybookStep, _stepOutput?: unknown): string | null {
+  determineNextStep(
+    currentStep: PlaybookStep,
+    _stepOutput?: unknown
+  ): string | null {
     // S11: Personality collaboration style influences delegation
     // - assertive: More likely to delegate or request help from other agents
     // - supportive: Prefers to support other agents, less likely to delegate
@@ -167,7 +180,9 @@ export class CollaborationCoordinator {
     // - How to frame requests (assertive vs. cooperative)
     // - Willingness to accept delegated tasks
     if (this.personality && this.debugMode) {
-      console.log(`[CollaborationCoordinator] Collaboration style: ${this.personality.collaborationStyle}`);
+      console.log(
+        `[CollaborationCoordinator] Collaboration style: ${this.personality.collaborationStyle}`
+      );
     }
 
     // Check for delegation messages
@@ -243,7 +258,9 @@ export class CollaborationCoordinator {
    * Get messages for a specific step
    */
   getMessagesForStep(stepKey: string): AgentCollaborationMessage[] {
-    return this.messages.filter((m) => m.toStepKey === stepKey || m.fromStepKey === stepKey);
+    return this.messages.filter(
+      (m) => m.toStepKey === stepKey || m.fromStepKey === stepKey
+    );
   }
 
   /**
@@ -313,14 +330,18 @@ export class CollaborationCoordinator {
       messageCount: this.messages.length,
       sharedStateKeys: Object.keys(this.sharedState),
       escalationLevel: this.escalationLevel,
-      delegationCount: this.messages.filter((m) => m.type === 'delegation').length,
-      escalationCount: this.messages.filter((m) => m.type === 'escalation').length,
-      personality: this.personality ? {
-        tone: this.personality.tone,
-        style: this.personality.style,
-        riskTolerance: this.personality.riskTolerance,
-        collaborationStyle: this.personality.collaborationStyle,
-      } : undefined,
+      delegationCount: this.messages.filter((m) => m.type === 'delegation')
+        .length,
+      escalationCount: this.messages.filter((m) => m.type === 'escalation')
+        .length,
+      personality: this.personality
+        ? {
+            tone: this.personality.tone,
+            style: this.personality.style,
+            riskTolerance: this.personality.riskTolerance,
+            collaborationStyle: this.personality.collaborationStyle,
+          }
+        : undefined,
     };
   }
 }

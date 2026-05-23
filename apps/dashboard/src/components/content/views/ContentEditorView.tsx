@@ -10,8 +10,9 @@
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
 
-import { useState } from 'react';
 import { X } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import { PravadoEditor } from '../editor/PravadoEditor';
 import { CREATION_TYPE_CONFIG } from '../types';
 import type { EditorInitData, AutomationMode, OutlineSection } from '../types';

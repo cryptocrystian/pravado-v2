@@ -5,8 +5,14 @@
 
 'use client';
 
+import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import type {
+  EnrichmentRecordStatus,
+  EnrichmentSourceType,
+} from '@pravado/types';
 import React, { useState, useEffect } from 'react';
-import type { EnrichmentRecordStatus, EnrichmentSourceType } from '@pravado/types';
+
+import { BatchJobStatusTable } from '@/components/journalist-enrichment/BatchJobStatusTable';
 import {
   EnrichmentGeneratorForm,
   type EnrichmentFormData,
@@ -14,9 +20,7 @@ import {
 import { EnrichmentRecordList } from '@/components/journalist-enrichment/EnrichmentRecordCard';
 import { EnrichmentRecordDetailDrawer } from '@/components/journalist-enrichment/EnrichmentRecordDetailDrawer';
 import { EnrichmentSuggestionsPanel } from '@/components/journalist-enrichment/EnrichmentSuggestionsPanel';
-import { BatchJobStatusTable } from '@/components/journalist-enrichment/BatchJobStatusTable';
 import * as enrichmentApi from '@/lib/journalistEnrichmentApi';
-import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
 
 export default function EnrichmentPage() {
   // State
@@ -27,7 +31,9 @@ export default function EnrichmentPage() {
   const [loading, setLoading] = useState(false);
   const [generatingEnrichment, setGeneratingEnrichment] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'details' | 'suggestions' | 'jobs'>('details');
+  const [activeTab, setActiveTab] = useState<
+    'details' | 'suggestions' | 'jobs'
+  >('details');
 
   // Filters
   const [filters, _setFilters] = useState({
@@ -55,7 +61,8 @@ export default function EnrichmentPage() {
       setLoading(true);
       const response = await enrichmentApi.listEnrichmentRecords({
         status: filters.status.length > 0 ? filters.status : undefined,
-        sourceTypes: filters.sourceTypes.length > 0 ? filters.sourceTypes : undefined,
+        sourceTypes:
+          filters.sourceTypes.length > 0 ? filters.sourceTypes : undefined,
         minConfidenceScore: filters.minConfidenceScore,
         sortBy: 'created_at',
         sortOrder: 'desc',

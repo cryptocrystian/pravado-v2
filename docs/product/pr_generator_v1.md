@@ -7,6 +7,7 @@
 ## Overview
 
 The Press Release Generator is an AI-powered system that creates professional press releases with:
+
 - Context-aware content assembly
 - Narrative angle finding and scoring
 - SEO-optimized headline generation
@@ -92,6 +93,7 @@ const context = await service.assembleContext(orgId, input);
 ```
 
 Sources:
+
 - **SEO Intelligence**: Keywords, search volume, difficulty
 - **Content Intelligence**: Recent content, topics
 - **Personality System**: Tone, voice attributes, writing style
@@ -146,6 +148,7 @@ Sources:
 ### Phase 4: Draft Generation
 
 AP Style Press Release Structure:
+
 1. **Headline**: Selected from scored variants
 2. **Subheadline**: One-sentence summary
 3. **Dateline**: CITY, STATE, Date
@@ -169,36 +172,40 @@ const optimized = await service.optimizeRelease(releaseId, orgId);
 
 ## Angle Scoring Heuristics
 
-| News Type | Base Newsworthiness | Typical Angles |
-|-----------|---------------------|----------------|
-| product_launch | +20 | Innovation, Customer Problem Solved |
-| funding | +20 | Growth Acceleration, Investor Confidence |
-| acquisition | +20 | Strategic Growth, Capabilities Expansion |
-| partnership | +15 | Strategic Alignment, Market Synergy |
-| executive_hire | +10 | Leadership, Industry Expertise |
-| award | +10 | Industry Recognition, Excellence |
-| other | 0 | Industry Leadership, Strategic Milestone |
+| News Type      | Base Newsworthiness | Typical Angles                           |
+| -------------- | ------------------- | ---------------------------------------- |
+| product_launch | +20                 | Innovation, Customer Problem Solved      |
+| funding        | +20                 | Growth Acceleration, Investor Confidence |
+| acquisition    | +20                 | Strategic Growth, Capabilities Expansion |
+| partnership    | +15                 | Strategic Alignment, Market Synergy      |
+| executive_hire | +10                 | Leadership, Industry Expertise           |
+| award          | +10                 | Industry Recognition, Excellence         |
+| other          | 0                   | Industry Leadership, Strategic Milestone |
 
 ## Headline Scoring Rules
 
 ### SEO Scoring
+
 - **Keyword Match**: +15 per target keyword found
 - **Optimal Length**: +10 for 8-15 words
 - **Company Name**: +10 if company name present
 - **Length Penalty**: -15 for <6 or >20 words
 
 ### Virality Scoring
+
 - **Power Words**: +8 each (breakthrough, revolutionary, first, exclusive, announces, launches, unveils, transforms, innovates)
 - **Numbers**: +10 if contains numeric data
 - **Clickbait Penalty**: -20 for terms like "shocking", "unbelievable"
 
 ### Readability Scoring
+
 - **Word Length**: +10 for avg <5 chars, -15 for avg >8 chars
 - **Punctuation**: -10 for complex punctuation (semicolons, em-dashes)
 
 ## Optimization Engine
 
 ### Readability Optimizations
+
 1. Split sentences longer than 150 characters at conjunctions
 2. Replace verbose phrases with concise alternatives:
    - "in order to" → "to"
@@ -207,24 +214,26 @@ const optimized = await service.optimizeRelease(releaseId, orgId);
    - "in the event that" → "if"
 
 ### Headline Optimizations
+
 1. Apply title case capitalization
 2. Lowercase articles, conjunctions, prepositions (except first word)
 
 ### SEO Optimizations
+
 1. Track keyword density
 2. Suggest additions for underused keywords
 3. Flag overused keywords (>3% density)
 
 ## API Endpoints
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/v1/pr/releases/generate` | Generate press release | Required |
-| GET | `/api/v1/pr/releases` | List releases | Required |
-| GET | `/api/v1/pr/releases/:id` | Get release details | Required |
-| POST | `/api/v1/pr/releases/:id/optimize` | Re-run optimization | Required |
-| GET | `/api/v1/pr/releases/:id/embeddings/similar` | Find similar | Required |
-| GET | `/api/v1/pr/releases/:id/stream` | SSE progress | Required |
+| Method | Endpoint                                     | Description            | Auth     |
+| ------ | -------------------------------------------- | ---------------------- | -------- |
+| POST   | `/api/v1/pr/releases/generate`               | Generate press release | Required |
+| GET    | `/api/v1/pr/releases`                        | List releases          | Required |
+| GET    | `/api/v1/pr/releases/:id`                    | Get release details    | Required |
+| POST   | `/api/v1/pr/releases/:id/optimize`           | Re-run optimization    | Required |
+| GET    | `/api/v1/pr/releases/:id/embeddings/similar` | Find similar           | Required |
+| GET    | `/api/v1/pr/releases/:id/stream`             | SSE progress           | Required |
 
 ## SSE Events
 
@@ -300,6 +309,7 @@ CREATE TABLE pr_angle_options (
 ## Example Output
 
 ### Input
+
 ```json
 {
   "newsType": "product_launch",
@@ -312,6 +322,7 @@ CREATE TABLE pr_angle_options (
 ```
 
 ### Generated Press Release
+
 ```
 HEADLINE:
 TechCorp Launches Revolutionary AI-Powered Analytics Platform
@@ -348,11 +359,13 @@ in artificial intelligence and analytics solutions for enterprise customers.
 ## Configuration
 
 ### Feature Flag
+
 ```typescript
-ENABLE_PR_GENERATOR: true
+ENABLE_PR_GENERATOR: true;
 ```
 
 ### Environment Variables
+
 - `LLM_ANTHROPIC_API_KEY`: Required for AI generation
 - `SUPABASE_URL`: Database connection
 - `SUPABASE_SERVICE_ROLE_KEY`: Service account key

@@ -35,7 +35,9 @@ export default function CommandCenterError({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center">
-      <h2 className="text-2xl font-semibold mb-3">Command Center couldn&apos;t load</h2>
+      <h2 className="text-2xl font-semibold mb-3">
+        Command Center couldn&apos;t load
+      </h2>
       <p className="text-white/60 mb-6 max-w-md">
         This usually means your workspace isn&apos;t fully set up yet. Continue
         onboarding to activate SAGE.

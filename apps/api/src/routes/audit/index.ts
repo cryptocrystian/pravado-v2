@@ -15,7 +15,12 @@
 import * as fs from 'fs';
 
 import { FLAGS } from '@pravado/feature-flags';
-import type { ActorType, AuditEventType, AuditQueryFilters, AuditSeverity } from '@pravado/types';
+import type {
+  ActorType,
+  AuditEventType,
+  AuditQueryFilters,
+  AuditSeverity,
+} from '@pravado/types';
 import {
   apiEnvSchema,
   getAuditEventTypesQuerySchema,
@@ -34,7 +39,10 @@ import { AuditService } from '../../services/auditService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: SupabaseClient): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: SupabaseClient
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -64,151 +72,158 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
   }
 
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const auditService = new AuditService(supabase);
-  const exportService = new AuditExportService(supabase, auditService, env.AUDIT_EXPORT_STORAGE_DIR);
+  const exportService = new AuditExportService(
+    supabase,
+    auditService,
+    env.AUDIT_EXPORT_STORAGE_DIR
+  );
 
   /**
    * GET /api/v1/audit
    * List audit logs with filters and pagination
    */
-  server.get(
-    '/',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+  server.get('/', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
 
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'ORG_NOT_FOUND',
-              message: 'Organization not found for user',
-            },
-          });
-        }
-
-        // Parse and validate query params
-        const parseResult = getAuditLogsQuerySchema.safeParse(request.query);
-        if (!parseResult.success) {
-          return reply.code(400).send({
-            success: false,
-            error: {
-              code: 'VALIDATION_ERROR',
-              message: 'Invalid query parameters',
-              details: parseResult.error.errors,
-            },
-          });
-        }
-
-        const query = parseResult.data;
-
-        // Build filters
-        const filters: Partial<AuditQueryFilters> = {
-          limit: query.limit,
-          offset: query.offset,
-          cursor: query.cursor,
-          searchTerm: query.search,
-        };
-
-        // Parse event type (can be comma-separated)
-        if (query.eventType) {
-          const types = query.eventType.split(',').map((t) => t.trim() as AuditEventType);
-          filters.eventType = types.length === 1 ? types[0] : types;
-        }
-
-        // Parse severity (can be comma-separated)
-        if (query.severity) {
-          const severities = query.severity.split(',').map((s) => s.trim() as AuditSeverity);
-          filters.severity = severities.length === 1 ? severities[0] : severities;
-        }
-
-        // Parse actor type (can be comma-separated)
-        if (query.actorType) {
-          const actors = query.actorType.split(',').map((a) => a.trim() as ActorType);
-          filters.actorType = actors.length === 1 ? actors[0] : actors;
-        }
-
-        if (query.userId) {
-          filters.userId = query.userId;
-        }
-
-        if (query.startDate) {
-          filters.startDate = query.startDate;
-        }
-
-        if (query.endDate) {
-          filters.endDate = query.endDate;
-        }
-
-        const result = await auditService.queryAuditLog(orgId, filters);
-
-        return reply.send({
-          success: true,
-          data: result,
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to query audit logs', { error });
-        return reply.code(500).send({
+      if (!orgId) {
+        return reply.code(404).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to query audit logs',
+            code: 'ORG_NOT_FOUND',
+            message: 'Organization not found for user',
           },
         });
       }
+
+      // Parse and validate query params
+      const parseResult = getAuditLogsQuerySchema.safeParse(request.query);
+      if (!parseResult.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid query parameters',
+            details: parseResult.error.errors,
+          },
+        });
+      }
+
+      const query = parseResult.data;
+
+      // Build filters
+      const filters: Partial<AuditQueryFilters> = {
+        limit: query.limit,
+        offset: query.offset,
+        cursor: query.cursor,
+        searchTerm: query.search,
+      };
+
+      // Parse event type (can be comma-separated)
+      if (query.eventType) {
+        const types = query.eventType
+          .split(',')
+          .map((t) => t.trim() as AuditEventType);
+        filters.eventType = types.length === 1 ? types[0] : types;
+      }
+
+      // Parse severity (can be comma-separated)
+      if (query.severity) {
+        const severities = query.severity
+          .split(',')
+          .map((s) => s.trim() as AuditSeverity);
+        filters.severity = severities.length === 1 ? severities[0] : severities;
+      }
+
+      // Parse actor type (can be comma-separated)
+      if (query.actorType) {
+        const actors = query.actorType
+          .split(',')
+          .map((a) => a.trim() as ActorType);
+        filters.actorType = actors.length === 1 ? actors[0] : actors;
+      }
+
+      if (query.userId) {
+        filters.userId = query.userId;
+      }
+
+      if (query.startDate) {
+        filters.startDate = query.startDate;
+      }
+
+      if (query.endDate) {
+        filters.endDate = query.endDate;
+      }
+
+      const result = await auditService.queryAuditLog(orgId, filters);
+
+      return reply.send({
+        success: true,
+        data: result,
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to query audit logs', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to query audit logs',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/audit/events
    * List available event types with metadata
    */
-  server.get(
-    '/events',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        // Parse and validate query params
-        const parseResult = getAuditEventTypesQuerySchema.safeParse(request.query);
-        if (!parseResult.success) {
-          return reply.code(400).send({
-            success: false,
-            error: {
-              code: 'VALIDATION_ERROR',
-              message: 'Invalid query parameters',
-              details: parseResult.error.errors,
-            },
-          });
-        }
-
-        const { category } = parseResult.data;
-        const eventTypes = auditService.getEventTypes(category);
-        const categories = auditService.getEventCategories();
-
-        return reply.send({
-          success: true,
-          data: {
-            eventTypes,
-            categories,
-          },
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to list event types', { error });
-        return reply.code(500).send({
+  server.get('/events', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      // Parse and validate query params
+      const parseResult = getAuditEventTypesQuerySchema.safeParse(
+        request.query
+      );
+      if (!parseResult.success) {
+        return reply.code(400).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to list event types',
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid query parameters',
+            details: parseResult.error.errors,
           },
         });
       }
+
+      const { category } = parseResult.data;
+      const eventTypes = auditService.getEventTypes(category);
+      const categories = auditService.getEventCategories();
+
+      return reply.send({
+        success: true,
+        data: {
+          eventTypes,
+          categories,
+        },
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to list event types', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to list event types',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/audit/stats
@@ -216,44 +231,40 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
    */
   server.get<{
     Querystring: { days?: string };
-  }>(
-    '/stats',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+  }>('/stats', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
 
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'ORG_NOT_FOUND',
-              message: 'Organization not found for user',
-            },
-          });
-        }
-
-        const days = request.query.days ? parseInt(request.query.days, 10) : 30;
-        const stats = await auditService.getAuditStats(orgId, days);
-
-        return reply.send({
-          success: true,
-          data: stats,
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to get audit stats', { error });
-        return reply.code(500).send({
+      if (!orgId) {
+        return reply.code(404).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to get audit statistics',
+            code: 'ORG_NOT_FOUND',
+            message: 'Organization not found for user',
           },
         });
       }
+
+      const days = request.query.days ? parseInt(request.query.days, 10) : 30;
+      const stats = await auditService.getAuditStats(orgId, days);
+
+      return reply.send({
+        success: true,
+        data: stats,
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to get audit stats', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to get audit statistics',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/audit/:id
@@ -261,67 +272,63 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/:id',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
+  }>('/:id', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
 
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'ORG_NOT_FOUND',
-              message: 'Organization not found for user',
-            },
-          });
-        }
-
-        // Validate params
-        const parseResult = getAuditLogParamsSchema.safeParse(request.params);
-        if (!parseResult.success) {
-          return reply.code(400).send({
-            success: false,
-            error: {
-              code: 'VALIDATION_ERROR',
-              message: 'Invalid parameters',
-              details: parseResult.error.errors,
-            },
-          });
-        }
-
-        const { id } = parseResult.data;
-        const entry = await auditService.getAuditEntry(orgId, id);
-
-        if (!entry) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Audit log entry not found',
-            },
-          });
-        }
-
-        return reply.send({
-          success: true,
-          data: entry,
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to get audit entry', { error });
-        return reply.code(500).send({
+      if (!orgId) {
+        return reply.code(404).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to get audit log entry',
+            code: 'ORG_NOT_FOUND',
+            message: 'Organization not found for user',
           },
         });
       }
+
+      // Validate params
+      const parseResult = getAuditLogParamsSchema.safeParse(request.params);
+      if (!parseResult.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid parameters',
+            details: parseResult.error.errors,
+          },
+        });
+      }
+
+      const { id } = parseResult.data;
+      const entry = await auditService.getAuditEntry(orgId, id);
+
+      if (!entry) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Audit log entry not found',
+          },
+        });
+      }
+
+      return reply.send({
+        success: true,
+        data: entry,
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to get audit entry', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to get audit log entry',
+        },
+      });
     }
-  );
+  });
 
   // ===== Sprint S36: Export Routes =====
 
@@ -345,91 +352,90 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
    */
   server.post<{
     Body: { filters?: AuditQueryFilters };
-  }>(
-    '/export',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      // Check if exports are enabled
-      if (!FLAGS.ENABLE_AUDIT_EXPORTS) {
-        return reply.code(503).send({
+  }>('/export', { preHandler: requireUser }, async (request, reply) => {
+    // Check if exports are enabled
+    if (!FLAGS.ENABLE_AUDIT_EXPORTS) {
+      return reply.code(503).send({
+        success: false,
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'Audit exports are not enabled',
+        },
+      });
+    }
+
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
+
+      if (!orgId) {
+        return reply.code(404).send({
           success: false,
           error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Audit exports are not enabled',
+            code: 'ORG_NOT_FOUND',
+            message: 'Organization not found for user',
           },
         });
       }
 
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
-
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'ORG_NOT_FOUND',
-              message: 'Organization not found for user',
-            },
-          });
-        }
-
-        // RBAC: Only admins can create exports
-        const isAdmin = await isUserAdmin(userId, orgId);
-        if (!isAdmin) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'FORBIDDEN',
-              message: 'Only admins can export audit logs',
-            },
-          });
-        }
-
-        const filters = request.body?.filters || {};
-        const job = await exportService.createExportJob({
-          orgId,
-          userId,
-          filters,
-        });
-
-        if (!job) {
-          return reply.code(500).send({
-            success: false,
-            error: {
-              code: 'EXPORT_FAILED',
-              message: 'Failed to create export job',
-            },
-          });
-        }
-
-        // Trigger async processing (in production, this would go to a queue)
-        setImmediate(() => {
-          exportService.processExportJob(job.id).catch((err) => {
-            console.error('[Audit] Export job processing failed', { err, jobId: job.id });
-          });
-        });
-
-        return reply.code(201).send({
-          success: true,
-          data: {
-            jobId: job.id,
-            status: job.status,
+      // RBAC: Only admins can create exports
+      const isAdmin = await isUserAdmin(userId, orgId);
+      if (!isAdmin) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            message: 'Only admins can export audit logs',
           },
         });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to create export job', { error });
+      }
+
+      const filters = request.body?.filters || {};
+      const job = await exportService.createExportJob({
+        orgId,
+        userId,
+        filters,
+      });
+
+      if (!job) {
         return reply.code(500).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to create export job',
+            code: 'EXPORT_FAILED',
+            message: 'Failed to create export job',
           },
         });
       }
+
+      // Trigger async processing (in production, this would go to a queue)
+      setImmediate(() => {
+        exportService.processExportJob(job.id).catch((err) => {
+          console.error('[Audit] Export job processing failed', {
+            err,
+            jobId: job.id,
+          });
+        });
+      });
+
+      return reply.code(201).send({
+        success: true,
+        data: {
+          jobId: job.id,
+          status: job.status,
+        },
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to create export job', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to create export job',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/audit/export/:id
@@ -437,68 +443,64 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/export/:id',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      if (!FLAGS.ENABLE_AUDIT_EXPORTS) {
-        return reply.code(503).send({
-          success: false,
-          error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Audit exports are not enabled',
-          },
-        });
-      }
-
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
-
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'ORG_NOT_FOUND',
-              message: 'Organization not found for user',
-            },
-          });
-        }
-
-        const job = await exportService.getExportJob(orgId, request.params.id);
-
-        if (!job) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Export job not found',
-            },
-          });
-        }
-
-        const downloadUrl = exportService.getDownloadPath(job);
-
-        return reply.send({
-          success: true,
-          data: {
-            job,
-            downloadUrl,
-          },
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to get export status', { error });
-        return reply.code(500).send({
-          success: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to get export status',
-          },
-        });
-      }
+  }>('/export/:id', { preHandler: requireUser }, async (request, reply) => {
+    if (!FLAGS.ENABLE_AUDIT_EXPORTS) {
+      return reply.code(503).send({
+        success: false,
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'Audit exports are not enabled',
+        },
+      });
     }
-  );
+
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
+
+      if (!orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'ORG_NOT_FOUND',
+            message: 'Organization not found for user',
+          },
+        });
+      }
+
+      const job = await exportService.getExportJob(orgId, request.params.id);
+
+      if (!job) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Export job not found',
+          },
+        });
+      }
+
+      const downloadUrl = exportService.getDownloadPath(job);
+
+      return reply.send({
+        success: true,
+        data: {
+          job,
+          downloadUrl,
+        },
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to get export status', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to get export status',
+        },
+      });
+    }
+  });
 
   /**
    * GET /api/v1/audit/export/:id/download
@@ -594,54 +596,52 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
    */
   server.get<{
     Querystring: { limit?: string };
-  }>(
-    '/exports',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      if (!FLAGS.ENABLE_AUDIT_EXPORTS) {
-        return reply.code(503).send({
-          success: false,
-          error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Audit exports are not enabled',
-          },
-        });
-      }
-
-      try {
-        const userId = request.user!.id;
-        const orgId = await getUserOrgId(userId, supabase);
-
-        if (!orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'ORG_NOT_FOUND',
-              message: 'Organization not found for user',
-            },
-          });
-        }
-
-        const limit = request.query.limit ? parseInt(request.query.limit, 10) : 20;
-        const jobs = await exportService.listExportJobs(orgId, limit);
-
-        return reply.send({
-          success: true,
-          data: {
-            exports: jobs,
-          },
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Audit] Failed to list exports', { error });
-        return reply.code(500).send({
-          success: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to list exports',
-          },
-        });
-      }
+  }>('/exports', { preHandler: requireUser }, async (request, reply) => {
+    if (!FLAGS.ENABLE_AUDIT_EXPORTS) {
+      return reply.code(503).send({
+        success: false,
+        error: {
+          code: 'FEATURE_DISABLED',
+          message: 'Audit exports are not enabled',
+        },
+      });
     }
-  );
+
+    try {
+      const userId = request.user!.id;
+      const orgId = await getUserOrgId(userId, supabase);
+
+      if (!orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'ORG_NOT_FOUND',
+            message: 'Organization not found for user',
+          },
+        });
+      }
+
+      const limit = request.query.limit
+        ? parseInt(request.query.limit, 10)
+        : 20;
+      const jobs = await exportService.listExportJobs(orgId, limit);
+
+      return reply.send({
+        success: true,
+        data: {
+          exports: jobs,
+        },
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Audit] Failed to list exports', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to list exports',
+        },
+      });
+    }
+  });
 }

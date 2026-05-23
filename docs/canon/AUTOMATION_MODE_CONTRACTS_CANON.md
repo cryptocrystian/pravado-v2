@@ -30,6 +30,7 @@ It does NOT prescribe layouts, components, or visual structures. Each pillar is 
 **Each pillar** (PR, Content, SEO/AEO, Ads) is expected to design its own optimal UX while honoring the behavioral contracts defined below.
 
 A pillar may:
+
 - Use different layouts for the same mode
 - Implement different interaction patterns
 - Prioritize different information hierarchies
@@ -45,19 +46,20 @@ As long as the **semantic contracts** are preserved.
 
 **Core Principle:** User is the primary decision-maker.
 
-| Aspect | Contract |
-|--------|----------|
-| **Authority** | User has full control over all decisions |
-| **AI Role** | May observe, suggest, and annotate — never act |
-| **Queue/Priority** | User controls ordering; no automatic reordering |
-| **Filtering** | User controls what is visible; no automatic filtering |
-| **Execution** | Nothing executes without explicit user action |
-| **Editing** | Editing surfaces MAY be embedded directly into primary work views |
-| **State** | AI state is typically `idle` or `ready` (awaiting input) |
+| Aspect             | Contract                                                          |
+| ------------------ | ----------------------------------------------------------------- |
+| **Authority**      | User has full control over all decisions                          |
+| **AI Role**        | May observe, suggest, and annotate — never act                    |
+| **Queue/Priority** | User controls ordering; no automatic reordering                   |
+| **Filtering**      | User controls what is visible; no automatic filtering             |
+| **Execution**      | Nothing executes without explicit user action                     |
+| **Editing**        | Editing surfaces MAY be embedded directly into primary work views |
+| **State**          | AI state is typically `idle` or `ready` (awaiting input)          |
 
 **User Mental Model:** "I am in control. AI assists when I ask."
 
 **UX Implications:**
+
 - Provide full queue manipulation controls
 - Show all items (no hidden filtering)
 - Emphasize direct manipulation affordances
@@ -69,19 +71,20 @@ As long as the **semantic contracts** are preserved.
 
 **Core Principle:** AI proposes, user approves.
 
-| Aspect | Contract |
-|--------|----------|
-| **Authority** | AI prepares; user authorizes |
-| **AI Role** | Proposes structured plans, queues, or drafts |
+| Aspect             | Contract                                       |
+| ------------------ | ---------------------------------------------- |
+| **Authority**      | AI prepares; user authorizes                   |
+| **AI Role**        | Proposes structured plans, queues, or drafts   |
 | **Queue/Priority** | AI orders by recommendation; user may override |
-| **Filtering** | AI may prioritize; user sees reasoning |
-| **Execution** | User approval required before any execution |
-| **Reasoning** | AI reasoning MUST be visible and explainable |
-| **State** | AI state cycles through `evaluating` → `ready` |
+| **Filtering**      | AI may prioritize; user sees reasoning         |
+| **Execution**      | User approval required before any execution    |
+| **Reasoning**      | AI reasoning MUST be visible and explainable   |
+| **State**          | AI state cycles through `evaluating` → `ready` |
 
 **User Mental Model:** "AI prepared this. I review and approve."
 
 **UX Implications:**
+
 - Emphasize review, comparison, and approval workflows
 - Show AI reasoning prominently (not hidden behind clicks)
 - Provide clear approval/rejection affordances
@@ -94,19 +97,20 @@ As long as the **semantic contracts** are preserved.
 
 **Core Principle:** AI handles routine; user handles exceptions.
 
-| Aspect | Contract |
-|--------|----------|
-| **Authority** | AI executes within guardrails; user oversees |
-| **AI Role** | Autonomous execution of routine, low-risk actions |
+| Aspect             | Contract                                          |
+| ------------------ | ------------------------------------------------- |
+| **Authority**      | AI executes within guardrails; user oversees      |
+| **AI Role**        | Autonomous execution of routine, low-risk actions |
 | **Queue/Priority** | Only exceptions, failures, and violations surface |
-| **Filtering** | Routine items are hidden by default |
-| **Execution** | Automatic for low-risk; escalates for high-risk |
-| **Transparency** | Audit logs MUST be available |
-| **State** | AI state is typically `executing` or `blocked` |
+| **Filtering**      | Routine items are hidden by default               |
+| **Execution**      | Automatic for low-risk; escalates for high-risk   |
+| **Transparency**   | Audit logs MUST be available                      |
+| **State**          | AI state is typically `executing` or `blocked`    |
 
 **User Mental Model:** "AI is working. I only see what needs my attention."
 
 **UX Implications:**
+
 - No dense creation interfaces
 - Quiet, sparse, and authoritative presentation
 - Guardrail violations are prominent
@@ -121,13 +125,14 @@ As long as the **semantic contracts** are preserved.
 
 Actions may define a **maximum allowed automation level** (mode ceiling):
 
-| Ceiling | Meaning |
-|---------|---------|
-| `manual` | Action can only run in Manual mode |
-| `copilot` | Action can run in Manual or Copilot, not Autopilot |
-| `autopilot` | Action can run in any mode |
+| Ceiling     | Meaning                                            |
+| ----------- | -------------------------------------------------- |
+| `manual`    | Action can only run in Manual mode                 |
+| `copilot`   | Action can run in Manual or Copilot, not Autopilot |
+| `autopilot` | Action can run in any mode                         |
 
 **UX Requirements:**
+
 - Clearly indicate when a mode is capped
 - Explain why (e.g., "High-risk action requires approval")
 - Never silently downgrade user expectations
@@ -151,21 +156,25 @@ Guardrails are conditions that force escalation even in Autopilot:
 This canon operates within a hierarchy of authority:
 
 ### Superior Canons (override this canon if conflict)
+
 - `PRODUCT_CONSTITUTION.md` — Core mission and non-negotiables
 - `CRAFT_EXECUTION_MODEL.md` — Execution authority and risk model
 
 ### Peer Canons (coordinate with this canon)
+
 - `AUTOMATION_MODES_UX.md` — UX patterns for mode implementation
 - `AI_VISUAL_COMMUNICATION_CANON.md` — Visual state communication
 - `UX_CONTINUITY_CANON.md` — Interaction principles
 
 ### Subordinate Canons (must comply with this canon)
+
 - Pillar-specific contracts (PR, Content, SEO)
 - Surface-specific contracts
 
 ### Conflict Resolution
 
 In case of conflict:
+
 1. **Behavioral contracts win** over visual convenience
 2. **Safety wins** over automation speed
 3. **Canon wins** over implementation convenience
@@ -176,16 +185,19 @@ In case of conflict:
 ## 6. Enforcement Philosophy
 
 ### Acceptable States
+
 - **Full compliance** — Ideal
 - **Partial compliance** — Acceptable during development
 - **Documented deviation** — Acceptable with justification
 
 ### Unacceptable States
+
 - **Silent violation** — Never acceptable
 - **Behavioral contract violation** — Must be fixed
 - **Safety contract violation** — Blocker
 
 ### Approach
+
 - Violations must be **flagged, not auto-fixed**
 - This canon should **guide design decisions**, not replace judgment
 - Pillar teams have discretion on **how** to implement, not **whether** to comply
@@ -196,13 +208,14 @@ In case of conflict:
 
 When mode changes:
 
-| Transition | Expected Behavior |
-|------------|-------------------|
-| Any → Manual | Full queue restored; AI assistance optional |
-| Any → Copilot | AI evaluates and prepares plan; awaits approval |
-| Any → Autopilot | Routine items filter out; exceptions surface |
+| Transition      | Expected Behavior                               |
+| --------------- | ----------------------------------------------- |
+| Any → Manual    | Full queue restored; AI assistance optional     |
+| Any → Copilot   | AI evaluates and prepares plan; awaits approval |
+| Any → Autopilot | Routine items filter out; exceptions surface    |
 
 **State Reset Requirements:**
+
 - Plan approval state resets on mode change
 - Queue reasoning updates for new mode context
 - AI state indicator reflects transition (`evaluating` during recalculation)
@@ -217,11 +230,11 @@ Content is the **first pillar** to apply this canon comprehensively.
 
 ### Content-Specific Expectations
 
-| Mode | Content Posture | Primary Activity |
-|------|-----------------|------------------|
-| **Manual** | Editor-forward | Direct content creation, manual prioritization |
-| **Copilot** | Plan/review-forward | Brief review, AI draft approval, staged editing |
-| **Autopilot** | Exception-forward | Quality issues, deadline alerts, execution failures |
+| Mode          | Content Posture     | Primary Activity                                    |
+| ------------- | ------------------- | --------------------------------------------------- |
+| **Manual**    | Editor-forward      | Direct content creation, manual prioritization      |
+| **Copilot**   | Plan/review-forward | Brief review, AI draft approval, staged editing     |
+| **Autopilot** | Exception-forward   | Quality issues, deadline alerts, execution failures |
 
 ### What This Means
 
@@ -244,6 +257,6 @@ These decisions belong to the Content pillar design process, guided by user rese
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-29 | Initial canonical version |
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-01-29 | Initial canonical version |

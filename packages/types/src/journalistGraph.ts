@@ -256,7 +256,12 @@ export interface JournalistTierClassification {
 // Graph Types
 // ===================================
 
-export type JournalistGraphNodeType = 'journalist' | 'outlet' | 'topic' | 'coverage' | 'outreach';
+export type JournalistGraphNodeType =
+  | 'journalist'
+  | 'outlet'
+  | 'topic'
+  | 'coverage'
+  | 'outreach';
 
 export type JournalistGraphEdgeType =
   | 'works_for'
@@ -359,7 +364,11 @@ export interface ListJournalistProfilesQuery {
   beat?: string;
   minEngagementScore?: number;
   minRelevanceScore?: number;
-  sortBy?: 'engagement_score' | 'relevance_score' | 'last_activity_at' | 'full_name';
+  sortBy?:
+    | 'engagement_score'
+    | 'relevance_score'
+    | 'last_activity_at'
+    | 'full_name';
   sortOrder?: 'asc' | 'desc';
   limit?: number;
   offset?: number;

@@ -12,7 +12,6 @@
  * docs/sprints/D027-AUDIT-REBUILD/WORK_ORDER.md Phase 1B/1C.
  */
 
-import { useState } from 'react';
 import {
   GoogleLogo,
   Robot,
@@ -21,20 +20,24 @@ import {
   Globe,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
+import { useState } from 'react';
+
+import type { ScanResponse } from '@/components/marketing/audit-types';
 import { AuditForm } from '@/components/marketing/AuditForm';
 import { EVIScorecardResults } from '@/components/marketing/EVIScorecardResults';
-import type { ScanResponse } from '@/components/marketing/audit-types';
 
 function TM() {
-  return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;
+  return (
+    <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>
+  );
 }
 
 const ENGINES: Array<{ name: string; Icon: Icon }> = [
-  { name: 'Google',     Icon: GoogleLogo },
-  { name: 'ChatGPT',    Icon: Robot },
+  { name: 'Google', Icon: GoogleLogo },
+  { name: 'ChatGPT', Icon: Robot },
   { name: 'Perplexity', Icon: Compass },
-  { name: 'Gemini',     Icon: Sparkle },
-  { name: 'Bing',       Icon: Globe },
+  { name: 'Gemini', Icon: Sparkle },
+  { name: 'Bing', Icon: Globe },
 ];
 
 const KEYFRAMES = `
@@ -72,7 +75,13 @@ export default function AuditPage() {
         {result ? (
           <EVIScorecardResults scanResult={result} entryPath="generic" />
         ) : (
-          <div style={{ maxWidth: 680, margin: '0 auto', padding: '120px 24px 80px' }}>
+          <div
+            style={{
+              maxWidth: 680,
+              margin: '0 auto',
+              padding: '120px 24px 80px',
+            }}
+          >
             {/* Eyebrow */}
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
               <span
@@ -89,7 +98,8 @@ export default function AuditPage() {
                   border: '1px solid rgba(168,85,247,0.2)',
                 }}
               >
-                SAGE<TM /> PROPRIETARY DIAGNOSTIC &middot; FREE
+                SAGE
+                <TM /> PROPRIETARY DIAGNOSTIC &middot; FREE
               </span>
             </div>
 
@@ -100,7 +110,8 @@ export default function AuditPage() {
                 fontWeight: 800,
                 lineHeight: 1.1,
                 marginBottom: 16,
-                background: 'linear-gradient(135deg, #ffffff 0%, #A855F7 50%, #00D9FF 100%)',
+                background:
+                  'linear-gradient(135deg, #ffffff 0%, #A855F7 50%, #00D9FF 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -148,7 +159,11 @@ export default function AuditPage() {
                     color: 'rgba(255,255,255,0.35)',
                   }}
                 >
-                  <Icon size={24} weight="regular" color="rgba(255,255,255,0.55)" />
+                  <Icon
+                    size={24}
+                    weight="regular"
+                    color="rgba(255,255,255,0.55)"
+                  />
                   {name}
                 </div>
               ))}

@@ -62,7 +62,14 @@ const STATUS_CONFIG: Record<
   analyzing: {
     icon: (
       <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
         <path
           className="opacity-75"
           fill="currentColor"
@@ -128,20 +135,26 @@ const STATUS_CONFIG: Record<
 
 function FactorBar({ label, score }: { label: string; score: number }) {
   const color =
-    score >= 75 ? 'bg-semantic-success' :
-    score >= 55 ? 'bg-semantic-warning' :
-    'bg-semantic-danger';
+    score >= 75
+      ? 'bg-semantic-success'
+      : score >= 55
+        ? 'bg-semantic-warning'
+        : 'bg-semantic-danger';
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-white/50 w-20 shrink-0 truncate">{label}</span>
+      <span className="text-xs text-white/50 w-20 shrink-0 truncate">
+        {label}
+      </span>
       <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${color}`}
           style={{ width: `${Math.min(score, 100)}%` }}
         />
       </div>
-      <span className="text-xs tabular-nums text-white/60 w-7 text-right">{Math.round(score)}</span>
+      <span className="text-xs tabular-nums text-white/60 w-7 text-right">
+        {Math.round(score)}
+      </span>
     </div>
   );
 }
@@ -184,14 +197,23 @@ export function CiteMindStatusIndicator({
           <span className={`text-sm font-medium ${config.color} flex-1`}>
             CiteMind: {config.label}
             {scoreData && (
-              <span className="ml-1 text-xs text-white/40">({Math.round(scoreData.overall_score)}/100)</span>
+              <span className="ml-1 text-xs text-white/40">
+                ({Math.round(scoreData.overall_score)}/100)
+              </span>
             )}
           </span>
           <svg
             className={`w-3 h-3 text-white/30 transition-transform ${expanded ? 'rotate-180' : ''}`}
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
         <p className="text-xs text-white/55 mt-1">{config.description}</p>
@@ -201,16 +223,30 @@ export function CiteMindStatusIndicator({
       {expanded && scoreData && (
         <div className="px-3 pb-3 space-y-2 border-t border-white/5 pt-2">
           <FactorBar label="Entities" score={scoreData.entity_density_score} />
-          <FactorBar label="Claims" score={scoreData.claim_verifiability_score} />
-          <FactorBar label="Structure" score={scoreData.structural_clarity_score} />
-          <FactorBar label="Authority" score={scoreData.topical_authority_score} />
+          <FactorBar
+            label="Claims"
+            score={scoreData.claim_verifiability_score}
+          />
+          <FactorBar
+            label="Structure"
+            score={scoreData.structural_clarity_score}
+          />
+          <FactorBar
+            label="Authority"
+            score={scoreData.topical_authority_score}
+          />
           <FactorBar label="Schema" score={scoreData.schema_markup_score} />
-          <FactorBar label="Citation" score={scoreData.citation_pattern_score} />
+          <FactorBar
+            label="Citation"
+            score={scoreData.citation_pattern_score}
+          />
 
           {/* Recommendations */}
           {scoreData.recommendations.length > 0 && (
             <div className="mt-2 pt-2 border-t border-white/5">
-              <p className="text-xs font-medium text-white/50 mb-1">Recommendations</p>
+              <p className="text-xs font-medium text-white/50 mb-1">
+                Recommendations
+              </p>
               <ul className="space-y-1">
                 {scoreData.recommendations.map((rec, i) => (
                   <li key={i} className="text-xs text-white/40 leading-relaxed">
@@ -237,7 +273,9 @@ export function CiteMindStatusIndicator({
             >
               {issue.message}
               {issue.section && (
-                <span className="text-white/40 ml-1">(Section: {issue.section})</span>
+                <span className="text-white/40 ml-1">
+                  (Section: {issue.section})
+                </span>
               )}
             </div>
           ))}
@@ -249,16 +287,18 @@ export function CiteMindStatusIndicator({
         </div>
       )}
 
-      {onViewIssues && (status === 'warning' || status === 'blocked') && !expanded && (
-        <div className="px-3 pb-3">
-          <button
-            onClick={onViewIssues}
-            className={`text-xs font-medium ${config.color} hover:underline`}
-          >
-            View Issues
-          </button>
-        </div>
-      )}
+      {onViewIssues &&
+        (status === 'warning' || status === 'blocked') &&
+        !expanded && (
+          <div className="px-3 pb-3">
+            <button
+              onClick={onViewIssues}
+              className={`text-xs font-medium ${config.color} hover:underline`}
+            >
+              View Issues
+            </button>
+          </div>
+        )}
     </div>
   );
 }

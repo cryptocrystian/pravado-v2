@@ -1,4 +1,5 @@
 # EVI — Earned Visibility Index: Formula Reference
+
 **Version:** 1.0  
 **Status:** CANONICAL — reflects production implementation as of Sprint S-INT-01  
 **Implementation:** `apps/api/src/services/evi/`
@@ -26,15 +27,16 @@ Each sub-score is normalized to 0–100 before weighting.
 ## Sub-Score Definitions
 
 ### Visibility (40% weight)
-*"Are people finding and engaging with this brand?"*
+
+_"Are people finding and engaging with this brand?"_
 
 Visibility aggregates active signals that indicate real-world reach and engagement right now.
 
-| Signal | Source Table | Contribution |
-|--------|-------------|--------------|
-| Pitch open rate | `pr_pitches` + `pr_outreach_events` | Opens / Sent (last 30 days) |
-| Pitch reply rate | `pr_pitches` + `pr_outreach_events` | Replies / Sent (last 30 days) |
-| Journalist reach | `journalist_profiles` (DA field) | Avg DA of journalists pitched |
+| Signal           | Source Table                        | Contribution                                  |
+| ---------------- | ----------------------------------- | --------------------------------------------- |
+| Pitch open rate  | `pr_pitches` + `pr_outreach_events` | Opens / Sent (last 30 days)                   |
+| Pitch reply rate | `pr_pitches` + `pr_outreach_events` | Replies / Sent (last 30 days)                 |
+| Journalist reach | `journalist_profiles` (DA field)    | Avg DA of journalists pitched                 |
 | AI citation rate | `citation_summaries` (mention_rate) | Brand mentions / total queries (last 30 days) |
 
 **Normalization:** Each signal is normalized to 0–100 individually, then averaged. Missing signals (no pitches sent, no citation monitoring yet) score 0 for that component — they don't invalidate the sub-score, they suppress it until data exists.
@@ -44,22 +46,24 @@ Visibility aggregates active signals that indicate real-world reach and engageme
 ---
 
 ### Authority (35% weight)
-*"Does this brand have lasting credibility in its domain?"*
+
+_"Does this brand have lasting credibility in its domain?"_
 
 Authority measures structural signals that persist over time — content quality, link equity, and keyword position.
 
-| Signal | Source Table | Contribution |
-|--------|-------------|--------------|
-| Content quality | `content_quality_scores` (avg overall_score) | Avg CiteMind score of published content |
-| Backlink authority | `seo_backlinks` | Count of backlinks with DA > 40 (capped at 200) |
-| Keyword positions | `seo_keyword_metrics` | Avg position score (position 1 = 100, position 50 = 0) |
+| Signal             | Source Table                                 | Contribution                                           |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------ |
+| Content quality    | `content_quality_scores` (avg overall_score) | Avg CiteMind score of published content                |
+| Backlink authority | `seo_backlinks`                              | Count of backlinks with DA > 40 (capped at 200)        |
+| Keyword positions  | `seo_keyword_metrics`                        | Avg position score (position 1 = 100, position 50 = 0) |
 
 **Normalization:** Content quality is already 0–100. Backlink count is scaled: 0 links = 0, 200+ links = 100. Keyword position score: `max(0, 100 - (avg_position - 1) × 2)`.
 
 ---
 
 ### Momentum (25% weight)
-*"Is this brand getting better or worse?"*
+
+_"Is this brand getting better or worse?"_
 
 Momentum is a rate-of-change signal. It compares the current period's Visibility + Authority signals against the prior period of equal length.
 
@@ -76,12 +80,12 @@ A brand growing 10% period-over-period scores ~60/100 on Momentum. Flat scores 5
 
 ## Calculation Cadence
 
-| Trigger | Behavior |
-|---------|----------|
-| Nightly BullMQ job (`evi:recalculate`) | Full recalculation for all orgs with data |
-| Manual trigger via `POST /api/v1/evi/recalculate` | On-demand, used during onboarding activation |
-| After GSC sync | `gsc:sync` worker enqueues `evi:recalculate` after data import |
-| After SAGE signal scan | Not triggered automatically — nightly cadence is sufficient |
+| Trigger                                           | Behavior                                                       |
+| ------------------------------------------------- | -------------------------------------------------------------- |
+| Nightly BullMQ job (`evi:recalculate`)            | Full recalculation for all orgs with data                      |
+| Manual trigger via `POST /api/v1/evi/recalculate` | On-demand, used during onboarding activation                   |
+| After GSC sync                                    | `gsc:sync` worker enqueues `evi:recalculate` after data import |
+| After SAGE signal scan                            | Not triggered automatically — nightly cadence is sufficient    |
 
 ---
 
@@ -108,10 +112,10 @@ The `signal_breakdown` field is non-negotiable — it stores every input signal,
 
 ## API Endpoints
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/evi/current` | Latest calculated EVI score + delta vs prior period |
-| `GET /api/evi/history?days=90` | Array of historical snapshots for trend charts |
+| Endpoint                       | Description                                         |
+| ------------------------------ | --------------------------------------------------- |
+| `GET /api/evi/current`         | Latest calculated EVI score + delta vs prior period |
+| `GET /api/evi/history?days=90` | Array of historical snapshots for trend charts      |
 
 ---
 
@@ -127,13 +131,13 @@ The `signal_breakdown` field is non-negotiable — it stores every input signal,
 
 ## Interpretation Guide
 
-| EVI Range | Interpretation |
-|-----------|---------------|
-| 0–25 | Early stage — limited signals, low visibility |
-| 26–45 | Building — some activity, inconsistent presence |
-| 46–65 | Established — consistent visibility, room to grow |
-| 66–80 | Strong — high authority and active engagement |
-| 81–100 | Market leader — top-tier visibility across all channels |
+| EVI Range | Interpretation                                          |
+| --------- | ------------------------------------------------------- |
+| 0–25      | Early stage — limited signals, low visibility           |
+| 26–45     | Building — some activity, inconsistent presence         |
+| 46–65     | Established — consistent visibility, room to grow       |
+| 66–80     | Strong — high authority and active engagement           |
+| 81–100    | Market leader — top-tier visibility across all channels |
 
 ---
 
@@ -146,4 +150,4 @@ The `signal_breakdown` field is non-negotiable — it stores every input signal,
 
 ---
 
-*This is the authoritative formula reference for EVI. If the implementation in `eviCalculationService.ts` deviates from this document, the document is correct and the code should be updated.*
+_This is the authoritative formula reference for EVI. If the implementation in `eviCalculationService.ts` deviates from this document, the document is correct and the code should be updated._

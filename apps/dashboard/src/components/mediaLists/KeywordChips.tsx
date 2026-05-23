@@ -14,14 +14,16 @@ const sizeClasses = {
   md: 'text-sm px-2.5 py-1',
 };
 
-export function KeywordChips({ keywords, maxDisplay = 5, size = 'md' }: KeywordChipsProps) {
+export function KeywordChips({
+  keywords,
+  maxDisplay = 5,
+  size = 'md',
+}: KeywordChipsProps) {
   const displayKeywords = keywords.slice(0, maxDisplay);
   const remainingCount = keywords.length - maxDisplay;
 
   if (keywords.length === 0) {
-    return (
-      <span className="text-sm text-gray-400 italic">No keywords</span>
-    );
+    return <span className="text-sm text-gray-400 italic">No keywords</span>;
   }
 
   return (

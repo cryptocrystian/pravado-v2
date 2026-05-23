@@ -63,16 +63,21 @@ export function generateStubProposal(ctx: ProposalPromptContext): {
   rationale: string;
   suggested_action: string;
 } {
-  const templates: Record<string, { title: string; rationale: string; action: string }> = {
+  const templates: Record<
+    string,
+    { title: string; rationale: string; action: string }
+  > = {
     pr_stale_followup: {
       title: `Follow up on unanswered pitch (${ctx.signal_data.days_since_sent ?? '?'} days)`,
       rationale: `A pitch sent ${ctx.signal_data.days_since_sent ?? 'several'} days ago has not received a reply. Following up within the first week significantly increases response rates. Letting this slip risks losing the journalist's attention window.`,
-      action: 'Send a concise follow-up email referencing the original pitch angle.',
+      action:
+        'Send a concise follow-up email referencing the original pitch angle.',
     },
     pr_high_value_unpitched: {
       title: `Pitch high-engagement journalist (score: ${ctx.signal_data.engagement_score ?? '?'})`,
       rationale: `This journalist has a high engagement score of ${ctx.signal_data.engagement_score ?? 'N/A'} but has never been pitched by ${ctx.org_name}. High-engagement journalists are more likely to cover stories and amplify brand visibility.`,
-      action: 'Research their recent coverage and craft a personalized pitch aligned with their beat.',
+      action:
+        'Research their recent coverage and craft a personalized pitch aligned with their beat.',
     },
     pr_pitch_window: {
       title: `Pitch window: positive relationship event detected`,
@@ -82,12 +87,14 @@ export function generateStubProposal(ctx: ProposalPromptContext): {
     content_stale_draft: {
       title: `Revive stale draft: "${(ctx.signal_data.title as string)?.substring(0, 40) ?? 'Untitled'}..."`,
       rationale: `This draft has been idle for ${ctx.signal_data.days_stale ?? '14+'} days. Stale drafts represent wasted effort and missed publishing opportunities that could improve authority scores.`,
-      action: 'Review the draft and either complete it or archive it to keep the content pipeline clean.',
+      action:
+        'Review the draft and either complete it or archive it to keep the content pipeline clean.',
     },
     content_low_quality: {
       title: `Improve low-quality published content (score: ${ctx.signal_data.quality_score ?? '?'})`,
       rationale: `Published content with a quality score of ${ctx.signal_data.quality_score ?? '<50'} is hurting authority metrics. Low-quality published pages reduce overall domain authority and are less likely to be cited by AI models.`,
-      action: 'Review and update the content to improve quality score above 60.',
+      action:
+        'Review and update the content to improve quality score above 60.',
     },
     content_coverage_gap: {
       title: `Fill content gap: "${ctx.signal_data.topic_name ?? 'Unknown topic'}"`,
@@ -97,27 +104,32 @@ export function generateStubProposal(ctx: ProposalPromptContext): {
     seo_position_drop: {
       title: `Recover ranking: "${(ctx.signal_data.keyword as string)?.substring(0, 30) ?? '?'}" dropped ${ctx.signal_data.position_gap ?? '?'} positions`,
       rationale: `The keyword "${ctx.signal_data.keyword ?? 'Unknown'}" has dropped from target position, creating a gap of ${ctx.signal_data.position_gap ?? '?'} positions. Each position lost represents declining visibility and traffic.`,
-      action: 'Analyze competitor content for this keyword and update our page with fresher, more comprehensive content.',
+      action:
+        'Analyze competitor content for this keyword and update our page with fresher, more comprehensive content.',
     },
     seo_opportunity_keyword: {
       title: `SEO opportunity: "${(ctx.signal_data.keyword as string)?.substring(0, 30) ?? '?'}" (${ctx.signal_data.search_volume ?? '?'} vol)`,
       rationale: `High-volume keyword "${ctx.signal_data.keyword ?? 'Unknown'}" with ${ctx.signal_data.search_volume ?? 'high'} monthly searches has our page ranking at position ${ctx.signal_data.current_position ?? '20+'}. Significant traffic opportunity exists.`,
-      action: 'Create targeted content or optimize existing page to capture this search volume.',
+      action:
+        'Create targeted content or optimize existing page to capture this search volume.',
     },
     seo_content_gap: {
       title: `Create content for target keyword: "${(ctx.signal_data.keyword as string)?.substring(0, 30) ?? '?'}"`,
       rationale: `Keyword "${ctx.signal_data.keyword ?? 'Unknown'}" has a target position in the top 10 but no matching content exists. This gap prevents us from ranking for a strategically important term.`,
-      action: 'Create a dedicated page targeting this keyword with comprehensive, authoritative content.',
+      action:
+        'Create a dedicated page targeting this keyword with comprehensive, authoritative content.',
     },
     content_low_citemind: {
       title: `Low CiteMind score blocks publish (score: ${ctx.signal_data.score ?? '?'})`,
       rationale: `Content scored ${ctx.signal_data.score ?? 'below threshold'}/100 on CiteMind analysis, which means AI engines are unlikely to cite it. Publishing low-scoring content reduces overall brand authority in AI-generated answers.`,
-      action: 'Review CiteMind recommendations and improve the content before publishing.',
+      action:
+        'Review CiteMind recommendations and improve the content before publishing.',
     },
     content_low_citation_rate: {
-      title: `AI engines citing brand in only ${((ctx.signal_data.mention_rate as number ?? 0) * 100).toFixed(1)}% of queries`,
+      title: `AI engines citing brand in only ${(((ctx.signal_data.mention_rate as number) ?? 0) * 100).toFixed(1)}% of queries`,
       rationale: `Out of ${ctx.signal_data.total_queries ?? '?'} relevant AI queries, ${ctx.org_name} was mentioned only ${ctx.signal_data.total_mentions ?? 0} times. Low citation rates indicate the brand lacks structured, authoritative content that AI models rely on for answers.`,
-      action: 'Improve entity markup, add structured data, and ensure content directly answers common queries in the topic space.',
+      action:
+        'Improve entity markup, add structured data, and ensure content directly answers common queries in the topic space.',
     },
     competitor_citation_gap: {
       title: `${ctx.signal_data.engine ?? 'AI engine'} cites competitors but not ${ctx.org_name}`,

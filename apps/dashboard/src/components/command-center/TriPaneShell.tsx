@@ -42,35 +42,66 @@ export function TriPaneShell({
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
 
-  const mobileSegments: { key: MobilePane; label: string; icon: ReactNode }[] = [
-    {
-      key: 'action',
-      label: 'Action',
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ),
-    },
-    {
-      key: 'intelligence',
-      label: 'Intelligence',
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      ),
-    },
-    {
-      key: 'strategy',
-      label: 'Strategy',
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-    },
-  ];
+  const mobileSegments: { key: MobilePane; label: string; icon: ReactNode }[] =
+    [
+      {
+        key: 'action',
+        label: 'Action',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+          </svg>
+        ),
+      },
+      {
+        key: 'intelligence',
+        label: 'Intelligence',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            />
+          </svg>
+        ),
+      },
+      {
+        key: 'strategy',
+        label: 'Strategy',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+        ),
+      },
+    ];
 
   return (
     <div className="h-full flex flex-col bg-page">
@@ -112,10 +143,23 @@ export function TriPaneShell({
               aria-label="Expand Action Stream"
             >
               <div className="flex flex-col items-center gap-3">
-                <svg className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
-                <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr] rotate-180">Actions</span> {/* typography-allow: vertical label */}
+                <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr] rotate-180">
+                  Actions
+                </span>{' '}
+                {/* typography-allow: vertical label */}
               </div>
             </button>
           ) : (
@@ -123,22 +167,38 @@ export function TriPaneShell({
               <div className="border-b border-border-subtle bg-gradient-to-r from-page to-slate-1">
                 {greeting && (
                   <div className="flex items-center justify-between px-4 pt-3 pb-1">
-                    <span className="text-sm font-semibold text-white/90">{greeting}</span>
-                    {date && <span className="text-[11px] text-white/40">{date}</span>}
+                    <span className="text-sm font-semibold text-white/90">
+                      {greeting}
+                    </span>
+                    {date && (
+                      <span className="text-[11px] text-white/40">{date}</span>
+                    )}
                   </div>
                 )}
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-                    <h2 className="text-lg font-semibold text-white/90 tracking-tight">Action Stream</h2>
+                    <h2 className="text-lg font-semibold text-white/90 tracking-tight">
+                      Action Stream
+                    </h2>
                   </div>
                   <button
                     onClick={() => setLeftCollapsed(true)}
                     className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded transition-colors"
                     aria-label="Collapse Action Stream"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -155,11 +215,19 @@ export function TriPaneShell({
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-page to-slate-1">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-brand-iris animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
-              <h2 className="text-lg font-semibold text-white/90 tracking-tight">Intelligence Canvas</h2>
+              <h2 className="text-lg font-semibold text-white/90 tracking-tight">
+                Intelligence Canvas
+              </h2>
             </div>
-            <div className="flex items-center gap-1 text-[11px] text-white/50"> {/* typography-allow: status indicator */}
+            <div className="flex items-center gap-1 text-[11px] text-white/50">
+              {' '}
+              {/* typography-allow: status indicator */}
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clipRule="evenodd"
+                />
               </svg>
               Live
             </div>
@@ -184,10 +252,23 @@ export function TriPaneShell({
               aria-label="Expand Strategy Panel"
             >
               <div className="flex flex-col items-center gap-3">
-                <svg className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
-                <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">Strategy</span> {/* typography-allow: vertical label */}
+                <span className="text-[11px] font-medium uppercase tracking-wider [writing-mode:vertical-lr]">
+                  Strategy
+                </span>{' '}
+                {/* typography-allow: vertical label */}
               </div>
             </button>
           ) : (
@@ -195,15 +276,27 @@ export function TriPaneShell({
               <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-slate-1 to-page">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-brand-magenta animate-pulse shadow-[0_0_8px_rgba(232,121,249,0.6)]" />
-                  <h2 className="text-lg font-semibold text-white/90 tracking-tight">Strategy Panel</h2>
+                  <h2 className="text-lg font-semibold text-white/90 tracking-tight">
+                    Strategy Panel
+                  </h2>
                 </div>
                 <button
                   onClick={() => setRightCollapsed(true)}
                   className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded transition-colors"
                   aria-label="Collapse Strategy Panel"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>

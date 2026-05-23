@@ -10,7 +10,12 @@
 // ENTITY TYPES
 // ============================================
 
-export type EntityType = 'journalist' | 'podcast' | 'influencer' | 'kol' | 'outlet';
+export type EntityType =
+  | 'journalist'
+  | 'podcast'
+  | 'influencer'
+  | 'kol'
+  | 'outlet';
 
 export type PreferredChannel = 'email' | 'social' | 'form' | 'phone';
 
@@ -20,11 +25,21 @@ export type OutletTier = 't1' | 't2' | 't3' | 'trade' | 'niche';
 
 export type Sentiment = 'positive' | 'neutral' | 'negative';
 
-export type PitchStatus = 'draft' | 'scheduled' | 'sent' | 'opened' | 'replied' | 'declined';
+export type PitchStatus =
+  | 'draft'
+  | 'scheduled'
+  | 'sent'
+  | 'opened'
+  | 'replied'
+  | 'declined';
 
 export type DistributionTrack = 'citemind_aeo' | 'legacy_wire';
 
-export type DistributionStatus = 'draft' | 'pending_approval' | 'distributed' | 'failed';
+export type DistributionStatus =
+  | 'draft'
+  | 'pending_approval'
+  | 'distributed'
+  | 'failed';
 
 export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
 
@@ -516,9 +531,20 @@ export interface DistributionTrackInfo {
 // V1.1 TYPES — DATABASE ADVANCED FILTERS
 // ============================================
 
-export type OutletType = 'newspaper' | 'magazine' | 'blog' | 'broadcast' | 'wire' | 'podcast' | 'newsletter';
+export type OutletType =
+  | 'newspaper'
+  | 'magazine'
+  | 'blog'
+  | 'broadcast'
+  | 'wire'
+  | 'podcast'
+  | 'newsletter';
 
-export type VerificationStatus = 'verified' | 'unverified' | 'outdated' | 'needs_review';
+export type VerificationStatus =
+  | 'verified'
+  | 'unverified'
+  | 'outdated'
+  | 'needs_review';
 
 export type AudienceSignal = 'growing' | 'stable' | 'declining' | 'unknown';
 

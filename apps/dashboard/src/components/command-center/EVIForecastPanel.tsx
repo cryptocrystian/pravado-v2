@@ -10,8 +10,10 @@
  */
 
 import { useState, useMemo } from 'react';
-import type { EVIForecast, ForecastScenario, EVIDriverType } from './types';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import type { EVIForecast, ForecastScenario, EVIDriverType } from './types';
 
 interface EVIForecastPanelProps {
   forecast: EVIForecast | null;
@@ -35,30 +37,37 @@ function ScenarioCard({
   isActive: boolean;
   onToggle: () => void;
 }) {
-  const deltaColor = scenario.delta_evi >= 0 ? 'text-semantic-success' : 'text-semantic-danger';
+  const deltaColor =
+    scenario.delta_evi >= 0 ? 'text-semantic-success' : 'text-semantic-danger';
 
   return (
     <button
       onClick={onToggle}
       className={`
         w-full p-3 rounded-lg border text-left transition-all
-        ${isActive
-          ? 'bg-brand-cyan/5 border-brand-cyan/30'
-          : 'bg-page border-border-subtle hover:border-slate-5'
+        ${
+          isActive
+            ? 'bg-brand-cyan/5 border-brand-cyan/30'
+            : 'bg-page border-border-subtle hover:border-slate-5'
         }
       `}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-white/70'}`}>
+            <span
+              className={`text-sm font-medium ${isActive ? 'text-white' : 'text-white/70'}`}
+            >
               {scenario.label}
             </span>
             <span className={`text-xs font-bold ${deltaColor}`}>
-              {scenario.delta_evi >= 0 ? '+' : ''}{scenario.delta_evi.toFixed(1)} pts
+              {scenario.delta_evi >= 0 ? '+' : ''}
+              {scenario.delta_evi.toFixed(1)} pts
             </span>
           </div>
-          <p className="text-[13px] text-white/50 line-clamp-2">{scenario.description}</p>
+          <p className="text-[13px] text-white/50 line-clamp-2">
+            {scenario.description}
+          </p>
           <div className="flex gap-1.5 mt-2">
             {scenario.drivers.map((driver) => (
               <span
@@ -73,15 +82,20 @@ function ScenarioCard({
         <div
           className={`
             w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all
-            ${isActive
-              ? 'bg-brand-cyan border-brand-cyan'
-              : 'border-white/30'
-            }
+            ${isActive ? 'bg-brand-cyan border-brand-cyan' : 'border-white/30'}
           `}
         >
           {isActive && (
-            <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <svg
+              className="w-full h-full text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
           )}
         </div>
@@ -112,7 +126,9 @@ function ForecastBar({
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <span className="text-[13px] text-white/50">{label}</span>
-        <span className="text-sm font-bold text-white">{expected.toFixed(1)}</span>
+        <span className="text-sm font-bold text-white">
+          {expected.toFixed(1)}
+        </span>
       </div>
       <div className="relative h-2 bg-slate-4 rounded-full overflow-hidden">
         {/* Range bar */}
@@ -128,7 +144,10 @@ function ForecastBar({
         {/* Current position marker */}
         <div
           className="absolute -top-0.5 w-2 h-3 bg-white rounded-sm"
-          style={{ left: `${Math.min(Math.max(currentPct, 0), 100)}%`, transform: 'translateX(-50%)' }}
+          style={{
+            left: `${Math.min(Math.max(currentPct, 0), 100)}%`,
+            transform: 'translateX(-50%)',
+          }}
         />
       </div>
       <div className="flex justify-between text-xs text-white/30">
@@ -154,9 +173,15 @@ function LoadingSkeleton() {
   );
 }
 
-export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps) {
+export function EVIForecastPanel({
+  forecast,
+  isLoading,
+}: EVIForecastPanelProps) {
   const [activeScenarios, setActiveScenarios] = useState<Set<string>>(
-    () => new Set(forecast?.scenarios.filter((s) => s.is_active).map((s) => s.id) || [])
+    () =>
+      new Set(
+        forecast?.scenarios.filter((s) => s.is_active).map((s) => s.id) || []
+      )
   );
 
   // Calculate forecast with active scenarios
@@ -198,8 +223,18 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
     return (
       <div className="p-4 text-center">
         <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-slate-4 flex items-center justify-center">
-          <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          <svg
+            className="w-5 h-5 text-white/40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+            />
           </svg>
         </div>
         <p className="text-sm text-white/50">No forecast data available</p>
@@ -214,7 +249,10 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-white/50 uppercase tracking-wide font-semibold inline-flex items-center gap-1">
             30-Day Forecast
-            <InfoTooltip content="SAGE projects where your EVI score will be in 30 days based on planned actions, content pipeline, and current momentum. Toggle scenarios to see their individual impact." size={11} />
+            <InfoTooltip
+              content="SAGE projects where your EVI score will be in 30 days based on planned actions, content pipeline, and current momentum. Toggle scenarios to see their individual impact."
+              size={11}
+            />
           </span>
           <span className="text-[11px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-iris/10 text-brand-iris border border-brand-iris/30">
             BETA
@@ -229,7 +267,9 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
       <div className="grid grid-cols-2 gap-3">
         <div className="p-3 bg-page border border-border-subtle rounded-lg">
           <div className="text-xs text-white/50 mb-1">Current EVI</div>
-          <div className="text-2xl font-bold text-white">{forecast.current_score.toFixed(1)}</div>
+          <div className="text-2xl font-bold text-white">
+            {forecast.current_score.toFixed(1)}
+          </div>
         </div>
         <div className="p-3 bg-brand-cyan/5 border border-brand-cyan/20 rounded-lg">
           <div className="text-xs text-brand-cyan mb-1">Projected EVI</div>
@@ -238,8 +278,11 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
               {projectedForecast.withScenarios.expected.toFixed(1)}
             </span>
             {projectedForecast.totalDelta !== 0 && (
-              <span className={`text-xs font-bold ${projectedForecast.totalDelta >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-                {projectedForecast.totalDelta >= 0 ? '+' : ''}{projectedForecast.totalDelta.toFixed(1)}
+              <span
+                className={`text-xs font-bold ${projectedForecast.totalDelta >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}
+              >
+                {projectedForecast.totalDelta >= 0 ? '+' : ''}
+                {projectedForecast.totalDelta.toFixed(1)}
               </span>
             )}
           </div>
@@ -278,7 +321,8 @@ export function EVIForecastPanel({ forecast, isLoading }: EVIForecastPanelProps)
 
       {/* Disclaimer */}
       <p className="text-xs text-white/30 text-center">
-        Forecasts are based on historical patterns and active scenarios. Actual results may vary.
+        Forecasts are based on historical patterns and active scenarios. Actual
+        results may vary.
       </p>
     </div>
   );

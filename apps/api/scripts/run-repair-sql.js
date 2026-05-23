@@ -22,7 +22,7 @@ async function runRepairSQL() {
 
   const client = new Client({
     connectionString,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
 
   try {
@@ -31,15 +31,14 @@ async function runRepairSQL() {
     console.log('Connected!');
 
     // Get SQL file from command line arg or default
-const sqlFile = process.argv[2] || 'PR_PILLAR_SCHEMA_REPAIR.sql';
-const sqlPath = path.join(__dirname, '../supabase', sqlFile);
+    const sqlFile = process.argv[2] || 'PR_PILLAR_SCHEMA_REPAIR.sql';
+    const sqlPath = path.join(__dirname, '../supabase', sqlFile);
     const sql = fs.readFileSync(sqlPath, 'utf-8');
 
     console.log('Running repair SQL...');
     const result = await client.query(sql);
     console.log('Repair SQL completed!');
     console.log('Result:', result);
-
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);

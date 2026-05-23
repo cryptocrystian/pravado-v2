@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations -- lexical decl in case block; Phase 1 cleanup */
 'use client';
 
 /**
@@ -6,6 +7,7 @@
  */
 
 import type { ScenarioSuiteItem, AIScenarioSimulation } from '@pravado/types';
+
 import {
   CONDITION_TYPE_LABELS,
   CONDITION_TYPE_DESCRIPTIONS,
@@ -31,11 +33,25 @@ export function SuiteItemList({
   if (items.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
-        <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg
+          className="w-12 h-12 mx-auto mb-3 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          />
         </svg>
         <p>No simulations in this suite yet.</p>
-        {!readonly && <p className="text-sm mt-1">Add simulations to build your scenario chain.</p>}
+        {!readonly && (
+          <p className="text-sm mt-1">
+            Add simulations to build your scenario chain.
+          </p>
+        )}
       </div>
     );
   }
@@ -46,8 +62,10 @@ export function SuiteItemList({
     <div className="space-y-2">
       {sortedItems.map((item, index) => {
         const simulation = simulations?.get(item.simulationId);
-        const conditionLabel = CONDITION_TYPE_LABELS[item.triggerConditionType] || 'Unknown';
-        const conditionDesc = CONDITION_TYPE_DESCRIPTIONS[item.triggerConditionType] || '';
+        const conditionLabel =
+          CONDITION_TYPE_LABELS[item.triggerConditionType] || 'Unknown';
+        const conditionDesc =
+          CONDITION_TYPE_DESCRIPTIONS[item.triggerConditionType] || '';
 
         return (
           <div key={item.id} className="relative">
@@ -80,21 +98,28 @@ export function SuiteItemList({
 
                 {simulation && (
                   <p className="text-xs text-gray-500">
-                    {simulation.objectiveType.replace(/_/g, ' ')} - {simulation.simulationMode.replace(/_/g, ' ')}
+                    {simulation.objectiveType.replace(/_/g, ' ')} -{' '}
+                    {simulation.simulationMode.replace(/_/g, ' ')}
                   </p>
                 )}
 
                 {item.notes && (
-                  <p className="text-xs text-gray-400 mt-1 line-clamp-1">{item.notes}</p>
+                  <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                    {item.notes}
+                  </p>
                 )}
 
                 {/* Condition details */}
-                {item.triggerConditionType !== 'always' && item.triggerCondition && (
-                  <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
-                    <span className="font-medium">Condition:</span>{' '}
-                    {renderConditionSummary(item.triggerConditionType, item.triggerCondition as Record<string, unknown>)}
-                  </div>
-                )}
+                {item.triggerConditionType !== 'always' &&
+                  item.triggerCondition && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                      <span className="font-medium">Condition:</span>{' '}
+                      {renderConditionSummary(
+                        item.triggerConditionType,
+                        item.triggerCondition as Record<string, unknown>
+                      )}
+                    </div>
+                  )}
               </div>
 
               {/* Actions */}
@@ -105,8 +130,18 @@ export function SuiteItemList({
                     className="p-1 text-gray-400 hover:text-indigo-600 rounded"
                     title="Edit"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
                     </svg>
                   </button>
                   <button
@@ -114,8 +149,18 @@ export function SuiteItemList({
                     className="p-1 text-gray-400 hover:text-red-600 rounded"
                     title="Remove"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -136,7 +181,7 @@ function renderConditionSummary(
     case 'risk_threshold':
       return `Risk level ${condition.comparison || '>='} ${condition.minRiskLevel}`;
     case 'keyword_match':
-      const keywords = condition.keywords as string[] || [];
+      const keywords = (condition.keywords as string[]) || [];
       return `Match ${condition.matchMode || 'any'}: ${keywords.slice(0, 3).join(', ')}${keywords.length > 3 ? '...' : ''}`;
     case 'sentiment_shift':
       return `Sentiment ${condition.direction}${condition.magnitude ? ` (${condition.magnitude})` : ''}`;

@@ -58,7 +58,8 @@ async function apiClient<T>(
 
   const headers = {
     'Content-Type': 'application/json',
-    'x-org-id': typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
+    'x-org-id':
+      typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
     ...options.headers,
   };
 
@@ -102,7 +103,9 @@ function buildQueryString(params: Record<string, unknown>): string {
 /**
  * List digests with filtering and pagination
  */
-export async function listDigests(query?: ListExecDigestsQuery): Promise<ListExecDigestsResponse> {
+export async function listDigests(
+  query?: ListExecDigestsQuery
+): Promise<ListExecDigestsResponse> {
   const qs = query ? buildQueryString(query) : '';
   const result = await apiClient<ListExecDigestsResponse>(qs ? `?${qs}` : '');
   return result.data!;
@@ -111,7 +114,9 @@ export async function listDigests(query?: ListExecDigestsQuery): Promise<ListExe
 /**
  * Create a new digest
  */
-export async function createDigest(data: CreateExecDigestInput): Promise<ExecDigest> {
+export async function createDigest(
+  data: CreateExecDigestInput
+): Promise<ExecDigest> {
   const result = await apiClient<ExecDigest>('', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -130,7 +135,10 @@ export async function getDigest(id: string): Promise<GetExecDigestResponse> {
 /**
  * Update a digest
  */
-export async function updateDigest(id: string, data: UpdateExecDigestInput): Promise<ExecDigest> {
+export async function updateDigest(
+  id: string,
+  data: UpdateExecDigestInput
+): Promise<ExecDigest> {
   const result = await apiClient<ExecDigest>(`/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
@@ -146,9 +154,12 @@ export async function deleteDigest(
   hardDelete: boolean = false
 ): Promise<{ deleted: boolean; archived: boolean }> {
   const qs = hardDelete ? '?hard=true' : '';
-  const result = await apiClient<{ deleted: boolean; archived: boolean }>(`/${id}${qs}`, {
-    method: 'DELETE',
-  });
+  const result = await apiClient<{ deleted: boolean; archived: boolean }>(
+    `/${id}${qs}`,
+    {
+      method: 'DELETE',
+    }
+  );
   return result.data!;
 }
 
@@ -171,10 +182,13 @@ export async function generateDigest(
   id: string,
   options?: GenerateExecDigestInput
 ): Promise<GenerateExecDigestResponse> {
-  const result = await apiClient<GenerateExecDigestResponse>(`/${id}/generate`, {
-    method: 'POST',
-    body: JSON.stringify(options || {}),
-  });
+  const result = await apiClient<GenerateExecDigestResponse>(
+    `/${id}/generate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(options || {}),
+    }
+  );
   return result.data!;
 }
 
@@ -199,8 +213,12 @@ export async function deliverDigest(
 /**
  * List sections for a digest
  */
-export async function listSections(digestId: string): Promise<ListExecDigestSectionsResponse> {
-  const result = await apiClient<ListExecDigestSectionsResponse>(`/${digestId}/sections`);
+export async function listSections(
+  digestId: string
+): Promise<ListExecDigestSectionsResponse> {
+  const result = await apiClient<ListExecDigestSectionsResponse>(
+    `/${digestId}/sections`
+  );
   return result.data!;
 }
 
@@ -211,10 +229,13 @@ export async function updateSectionOrder(
   digestId: string,
   sections: { sectionId: string; sortOrder: number }[]
 ): Promise<ExecDigestSection[]> {
-  const result = await apiClient<{ sections: ExecDigestSection[] }>(`/${digestId}/sections/order`, {
-    method: 'POST',
-    body: JSON.stringify({ sections }),
-  });
+  const result = await apiClient<{ sections: ExecDigestSection[] }>(
+    `/${digestId}/sections/order`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ sections }),
+    }
+  );
   return result.data!.sections;
 }
 
@@ -243,10 +264,13 @@ export async function addRecipient(
   digestId: string,
   data: AddExecDigestRecipientInput
 ): Promise<ExecDigestRecipient> {
-  const result = await apiClient<ExecDigestRecipient>(`/${digestId}/recipients`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  const result = await apiClient<ExecDigestRecipient>(
+    `/${digestId}/recipients`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }
+  );
   return result.data!;
 }
 
@@ -258,17 +282,23 @@ export async function updateRecipient(
   recipientId: string,
   data: UpdateExecDigestRecipientInput
 ): Promise<ExecDigestRecipient> {
-  const result = await apiClient<ExecDigestRecipient>(`/${digestId}/recipients/${recipientId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(data),
-  });
+  const result = await apiClient<ExecDigestRecipient>(
+    `/${digestId}/recipients/${recipientId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }
+  );
   return result.data!;
 }
 
 /**
  * Remove a recipient from a digest
  */
-export async function removeRecipient(digestId: string, recipientId: string): Promise<void> {
+export async function removeRecipient(
+  digestId: string,
+  recipientId: string
+): Promise<void> {
   await apiClient(`/${digestId}/recipients/${recipientId}`, {
     method: 'DELETE',
   });
@@ -299,7 +329,9 @@ export async function listDeliveryLogs(
 /**
  * Get label for delivery period
  */
-export function getDeliveryPeriodLabel(period: ExecDigestDeliveryPeriod): string {
+export function getDeliveryPeriodLabel(
+  period: ExecDigestDeliveryPeriod
+): string {
   return EXEC_DIGEST_DELIVERY_PERIOD_LABELS[period] || period;
 }
 
@@ -320,14 +352,18 @@ export function getSectionTypeLabel(type: ExecDigestSectionType): string {
 /**
  * Get label for delivery status
  */
-export function getDeliveryStatusLabel(status: ExecDigestDeliveryStatus): string {
+export function getDeliveryStatusLabel(
+  status: ExecDigestDeliveryStatus
+): string {
   return EXEC_DIGEST_DELIVERY_STATUS_LABELS[status] || status;
 }
 
 /**
  * Get color for delivery status
  */
-export function getDeliveryStatusColor(status: ExecDigestDeliveryStatus): string {
+export function getDeliveryStatusColor(
+  status: ExecDigestDeliveryStatus
+): string {
   const colors: Record<ExecDigestDeliveryStatus, string> = {
     pending: 'text-yellow-600',
     sending: 'text-blue-600',
@@ -341,7 +377,9 @@ export function getDeliveryStatusColor(status: ExecDigestDeliveryStatus): string
 /**
  * Get background color for delivery status
  */
-export function getDeliveryStatusBgColor(status: ExecDigestDeliveryStatus): string {
+export function getDeliveryStatusBgColor(
+  status: ExecDigestDeliveryStatus
+): string {
   const colors: Record<ExecDigestDeliveryStatus, string> = {
     pending: 'bg-yellow-100',
     sending: 'bg-blue-100',
@@ -355,7 +393,9 @@ export function getDeliveryStatusBgColor(status: ExecDigestDeliveryStatus): stri
 /**
  * Get icon for delivery status
  */
-export function getDeliveryStatusIcon(status: ExecDigestDeliveryStatus): string {
+export function getDeliveryStatusIcon(
+  status: ExecDigestDeliveryStatus
+): string {
   const icons: Record<ExecDigestDeliveryStatus, string> = {
     pending: 'clock',
     sending: 'loader',
@@ -390,7 +430,15 @@ export function getSectionTypeIcon(type: ExecDigestSectionType): string {
  * Format day of week number to name
  */
 export function getDayOfWeekLabel(day: number): string {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   return days[day] || 'Unknown';
 }
 
@@ -561,7 +609,9 @@ export function getDigestHealthStatus(
 /**
  * Get color for digest health status
  */
-export function getDigestHealthColor(status: 'healthy' | 'warning' | 'error'): string {
+export function getDigestHealthColor(
+  status: 'healthy' | 'warning' | 'error'
+): string {
   const colors: Record<'healthy' | 'warning' | 'error', string> = {
     healthy: 'text-green-600',
     warning: 'text-yellow-600',

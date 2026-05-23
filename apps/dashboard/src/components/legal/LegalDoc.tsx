@@ -33,9 +33,7 @@ export function H2({ children }: { children: ReactNode }) {
 
 export function H3({ children }: { children: ReactNode }) {
   return (
-    <h3 className="text-base font-semibold text-white mt-6 mb-2">
-      {children}
-    </h3>
+    <h3 className="text-base font-semibold text-white mt-6 mb-2">{children}</h3>
   );
 }
 

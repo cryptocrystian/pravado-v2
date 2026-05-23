@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
 interface SliderProps {
   value?: number[];
@@ -20,7 +20,7 @@ export function Slider({
   max = 100,
   step = 1,
   onValueChange,
-  className = "",
+  className = '',
   disabled = false,
 }: SliderProps) {
   const [internalValue, setInternalValue] = React.useState(defaultValue);

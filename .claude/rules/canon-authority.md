@@ -11,23 +11,24 @@ All canonical specifications are located in: `/docs/canon/`
 ## Required Reading Order
 
 Before any product-related work, read the canon index:
+
 1. `/docs/canon/README.md` - Canon index and reading order
 
 ## Canon Documents
 
 The following documents constitute PRAVADO canon:
 
-| Document | Authority |
-|----------|-----------|
-| `PRODUCT_CONSTITUTION.md` | Product philosophy, pillars, user model |
-| `SAGE_v2.md` | AI interaction framework |
-| `AUTOMATE_v2.md` | Automation modes and orchestration |
-| `UX_SURFACES.md` | Application surface definitions |
-| `CORE_UX_FLOWS.md` | User journey specifications |
-| `DS_v3_PRINCIPLES.md` | Design system foundation |
-| `DS_v3_1_EXPRESSION.md` | Visual expression guidelines |
-| `AUTOMATION_MODES_UX.md` | Automation UX patterns |
-| `PLANS_LIMITS_ENTITLEMENTS.md` | Billing and feature gating |
+| Document                       | Authority                               |
+| ------------------------------ | --------------------------------------- |
+| `PRODUCT_CONSTITUTION.md`      | Product philosophy, pillars, user model |
+| `SAGE_v2.md`                   | AI interaction framework                |
+| `AUTOMATE_v2.md`               | Automation modes and orchestration      |
+| `UX_SURFACES.md`               | Application surface definitions         |
+| `CORE_UX_FLOWS.md`             | User journey specifications             |
+| `DS_v3_PRINCIPLES.md`          | Design system foundation                |
+| `DS_v3_1_EXPRESSION.md`        | Visual expression guidelines            |
+| `AUTOMATION_MODES_UX.md`       | Automation UX patterns                  |
+| `PLANS_LIMITS_ENTITLEMENTS.md` | Billing and feature gating              |
 
 ## Conflict Resolution
 
@@ -50,6 +51,7 @@ The following are NOT canon and should not inform product decisions:
 ## Enforcement
 
 When encountering ambiguity:
+
 1. Check canon first
 2. If canon is silent, ask for clarification
 3. If non-canon contradicts canon, follow canon and flag the conflict

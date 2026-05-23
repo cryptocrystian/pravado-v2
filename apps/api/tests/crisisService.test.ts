@@ -170,7 +170,9 @@ describe('CrisisService', () => {
     it('should throw error if title is missing', async () => {
       const input = { description: 'No title' } as any;
 
-      await expect(service.createIncident(testOrgId, input, testUserId)).rejects.toThrow();
+      await expect(
+        service.createIncident(testOrgId, input, testUserId)
+      ).rejects.toThrow();
     });
 
     it('should generate incident code on creation', async () => {
@@ -217,7 +219,12 @@ describe('CrisisService', () => {
         error: null,
       } as any);
 
-      const result = await service.updateIncident(testOrgId, 'incident-1', updates, testUserId);
+      const result = await service.updateIncident(
+        testOrgId,
+        'incident-1',
+        updates,
+        testUserId
+      );
 
       expect(mockSupabase.from).toHaveBeenCalledWith('crisis_incidents');
       expect(mockSupabase.update).toHaveBeenCalled();
@@ -241,7 +248,12 @@ describe('CrisisService', () => {
         error: null,
       } as any);
 
-      const result = await service.updateIncident(testOrgId, 'incident-1', updates, testUserId);
+      const result = await service.updateIncident(
+        testOrgId,
+        'incident-1',
+        updates,
+        testUserId
+      );
 
       expect(result.status).toBe('contained');
     });
@@ -264,7 +276,12 @@ describe('CrisisService', () => {
         error: null,
       } as any);
 
-      const result = await service.escalateIncident(testOrgId, 'incident-1', 2, testUserId);
+      const result = await service.escalateIncident(
+        testOrgId,
+        'incident-1',
+        2,
+        testUserId
+      );
 
       expect(result.isEscalated).toBe(true);
       expect(result.escalationLevel).toBe(2);
@@ -368,7 +385,10 @@ describe('CrisisService', () => {
         severity: ['critical' as CrisisSeverity, 'severe' as CrisisSeverity],
       });
 
-      expect(mockSupabase.in).toHaveBeenCalledWith('severity', ['critical', 'severe']);
+      expect(mockSupabase.in).toHaveBeenCalledWith('severity', [
+        'critical',
+        'severe',
+      ]);
     });
 
     it('should filter escalated incidents', async () => {
@@ -568,7 +588,11 @@ describe('CrisisService', () => {
         error: null,
       } as any);
 
-      const result = await service.createEscalationRule(testOrgId, input, testUserId);
+      const result = await service.createEscalationRule(
+        testOrgId,
+        input,
+        testUserId
+      );
 
       expect(result.name).toBe('Critical Severity Auto-Escalate');
       expect(result.isActive).toBe(true);
@@ -647,7 +671,11 @@ describe('CrisisService', () => {
         error: null,
       } as any);
 
-      const result = await service.generateCrisisBrief(testOrgId, 'incident-1', {});
+      const result = await service.generateCrisisBrief(
+        testOrgId,
+        'incident-1',
+        {}
+      );
 
       expect(result.brief.format).toBe('executive_summary');
       expect(result.brief.isCurrent).toBe(true);

@@ -8,8 +8,9 @@
  * renders after all three pillars regardless of order.
  */
 
-import Link from 'next/link';
 import { ArrowsHorizontal, ArrowRight } from '@phosphor-icons/react';
+import Link from 'next/link';
+
 import {
   eviBand,
   sevColor,
@@ -26,7 +27,9 @@ interface Props {
 }
 
 function TM() {
-  return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;
+  return (
+    <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>
+  );
 }
 
 const QUARTILE_LABELS: Record<1 | 2 | 3 | 4, string> = {
@@ -47,8 +50,9 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
   const laggingScore = scanResult.pillars[variance.lagging_pillar].score;
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 80px' }}>
-
+    <div
+      style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 80px' }}
+    >
       {/* ── EVI hero ──────────────────────────────────────────── */}
       <div
         style={{
@@ -70,7 +74,8 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
             marginBottom: 16,
           }}
         >
-          Earned Visibility Index (EVI<TM />)
+          Earned Visibility Index (EVI
+          <TM />)
         </div>
 
         <div
@@ -93,7 +98,9 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
           >
             {scanResult.evi_score}
           </span>
-          <span style={{ fontSize: 32, color: 'rgba(255,255,255,0.3)' }}>/100</span>
+          <span style={{ fontSize: 32, color: 'rgba(255,255,255,0.3)' }}>
+            /100
+          </span>
         </div>
 
         <div style={{ marginBottom: 20 }}>
@@ -119,7 +126,8 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
             color: 'rgba(255,255,255,0.45)',
             lineHeight: 1.6,
             margin: 0,
-            marginBottom: benchmark.category_quartile && benchmark.category_label ? 16 : 0,
+            marginBottom:
+              benchmark.category_quartile && benchmark.category_label ? 16 : 0,
             maxWidth: 560,
             marginLeft: 'auto',
             marginRight: 'auto',
@@ -143,7 +151,8 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
               color: 'rgba(255,255,255,0.65)',
             }}
           >
-            {QUARTILE_LABELS[benchmark.category_quartile]} for {benchmark.category_label}
+            {QUARTILE_LABELS[benchmark.category_quartile]} for{' '}
+            {benchmark.category_label}
           </div>
         )}
       </div>
@@ -177,7 +186,14 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
                 flexDirection: 'column',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  marginBottom: 16,
+                }}
+              >
                 <div
                   style={{
                     width: 32,
@@ -190,14 +206,27 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
                     flexShrink: 0,
                   }}
                 >
-                  <PillarIcon size={18} weight="regular" color={config.accent} />
+                  <PillarIcon
+                    size={18}
+                    weight="regular"
+                    color={config.accent}
+                  />
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
+                <div
+                  style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}
+                >
                   {config.label}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 8,
+                  marginBottom: 8,
+                }}
+              >
                 <span
                   style={{
                     fontSize: 40,
@@ -209,7 +238,9 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
                 >
                   {pillar.score}
                 </span>
-                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)' }}>/100</span>
+                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)' }}>
+                  /100
+                </span>
               </div>
 
               <div style={{ marginBottom: 20 }}>
@@ -229,7 +260,9 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
                 </span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+              >
                 {topGaps.map((gap, i) => (
                   <div
                     key={i}
@@ -249,7 +282,14 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
                         marginBottom: 6,
                       }}
                     >
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#ffffff', lineHeight: 1.35 }}>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: '#ffffff',
+                          lineHeight: 1.35,
+                        }}
+                      >
                         {gap.title}
                       </span>
                       <span
@@ -287,7 +327,9 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
                         borderTop: '1px solid rgba(255,255,255,0.05)',
                       }}
                     >
-                      <span style={{ color: config.accent, fontWeight: 600 }}>Pravado would: </span>
+                      <span style={{ color: config.accent, fontWeight: 600 }}>
+                        Pravado would:{' '}
+                      </span>
                       {gap.remediation}
                     </div>
                   </div>
@@ -321,19 +363,55 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
             marginBottom: 20,
           }}
         >
-          <ArrowsHorizontal size={14} weight="bold" color="rgba(255,255,255,0.4)" />
+          <ArrowsHorizontal
+            size={14}
+            weight="bold"
+            color="rgba(255,255,255,0.4)"
+          />
           The orchestration opportunity
         </div>
 
-        <div className="evi-variance-row" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-          <div className="evi-variance-label evi-variance-label-lagging" style={{ minWidth: 120, textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
+        <div
+          className="evi-variance-row"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            marginBottom: 20,
+          }}
+        >
+          <div
+            className="evi-variance-label evi-variance-label-lagging"
+            style={{ minWidth: 120, textAlign: 'right' }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.45)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                marginBottom: 2,
+              }}
+            >
               Lagging
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: laggingConfig.accent }}>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: laggingConfig.accent,
+              }}
+            >
               {laggingConfig.label}
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 800,
+                color: '#ffffff',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
               {laggingScore}
             </div>
           </div>
@@ -359,14 +437,38 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
               }}
             />
           </div>
-          <div className="evi-variance-label evi-variance-label-leading" style={{ minWidth: 120 }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
+          <div
+            className="evi-variance-label evi-variance-label-leading"
+            style={{ minWidth: 120 }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.45)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                marginBottom: 2,
+              }}
+            >
               Leading
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: leadingConfig.accent }}>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: leadingConfig.accent,
+              }}
+            >
               {leadingConfig.label}
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 800,
+                color: '#ffffff',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
               {leadingScore}
             </div>
           </div>
@@ -457,7 +559,8 @@ export function EVIScorecardResults({ scanResult, entryPath }: Props) {
             marginBottom: 0,
           }}
         >
-          We&apos;ve emailed you a magic link to access this scorecard from your dashboard anytime.
+          We&apos;ve emailed you a magic link to access this scorecard from your
+          dashboard anytime.
         </p>
       )}
 

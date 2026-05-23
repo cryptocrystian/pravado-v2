@@ -80,7 +80,10 @@ export default function RSSCrawlerPage() {
 
     setIsAdding(true);
     try {
-      await createRSSFeed({ url: newFeedUrl.trim(), title: newFeedTitle.trim() || undefined });
+      await createRSSFeed({
+        url: newFeedUrl.trim(),
+        title: newFeedTitle.trim() || undefined,
+      });
       setNewFeedUrl('');
       setNewFeedTitle('');
       setShowAddFeedForm(false);
@@ -126,8 +129,12 @@ export default function RSSCrawlerPage() {
         <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">RSS & Media Crawling</h1>
-              <p className="text-sm text-gray-500">Automated article ingestion</p>
+              <h1 className="text-xl font-semibold text-gray-900">
+                RSS & Media Crawling
+              </h1>
+              <p className="text-sm text-gray-500">
+                Automated article ingestion
+              </p>
             </div>
             <div className="flex gap-2">
               <button
@@ -165,7 +172,9 @@ export default function RSSCrawlerPage() {
                 <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Feed URL</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Feed URL
+                      </label>
                       <input
                         type="url"
                         value={newFeedUrl}
@@ -175,7 +184,9 @@ export default function RSSCrawlerPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Title (Optional)</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Title (Optional)
+                      </label>
                       <input
                         type="text"
                         value={newFeedTitle}
@@ -205,13 +216,20 @@ export default function RSSCrawlerPage() {
 
               <div className="space-y-2">
                 {feeds.map((feed) => (
-                  <div key={feed.id} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
+                  <div
+                    key={feed.id}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4"
+                  >
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{feed.title || feed.url}</div>
+                      <div className="font-medium text-gray-900">
+                        {feed.title || feed.url}
+                      </div>
                       <div className="text-sm text-gray-500">{feed.url}</div>
                       <div className="mt-1 text-xs text-gray-400">
                         {feed.articlesFound} articles • Last fetched:{' '}
-                        {feed.lastFetchedAt ? new Date(feed.lastFetchedAt).toLocaleString() : 'Never'}
+                        {feed.lastFetchedAt
+                          ? new Date(feed.lastFetchedAt).toLocaleString()
+                          : 'Never'}
                       </div>
                     </div>
                     <button
@@ -223,7 +241,9 @@ export default function RSSCrawlerPage() {
                   </div>
                 ))}
                 {feeds.length === 0 && !isLoadingFeeds && (
-                  <p className="py-8 text-center text-sm text-gray-500">No RSS feeds yet. Add one to get started.</p>
+                  <p className="py-8 text-center text-sm text-gray-500">
+                    No RSS feeds yet. Add one to get started.
+                  </p>
                 )}
               </div>
             </div>
@@ -234,26 +254,43 @@ export default function RSSCrawlerPage() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">URL</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Attempts</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Created</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        URL
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Attempts
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Created
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {jobs.map((job) => (
                       <tr key={job.id}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{job.title || new URL(job.url).hostname}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {job.title || new URL(job.url).hostname}
+                        </td>
                         <td className="px-4 py-3 text-sm">
                           <CrawlStatusBadge status={job.status} />
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-500">{job.runCount}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">{new Date(job.createdAt).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">
+                          {job.runCount}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-500">
+                          {new Date(job.createdAt).toLocaleString()}
+                        </td>
                       </tr>
                     ))}
                     {jobs.length === 0 && !isLoadingJobs && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-sm text-gray-500">
+                        <td
+                          colSpan={4}
+                          className="px-4 py-8 text-center text-sm text-gray-500"
+                        >
                           No crawl jobs yet. Fetch RSS feeds to create jobs.
                         </td>
                       </tr>
@@ -269,12 +306,18 @@ export default function RSSCrawlerPage() {
             {stats && (
               <div className="space-y-3">
                 <div className="rounded-lg bg-white p-3 shadow-sm">
-                  <div className="text-2xl font-bold text-gray-900">{stats.totalFeeds}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {stats.totalFeeds}
+                  </div>
                   <div className="text-sm text-gray-500">Total Feeds</div>
-                  <div className="mt-1 text-xs text-green-600">{stats.activeFeeds} active</div>
+                  <div className="mt-1 text-xs text-green-600">
+                    {stats.activeFeeds} active
+                  </div>
                 </div>
                 <div className="rounded-lg bg-white p-3 shadow-sm">
-                  <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {stats.totalJobs}
+                  </div>
                   <div className="text-sm text-gray-500">Total Jobs</div>
                 </div>
                 <div className="rounded-lg bg-white p-3 shadow-sm">
@@ -298,8 +341,12 @@ export default function RSSCrawlerPage() {
                   </div>
                 </div>
                 <div className="rounded-lg bg-white p-3 shadow-sm">
-                  <div className="text-2xl font-bold text-gray-900">{stats.articlesDiscovered}</div>
-                  <div className="text-sm text-gray-500">Articles Discovered</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {stats.articlesDiscovered}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Articles Discovered
+                  </div>
                 </div>
               </div>
             )}

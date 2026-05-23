@@ -51,29 +51,19 @@ export function ConfidenceBadge({
         </span>
         <div className="text-xs space-y-1 text-gray-600">
           {breakdown.nameConfidence !== undefined && (
-            <div>
-              Name: {Math.round(breakdown.nameConfidence * 100)}%
-            </div>
+            <div>Name: {Math.round(breakdown.nameConfidence * 100)}%</div>
           )}
           {breakdown.emailConfidence !== undefined && (
-            <div>
-              Email: {Math.round(breakdown.emailConfidence * 100)}%
-            </div>
+            <div>Email: {Math.round(breakdown.emailConfidence * 100)}%</div>
           )}
           {breakdown.outletConfidence !== undefined && (
-            <div>
-              Outlet: {Math.round(breakdown.outletConfidence * 100)}%
-            </div>
+            <div>Outlet: {Math.round(breakdown.outletConfidence * 100)}%</div>
           )}
           {breakdown.socialConfidence !== undefined && (
-            <div>
-              Social: {Math.round(breakdown.socialConfidence * 100)}%
-            </div>
+            <div>Social: {Math.round(breakdown.socialConfidence * 100)}%</div>
           )}
           {breakdown.beatConfidence !== undefined && (
-            <div>
-              Beat: {Math.round(breakdown.beatConfidence * 100)}%
-            </div>
+            <div>Beat: {Math.round(breakdown.beatConfidence * 100)}%</div>
           )}
         </div>
       </div>

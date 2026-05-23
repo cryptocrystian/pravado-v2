@@ -21,11 +21,7 @@ const TOOL_OPTIONS = [
   'None of these',
 ];
 
-const FEEDBACK_OPTIONS = [
-  'Yes — happy to',
-  'Maybe',
-  'No thanks',
-];
+const FEEDBACK_OPTIONS = ['Yes — happy to', 'Maybe', 'No thanks'];
 
 export default function BetaRequestPage() {
   const [email, setEmail] = useState('');
@@ -45,8 +41,14 @@ export default function BetaRequestPage() {
     e.preventDefault();
     setFormState('submitting');
 
-    const freeDomains = ['gmail.com', 'yahoo.com', 'hotmail.com',
-      'outlook.com', 'icloud.com', 'aol.com'];
+    const freeDomains = [
+      'gmail.com',
+      'yahoo.com',
+      'hotmail.com',
+      'outlook.com',
+      'icloud.com',
+      'aol.com',
+    ];
     const domain = email.split('@')[1]?.toLowerCase();
     if (domain && freeDomains.includes(domain)) {
       setEmailError('Please use your work email address.');
@@ -79,11 +81,16 @@ export default function BetaRequestPage() {
         setMessage(json.data.message);
       } else {
         setFormState('error');
-        setMessage(json.error?.message || 'Something went wrong. Please try again or email hello@pravado.io directly.');
+        setMessage(
+          json.error?.message ||
+            'Something went wrong. Please try again or email hello@pravado.io directly.'
+        );
       }
     } catch {
       setFormState('error');
-      setMessage('Something went wrong. Please try again or email hello@pravado.io directly.');
+      setMessage(
+        'Something went wrong. Please try again or email hello@pravado.io directly.'
+      );
     }
   };
 
@@ -93,15 +100,22 @@ export default function BetaRequestPage() {
     );
   };
 
-  const inputStyle = { backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' };
+  const inputStyle = {
+    backgroundColor: '#0A0A0F',
+    border: '1px solid #1F1F28',
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: '#0A0A0F' }}>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
+      style={{ backgroundColor: '#0A0A0F' }}
+    >
       {/* Background gradient */}
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 60%)',
+          background:
+            'radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 60%)',
         }}
       />
 
@@ -114,11 +128,14 @@ export default function BetaRequestPage() {
         </h1>
 
         {/* Subheadline */}
-        <p className="mt-4 mb-2 text-center text-base md:text-lg" style={{ color: '#7A7A8A' }}>
-          Pravado&apos;s AI engine — SAGE — monitors signals across your PR pipeline,
-          content library, and SEO landscape around the clock. It surfaces exactly
-          what to do next, then helps you do it. One platform. Three pillars.
-          Everything moving in the same direction.
+        <p
+          className="mt-4 mb-2 text-center text-base md:text-lg"
+          style={{ color: '#7A7A8A' }}
+        >
+          Pravado&apos;s AI engine — SAGE — monitors signals across your PR
+          pipeline, content library, and SEO landscape around the clock. It
+          surfaces exactly what to do next, then helps you do it. One platform.
+          Three pillars. Everything moving in the same direction.
         </p>
 
         {/* Social proof */}
@@ -128,25 +145,40 @@ export default function BetaRequestPage() {
 
         {/* Value prop cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="p-6 rounded-xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+          <div
+            className="p-6 rounded-xl border"
+            style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}
+          >
             <div className="text-2xl mb-3">⚡</div>
-            <h3 className="text-sm font-semibold text-white mb-2">SAGE identifies your next move</h3>
+            <h3 className="text-sm font-semibold text-white mb-2">
+              SAGE identifies your next move
+            </h3>
             <p className="text-sm" style={{ color: '#7A7A8A' }}>
               Continuously analyzes PR, content, and SEO signals to surface your
               highest-impact actions — ranked by EVI improvement potential.
             </p>
           </div>
-          <div className="p-6 rounded-xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+          <div
+            className="p-6 rounded-xl border"
+            style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}
+          >
             <div className="text-2xl mb-3">🎯</div>
-            <h3 className="text-sm font-semibold text-white mb-2">Execute across all three pillars</h3>
+            <h3 className="text-sm font-semibold text-white mb-2">
+              Execute across all three pillars
+            </h3>
             <p className="text-sm" style={{ color: '#7A7A8A' }}>
               From pitch to publish to ranking — manage every visibility action
               from one command center without switching between five tools.
             </p>
           </div>
-          <div className="p-6 rounded-xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+          <div
+            className="p-6 rounded-xl border"
+            style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}
+          >
             <div className="text-2xl mb-3">📡</div>
-            <h3 className="text-sm font-semibold text-white mb-2">Know exactly where you stand with AI engines</h3>
+            <h3 className="text-sm font-semibold text-white mb-2">
+              Know exactly where you stand with AI engines
+            </h3>
             <p className="text-sm" style={{ color: '#7A7A8A' }}>
               Your Earned Visibility Index tells you how your brand registers in
               ChatGPT, Perplexity, and Google — and what&apos;s moving it.
@@ -155,10 +187,20 @@ export default function BetaRequestPage() {
         </div>
 
         {/* Form card */}
-        <div className="w-full max-w-lg mx-auto p-8 space-y-6 rounded-2xl border" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+        <div
+          className="w-full max-w-lg mx-auto p-8 space-y-6 rounded-2xl border"
+          style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}
+        >
           {/* Header */}
           <div className="text-center space-y-2">
-            <span className="text-2xl font-bold" style={{ background: 'linear-gradient(135deg, #A855F7, #00D9FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span
+              className="text-2xl font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #A855F7, #00D9FF)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
               Pravado
             </span>
             <h2 className="text-xl font-semibold text-white mt-2">
@@ -168,27 +210,45 @@ export default function BetaRequestPage() {
 
           {formState === 'success' ? (
             <div className="text-center py-8 space-y-4">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}>
-                <svg className="w-8 h-8" fill="none" stroke="#22C55E" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
+                style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="#22C55E"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white">You&apos;re on the list.</h3>
+              <h3 className="text-xl font-semibold text-white">
+                You&apos;re on the list.
+              </h3>
               <p className="text-sm" style={{ color: '#7A7A8A' }}>
                 We review applications every day and prioritize teams ready to
-                stop managing PR, content, and SEO separately. If approved, you&apos;ll
-                get a personal email from Christian with your invite code.
+                stop managing PR, content, and SEO separately. If approved,
+                you&apos;ll get a personal email from Christian with your invite
+                code.
               </p>
               <p className="text-xs" style={{ color: '#5A5A6A' }}>
-                One thing to do now — connect on LinkedIn. That&apos;s where
-                the research behind Pravado comes out first.
+                One thing to do now — connect on LinkedIn. That&apos;s where the
+                research behind Pravado comes out first.
               </p>
               <a
                 href="https://linkedin.com/in/cdibrell"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block mt-2 px-6 py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}
+                style={{
+                  background: 'linear-gradient(135deg, #A855F7, #7C3AED)',
+                }}
               >
                 Connect on LinkedIn →
               </a>
@@ -197,7 +257,10 @@ export default function BetaRequestPage() {
             <form className="space-y-4" onSubmit={handleSubmit}>
               {/* Work email */}
               <div>
-                <label htmlFor="beta-email" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-email"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   Work email *
                 </label>
                 <input
@@ -205,19 +268,27 @@ export default function BetaRequestPage() {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError('');
+                  }}
                   className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder:text-[#3D3D4A] outline-none transition-colors"
                   style={inputStyle}
                   placeholder="you@company.com"
                 />
                 {emailError && (
-                  <p className="mt-1 text-xs" style={{ color: '#EF4444' }}>{emailError}</p>
+                  <p className="mt-1 text-xs" style={{ color: '#EF4444' }}>
+                    {emailError}
+                  </p>
                 )}
               </div>
 
               {/* Job title */}
               <div>
-                <label htmlFor="beta-job-title" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-job-title"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   Job title *
                 </label>
                 <input
@@ -234,7 +305,10 @@ export default function BetaRequestPage() {
 
               {/* Company name */}
               <div>
-                <label htmlFor="beta-company" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-company"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   Company name
                 </label>
                 <input
@@ -250,7 +324,10 @@ export default function BetaRequestPage() {
 
               {/* Company website */}
               <div>
-                <label htmlFor="beta-website" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-website"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   Company website *
                 </label>
                 <input
@@ -267,7 +344,10 @@ export default function BetaRequestPage() {
 
               {/* Team size */}
               <div>
-                <label htmlFor="beta-size" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-size"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   Team size
                 </label>
                 <select
@@ -288,7 +368,10 @@ export default function BetaRequestPage() {
 
               {/* Use case */}
               <div>
-                <label htmlFor="beta-usecase" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-usecase"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   What do you want to use Pravado for?
                 </label>
                 <textarea
@@ -309,7 +392,10 @@ export default function BetaRequestPage() {
                 </label>
                 <div className="space-y-2">
                   {TOOL_OPTIONS.map((tool) => (
-                    <label key={tool} className="flex items-center gap-2.5 cursor-pointer group">
+                    <label
+                      key={tool}
+                      className="flex items-center gap-2.5 cursor-pointer group"
+                    >
                       <input
                         type="checkbox"
                         checked={currentTools.includes(tool)}
@@ -317,7 +403,9 @@ export default function BetaRequestPage() {
                         className="w-4 h-4 rounded border accent-purple-500"
                         style={{ accentColor: '#A855F7' }}
                       />
-                      <span className="text-sm" style={{ color: '#7A7A8A' }}>{tool}</span>
+                      <span className="text-sm" style={{ color: '#7A7A8A' }}>
+                        {tool}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -325,7 +413,10 @@ export default function BetaRequestPage() {
 
               {/* Referral source */}
               <div>
-                <label htmlFor="beta-referral" className="block text-sm font-medium text-white mb-1.5">
+                <label
+                  htmlFor="beta-referral"
+                  className="block text-sm font-medium text-white mb-1.5"
+                >
                   How did you hear about us?
                 </label>
                 <select
@@ -352,7 +443,10 @@ export default function BetaRequestPage() {
                 </label>
                 <div className="space-y-2">
                   {FEEDBACK_OPTIONS.map((option) => (
-                    <label key={option} className="flex items-center gap-2.5 cursor-pointer">
+                    <label
+                      key={option}
+                      className="flex items-center gap-2.5 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name="feedbackCall"
@@ -362,14 +456,22 @@ export default function BetaRequestPage() {
                         className="w-4 h-4"
                         style={{ accentColor: '#A855F7' }}
                       />
-                      <span className="text-sm" style={{ color: '#7A7A8A' }}>{option}</span>
+                      <span className="text-sm" style={{ color: '#7A7A8A' }}>
+                        {option}
+                      </span>
                     </label>
                   ))}
                 </div>
               </div>
 
               {formState === 'error' && (
-                <div className="px-3 py-2 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}>
+                <div
+                  className="px-3 py-2 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    color: '#EF4444',
+                  }}
+                >
                   {message}
                 </div>
               )}
@@ -378,16 +480,33 @@ export default function BetaRequestPage() {
                 type="submit"
                 disabled={formState === 'submitting'}
                 className="w-full py-3 rounded-lg text-sm font-medium text-white transition-opacity disabled:opacity-50"
-                style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}
+                style={{
+                  background: 'linear-gradient(135deg, #A855F7, #7C3AED)',
+                }}
               >
-                {formState === 'submitting' ? 'Submitting...' : 'Request Early Access →'}
+                {formState === 'submitting'
+                  ? 'Submitting...'
+                  : 'Request Early Access →'}
               </button>
 
               <p className="text-center text-xs" style={{ color: '#5A5A6A' }}>
                 By applying you agree to our{' '}
-                <a href="/legal/terms" className="hover:underline" style={{ color: '#00D9FF' }}>Terms of Service</a>
-                {' '}and{' '}
-                <a href="/legal/privacy" className="hover:underline" style={{ color: '#00D9FF' }}>Privacy Policy</a>.
+                <a
+                  href="/legal/terms"
+                  className="hover:underline"
+                  style={{ color: '#00D9FF' }}
+                >
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a
+                  href="/legal/privacy"
+                  className="hover:underline"
+                  style={{ color: '#00D9FF' }}
+                >
+                  Privacy Policy
+                </a>
+                .
                 <br />
                 We review applications within 48 hours.
               </p>

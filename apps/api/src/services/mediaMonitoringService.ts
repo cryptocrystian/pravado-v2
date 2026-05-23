@@ -84,7 +84,10 @@ export class MediaMonitoringService {
   /**
    * Create a new monitoring source
    */
-  async createSource(orgId: string, input: CreateSourceInput): Promise<MediaMonitoringSource> {
+  async createSource(
+    orgId: string,
+    input: CreateSourceInput
+  ): Promise<MediaMonitoringSource> {
     const { data, error } = await this.supabase
       .from('media_monitoring_sources')
       .insert({
@@ -109,7 +112,10 @@ export class MediaMonitoringService {
   /**
    * List monitoring sources for an organization
    */
-  async listSources(orgId: string, query: ListSourcesQuery = {}): Promise<SourceListResponse> {
+  async listSources(
+    orgId: string,
+    query: ListSourcesQuery = {}
+  ): Promise<SourceListResponse> {
     const { active, limit = 50, offset = 0 } = query;
 
     let queryBuilder = this.supabase
@@ -131,7 +137,9 @@ export class MediaMonitoringService {
     }
 
     return {
-      sources: (data || []).map((r) => transformSourceRecord(r as MediaMonitoringSourceRecord)),
+      sources: (data || []).map((r) =>
+        transformSourceRecord(r as MediaMonitoringSourceRecord)
+      ),
       total: count || 0,
       limit,
       offset,
@@ -141,7 +149,10 @@ export class MediaMonitoringService {
   /**
    * Get a single source by ID
    */
-  async getSource(orgId: string, sourceId: string): Promise<MediaMonitoringSource | null> {
+  async getSource(
+    orgId: string,
+    sourceId: string
+  ): Promise<MediaMonitoringSource | null> {
     const { data, error } = await this.supabase
       .from('media_monitoring_sources')
       .select('*')
@@ -177,9 +188,11 @@ export class MediaMonitoringService {
 
     if (input.name !== undefined) updateData.name = input.name;
     if (input.url !== undefined) updateData.url = input.url;
-    if (input.description !== undefined) updateData.description = input.description;
+    if (input.description !== undefined)
+      updateData.description = input.description;
     if (input.active !== undefined) updateData.active = input.active;
-    if (input.sourceType !== undefined) updateData.source_type = input.sourceType;
+    if (input.sourceType !== undefined)
+      updateData.source_type = input.sourceType;
     if (input.crawlFrequencyHours !== undefined)
       updateData.crawl_frequency_hours = input.crawlFrequencyHours;
     if (input.metadata !== undefined) updateData.metadata = input.metadata;
@@ -239,7 +252,10 @@ export class MediaMonitoringService {
     const embeddings = await this.generateEmbeddings(extracted.content);
 
     // Step 3: Classify keywords
-    const keywords = await this.extractKeywords(extracted.content, extracted.title);
+    const keywords = await this.extractKeywords(
+      extracted.content,
+      extracted.title
+    );
 
     // Step 4: Calculate relevance score (stub)
     const relevanceScore = this.calculateRelevanceScore(keywords, extracted);
@@ -276,7 +292,9 @@ export class MediaMonitoringService {
       throw new Error(`Failed to store article: ${error.message}`);
     }
 
-    const article = transformArticleRecord(data as MediaMonitoringArticleRecord);
+    const article = transformArticleRecord(
+      data as MediaMonitoringArticleRecord
+    );
 
     // Update source last_crawled_at if source provided
     if (options.sourceId) {
@@ -328,7 +346,9 @@ export class MediaMonitoringService {
 
     const title = options.title || this.extractTitleFromUrl(url);
     const author = options.author || null;
-    const publishedAt = options.publishedAt ? new Date(options.publishedAt) : null;
+    const publishedAt = options.publishedAt
+      ? new Date(options.publishedAt)
+      : null;
     const content =
       options.content ||
       `This is stub content for article from ${url}. In production, this would be scraped from the actual webpage.`;
@@ -373,7 +393,10 @@ export class MediaMonitoringService {
   /**
    * Generate article summary using LLM
    */
-  private async generateSummary(content: string, title: string): Promise<string> {
+  private async generateSummary(
+    content: string,
+    title: string
+  ): Promise<string> {
     if (!this.llmRouter) {
       // Fallback: First 200 characters
       return content.substring(0, 200) + (content.length > 200 ? '...' : '');
@@ -400,9 +423,11 @@ export class MediaMonitoringService {
   /**
    * Generate embeddings for article content
    */
-  private async generateEmbeddings(
-    content: string
-  ): Promise<{ vector: number[] | null; generated: boolean; dimensions: number }> {
+  private async generateEmbeddings(content: string): Promise<{
+    vector: number[] | null;
+    generated: boolean;
+    dimensions: number;
+  }> {
     if (!this.openaiApiKey) {
       return { vector: null, generated: false, dimensions: 0 };
     }
@@ -446,7 +471,10 @@ export class MediaMonitoringService {
   /**
    * Extract keywords from content
    */
-  private async extractKeywords(content: string, title: string): Promise<string[]> {
+  private async extractKeywords(
+    content: string,
+    title: string
+  ): Promise<string[]> {
     if (!this.llmRouter) {
       // Fallback: Simple keyword extraction
       return this.extractKeywordsFallback(content, title);
@@ -625,8 +653,19 @@ export class MediaMonitoringService {
       const domain = urlObj.hostname.toLowerCase();
 
       // Simple tier-based scoring
-      const tier1Domains = ['nytimes.com', 'wsj.com', 'bbc.com', 'reuters.com', 'bloomberg.com'];
-      const tier2Domains = ['techcrunch.com', 'wired.com', 'theverge.com', 'forbes.com'];
+      const tier1Domains = [
+        'nytimes.com',
+        'wsj.com',
+        'bbc.com',
+        'reuters.com',
+        'bloomberg.com',
+      ];
+      const tier2Domains = [
+        'techcrunch.com',
+        'wired.com',
+        'theverge.com',
+        'forbes.com',
+      ];
 
       if (tier1Domains.some((d) => domain.includes(d))) return 90;
       if (tier2Domains.some((d) => domain.includes(d))) return 70;
@@ -645,7 +684,10 @@ export class MediaMonitoringService {
   /**
    * List articles for an organization
    */
-  async listArticles(orgId: string, query: ListArticlesQuery = {}): Promise<ArticleListResponse> {
+  async listArticles(
+    orgId: string,
+    query: ListArticlesQuery = {}
+  ): Promise<ArticleListResponse> {
     const {
       sourceId,
       minRelevance,
@@ -700,7 +742,10 @@ export class MediaMonitoringService {
 
     const articles: ArticleWithSource[] = (data || []).map((record) => {
       const articleRecord = record as MediaMonitoringArticleRecord & {
-        media_monitoring_sources: MediaMonitoringSourceRecord | MediaMonitoringSourceRecord[] | null;
+        media_monitoring_sources:
+          | MediaMonitoringSourceRecord
+          | MediaMonitoringSourceRecord[]
+          | null;
       };
 
       const sourceData = articleRecord.media_monitoring_sources;
@@ -741,7 +786,10 @@ export class MediaMonitoringService {
     }
 
     const articleRecord = articleData as MediaMonitoringArticleRecord & {
-      media_monitoring_sources: MediaMonitoringSourceRecord | MediaMonitoringSourceRecord[] | null;
+      media_monitoring_sources:
+        | MediaMonitoringSourceRecord
+        | MediaMonitoringSourceRecord[]
+        | null;
     };
 
     const sourceData = articleRecord.media_monitoring_sources;
@@ -762,7 +810,9 @@ export class MediaMonitoringService {
     return {
       ...transformArticleRecord(articleRecord),
       source: source ? transformSourceRecord(source) : null,
-      mentions: (mentionsData || []).map((r) => transformMentionRecord(r as EarnedMentionRecord)),
+      mentions: (mentionsData || []).map((r) =>
+        transformMentionRecord(r as EarnedMentionRecord)
+      ),
     };
   }
 
@@ -806,7 +856,11 @@ export class MediaMonitoringService {
     );
 
     // Match journalist
-    const journalistMatch = await this.matchJournalist(orgId, article.author, article.content);
+    const journalistMatch = await this.matchJournalist(
+      orgId,
+      article.author,
+      article.content
+    );
 
     // Store mentions
     const storedMentions: EarnedMention[] = [];
@@ -840,7 +894,10 @@ export class MediaMonitoringService {
             await this.mediaAlertService.evaluateRulesForNewMention(mention);
           } catch (alertError) {
             // Log but don't fail mention detection if alert evaluation fails
-            console.error('Failed to evaluate alert rules for mention:', alertError);
+            console.error(
+              'Failed to evaluate alert rules for mention:',
+              alertError
+            );
           }
         }
       }
@@ -988,7 +1045,9 @@ ${content.substring(0, 6000)}`;
       let position = 0;
       let searchFrom = 0;
 
-      while ((position = lowerContent.indexOf(lowerEntity, searchFrom)) !== -1) {
+      while (
+        (position = lowerContent.indexOf(lowerEntity, searchFrom)) !== -1
+      ) {
         // Extract snippet (100 chars before and after)
         const start = Math.max(0, position - 100);
         const end = Math.min(fullText.length, position + entity.length + 100);
@@ -1061,7 +1120,9 @@ ${content.substring(0, 6000)}`;
         .from('journalists')
         .select('*, media_outlets(name)')
         .eq('org_id', orgId)
-        .or(`name.ilike.%${nameParts[0]}%,name.ilike.%${nameParts[nameParts.length - 1]}%`)
+        .or(
+          `name.ilike.%${nameParts[0]}%,name.ilike.%${nameParts[nameParts.length - 1]}%`
+        )
         .limit(5);
 
       if (!fuzzyError && fuzzyMatches && fuzzyMatches.length > 0) {
@@ -1069,7 +1130,9 @@ ${content.substring(0, 6000)}`;
         const scoredMatches = fuzzyMatches.map((j) => {
           const jNameParts = j.name.toLowerCase().split(/\s+/);
           const matchingParts = nameParts.filter((p) => jNameParts.includes(p));
-          const score = matchingParts.length / Math.max(nameParts.length, jNameParts.length);
+          const score =
+            matchingParts.length /
+            Math.max(nameParts.length, jNameParts.length);
           return { journalist: j, score };
         });
 
@@ -1102,7 +1165,10 @@ ${content.substring(0, 6000)}`;
   /**
    * List mentions for an organization
    */
-  async listMentions(orgId: string, query: ListMentionsQuery = {}): Promise<MentionListResponse> {
+  async listMentions(
+    orgId: string,
+    query: ListMentionsQuery = {}
+  ): Promise<MentionListResponse> {
     const {
       articleId,
       entity,
@@ -1162,7 +1228,9 @@ ${content.substring(0, 6000)}`;
 
     const mentions: MentionWithArticle[] = (data || []).map((record) => {
       const mentionRecord = record as EarnedMentionRecord & {
-        media_monitoring_articles: MediaMonitoringArticleRecord | MediaMonitoringArticleRecord[];
+        media_monitoring_articles:
+          | MediaMonitoringArticleRecord
+          | MediaMonitoringArticleRecord[];
       };
 
       const articleData = mentionRecord.media_monitoring_articles;
@@ -1190,9 +1258,12 @@ ${content.substring(0, 6000)}`;
    * Get media monitoring statistics
    */
   async getStats(orgId: string): Promise<MediaMonitoringStats> {
-    const { data, error } = await this.supabase.rpc('get_media_monitoring_stats', {
-      p_org_id: orgId,
-    });
+    const { data, error } = await this.supabase.rpc(
+      'get_media_monitoring_stats',
+      {
+        p_org_id: orgId,
+      }
+    );
 
     if (error) {
       // Fallback if RPC not available
@@ -1201,39 +1272,53 @@ ${content.substring(0, 6000)}`;
       }
 
       // Manual calculation
-      const [sourcesResult, articlesResult, mentionsResult] = await Promise.all([
-        this.supabase
-          .from('media_monitoring_sources')
-          .select('active', { count: 'exact' })
-          .eq('org_id', orgId),
-        this.supabase
-          .from('media_monitoring_articles')
-          .select('relevance_score, created_at', { count: 'exact' })
-          .eq('org_id', orgId),
-        this.supabase
-          .from('earned_mentions')
-          .select('sentiment, created_at', { count: 'exact' })
-          .eq('org_id', orgId),
-      ]);
+      const [sourcesResult, articlesResult, mentionsResult] = await Promise.all(
+        [
+          this.supabase
+            .from('media_monitoring_sources')
+            .select('active', { count: 'exact' })
+            .eq('org_id', orgId),
+          this.supabase
+            .from('media_monitoring_articles')
+            .select('relevance_score, created_at', { count: 'exact' })
+            .eq('org_id', orgId),
+          this.supabase
+            .from('earned_mentions')
+            .select('sentiment, created_at', { count: 'exact' })
+            .eq('org_id', orgId),
+        ]
+      );
 
-      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const weekAgo = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).toISOString();
 
       return {
         totalSources: sourcesResult.count || 0,
-        activeSources: (sourcesResult.data || []).filter((s) => s.active).length,
+        activeSources: (sourcesResult.data || []).filter((s) => s.active)
+          .length,
         totalArticles: articlesResult.count || 0,
-        articlesThisWeek: (articlesResult.data || []).filter((a) => a.created_at >= weekAgo).length,
+        articlesThisWeek: (articlesResult.data || []).filter(
+          (a) => a.created_at >= weekAgo
+        ).length,
         totalMentions: mentionsResult.count || 0,
-        mentionsThisWeek: (mentionsResult.data || []).filter((m) => m.created_at >= weekAgo).length,
-        positiveMentions: (mentionsResult.data || []).filter((m) => m.sentiment === 'positive')
-          .length,
-        neutralMentions: (mentionsResult.data || []).filter((m) => m.sentiment === 'neutral')
-          .length,
-        negativeMentions: (mentionsResult.data || []).filter((m) => m.sentiment === 'negative')
-          .length,
+        mentionsThisWeek: (mentionsResult.data || []).filter(
+          (m) => m.created_at >= weekAgo
+        ).length,
+        positiveMentions: (mentionsResult.data || []).filter(
+          (m) => m.sentiment === 'positive'
+        ).length,
+        neutralMentions: (mentionsResult.data || []).filter(
+          (m) => m.sentiment === 'neutral'
+        ).length,
+        negativeMentions: (mentionsResult.data || []).filter(
+          (m) => m.sentiment === 'negative'
+        ).length,
         avgRelevance:
-          (articlesResult.data || []).reduce((sum, a) => sum + (a.relevance_score || 0), 0) /
-            Math.max((articlesResult.data || []).length, 1) || 0,
+          (articlesResult.data || []).reduce(
+            (sum, a) => sum + (a.relevance_score || 0),
+            0
+          ) / Math.max((articlesResult.data || []).length, 1) || 0,
       };
     }
 
@@ -1309,7 +1394,10 @@ ${content.substring(0, 6000)}`;
     if (articlesError) return [];
 
     const similarityMap = new Map<string, number>(
-      (data || []).map((r: { id: string; similarity: number }) => [r.id, r.similarity])
+      (data || []).map((r: { id: string; similarity: number }) => [
+        r.id,
+        r.similarity,
+      ])
     );
 
     return (articlesData || []).map((r) => ({

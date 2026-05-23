@@ -10,13 +10,13 @@ This document audits the current implementation of Pravado Design System v2 acro
 
 Per the canonical spec (`docs/design-system/pravado_design_system_v2_ai_first_standard.md`):
 
-| Principle | Description |
-|-----------|-------------|
-| **AI-First** | AI presence indicators, proactive suggestions, intelligence surfacing |
-| **Premium Dark** | Dark slate backgrounds, subtle depth, professional elegance |
-| **Brand Energy** | Iris, cyan, magenta accents for energy and differentiation |
-| **Motion** | Smooth transitions, subtle animations, AI pulse effects |
-| **Depth** | Layered panels, elevation shadows, backdrop blur |
+| Principle        | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| **AI-First**     | AI presence indicators, proactive suggestions, intelligence surfacing |
+| **Premium Dark** | Dark slate backgrounds, subtle depth, professional elegance           |
+| **Brand Energy** | Iris, cyan, magenta accents for energy and differentiation            |
+| **Motion**       | Smooth transitions, subtle animations, AI pulse effects               |
+| **Depth**        | Layered panels, elevation shadows, backdrop blur                      |
 
 ---
 
@@ -24,41 +24,41 @@ Per the canonical spec (`docs/design-system/pravado_design_system_v2_ai_first_st
 
 ### CSS Variables (globals.css)
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Slate Neutrals (0-6) | ✅ Complete | All values defined in `:root` |
-| Brand Accents | ✅ Complete | iris, cyan, teal, magenta, amber |
-| Semantic Colors | ✅ Complete | info, success, warning, danger |
-| Page/Panel Aliases | ✅ Complete | Proper semantic naming |
-| Radii | ✅ Complete | xs through 2xl defined |
-| Elevation/Shadows | ✅ Complete | elev-0 through elev-3 |
-| Motion | ✅ Complete | Duration and easing tokens |
-| Z-Index | ✅ Complete | Proper layering scale |
-| Gradients | ✅ Complete | Hero and warm gradients |
+| Category             | Status      | Notes                            |
+| -------------------- | ----------- | -------------------------------- |
+| Slate Neutrals (0-6) | ✅ Complete | All values defined in `:root`    |
+| Brand Accents        | ✅ Complete | iris, cyan, teal, magenta, amber |
+| Semantic Colors      | ✅ Complete | info, success, warning, danger   |
+| Page/Panel Aliases   | ✅ Complete | Proper semantic naming           |
+| Radii                | ✅ Complete | xs through 2xl defined           |
+| Elevation/Shadows    | ✅ Complete | elev-0 through elev-3            |
+| Motion               | ✅ Complete | Duration and easing tokens       |
+| Z-Index              | ✅ Complete | Proper layering scale            |
+| Gradients            | ✅ Complete | Hero and warm gradients          |
 
 ### Tailwind Integration (tailwind.config.ts)
 
-| Extension | Status | Notes |
-|-----------|--------|-------|
-| Colors | ✅ Complete | All brand/semantic colors mapped |
-| Border Radius | ✅ Complete | DS radii available |
-| Box Shadow | ✅ Complete | Elevation shadows wired |
-| Transitions | ✅ Complete | Motion tokens available |
+| Extension     | Status      | Notes                            |
+| ------------- | ----------- | -------------------------------- |
+| Colors        | ✅ Complete | All brand/semantic colors mapped |
+| Border Radius | ✅ Complete | DS radii available               |
+| Box Shadow    | ✅ Complete | Elevation shadows wired          |
+| Transitions   | ✅ Complete | Motion tokens available          |
 
 ### Component Classes (globals.css)
 
-| Class | Purpose | Status |
-|-------|---------|--------|
-| `.btn-primary` | Primary action button | ✅ Complete |
-| `.btn-secondary` | Secondary button | ✅ Complete |
-| `.btn-ghost` | Ghost button | ✅ Complete |
-| `.btn-oauth` | OAuth provider buttons | ✅ Complete |
-| `.input-field` | Form inputs | ✅ Complete |
-| `.auth-card` | Auth page cards | ✅ Complete |
-| `.panel-card` | Standard panels | ✅ Complete |
-| `.ai-dot` | AI presence idle | ✅ Complete |
-| `.ai-dot-analyzing` | AI analyzing state | ✅ Complete |
-| `.ai-dot-generating` | AI generating state | ✅ Complete |
+| Class                | Purpose                | Status      |
+| -------------------- | ---------------------- | ----------- |
+| `.btn-primary`       | Primary action button  | ✅ Complete |
+| `.btn-secondary`     | Secondary button       | ✅ Complete |
+| `.btn-ghost`         | Ghost button           | ✅ Complete |
+| `.btn-oauth`         | OAuth provider buttons | ✅ Complete |
+| `.input-field`       | Form inputs            | ✅ Complete |
+| `.auth-card`         | Auth page cards        | ✅ Complete |
+| `.panel-card`        | Standard panels        | ✅ Complete |
+| `.ai-dot`            | AI presence idle       | ✅ Complete |
+| `.ai-dot-analyzing`  | AI analyzing state     | ✅ Complete |
+| `.ai-dot-generating` | AI generating state    | ✅ Complete |
 
 **Assessment: Token foundation is solid.** The problem is adoption, not definition.
 
@@ -68,33 +68,33 @@ Per the canonical spec (`docs/design-system/pravado_design_system_v2_ai_first_st
 
 ### Fully Aligned Pages ✅
 
-| Page | Route | DS v2 Status |
-|------|-------|--------------|
-| Login | `/login` | ✅ Full alignment |
-| Onboarding | `/onboarding` | ✅ Full alignment |
-| App Shell | `/app/layout.tsx` | ✅ Full alignment |
-| Callback | `/callback` | ✅ Full alignment |
+| Page       | Route             | DS v2 Status      |
+| ---------- | ----------------- | ----------------- |
+| Login      | `/login`          | ✅ Full alignment |
+| Onboarding | `/onboarding`     | ✅ Full alignment |
+| App Shell  | `/app/layout.tsx` | ✅ Full alignment |
+| Callback   | `/callback`       | ✅ Full alignment |
 
 ### Partially Aligned Pages ⚠️
 
-| Page | Route | Issues |
-|------|-------|--------|
-| Dashboard | `/app` | Uses DS colors but static, no AI proactivity |
-| PR/Media | `/app/pr` | Panel cards present, but legacy grays in some sub-components |
-| Content | `/app/content` | Three-panel layout good, missing accent energy |
-| SEO | `/app/seo` | Tab structure works, placeholders feel hollow |
-| Playbooks | `/app/playbooks` | Cards use DS tokens, missing visual flow editor |
-| Exec | `/app/exec` | Most complete - KPIs, insights, narratives |
-| Scenarios | `/app/scenarios` | Functional but generic feeling |
+| Page      | Route            | Issues                                                       |
+| --------- | ---------------- | ------------------------------------------------------------ |
+| Dashboard | `/app`           | Uses DS colors but static, no AI proactivity                 |
+| PR/Media  | `/app/pr`        | Panel cards present, but legacy grays in some sub-components |
+| Content   | `/app/content`   | Three-panel layout good, missing accent energy               |
+| SEO       | `/app/seo`       | Tab structure works, placeholders feel hollow                |
+| Playbooks | `/app/playbooks` | Cards use DS tokens, missing visual flow editor              |
+| Exec      | `/app/exec`      | Most complete - KPIs, insights, narratives                   |
+| Scenarios | `/app/scenarios` | Functional but generic feeling                               |
 
 ### Not Aligned Pages ❌
 
-| Page | Route | Issues |
-|------|-------|--------|
-| Agents | `/app/agents` | Empty shell, should be AI showcase |
-| Reality Maps | Not implemented | No page exists |
-| Insight Conflicts | Not implemented | No page exists |
-| Team | `/app/team` | Functional but unstyled |
+| Page              | Route           | Issues                             |
+| ----------------- | --------------- | ---------------------------------- |
+| Agents            | `/app/agents`   | Empty shell, should be AI showcase |
+| Reality Maps      | Not implemented | No page exists                     |
+| Insight Conflicts | Not implemented | No page exists                     |
+| Team              | `/app/team`     | Functional but unstyled            |
 
 ---
 
@@ -106,24 +106,24 @@ Per the canonical spec (`docs/design-system/pravado_design_system_v2_ai_first_st
 
 #### High-Severity Violations (Core User Paths)
 
-| File | Violations | Impact |
-|------|------------|--------|
+| File                                                     | Violations       | Impact |
+| -------------------------------------------------------- | ---------------- | ------ |
 | `apps/dashboard/src/components/scenario-playbooks/*.tsx` | gray backgrounds | Medium |
-| `apps/dashboard/src/components/media-monitoring/*.tsx` | gray borders | Medium |
-| `apps/dashboard/src/components/audit/*.tsx` | gray/blue mix | Low |
-| `apps/dashboard/src/components/billing/*.tsx` | gray buttons | Low |
+| `apps/dashboard/src/components/media-monitoring/*.tsx`   | gray borders     | Medium |
+| `apps/dashboard/src/components/audit/*.tsx`              | gray/blue mix    | Low    |
+| `apps/dashboard/src/components/billing/*.tsx`            | gray buttons     | Low    |
 
 #### Component Categories with Legacy Styling
 
-| Category | File Count | Primary Issues |
-|----------|------------|----------------|
-| Reality Maps | 6 | bg-gray-*, border-gray-* |
-| Insight Conflicts | 8 | bg-gray-*, text-gray-* |
-| Scenario Components | 12 | Mixed DS and legacy |
-| Executive Components | 10 | Mostly compliant, some gray |
-| PR/Media Components | 15 | Legacy gray in tables |
-| Crisis Components | 8 | Some legacy borders |
-| Governance | 6 | Legacy gray backgrounds |
+| Category             | File Count | Primary Issues              |
+| -------------------- | ---------- | --------------------------- |
+| Reality Maps         | 6          | bg-gray-_, border-gray-_    |
+| Insight Conflicts    | 8          | bg-gray-_, text-gray-_      |
+| Scenario Components  | 12         | Mixed DS and legacy         |
+| Executive Components | 10         | Mostly compliant, some gray |
+| PR/Media Components  | 15         | Legacy gray in tables       |
+| Crisis Components    | 8          | Some legacy borders         |
+| Governance           | 6          | Legacy gray backgrounds     |
 
 ---
 
@@ -131,23 +131,23 @@ Per the canonical spec (`docs/design-system/pravado_design_system_v2_ai_first_st
 
 ### AI Dot Implementation
 
-| Location | State | Implementation |
-|----------|-------|----------------|
-| App Shell Header | ✅ Present | Static "AI Active" badge |
-| Sidebar Logo | ✅ Present | Cyan pulse dot |
-| Dashboard | ❌ Missing | No AI activity indicator |
-| Pillar Pages | ❌ Missing | No AI presence anywhere |
-| Playbook Runs | ⚠️ Partial | Status only, no AI indicator |
+| Location         | State      | Implementation               |
+| ---------------- | ---------- | ---------------------------- |
+| App Shell Header | ✅ Present | Static "AI Active" badge     |
+| Sidebar Logo     | ✅ Present | Cyan pulse dot               |
+| Dashboard        | ❌ Missing | No AI activity indicator     |
+| Pillar Pages     | ❌ Missing | No AI presence anywhere      |
+| Playbook Runs    | ⚠️ Partial | Status only, no AI indicator |
 
 ### AI Proactivity Elements
 
-| Element | Spec | Implementation |
-|---------|------|----------------|
+| Element                 | Spec     | Implementation     |
+| ----------------------- | -------- | ------------------ |
 | "Pravado recommends..." | Required | ❌ Not implemented |
-| AI suggestion cards | Required | ❌ Not implemented |
-| AI activity feed | Required | ❌ Not implemented |
-| "Ask Pravado" input | Optional | ❌ Not implemented |
-| Contextual AI tips | Required | ⚠️ Onboarding only |
+| AI suggestion cards     | Required | ❌ Not implemented |
+| AI activity feed        | Required | ❌ Not implemented |
+| "Ask Pravado" input     | Optional | ❌ Not implemented |
+| Contextual AI tips      | Required | ⚠️ Onboarding only |
 
 ### AI States Visualization
 
@@ -171,22 +171,22 @@ Current implementation:
 
 ### Motion Tokens Usage
 
-| Token | Files Using | Expected |
-|-------|-------------|----------|
-| `duration-sm` | 158 files | ✅ Good |
-| `duration-md` | 23 files | Could be higher |
-| `ease-standard` | ~50 files | Could be higher |
-| `animate-ai-pulse` | 2 files | ❌ Should be more |
+| Token              | Files Using | Expected          |
+| ------------------ | ----------- | ----------------- |
+| `duration-sm`      | 158 files   | ✅ Good           |
+| `duration-md`      | 23 files    | Could be higher   |
+| `ease-standard`    | ~50 files   | Could be higher   |
+| `animate-ai-pulse` | 2 files     | ❌ Should be more |
 
 ### Missing Motion Affordances
 
-| Element | Spec | Implementation |
-|---------|------|----------------|
-| Card hover lift | `elev-2` on hover | ❌ Most cards static |
-| Button press | Scale 0.98 | ❌ Not implemented |
-| Loading shimmer | Brand gradient | ⚠️ Partial (some components) |
-| Page transitions | Fade in/out | ❌ Not implemented |
-| AI thinking pulse | Cyan pulse | ⚠️ Logo only |
+| Element           | Spec              | Implementation               |
+| ----------------- | ----------------- | ---------------------------- |
+| Card hover lift   | `elev-2` on hover | ❌ Most cards static         |
+| Button press      | Scale 0.98        | ❌ Not implemented           |
+| Loading shimmer   | Brand gradient    | ⚠️ Partial (some components) |
+| Page transitions  | Fade in/out       | ❌ Not implemented           |
+| AI thinking pulse | Cyan pulse        | ⚠️ Logo only                 |
 
 ---
 
@@ -194,23 +194,23 @@ Current implementation:
 
 ### Depth & Elevation
 
-| Component | Expected Shadow | Actual |
-|-----------|-----------------|--------|
+| Component   | Expected Shadow           | Actual            |
+| ----------- | ------------------------- | ----------------- |
 | Panel cards | `elev-3` / `shadow-panel` | ✅ Mostly correct |
-| Dropdowns | `elev-2` | ⚠️ Some missing |
-| Modals | `elev-3` + backdrop | ✅ Correct |
-| Toasts | `elev-2` | ⚠️ Not verified |
-| Sidebar | `elev-1` | ✅ Correct |
+| Dropdowns   | `elev-2`                  | ⚠️ Some missing   |
+| Modals      | `elev-3` + backdrop       | ✅ Correct        |
+| Toasts      | `elev-2`                  | ⚠️ Not verified   |
+| Sidebar     | `elev-1`                  | ✅ Correct        |
 
 ### Color Accent Usage
 
-| Accent | Intended Use | Actual Use |
-|--------|--------------|------------|
-| Iris (#6A6FF9) | Primary actions, AI | ✅ Buttons, AI dot |
-| Cyan (#38E1FF) | Focus, links, AI | ✅ Focus rings |
-| Magenta (#D66DFF) | Premium features | ❌ Underutilized |
-| Teal (#21B5C5) | Success indicators | ⚠️ Partial |
-| Amber (#FFB65A) | Warnings, attention | ⚠️ Partial |
+| Accent            | Intended Use        | Actual Use         |
+| ----------------- | ------------------- | ------------------ |
+| Iris (#6A6FF9)    | Primary actions, AI | ✅ Buttons, AI dot |
+| Cyan (#38E1FF)    | Focus, links, AI    | ✅ Focus rings     |
+| Magenta (#D66DFF) | Premium features    | ❌ Underutilized   |
+| Teal (#21B5C5)    | Success indicators  | ⚠️ Partial         |
+| Amber (#FFB65A)   | Warnings, attention | ⚠️ Partial         |
 
 ---
 
@@ -234,12 +234,12 @@ Current implementation:
 
 ### Specific Feel Issues
 
-| Issue | Description | Impact |
-|-------|-------------|--------|
-| "Flat" feeling | No hover states, no depth changes | High |
-| "Generic" | Could be any SaaS app | High |
-| "Lifeless" | No animation, no personality | High |
-| "Disconnected" | Pillars feel like separate apps | Medium |
+| Issue              | Description                           | Impact |
+| ------------------ | ------------------------------------- | ------ |
+| "Flat" feeling     | No hover states, no depth changes     | High   |
+| "Generic"          | Could be any SaaS app                 | High   |
+| "Lifeless"         | No animation, no personality          | High   |
+| "Disconnected"     | Pillars feel like separate apps       | Medium |
 | "Developer-facing" | Too much raw data, not enough insight | Medium |
 
 ---
@@ -248,18 +248,19 @@ Current implementation:
 
 ### Current Score: 4/10
 
-| Criteria | Score | Notes |
-|----------|-------|-------|
-| Color system | 7/10 | Tokens defined well |
-| AI presence | 2/10 | Barely visible |
-| Motion/animation | 3/10 | Mostly static |
-| Visual polish | 5/10 | Functional but not premium |
-| Unique personality | 3/10 | Generic SaaS feel |
-| Cross-pillar cohesion | 4/10 | Each pillar feels different |
+| Criteria              | Score | Notes                       |
+| --------------------- | ----- | --------------------------- |
+| Color system          | 7/10  | Tokens defined well         |
+| AI presence           | 2/10  | Barely visible              |
+| Motion/animation      | 3/10  | Mostly static               |
+| Visual polish         | 5/10  | Functional but not premium  |
+| Unique personality    | 3/10  | Generic SaaS feel           |
+| Cross-pillar cohesion | 4/10  | Each pillar feels different |
 
 ### Competitor Comparison
 
 If shown to a user unfamiliar with Pravado:
+
 - "This looks like any analytics dashboard"
 - "Where's the AI?"
 - "Why is it special?"
@@ -315,30 +316,30 @@ The DS v2 tokens exist but don't create a distinctive experience.
 
 ### Batch 1: Core Experience (Critical)
 
-| File | Changes Needed |
-|------|----------------|
-| `/app/app/page.tsx` | Add AI activity, hover states |
-| `/app/app/pr/page.tsx` | Add AI suggestions, fix grays |
-| `/app/app/content/page.tsx` | Add accent highlighting |
-| `/app/app/seo/page.tsx` | Implement missing tabs |
-| `/app/app/agents/page.tsx` | Complete redesign needed |
+| File                        | Changes Needed                |
+| --------------------------- | ----------------------------- |
+| `/app/app/page.tsx`         | Add AI activity, hover states |
+| `/app/app/pr/page.tsx`      | Add AI suggestions, fix grays |
+| `/app/app/content/page.tsx` | Add accent highlighting       |
+| `/app/app/seo/page.tsx`     | Implement missing tabs        |
+| `/app/app/agents/page.tsx`  | Complete redesign needed      |
 
 ### Batch 2: Components (High)
 
-| Pattern | Files Affected | Fix |
-|---------|----------------|-----|
-| Table components | ~20 | Add hover rows, fix borders |
-| Card components | ~30 | Add hover lift, accent borders |
-| Badge components | ~15 | Ensure DS colors only |
-| Form components | ~10 | Verify focus states |
+| Pattern          | Files Affected | Fix                            |
+| ---------------- | -------------- | ------------------------------ |
+| Table components | ~20            | Add hover rows, fix borders    |
+| Card components  | ~30            | Add hover lift, accent borders |
+| Badge components | ~15            | Ensure DS colors only          |
+| Form components  | ~10            | Verify focus states            |
 
 ### Batch 3: Secondary Pages (Medium)
 
-| Area | Pages | Priority |
-|------|-------|----------|
-| Exec suite | 5 pages | Medium - mostly compliant |
-| Billing | 4 pages | Medium - functional |
-| Team/Settings | 2 pages | Low - rarely seen |
+| Area          | Pages   | Priority                  |
+| ------------- | ------- | ------------------------- |
+| Exec suite    | 5 pages | Medium - mostly compliant |
+| Billing       | 4 pages | Medium - functional       |
+| Team/Settings | 2 pages | Low - rarely seen         |
 
 ---
 
@@ -356,6 +357,7 @@ The DS v2 tokens exist but don't create a distinctive experience.
 The dashboard looks like a generic SaaS tool that happens to use dark mode, not an "AI-first communication intelligence platform." The premium, intelligent, proactive feel that DS v2 specifies is almost entirely absent.
 
 Priority should be:
+
 1. Add visible AI activity/presence
 2. Add motion and hover states
 3. Replace legacy colors

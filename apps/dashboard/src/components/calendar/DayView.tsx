@@ -9,9 +9,9 @@
  * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md SS9.1
  */
 
-import type { CalendarItem } from '../command-center/types';
 import { CalendarItemCard } from './CalendarItemCard';
 import { TIME_GROUPS } from './types';
+import type { CalendarItem } from '../command-center/types';
 
 // ============================================
 // TYPES
@@ -64,16 +64,36 @@ function shiftDate(isoDate: string, days: number): string {
 
 function ChevronLeft() {
   return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
     </svg>
   );
 }
 
 function ChevronRight() {
   return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 5l7 7-7 7"
+      />
     </svg>
   );
 }
@@ -82,7 +102,13 @@ function ChevronRight() {
 // COMPONENT
 // ============================================
 
-export function DayView({ items, selectedDate, onSelectDate, onItemClick, today }: DayViewProps) {
+export function DayView({
+  items,
+  selectedDate,
+  onSelectDate,
+  onItemClick,
+  today,
+}: DayViewProps) {
   const isToday = selectedDate === today;
 
   // Filter items to the selected date and sort by time
@@ -149,9 +175,23 @@ export function DayView({ items, selectedDate, onSelectDate, onItemClick, today 
                   {group.label}
                 </span>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/30">
-                  {group.startHour === 0 ? '12 AM' : group.startHour < 12 ? `${group.startHour} AM` : group.startHour === 12 ? '12 PM' : `${group.startHour - 12} PM`}
+                  {group.startHour === 0
+                    ? '12 AM'
+                    : group.startHour < 12
+                      ? `${group.startHour} AM`
+                      : group.startHour === 12
+                        ? '12 PM'
+                        : `${group.startHour - 12} PM`}
                   {' \u2013 '}
-                  {group.endHour === 0 ? '12 AM' : group.endHour < 12 ? `${group.endHour} AM` : group.endHour === 12 ? '12 PM' : group.endHour === 24 ? '12 AM' : `${group.endHour - 12} PM`}
+                  {group.endHour === 0
+                    ? '12 AM'
+                    : group.endHour < 12
+                      ? `${group.endHour} AM`
+                      : group.endHour === 12
+                        ? '12 PM'
+                        : group.endHour === 24
+                          ? '12 AM'
+                          : `${group.endHour - 12} PM`}
                 </span>
                 <div className="flex-1 h-px bg-border-subtle" />
               </div>
@@ -160,7 +200,11 @@ export function DayView({ items, selectedDate, onSelectDate, onItemClick, today 
               {group.items.length > 0 ? (
                 <div className="space-y-3">
                   {group.items.map((item) => (
-                    <CalendarItemCard key={item.id} item={item} onClick={onItemClick} />
+                    <CalendarItemCard
+                      key={item.id}
+                      item={item}
+                      onClick={onItemClick}
+                    />
                   ))}
                 </div>
               ) : (

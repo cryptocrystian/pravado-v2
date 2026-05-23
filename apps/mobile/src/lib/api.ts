@@ -4,9 +4,11 @@ const API_BASE = 'https://pravado-api.onrender.com/api/v1';
 
 export async function apiFetch<T = unknown>(
   path: string,
-  options: RequestInit = {},
+  options: RequestInit = {}
 ): Promise<T> {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   if (!session?.access_token) {
     throw new Error('Not authenticated');
@@ -33,7 +35,12 @@ export async function apiFetch<T = unknown>(
 
   const data = await res.json();
   // Unwrap { success: true, data: ... } pattern
-  if (data && typeof data === 'object' && 'success' in data && data.data !== undefined) {
+  if (
+    data &&
+    typeof data === 'object' &&
+    'success' in data &&
+    data.data !== undefined
+  ) {
     return data.data as T;
   }
   return data as T;

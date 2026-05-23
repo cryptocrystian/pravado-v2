@@ -70,10 +70,10 @@ export function PRSidebarList({
                   statusColor === 'green'
                     ? 'bg-semantic-success'
                     : statusColor === 'blue'
-                    ? 'bg-brand-cyan'
-                    : statusColor === 'red'
-                    ? 'bg-semantic-danger'
-                    : 'bg-white/30'
+                      ? 'bg-brand-cyan'
+                      : statusColor === 'red'
+                        ? 'bg-semantic-danger'
+                        : 'bg-white/30'
                 }`}
               />
             </div>

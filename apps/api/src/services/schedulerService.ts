@@ -3,7 +3,6 @@
  * Manages scheduled background tasks and cron job execution
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   HourlyRssFetchMetadata,
   ListSchedulerTasksQuery,
@@ -20,11 +19,11 @@ import type {
   TaskExecutionResult,
   UpdateSchedulerTaskInput,
 } from '@pravado/types';
-
 import {
   transformSchedulerTaskRecord,
   transformSchedulerTaskRunRecord,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { MediaCrawlerService } from './mediaCrawlerService';
 
@@ -134,10 +133,14 @@ export class SchedulerService {
   /**
    * List all scheduler tasks
    */
-  async listTasks(query: ListSchedulerTasksQuery = {}): Promise<SchedulerTaskListResponse> {
+  async listTasks(
+    query: ListSchedulerTasksQuery = {}
+  ): Promise<SchedulerTaskListResponse> {
     this.log('Listing scheduler tasks:', query);
 
-    let dbQuery = this.supabase.from('scheduler_tasks').select('*', { count: 'exact' });
+    let dbQuery = this.supabase
+      .from('scheduler_tasks')
+      .select('*', { count: 'exact' });
 
     if (query.enabled !== undefined) {
       dbQuery = dbQuery.eq('enabled', query.enabled);
@@ -146,7 +149,10 @@ export class SchedulerService {
     dbQuery = dbQuery.order('name', { ascending: true });
 
     if (query.limit) {
-      dbQuery = dbQuery.range(query.offset || 0, (query.offset || 0) + query.limit - 1);
+      dbQuery = dbQuery.range(
+        query.offset || 0,
+        (query.offset || 0) + query.limit - 1
+      );
     }
 
     const { data, error, count } = await dbQuery;
@@ -212,7 +218,10 @@ export class SchedulerService {
   /**
    * Update task status (enable/disable)
    */
-  async updateTaskStatus(taskId: string, input: UpdateSchedulerTaskInput): Promise<void> {
+  async updateTaskStatus(
+    taskId: string,
+    input: UpdateSchedulerTaskInput
+  ): Promise<void> {
     this.log('Updating scheduler task:', { taskId, input });
 
     const updates: Partial<SchedulerTaskRecord> = {};
@@ -312,10 +321,14 @@ export class SchedulerService {
   /**
    * List task runs
    */
-  async listTaskRuns(query: ListTaskRunsQuery = {}): Promise<SchedulerTaskRunListResponse> {
+  async listTaskRuns(
+    query: ListTaskRunsQuery = {}
+  ): Promise<SchedulerTaskRunListResponse> {
     this.log('Listing task runs:', query);
 
-    let dbQuery = this.supabase.from('scheduler_task_runs').select('*', { count: 'exact' });
+    let dbQuery = this.supabase
+      .from('scheduler_task_runs')
+      .select('*', { count: 'exact' });
 
     if (query.taskId) {
       dbQuery = dbQuery.eq('task_id', query.taskId);
@@ -336,7 +349,10 @@ export class SchedulerService {
     dbQuery = dbQuery.order('started_at', { ascending: false });
 
     if (query.limit) {
-      dbQuery = dbQuery.range(query.offset || 0, (query.offset || 0) + query.limit - 1);
+      dbQuery = dbQuery.range(
+        query.offset || 0,
+        (query.offset || 0) + query.limit - 1
+      );
     }
 
     const { data, error, count } = await dbQuery;
@@ -385,7 +401,10 @@ export class SchedulerService {
       CronMatcher.isDue(task.schedule, task.lastRunAt)
     );
 
-    this.log(`Found ${dueTasks.length} due tasks:`, dueTasks.map((t) => t.name));
+    this.log(
+      `Found ${dueTasks.length} due tasks:`,
+      dueTasks.map((t) => t.name)
+    );
 
     const results: TaskExecutionResult[] = [];
 
@@ -449,7 +468,8 @@ export class SchedulerService {
       };
     } catch (error) {
       const duration = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
 
       await this.recordTaskRunEnd(runId, 'failure', errorMessage);
 
@@ -503,7 +523,10 @@ export class SchedulerService {
     // Fetch for each org
     for (const [feedOrgId, feedIds] of orgFeeds) {
       try {
-        const results = await this.mediaCrawlerService.fetchAllActiveFeeds(feedOrgId, feedIds);
+        const results = await this.mediaCrawlerService.fetchAllActiveFeeds(
+          feedOrgId,
+          feedIds
+        );
         totalJobsCreated += results.reduce((sum, r) => sum + r.jobsCreated, 0);
       } catch (error) {
         const msg = error instanceof Error ? error.message : 'Unknown error';
@@ -635,9 +658,13 @@ export class SchedulerService {
    * Fallback statistics calculation
    */
   private async getStatsFallback(): Promise<SchedulerStats> {
-    const { data: tasks } = await this.supabase.from('scheduler_tasks').select('*');
+    const { data: tasks } = await this.supabase
+      .from('scheduler_tasks')
+      .select('*');
 
-    const { data: runs } = await this.supabase.from('scheduler_task_runs').select('*');
+    const { data: runs } = await this.supabase
+      .from('scheduler_task_runs')
+      .select('*');
 
     const last24h = new Date();
     last24h.setHours(last24h.getHours() - 24);
@@ -658,6 +685,8 @@ export class SchedulerService {
 // FACTORY
 // ========================================
 
-export function createSchedulerService(config: SchedulerServiceConfig): SchedulerService {
+export function createSchedulerService(
+  config: SchedulerServiceConfig
+): SchedulerService {
   return new SchedulerService(config);
 }

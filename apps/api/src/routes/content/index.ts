@@ -32,13 +32,16 @@ import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
-import { ContentService } from '../../services/contentService';
 import { enqueueCiteMindScore } from '../../queue/bullmqQueue';
+import { ContentService } from '../../services/contentService';
 
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -51,7 +54,10 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function contentRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const contentService = new ContentService(supabase);
 
   // ========================================
@@ -105,7 +111,9 @@ export async function contentRoutes(server: FastifyInstance) {
         q: request.query.q,
         topicId: request.query.topicId,
         page: request.query.page ? parseInt(request.query.page, 10) : undefined,
-        pageSize: request.query.pageSize ? parseInt(request.query.pageSize, 10) : undefined,
+        pageSize: request.query.pageSize
+          ? parseInt(request.query.pageSize, 10)
+          : undefined,
         contentType: request.query.contentType,
       });
 
@@ -305,7 +313,9 @@ export async function contentRoutes(server: FastifyInstance) {
 
       // Fire-and-forget: enqueue CiteMind scoring if body was updated
       if (updates.body) {
-        enqueueCiteMindScore(id, orgId).catch(() => { /* non-critical */ });
+        enqueueCiteMindScore(id, orgId).catch(() => {
+          /* non-critical */
+        });
       }
 
       return reply.send({
@@ -360,8 +370,12 @@ export async function contentRoutes(server: FastifyInstance) {
       // Parse and validate query params
       const validation = listContentBriefsSchema.safeParse({
         status: request.query.status,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       if (!validation.success) {
@@ -419,7 +433,10 @@ export async function contentRoutes(server: FastifyInstance) {
       }
 
       const { id } = request.params;
-      const briefWithContext = await contentService.getContentBriefWithContext(orgId, id);
+      const briefWithContext = await contentService.getContentBriefWithContext(
+        orgId,
+        id
+      );
 
       if (!briefWithContext) {
         return reply.code(404).send({
@@ -657,9 +674,13 @@ export async function contentRoutes(server: FastifyInstance) {
       // Parse and validate query params
       const validation = listContentGapsSchema.safeParse({
         keyword: request.query.keyword,
-        minScore: request.query.minScore ? parseFloat(request.query.minScore) : undefined,
+        minScore: request.query.minScore
+          ? parseFloat(request.query.minScore)
+          : undefined,
         topicId: request.query.topicId,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
       });
 
       if (!validation.success) {

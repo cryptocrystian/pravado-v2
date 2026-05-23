@@ -17,12 +17,20 @@ export type ReputationAlertChannel = 'in_app' | 'email' | 'slack' | 'webhook';
 /**
  * Alert event status
  */
-export type ReputationAlertStatus = 'new' | 'acknowledged' | 'muted' | 'resolved';
+export type ReputationAlertStatus =
+  | 'new'
+  | 'acknowledged'
+  | 'muted'
+  | 'resolved';
 
 /**
  * Report frequency options
  */
-export type ReputationReportFrequency = 'ad_hoc' | 'weekly' | 'monthly' | 'quarterly';
+export type ReputationReportFrequency =
+  | 'ad_hoc'
+  | 'weekly'
+  | 'monthly'
+  | 'quarterly';
 
 /**
  * Report format options
@@ -32,7 +40,11 @@ export type ReputationReportFormat = 'executive_summary' | 'detailed';
 /**
  * Report generation status
  */
-export type ReputationReportStatus = 'draft' | 'generating' | 'generated' | 'published';
+export type ReputationReportStatus =
+  | 'draft'
+  | 'generating'
+  | 'generated'
+  | 'published';
 
 /**
  * Report section types
@@ -823,7 +835,10 @@ export const DEFAULT_REPORT_SECTION_ORDER: ReputationReportSectionType[] = [
 /**
  * Default section titles
  */
-export const DEFAULT_SECTION_TITLES: Record<ReputationReportSectionType, string> = {
+export const DEFAULT_SECTION_TITLES: Record<
+  ReputationReportSectionType,
+  string
+> = {
   overview: 'Executive Overview',
   highlights: 'Key Highlights',
   risks: 'Risks & Concerns',
@@ -856,7 +871,10 @@ export const ALERT_STATUS_LABELS: Record<ReputationAlertStatus, string> = {
 /**
  * Report frequency display names
  */
-export const REPORT_FREQUENCY_LABELS: Record<ReputationReportFrequency, string> = {
+export const REPORT_FREQUENCY_LABELS: Record<
+  ReputationReportFrequency,
+  string
+> = {
   ad_hoc: 'Ad Hoc',
   weekly: 'Weekly',
   monthly: 'Monthly',

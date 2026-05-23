@@ -8,14 +8,19 @@
  * The AppShellWrapper client component handles the routing logic.
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { AppShellWrapper } from '@/components/layout/AppShellWrapper';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
 // Fallback org/user for when session is unavailable (middleware handles auth gate)
-const FALLBACK_ORG = { id: '', name: 'Workspace', createdAt: '', updatedAt: '' };
+const FALLBACK_ORG = {
+  id: '',
+  name: 'Workspace',
+  createdAt: '',
+  updatedAt: '',
+};
 const FALLBACK_USER = { fullName: 'User', email: null, avatarUrl: null };
 
 export default async function AppLayout({

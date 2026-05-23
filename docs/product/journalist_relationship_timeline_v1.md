@@ -12,6 +12,7 @@
 The Journalist Relationship Timeline is the foundational intelligence layer of the Pravado Journalist Relationship CRM. It aggregates, normalizes, and enriches all journalist interaction data from 11 upstream systems (S38-S48) into a unified, chronological relationship timeline.
 
 This feature enables PR professionals to:
+
 - View comprehensive interaction history with any journalist in one place
 - Understand relationship health through AI-powered scoring
 - Generate executive-ready relationship narratives
@@ -19,6 +20,7 @@ This feature enables PR professionals to:
 - Track relationship momentum over time
 
 **Key Metrics:**
+
 - **40+ event types** from 11 source systems
 - **12 performance indexes** for sub-50ms queries
 - **3 PostgreSQL helper functions** for server-side aggregation
@@ -83,6 +85,7 @@ Additionally, users can **manually add notes** for offline interactions like pho
 **Scenario**: Before sending a pitch, a PR professional wants to understand the current relationship state with a journalist.
 
 **Workflow**:
+
 1. Navigate to journalist's timeline page
 2. Review health score (e.g., 72/100 - "Healthy")
 3. Check "Last 30 Days" stats (e.g., 3 interactions, 2 positive)
@@ -99,6 +102,7 @@ Additionally, users can **manually add notes** for offline interactions like pho
 **Scenario**: A journalist just published positive coverage. The team wants to capitalize on this momentum.
 
 **Workflow**:
+
 1. Automated `coverage_published` event created via S40
 2. Timeline shows positive sentiment, high relevance score
 3. Health score increases from 58 → 67
@@ -115,6 +119,7 @@ Additionally, users can **manually add notes** for offline interactions like pho
 **Scenario**: CEO is meeting a key journalist at a conference tomorrow. Communications team needs to brief them.
 
 **Workflow**:
+
 1. Generate "All Time" narrative for journalist
 2. Export executive summary section:
    - Total interactions: 47 over 18 months
@@ -134,6 +139,7 @@ Additionally, users can **manually add notes** for offline interactions like pho
 **Scenario**: Communications director wants to assess team performance with top-tier journalists.
 
 **Workflow**:
+
 1. Review timelines for 20 priority journalists
 2. Filter events to "Last 90 Days"
 3. Generate health score trend reports
@@ -150,6 +156,7 @@ Additionally, users can **manually add notes** for offline interactions like pho
 **Scenario**: PR manager has a 30-minute phone call with a journalist about an upcoming product launch.
 
 **Workflow**:
+
 1. Open journalist timeline page
 2. Click "Add Note" button
 3. Fill in details:
@@ -207,17 +214,17 @@ Additionally, users can **manually add notes** for offline interactions like pho
 
 ### Component Stack
 
-| Layer | Technology | Files |
-|-------|-----------|-------|
-| **Database** | PostgreSQL + Supabase | `migrations/54_create_journalist_timeline_schema.sql` |
-| **Types** | TypeScript | `packages/types/src/journalistTimeline.ts` |
-| **Validation** | Zod | `packages/validators/src/journalistTimeline.ts` |
-| **Service** | Node.js | `apps/api/src/services/journalistTimelineService.ts` |
-| **Narrative AI** | LLM + Rules | `apps/api/src/services/narrativeGeneratorService.ts` |
-| **API** | Express REST | `apps/api/src/routes/journalistTimeline/index.ts` |
-| **Frontend** | React + Next.js | `apps/dashboard/src/app/app/journalists/[id]/timeline/page.tsx` |
-| **Components** | React | `apps/dashboard/src/components/journalist-timeline/*` |
-| **API Client** | Fetch | `apps/dashboard/src/lib/journalistTimelineApi.ts` |
+| Layer            | Technology            | Files                                                           |
+| ---------------- | --------------------- | --------------------------------------------------------------- |
+| **Database**     | PostgreSQL + Supabase | `migrations/54_create_journalist_timeline_schema.sql`           |
+| **Types**        | TypeScript            | `packages/types/src/journalistTimeline.ts`                      |
+| **Validation**   | Zod                   | `packages/validators/src/journalistTimeline.ts`                 |
+| **Service**      | Node.js               | `apps/api/src/services/journalistTimelineService.ts`            |
+| **Narrative AI** | LLM + Rules           | `apps/api/src/services/narrativeGeneratorService.ts`            |
+| **API**          | Express REST          | `apps/api/src/routes/journalistTimeline/index.ts`               |
+| **Frontend**     | React + Next.js       | `apps/dashboard/src/app/app/journalists/[id]/timeline/page.tsx` |
+| **Components**   | React                 | `apps/dashboard/src/components/journalist-timeline/*`           |
+| **API Client**   | Fetch                 | `apps/dashboard/src/lib/journalistTimelineApi.ts`               |
 
 ---
 
@@ -228,6 +235,7 @@ Additionally, users can **manually add notes** for offline interactions like pho
 The timeline supports **40+ event types** organized into 11 categories:
 
 #### 1. Pitching & Outreach (S39, S43)
+
 - `pitch_sent` - Pitch email sent to journalist
 - `pitch_opened` - Journalist opened pitch email
 - `pitch_clicked` - Journalist clicked link in pitch
@@ -239,73 +247,83 @@ The timeline supports **40+ event types** organized into 11 categories:
 - `outreach_bounced` - Email bounced
 
 #### 2. Coverage & Publishing (S38, S40)
+
 - `coverage_published` - Journalist published article mentioning organization
 - `coverage_updated` - Published article was updated
 - `rss_article_discovered` - New article discovered via RSS
 - `social_mention` - Social media mention by journalist
 
 #### 3. Press Releases (S41)
+
 - `press_release_sent` - Press release distributed to journalist
 - `press_release_viewed` - Journalist viewed press release
 - `press_release_downloaded` - Journalist downloaded release assets
 
 #### 4. Profile & Discovery (S42, S48)
+
 - `journalist_discovered` - New journalist profile created
 - `profile_enriched` - Contact data enriched
 - `contact_verified` - Email/contact verified
 - `profile_updated` - Profile information updated
 
 #### 5. Media Monitoring (S40, S44)
+
 - `media_alert_triggered` - Breaking news alert matched journalist
 - `trend_signal_detected` - Trending topic matched journalist's beat
 - `competitor_coverage_detected` - Journalist covered competitor
 
 #### 6. Content Intelligence (S45, S46, S47)
+
 - `content_brief_generated` - Brief created for journalist's beat
 - `content_quality_scored` - Quality score calculated for journalist content
 - `content_rewrite_suggested` - Rewrite recommendation for journalist
 
 #### 7. Engagement & Interaction
+
 - `email_engagement` - General email interaction
 - `website_visit` - Journalist visited press room/newsroom
 - `asset_download` - Journalist downloaded media kit/assets
 
 #### 8. Events & Meetings
+
 - `meeting_scheduled` - Meeting scheduled with journalist
 - `meeting_completed` - Meeting took place
 - `conference_interaction` - Met at conference/event
 - `phone_call` - Phone conversation
 
 #### 9. Relationship Milestones
+
 - `relationship_established` - First meaningful interaction
 - `relationship_milestone` - Significant relationship event
 - `coverage_milestone` - Nth article published
 
 #### 10. Negative Signals
+
 - `negative_coverage` - Negative article published
 - `complaint_received` - Journalist complaint
 - `unsubscribe` - Journalist unsubscribed from communications
 - `spam_report` - Email marked as spam
 
 #### 11. Manual Notes
+
 - `manual_note` - User-created timeline note
 
 ### Source System Mapping
 
-| Source System | Event Types | Integration Method |
-|--------------|-------------|-------------------|
-| **S38: RSS Crawler** | `rss_article_discovered`, `coverage_published` | Auto-push via `pushSystemEvent()` |
-| **S39: Pitch Engine** | `pitch_sent`, `pitch_opened`, `pitch_clicked`, `pitch_replied` | Auto-push via `pushSystemEvent()` |
-| **S40: Media Monitoring** | `coverage_published`, `coverage_updated`, `social_mention` | Auto-push via `pushSystemEvent()` |
-| **S41: Press Release** | `press_release_sent`, `press_release_viewed` | Auto-push via `pushSystemEvent()` |
-| **S42: Discovery Engine** | `journalist_discovered`, `profile_updated` | Auto-push via `pushSystemEvent()` |
-| **S43: Outreach System** | `outreach_sent`, `outreach_opened`, `outreach_replied` | Auto-push via `pushSystemEvent()` |
-| **S44: Media Alerts** | `media_alert_triggered`, `trend_signal_detected` | Auto-push via `pushSystemEvent()` |
-| **S45: Brief Generator** | `content_brief_generated` | Auto-push via `pushSystemEvent()` |
-| **S46: Quality Scoring** | `content_quality_scored` | Auto-push via `pushSystemEvent()` |
-| **S47: Rewrite Engine** | `content_rewrite_suggested` | Auto-push via `pushSystemEvent()` |
-| **S48: Enrichment** | `profile_enriched`, `contact_verified` | Auto-push via `pushSystemEvent()` |
-| **Manual Entry** | `manual_note`, `phone_call`, `meeting_completed` | User-created via UI |
+| Source System             | Event Types                                                    | Integration Method                |
+| ------------------------- | -------------------------------------------------------------- | --------------------------------- |
+| **S38: RSS Crawler**      | `rss_article_discovered`, `coverage_published`                 | Auto-push via `pushSystemEvent()` |
+| **S39: Pitch Engine**     | `pitch_sent`, `pitch_opened`, `pitch_clicked`, `pitch_replied` | Auto-push via `pushSystemEvent()` |
+| **S40: Media Monitoring** | `coverage_published`, `coverage_updated`, `social_mention`     | Auto-push via `pushSystemEvent()` |
+| **S41: Press Release**    | `press_release_sent`, `press_release_viewed`                   | Auto-push via `pushSystemEvent()` |
+| **S42: Discovery Engine** | `journalist_discovered`, `profile_updated`                     | Auto-push via `pushSystemEvent()` |
+| **S43: Outreach System**  | `outreach_sent`, `outreach_opened`, `outreach_replied`         | Auto-push via `pushSystemEvent()` |
+| **S44: Media Alerts**     | `media_alert_triggered`, `trend_signal_detected`               | Auto-push via `pushSystemEvent()` |
+| **S45: Brief Generator**  | `content_brief_generated`                                      | Auto-push via `pushSystemEvent()` |
+| **S46: Quality Scoring**  | `content_quality_scored`                                       | Auto-push via `pushSystemEvent()` |
+| **S47: Rewrite Engine**   | `content_rewrite_suggested`                                    | Auto-push via `pushSystemEvent()` |
+| **S48: Enrichment**       | `profile_enriched`, `contact_verified`                         | Auto-push via `pushSystemEvent()` |
+| **Manual Entry**          | `manual_note`, `phone_call`, `meeting_completed`               | User-created via UI               |
 
 ---
 
@@ -328,6 +346,7 @@ Health Score =
 ### Detailed Scoring Logic
 
 #### 1. Event Count Score (Max 20 points)
+
 ```sql
 -- Base score from total event count
 event_count_score = MIN(total_events * 0.5, 20)
@@ -339,6 +358,7 @@ event_count_score = MIN(total_events * 0.5, 20)
 ```
 
 #### 2. Recency Score (Max 25 points)
+
 ```sql
 -- Days since last interaction
 IF last_interaction_days <= 7 THEN
@@ -353,6 +373,7 @@ END IF
 ```
 
 #### 3. Activity Score (Max 15 points)
+
 ```sql
 -- Events in last 90 days
 activity_score = MIN(recent_90_days * 1.5, 15)
@@ -364,6 +385,7 @@ activity_score = MIN(recent_90_days * 1.5, 15)
 ```
 
 #### 4. Sentiment Score (Max 15 points)
+
 ```sql
 -- Weighted by sentiment distribution
 positive_ratio = positive_events / total_events
@@ -379,6 +401,7 @@ sentiment_score = (positive_ratio * 15) - (negative_ratio * 10)
 ```
 
 #### 5. Engagement Score (Max 15 points)
+
 ```sql
 -- High-value engagement events
 engagement_events = COUNT(event_type IN [
@@ -398,6 +421,7 @@ engagement_score = MIN(engagement_events * 3, 15)
 ```
 
 #### 6. Coverage Score (Max 10 points)
+
 ```sql
 -- Published coverage counts extra
 coverage_count = COUNT(event_type IN [
@@ -415,13 +439,13 @@ coverage_score = MIN(coverage_count * 2, 10)
 
 ### Health Score Ranges
 
-| Score | Label | Color | Interpretation |
-|-------|-------|-------|---------------|
-| 80-100 | Very Healthy | Green | Strong, active relationship with recent positive interactions |
-| 60-79 | Healthy | Light Green | Good relationship with regular engagement |
-| 40-59 | Moderate | Yellow | Relationship exists but needs attention |
-| 20-39 | Weak | Orange | Limited interaction, relationship at risk |
-| 0-19 | Poor | Red | Inactive or damaged relationship, immediate action needed |
+| Score  | Label        | Color       | Interpretation                                                |
+| ------ | ------------ | ----------- | ------------------------------------------------------------- |
+| 80-100 | Very Healthy | Green       | Strong, active relationship with recent positive interactions |
+| 60-79  | Healthy      | Light Green | Good relationship with regular engagement                     |
+| 40-59  | Moderate     | Yellow      | Relationship exists but needs attention                       |
+| 20-39  | Weak         | Orange      | Limited interaction, relationship at risk                     |
+| 0-19   | Poor         | Red         | Inactive or damaged relationship, immediate action needed     |
 
 ### Health Score Breakdown
 
@@ -429,15 +453,15 @@ The API returns detailed breakdown for transparency:
 
 ```typescript
 interface RelationshipHealthScore {
-  score: number;              // 0-100 total score
+  score: number; // 0-100 total score
   trend: 'improving' | 'stable' | 'declining';
   breakdown: {
-    eventCount: number;       // 0-20
-    recency: number;          // 0-25
-    activity: number;         // 0-15
-    sentiment: number;        // 0-15
-    engagement: number;       // 0-15
-    coverage: number;         // 0-10
+    eventCount: number; // 0-20
+    recency: number; // 0-25
+    activity: number; // 0-15
+    sentiment: number; // 0-15
+    engagement: number; // 0-15
+    coverage: number; // 0-10
   };
   recommendations: string[];
 }
@@ -450,27 +474,37 @@ Based on score components, the system generates actionable recommendations:
 ```typescript
 // Low recency (0-8 points)
 if (breakdown.recency <= 8) {
-  recommendations.push("Relationship is stale. Schedule outreach within next 7 days.");
+  recommendations.push(
+    'Relationship is stale. Schedule outreach within next 7 days.'
+  );
 }
 
 // Low engagement (0-5 points)
 if (breakdown.engagement <= 5) {
-  recommendations.push("Low engagement. Try personalized pitch or exclusive content.");
+  recommendations.push(
+    'Low engagement. Try personalized pitch or exclusive content.'
+  );
 }
 
 // Negative sentiment trend
 if (breakdown.sentiment <= 5) {
-  recommendations.push("Recent negative sentiment detected. Review relationship issues.");
+  recommendations.push(
+    'Recent negative sentiment detected. Review relationship issues.'
+  );
 }
 
 // No coverage
 if (breakdown.coverage === 0) {
-  recommendations.push("No coverage yet. Consider newsjacking or exclusive offer.");
+  recommendations.push(
+    'No coverage yet. Consider newsjacking or exclusive offer.'
+  );
 }
 
 // High score with recent activity
 if (score >= 70 && breakdown.recency === 25) {
-  recommendations.push("Strong relationship. Good time for ambitious pitch or exclusive.");
+  recommendations.push(
+    'Strong relationship. Good time for ambitious pitch or exclusive.'
+  );
 }
 ```
 
@@ -481,6 +515,7 @@ if (score >= 70 && breakdown.recency === 25) {
 ### Overview
 
 The Narrative Generator creates **executive-ready relationship summaries** using:
+
 1. **LLM-powered generation** (primary) - Claude/GPT with custom prompts
 2. **Rule-based generation** (fallback) - Template-based summaries
 
@@ -490,17 +525,18 @@ Every generated narrative includes 6 sections:
 
 ```typescript
 interface JournalistNarrative {
-  executiveSummary: string;           // 2-3 sentence overview
-  relationshipHistory: string;        // Chronological relationship story
-  keyInteractions: Array<{            // 3-5 most important events
+  executiveSummary: string; // 2-3 sentence overview
+  relationshipHistory: string; // Chronological relationship story
+  keyInteractions: Array<{
+    // 3-5 most important events
     date: Date;
     type: string;
     description: string;
     significance: string;
   }>;
-  coverageAnalysis: string;           // Coverage patterns and themes
-  sentimentAnalysis: string;          // Sentiment trends over time
-  recommendations: string[];          // 3-5 actionable next steps
+  coverageAnalysis: string; // Coverage patterns and themes
+  sentimentAnalysis: string; // Sentiment trends over time
+  recommendations: string[]; // 3-5 actionable next steps
   generatedAt: Date;
   timeframe: 'last_30_days' | 'last_90_days' | 'all_time';
 }
@@ -509,6 +545,7 @@ interface JournalistNarrative {
 ### LLM Prompts
 
 #### System Prompt
+
 ```
 You are an expert PR and media relations analyst. Your task is to analyze
 journalist relationship data and generate insightful, actionable narratives
@@ -525,6 +562,7 @@ Write in a professional but conversational tone suitable for executive briefings
 ```
 
 #### Executive Summary Prompt
+
 ```
 Based on the following journalist interaction data, generate a 2-3 sentence
 executive summary of the relationship:
@@ -541,6 +579,7 @@ Provide a concise, actionable summary that captures relationship state and momen
 ```
 
 #### Relationship History Prompt
+
 ```
 Write a chronological narrative of the relationship based on these key events:
 
@@ -556,6 +595,7 @@ Maximum 3 paragraphs.
 ```
 
 #### Recommendations Prompt
+
 ```
 Based on this relationship analysis, provide 3-5 specific, actionable
 recommendations for the PR team:
@@ -600,15 +640,21 @@ const executiveSummary = `
 const recommendations = [];
 
 if (healthScore < 40) {
-  recommendations.push("Priority: Re-engage immediately with personalized outreach");
+  recommendations.push(
+    'Priority: Re-engage immediately with personalized outreach'
+  );
 }
 
 if (lastInteractionDays > 60) {
-  recommendations.push("Relationship is stale - schedule touch-base call or email");
+  recommendations.push(
+    'Relationship is stale - schedule touch-base call or email'
+  );
 }
 
 if (coverageCount === 0 && totalEvents > 5) {
-  recommendations.push("Multiple interactions but no coverage - review pitch quality");
+  recommendations.push(
+    'Multiple interactions but no coverage - review pitch quality'
+  );
 }
 
 // ... 10+ more rule-based recommendations
@@ -638,16 +684,19 @@ Users can generate narratives for three timeframes:
 ## API Reference
 
 ### Base URL
+
 ```
 /api/v1/journalist-timeline
 ```
 
 ### Authentication
+
 All endpoints require authentication. Include session cookie or JWT token.
 
 ### Endpoints
 
 #### 1. Create Event
+
 ```http
 POST /events
 Content-Type: application/json
@@ -676,6 +725,7 @@ Response: 201 Created
 ```
 
 #### 2. List Events
+
 ```http
 GET /events?journalistId={uuid}&limit=20&offset=0&sortBy=event_timestamp&sortOrder=desc
 
@@ -709,6 +759,7 @@ Response: 200 OK
 ```
 
 #### 3. Get Event
+
 ```http
 GET /events/{eventId}
 
@@ -720,6 +771,7 @@ Response: 200 OK
 ```
 
 #### 4. Update Event
+
 ```http
 PATCH /events/{eventId}
 Content-Type: application/json
@@ -739,6 +791,7 @@ Response: 200 OK
 ```
 
 #### 5. Delete Event
+
 ```http
 DELETE /events/{eventId}
 
@@ -749,6 +802,7 @@ Response: 200 OK
 ```
 
 #### 6. Get Statistics
+
 ```http
 GET /stats/{journalistId}
 
@@ -778,6 +832,7 @@ Response: 200 OK
 ```
 
 #### 7. Calculate Health Score
+
 ```http
 GET /health-score/{journalistId}
 
@@ -802,6 +857,7 @@ Response: 200 OK
 ```
 
 #### 8. Get Aggregation
+
 ```http
 GET /aggregation/{journalistId}?period=day&startDate=2025-01-01&endDate=2025-01-31
 
@@ -829,6 +885,7 @@ Response: 200 OK
 ```
 
 #### 9. Auto-Cluster Events
+
 ```http
 POST /auto-cluster/{journalistId}
 
@@ -839,6 +896,7 @@ Response: 200 OK
 ```
 
 #### 10. Get Cluster
+
 ```http
 GET /clusters/{clusterId}
 
@@ -852,6 +910,7 @@ Response: 200 OK
 ```
 
 #### 11. Batch Create Events
+
 ```http
 POST /batch
 Content-Type: application/json
@@ -877,6 +936,7 @@ Response: 200 OK
 ```
 
 #### 12. Create Manual Note
+
 ```http
 POST /notes
 Content-Type: application/json
@@ -898,6 +958,7 @@ Response: 201 Created
 ```
 
 #### 13. Generate Narrative
+
 ```http
 POST /narrative
 Content-Type: application/json
@@ -922,6 +983,7 @@ Response: 200 OK
 ```
 
 #### 14. Push System Event
+
 ```http
 POST /push-event
 Content-Type: application/json
@@ -948,11 +1010,13 @@ Response: 201 Created
 ## UI Components
 
 ### 1. TimelineEvent Component
+
 **File**: `components/journalist-timeline/TimelineEvent.tsx`
 
 **Purpose**: Displays individual timeline event with icon, title, metadata, sentiment badge.
 
 **Props**:
+
 ```typescript
 interface TimelineEventProps {
   event: JournalistTimelineEvent;
@@ -962,6 +1026,7 @@ interface TimelineEventProps {
 ```
 
 **Features**:
+
 - 40+ event type configurations with unique icons and colors
 - Sentiment badge (positive/negative/neutral)
 - Relevance score progress bar
@@ -971,11 +1036,13 @@ interface TimelineEventProps {
 ---
 
 ### 2. TimelineCluster Component
+
 **File**: `components/journalist-timeline/TimelineCluster.tsx`
 
 **Purpose**: Displays clustered events (e.g., outreach sequence, coverage thread).
 
 **Props**:
+
 ```typescript
 interface TimelineClusterProps {
   cluster: TimelineCluster;
@@ -984,6 +1051,7 @@ interface TimelineClusterProps {
 ```
 
 **Features**:
+
 - Collapsible cluster view
 - Cluster summary
 - Event count badge
@@ -992,11 +1060,13 @@ interface TimelineClusterProps {
 ---
 
 ### 3. TimelineFilters Component
+
 **File**: `components/journalist-timeline/TimelineFilters.tsx`
 
 **Purpose**: Filter panel for timeline events.
 
 **Props**:
+
 ```typescript
 interface TimelineFiltersProps {
   onFilterChange: (filters: TimelineQuery) => void;
@@ -1005,6 +1075,7 @@ interface TimelineFiltersProps {
 ```
 
 **Features**:
+
 - Event type multi-select
 - Sentiment filter (positive/neutral/negative)
 - Time range selector (last 30/90 days, custom range)
@@ -1015,11 +1086,13 @@ interface TimelineFiltersProps {
 ---
 
 ### 4. EventDrawer Component
+
 **File**: `components/journalist-timeline/EventDrawer.tsx`
 
 **Purpose**: Right-side overlay displaying full event details.
 
 **Props**:
+
 ```typescript
 interface EventDrawerProps {
   event: JournalistTimelineEvent | null;
@@ -1031,6 +1104,7 @@ interface EventDrawerProps {
 ```
 
 **Features**:
+
 - Full event metadata display
 - Payload and metadata JSON viewers
 - Source system information
@@ -1041,11 +1115,13 @@ interface EventDrawerProps {
 ---
 
 ### 5. HealthScoreBadge Component
+
 **File**: `components/journalist-timeline/HealthScoreBadge.tsx`
 
 **Purpose**: Displays relationship health score with visual indicators.
 
 **Props**:
+
 ```typescript
 interface HealthScoreBadgeProps {
   healthScore: RelationshipHealthScore;
@@ -1055,6 +1131,7 @@ interface HealthScoreBadgeProps {
 ```
 
 **Features**:
+
 - Color-coded score badge (red/orange/yellow/green)
 - Trend indicator (↑ improving, → stable, ↓ declining)
 - Optional breakdown tooltip
@@ -1063,11 +1140,13 @@ interface HealthScoreBadgeProps {
 ---
 
 ### 6. NarrativePanel Component
+
 **File**: `components/journalist-timeline/NarrativePanel.tsx`
 
 **Purpose**: Displays AI-generated narrative with executive summary, history, and recommendations.
 
 **Props**:
+
 ```typescript
 interface NarrativePanelProps {
   narrative: JournalistNarrative;
@@ -1077,6 +1156,7 @@ interface NarrativePanelProps {
 ```
 
 **Features**:
+
 - Executive summary section
 - Collapsible relationship history
 - Key interactions timeline
@@ -1088,11 +1168,13 @@ interface NarrativePanelProps {
 ---
 
 ### 7. AddNoteModal Component
+
 **File**: `components/journalist-timeline/AddNoteModal.tsx`
 
 **Purpose**: Modal for creating manual timeline notes.
 
 **Props**:
+
 ```typescript
 interface AddNoteModalProps {
   journalistId: string;
@@ -1103,6 +1185,7 @@ interface AddNoteModalProps {
 ```
 
 **Features**:
+
 - Title and description inputs
 - Sentiment selector (positive/neutral/negative)
 - Relationship impact slider (-1 to +1)
@@ -1182,12 +1265,15 @@ CREATE INDEX idx_timeline_search ON journalist_relationship_events USING gin(to_
 ### Helper Functions
 
 #### 1. get_journalist_timeline_stats
+
 Returns aggregated statistics for a journalist.
 
 #### 2. calculate_relationship_health_score
+
 Calculates 0-100 health score based on 6 factors.
 
 #### 3. auto_cluster_timeline_events
+
 Groups related events into clusters using temporal and semantic similarity.
 
 ---
@@ -1261,6 +1347,7 @@ The system automatically deduplicates events based on `(source_system, source_id
 ### 1. Manual Note Guidelines
 
 **When to add manual notes:**
+
 - Phone calls with journalist
 - In-person meetings at conferences
 - Informal conversations (coffee, lunch)
@@ -1268,12 +1355,14 @@ The system automatically deduplicates events based on `(source_system, source_id
 - Any interaction not captured by automated systems
 
 **What to include:**
+
 - Specific details (topics discussed, journalist interest level)
 - Action items or follow-ups promised
 - Sentiment and relationship impact assessment
 - Context that helps team understand relationship state
 
 **Example good note:**
+
 ```
 Title: "Phone call - Q1 product launch exclusive"
 
@@ -1295,43 +1384,49 @@ Relationship Impact: +0.6
 ### 2. Timeline Review Cadence
 
 **Weekly**: Review top 10 priority journalists
+
 - Check health scores for any declines
 - Review last 7 days of activity
 - Identify opportunities for follow-up
 
 **Monthly**: Comprehensive relationship audit
+
 - Generate 30-day narratives for key journalists
 - Identify declining relationships (score drop >10 points)
 - Plan re-engagement campaigns
 
 **Quarterly**: Strategic relationship planning
+
 - Generate 90-day narratives for all tier-1 journalists
 - Export health score reports for leadership
 - Set relationship goals for next quarter
 
 ### 3. Health Score Action Thresholds
 
-| Score | Action |
-|-------|--------|
-| 80-100 | Maintain momentum - continue current cadence |
-| 60-79 | Relationship is healthy - consider upselling (exclusives, CEO access) |
-| 40-59 | Needs attention - increase touchpoint frequency |
-| 20-39 | At risk - immediate re-engagement required |
-| 0-19 | Critical - escalate to team lead, develop recovery plan |
+| Score  | Action                                                                |
+| ------ | --------------------------------------------------------------------- |
+| 80-100 | Maintain momentum - continue current cadence                          |
+| 60-79  | Relationship is healthy - consider upselling (exclusives, CEO access) |
+| 40-59  | Needs attention - increase touchpoint frequency                       |
+| 20-39  | At risk - immediate re-engagement required                            |
+| 0-19   | Critical - escalate to team lead, develop recovery plan               |
 
 ### 4. Narrative Generation Strategy
 
 **Use 30-day narratives for:**
+
 - Pre-pitch preparation
 - Weekly team meetings
 - Quick relationship checks
 
 **Use 90-day narratives for:**
+
 - Quarterly business reviews
 - Relationship audits
 - Trend identification
 
 **Use all-time narratives for:**
+
 - Executive briefings
 - Major pitch preparation
 - New team member onboarding
@@ -1339,6 +1434,7 @@ Relationship Impact: +0.6
 ### 5. Event Filtering Best Practices
 
 **Find coverage opportunities:**
+
 ```
 Filter: eventType = ['pitch_sent', 'pitch_replied']
 AND sentiment = 'positive'
@@ -1347,6 +1443,7 @@ AND minRelevanceScore = 0.7
 ```
 
 **Identify at-risk relationships:**
+
 ```
 Filter: last90Days = true
 AND sentiment IN ['negative', 'neutral']
@@ -1354,6 +1451,7 @@ AND eventTypes NOT IN ['coverage_published', 'pitch_replied']
 ```
 
 **Track outreach effectiveness:**
+
 ```
 Filter: eventTypes = ['outreach_sent', 'outreach_opened', 'outreach_replied']
 AND last30Days = true
@@ -1365,19 +1463,20 @@ AND last30Days = true
 
 ### Query Performance
 
-| Operation | Typical Response Time | Notes |
-|-----------|---------------------|-------|
-| List events (20 items) | <50ms | With proper indexes |
-| Get single event | <10ms | Primary key lookup |
-| Calculate health score | <100ms | PostgreSQL function |
-| Get stats | <80ms | Aggregation query |
-| Auto-cluster | 200-500ms | Depends on event count |
-| Generate narrative (LLM) | 2-5 seconds | LLM latency |
-| Generate narrative (rules) | <200ms | Template-based |
+| Operation                  | Typical Response Time | Notes                  |
+| -------------------------- | --------------------- | ---------------------- |
+| List events (20 items)     | <50ms                 | With proper indexes    |
+| Get single event           | <10ms                 | Primary key lookup     |
+| Calculate health score     | <100ms                | PostgreSQL function    |
+| Get stats                  | <80ms                 | Aggregation query      |
+| Auto-cluster               | 200-500ms             | Depends on event count |
+| Generate narrative (LLM)   | 2-5 seconds           | LLM latency            |
+| Generate narrative (rules) | <200ms                | Template-based         |
 
 ### Scalability
 
 The system is designed to handle:
+
 - **10,000+ journalists** per organization
 - **100,000+ events** per journalist
 - **1M+ total events** per organization
@@ -1399,6 +1498,7 @@ The system is designed to handle:
 **File**: `apps/api/tests/journalistTimelineService.test.ts`
 
 **Test Scenarios (14+)**:
+
 - Event creation with validation
 - Timeline retrieval with filtering
 - Statistics calculation
@@ -1414,6 +1514,7 @@ The system is designed to handle:
 **File**: `apps/dashboard/tests/pr-timeline/timeline.spec.ts`
 
 **Test Scenarios (20+)**:
+
 - Timeline page display
 - Health score rendering
 - Event filtering workflows
@@ -1472,15 +1573,19 @@ CREATE POLICY timeline_org_isolation ON journalist_relationship_events
 ### Common Issues
 
 **Issue**: Health score not updating after new event
+
 - **Solution**: Health scores cached 5 minutes. Wait or manually trigger recalculation.
 
 **Issue**: Duplicate events appearing
+
 - **Solution**: Check that `sourceId` is unique per source system.
 
 **Issue**: Narrative generation failing
+
 - **Solution**: Check LLM service availability. System falls back to rule-based generation.
 
 **Issue**: Timeline loading slowly
+
 - **Solution**: Add filters to reduce result set. Check database indexes.
 
 ### Debug Logging
@@ -1495,6 +1600,7 @@ const DEBUG = process.env.DEBUG_TIMELINE === 'true';
 ### Metrics & Monitoring
 
 Track these key metrics:
+
 - Event creation rate (events/hour)
 - Timeline query latency (p50, p95, p99)
 - Health score calculation time
@@ -1506,6 +1612,7 @@ Track these key metrics:
 ## Changelog
 
 ### V1.0.0 (Sprint S49)
+
 - Initial release
 - 40+ event types from 11 source systems
 - Health scoring with 6 factors

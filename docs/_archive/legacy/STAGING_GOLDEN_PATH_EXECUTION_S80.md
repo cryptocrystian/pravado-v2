@@ -40,20 +40,20 @@ curl -s "$API_URL/health/info" | jq
 # Expected: Full app configuration (safe fields)
 ```
 
-| Check | Expected | Actual | Pass |
-|-------|----------|--------|------|
-| `/health/live` returns 200 | `{"alive":true}` | | [ ] |
-| `/health/ready` returns 200 | `{"ready":true,"version":"1.0.0-rc1"}` | | [ ] |
-| `/health/info` returns config | JSON with features, environment | | [ ] |
-| Version matches RC1 | `1.0.0-rc1` | | [ ] |
+| Check                         | Expected                               | Actual | Pass |
+| ----------------------------- | -------------------------------------- | ------ | ---- |
+| `/health/live` returns 200    | `{"alive":true}`                       |        | [ ]  |
+| `/health/ready` returns 200   | `{"ready":true,"version":"1.0.0-rc1"}` |        | [ ]  |
+| `/health/info` returns config | JSON with features, environment        |        | [ ]  |
+| Version matches RC1           | `1.0.0-rc1`                            |        | [ ]  |
 
 ### 1.2 Dashboard Availability
 
-| Check | URL | Expected | Pass |
-|-------|-----|----------|------|
-| Landing page loads | `/` | Page renders, no errors | [ ] |
-| Login page loads | `/login` | Supabase auth UI or login form | [ ] |
-| No console errors | - | DevTools console is clean | [ ] |
+| Check              | URL      | Expected                       | Pass |
+| ------------------ | -------- | ------------------------------ | ---- |
+| Landing page loads | `/`      | Page renders, no errors        | [ ]  |
+| Login page loads   | `/login` | Supabase auth UI or login form | [ ]  |
+| No console errors  | -        | DevTools console is clean      | [ ]  |
 
 ### 1.3 Database Connectivity
 
@@ -63,10 +63,10 @@ curl -s "$API_URL/health/info" | jq '.database'
 # Expected: {"connected":true} or similar
 ```
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Database connected | No connection errors in logs | [ ] |
-| Migrations count | 77 migrations applied | [ ] |
+| Check              | Expected                     | Pass |
+| ------------------ | ---------------------------- | ---- |
+| Database connected | No connection errors in logs | [ ]  |
+| Migrations count   | 77 migrations applied        | [ ]  |
 
 ---
 
@@ -79,29 +79,29 @@ curl -s "$API_URL/health/info" | jq '.database'
 3. Enter test email: `staging-test@yourdomain.com`
 4. Complete sign up flow
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Sign up form appears | Form with email/password fields | [ ] |
-| Sign up submits successfully | Confirmation or redirect | [ ] |
-| Confirmation email (if enabled) | Email received | [ ] |
+| Check                           | Expected                        | Pass |
+| ------------------------------- | ------------------------------- | ---- |
+| Sign up form appears            | Form with email/password fields | [ ]  |
+| Sign up submits successfully    | Confirmation or redirect        | [ ]  |
+| Confirmation email (if enabled) | Email received                  | [ ]  |
 
 ### 2.2 Sign In (Existing User)
 
 Use demo credentials if seeded, or your test user:
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Login form accepts credentials | No validation errors | [ ] |
-| Login succeeds | Redirects to `/app` | [ ] |
-| Session persists on refresh | Remains logged in | [ ] |
+| Check                          | Expected             | Pass |
+| ------------------------------ | -------------------- | ---- |
+| Login form accepts credentials | No validation errors | [ ]  |
+| Login succeeds                 | Redirects to `/app`  | [ ]  |
+| Session persists on refresh    | Remains logged in    | [ ]  |
 
 ### 2.3 Sign Out
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Sign out button visible | In navbar or menu | [ ] |
-| Sign out clears session | Redirects to login | [ ] |
-| Cannot access `/app` after logout | Redirected to login | [ ] |
+| Check                             | Expected            | Pass |
+| --------------------------------- | ------------------- | ---- |
+| Sign out button visible           | In navbar or menu   | [ ]  |
+| Sign out clears session           | Redirects to login  | [ ]  |
+| Cannot access `/app` after logout | Redirected to login | [ ]  |
 
 ---
 
@@ -111,45 +111,45 @@ Use demo credentials if seeded, or your test user:
 
 After login, verify:
 
-| Check | Route | Expected | Pass |
-|-------|-------|----------|------|
-| Dashboard home | `/app` | Main dashboard renders | [ ] |
-| Sidebar visible | - | Navigation menu shows | [ ] |
-| User info visible | - | Email/name in header | [ ] |
+| Check             | Route  | Expected               | Pass |
+| ----------------- | ------ | ---------------------- | ---- |
+| Dashboard home    | `/app` | Main dashboard renders | [ ]  |
+| Sidebar visible   | -      | Navigation menu shows  | [ ]  |
+| User info visible | -      | Email/name in header   | [ ]  |
 
 ### 3.2 Primary Navigation
 
 Visit each main section:
 
-| Section | Route | Expected | Pass |
-|---------|-------|----------|------|
-| Playbooks | `/app/playbooks` | List page renders | [ ] |
-| Content | `/app/content` | Content section renders | [ ] |
-| PR | `/app/pr` | PR section renders | [ ] |
-| SEO | `/app/seo` | SEO section renders | [ ] |
-| Team | `/app/team` | Team section renders | [ ] |
-| Agents | `/app/agents` | Agents section renders | [ ] |
+| Section   | Route            | Expected                | Pass |
+| --------- | ---------------- | ----------------------- | ---- |
+| Playbooks | `/app/playbooks` | List page renders       | [ ]  |
+| Content   | `/app/content`   | Content section renders | [ ]  |
+| PR        | `/app/pr`        | PR section renders      | [ ]  |
+| SEO       | `/app/seo`       | SEO section renders     | [ ]  |
+| Team      | `/app/team`      | Team section renders    | [ ]  |
+| Agents    | `/app/agents`    | Agents section renders  | [ ]  |
 
 ### 3.3 Executive Intelligence (if available)
 
-| Section | Route | Expected | Pass |
-|---------|-------|----------|------|
-| Command Center | `/app/exec` | Executive view | [ ] |
-| Digests | `/app/exec/digests` | Digest list | [ ] |
-| Board Reports | `/app/exec/board-reports` | Reports list | [ ] |
-| Investors | `/app/exec/investors` | IR section | [ ] |
-| Strategy | `/app/exec/strategy` | Strategy view | [ ] |
+| Section        | Route                     | Expected       | Pass |
+| -------------- | ------------------------- | -------------- | ---- |
+| Command Center | `/app/exec`               | Executive view | [ ]  |
+| Digests        | `/app/exec/digests`       | Digest list    | [ ]  |
+| Board Reports  | `/app/exec/board-reports` | Reports list   | [ ]  |
+| Investors      | `/app/exec/investors`     | IR section     | [ ]  |
+| Strategy       | `/app/exec/strategy`      | Strategy view  | [ ]  |
 
 ### 3.4 Advanced Intelligence (S70-S74)
 
-| Section | Route | Expected | Pass |
-|---------|-------|----------|------|
-| Unified Narratives | `/app/unified-narratives` | Narrative list | [ ] |
-| Scenarios | `/app/scenarios` | Scenario list | [ ] |
-| AI Simulations | `/app/scenarios/simulations` | Simulation view | [ ] |
-| Orchestrations | `/app/scenarios/orchestrations` | Orchestration view | [ ] |
-| Reality Maps | `/app/reality-maps` | Reality map viz | [ ] |
-| Insight Conflicts | `/app/insight-conflicts` | Conflict list | [ ] |
+| Section            | Route                           | Expected           | Pass |
+| ------------------ | ------------------------------- | ------------------ | ---- |
+| Unified Narratives | `/app/unified-narratives`       | Narrative list     | [ ]  |
+| Scenarios          | `/app/scenarios`                | Scenario list      | [ ]  |
+| AI Simulations     | `/app/scenarios/simulations`    | Simulation view    | [ ]  |
+| Orchestrations     | `/app/scenarios/orchestrations` | Orchestration view | [ ]  |
+| Reality Maps       | `/app/reality-maps`             | Reality map viz    | [ ]  |
+| Insight Conflicts  | `/app/insight-conflicts`        | Conflict list      | [ ]  |
 
 ---
 
@@ -159,20 +159,20 @@ Visit each main section:
 
 Open browser DevTools → Network tab and verify:
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| API requests to correct URL | Requests go to staging API | [ ] |
-| No CORS errors | No cross-origin blocks | [ ] |
-| 200 responses on data fetch | Successful responses | [ ] |
-| JSON data returned | Valid JSON payloads | [ ] |
+| Check                       | Expected                   | Pass |
+| --------------------------- | -------------------------- | ---- |
+| API requests to correct URL | Requests go to staging API | [ ]  |
+| No CORS errors              | No cross-origin blocks     | [ ]  |
+| 200 responses on data fetch | Successful responses       | [ ]  |
+| JSON data returned          | Valid JSON payloads        | [ ]  |
 
 ### 4.2 Authenticated Requests
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Auth header sent | `Authorization: Bearer ...` | [ ] |
-| Session cookie present | Supabase session cookie | [ ] |
-| 401 on invalid token | Proper auth error | [ ] |
+| Check                  | Expected                    | Pass |
+| ---------------------- | --------------------------- | ---- |
+| Auth header sent       | `Authorization: Bearer ...` | [ ]  |
+| Session cookie present | Supabase session cookie     | [ ]  |
+| 401 on invalid token   | Proper auth error           | [ ]  |
 
 ---
 
@@ -185,20 +185,20 @@ curl -s "$API_URL/health/info" | jq '.llm'
 # Expected: {"provider":"anthropic","configured":true} or similar
 ```
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| LLM provider configured | Not `stub` in production | [ ] |
-| API key present | `configured: true` | [ ] |
+| Check                   | Expected                 | Pass |
+| ----------------------- | ------------------------ | ---- |
+| LLM provider configured | Not `stub` in production | [ ]  |
+| API key present         | `configured: true`       | [ ]  |
 
 ### 5.2 Test AI Generation
 
 Navigate to a feature that uses AI:
 
-| Feature | Action | Expected | Pass |
-|---------|--------|----------|------|
-| Brief Generator | Generate a brief | AI content appears | [ ] |
-| Playbook Run | Execute AI step | Step completes | [ ] |
-| Content Rewrite | Request rewrite | AI suggestion shown | [ ] |
+| Feature         | Action           | Expected            | Pass |
+| --------------- | ---------------- | ------------------- | ---- |
+| Brief Generator | Generate a brief | AI content appears  | [ ]  |
+| Playbook Run    | Execute AI step  | Step completes      | [ ]  |
+| Content Rewrite | Request rewrite  | AI suggestion shown | [ ]  |
 
 ---
 
@@ -206,28 +206,28 @@ Navigate to a feature that uses AI:
 
 ### 6.1 Playbooks
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Playbook list loads | Shows existing playbooks | [ ] |
-| Can view playbook details | Detail page renders | [ ] |
-| Can create new playbook | Form works | [ ] |
-| Can run playbook | Execution starts | [ ] |
+| Check                     | Expected                 | Pass |
+| ------------------------- | ------------------------ | ---- |
+| Playbook list loads       | Shows existing playbooks | [ ]  |
+| Can view playbook details | Detail page renders      | [ ]  |
+| Can create new playbook   | Form works               | [ ]  |
+| Can run playbook          | Execution starts         | [ ]  |
 
 ### 6.2 Content Intelligence
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Content list loads | Shows content items | [ ] |
-| Can create content brief | Brief generator works | [ ] |
-| Quality scores display | Metrics visible | [ ] |
+| Check                    | Expected              | Pass |
+| ------------------------ | --------------------- | ---- |
+| Content list loads       | Shows content items   | [ ]  |
+| Can create content brief | Brief generator works | [ ]  |
+| Quality scores display   | Metrics visible       | [ ]  |
 
 ### 6.3 PR & Media
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Media sources display | List of sources | [ ] |
-| Mentions/coverage show | Media mentions | [ ] |
-| Press releases accessible | PR list | [ ] |
+| Check                     | Expected        | Pass |
+| ------------------------- | --------------- | ---- |
+| Media sources display     | List of sources | [ ]  |
+| Mentions/coverage show    | Media mentions  | [ ]  |
+| Press releases accessible | PR list         | [ ]  |
 
 ---
 
@@ -237,20 +237,20 @@ Navigate to a feature that uses AI:
 
 Intentionally trigger an error (if possible) or verify:
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Error boundary exists | Catches render errors | [ ] |
-| Error logged to `/api/v1/logs/client` | Error captured | [ ] |
-| Fallback UI appears | "Something went wrong" | [ ] |
-| Retry button works | Attempts recovery | [ ] |
+| Check                                 | Expected               | Pass |
+| ------------------------------------- | ---------------------- | ---- |
+| Error boundary exists                 | Catches render errors  | [ ]  |
+| Error logged to `/api/v1/logs/client` | Error captured         | [ ]  |
+| Fallback UI appears                   | "Something went wrong" | [ ]  |
+| Retry button works                    | Attempts recovery      | [ ]  |
 
 ### 7.2 API Error Handling
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| 404 on invalid route | Proper error page | [ ] |
-| 500 errors handled | Error message shown | [ ] |
-| Network errors handled | Retry or error state | [ ] |
+| Check                  | Expected             | Pass |
+| ---------------------- | -------------------- | ---- |
+| 404 on invalid route   | Proper error page    | [ ]  |
+| 500 errors handled     | Error message shown  | [ ]  |
+| Network errors handled | Retry or error state | [ ]  |
 
 ---
 
@@ -260,22 +260,22 @@ Intentionally trigger an error (if possible) or verify:
 
 Measure using browser DevTools:
 
-| Page | Target | Actual | Pass |
-|------|--------|--------|------|
-| Login | < 2s | | [ ] |
-| Dashboard | < 3s | | [ ] |
-| Playbooks list | < 2s | | [ ] |
-| Content list | < 2s | | [ ] |
+| Page           | Target | Actual | Pass |
+| -------------- | ------ | ------ | ---- |
+| Login          | < 2s   |        | [ ]  |
+| Dashboard      | < 3s   |        | [ ]  |
+| Playbooks list | < 2s   |        | [ ]  |
+| Content list   | < 2s   |        | [ ]  |
 
 ### 8.2 Core Web Vitals
 
 Run Lighthouse or similar:
 
-| Metric | Target | Actual | Pass |
-|--------|--------|--------|------|
-| LCP | < 2.5s | | [ ] |
-| FID/INP | < 100ms | | [ ] |
-| CLS | < 0.1 | | [ ] |
+| Metric  | Target  | Actual | Pass |
+| ------- | ------- | ------ | ---- |
+| LCP     | < 2.5s  |        | [ ]  |
+| FID/INP | < 100ms |        | [ ]  |
+| CLS     | < 0.1   |        | [ ]  |
 
 ---
 
@@ -284,10 +284,10 @@ Run Lighthouse or similar:
 Test in at least two browsers:
 
 | Browser | Version | Login | Navigation | Data | Pass |
-|---------|---------|-------|------------|------|------|
-| Chrome | 90+ | [ ] | [ ] | [ ] | [ ] |
-| Firefox | 88+ | [ ] | [ ] | [ ] | [ ] |
-| Safari | 14+ | [ ] | [ ] | [ ] | [ ] |
+| ------- | ------- | ----- | ---------- | ---- | ---- |
+| Chrome  | 90+     | [ ]   | [ ]        | [ ]  | [ ]  |
+| Firefox | 88+     | [ ]   | [ ]        | [ ]  | [ ]  |
+| Safari  | 14+     | [ ]   | [ ]        | [ ]  | [ ]  |
 
 ---
 
@@ -295,12 +295,12 @@ Test in at least two browsers:
 
 Test on mobile viewport (or actual device):
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Login works on mobile | Touch-friendly | [ ] |
-| Sidebar collapses | Hamburger menu | [ ] |
-| Content readable | No horizontal scroll | [ ] |
-| Buttons tappable | Adequate touch targets | [ ] |
+| Check                 | Expected               | Pass |
+| --------------------- | ---------------------- | ---- |
+| Login works on mobile | Touch-friendly         | [ ]  |
+| Sidebar collapses     | Hamburger menu         | [ ]  |
+| Content readable      | No horizontal scroll   | [ ]  |
+| Buttons tappable      | Adequate touch targets | [ ]  |
 
 ---
 
@@ -308,33 +308,33 @@ Test on mobile viewport (or actual device):
 
 ### Summary
 
-| Stage | Status |
-|-------|--------|
-| 1. Infrastructure Health | [ ] PASS / [ ] FAIL |
-| 2. Authentication Flow | [ ] PASS / [ ] FAIL |
-| 3. Core Navigation | [ ] PASS / [ ] FAIL |
-| 4. API Integration | [ ] PASS / [ ] FAIL |
-| 5. LLM Integration | [ ] PASS / [ ] FAIL / [ ] N/A |
-| 6. Feature Verification | [ ] PASS / [ ] FAIL |
-| 7. Error Handling | [ ] PASS / [ ] FAIL |
-| 8. Performance | [ ] PASS / [ ] FAIL |
-| 9. Cross-Browser | [ ] PASS / [ ] FAIL |
-| 10. Mobile Responsiveness | [ ] PASS / [ ] FAIL |
+| Stage                     | Status                        |
+| ------------------------- | ----------------------------- |
+| 1. Infrastructure Health  | [ ] PASS / [ ] FAIL           |
+| 2. Authentication Flow    | [ ] PASS / [ ] FAIL           |
+| 3. Core Navigation        | [ ] PASS / [ ] FAIL           |
+| 4. API Integration        | [ ] PASS / [ ] FAIL           |
+| 5. LLM Integration        | [ ] PASS / [ ] FAIL / [ ] N/A |
+| 6. Feature Verification   | [ ] PASS / [ ] FAIL           |
+| 7. Error Handling         | [ ] PASS / [ ] FAIL           |
+| 8. Performance            | [ ] PASS / [ ] FAIL           |
+| 9. Cross-Browser          | [ ] PASS / [ ] FAIL           |
+| 10. Mobile Responsiveness | [ ] PASS / [ ] FAIL           |
 
 ### Issues Found
 
 | Issue | Severity | Resolution |
-|-------|----------|------------|
-| | | |
-| | | |
+| ----- | -------- | ---------- |
+|       |          |            |
+|       |          |            |
 
 ### Approval
 
-| Role | Name | Signature | Date |
-|------|------|-----------|------|
-| Tester | | | |
-| Developer | | | |
-| Product Owner | | | |
+| Role          | Name | Signature | Date |
+| ------------- | ---- | --------- | ---- |
+| Tester        |      |           |      |
+| Developer     |      |           |      |
+| Product Owner |      |           |      |
 
 ---
 

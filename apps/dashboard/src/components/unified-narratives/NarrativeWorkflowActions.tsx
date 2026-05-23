@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import type { UnifiedNarrative } from '@pravado/types';
 import {
   CheckCircle2,
   Send,
@@ -16,15 +16,9 @@ import {
   MoreHorizontal,
   Loader2,
 } from 'lucide-react';
-import type { UnifiedNarrative } from '@pravado/types';
+import React, { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Dialog,
   DialogContent,
@@ -33,7 +27,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 interface NarrativeWorkflowActionsProps {
   narrative: UnifiedNarrative;
@@ -49,7 +50,9 @@ interface NarrativeWorkflowActionsProps {
   onPublish?: (channels?: string[]) => Promise<void>;
   onArchive?: (reason?: string) => Promise<void>;
   onRegenerate?: () => Promise<void>;
-  onExport?: (format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json') => Promise<void>;
+  onExport?: (
+    format: 'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'
+  ) => Promise<void>;
   className?: string;
 }
 
@@ -68,7 +71,9 @@ export default function NarrativeWorkflowActions({
   const [isLoading, setIsLoading] = useState(false);
   const [comments, setComments] = useState('');
   const [archiveReason, setArchiveReason] = useState('');
-  const [exportFormat, setExportFormat] = useState<'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'>('pdf');
+  const [exportFormat, setExportFormat] = useState<
+    'pdf' | 'docx' | 'pptx' | 'html' | 'md' | 'json'
+  >('pdf');
 
   const handleAction = async (action: () => Promise<void>) => {
     setIsLoading(true);
@@ -250,8 +255,8 @@ export default function NarrativeWorkflowActions({
           <DialogHeader>
             <DialogTitle>Archive Narrative</DialogTitle>
             <DialogDescription>
-              Archiving will remove this narrative from active views. This action
-              can be undone.
+              Archiving will remove this narrative from active views. This
+              action can be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

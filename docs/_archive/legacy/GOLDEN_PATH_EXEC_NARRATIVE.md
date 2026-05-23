@@ -39,6 +39,7 @@ This flow demonstrates how Pravado synthesizes information from multiple sources
 3. You should land on the main dashboard.
 
 **What to verify:**
+
 - Dashboard loads without errors
 - Organization shows as "Pravado Demo Org"
 
@@ -57,6 +58,7 @@ This flow demonstrates how Pravado synthesizes information from multiple sources
      - "Industry Challenges Ahead for 2025" (Negative, Reach: 45)
 
 **What to verify:**
+
 - Media sources are listed
 - Earned mentions show sentiment indicators (green/yellow/red)
 - Reach scores are displayed
@@ -69,6 +71,7 @@ This flow demonstrates how Pravado synthesizes information from multiple sources
    - "New Product Launch: AI Assistant Pro" (Draft)
 
 **What to verify:**
+
 - Press releases load
 - Status badges show correctly (Published vs Draft)
 
@@ -80,17 +83,20 @@ This flow demonstrates how Pravado synthesizes information from multiple sources
 2. The command center aggregates intelligence from all systems.
 
 **What to see:**
+
 - **Overall Health Score**: Derived from reputation reports (~80)
 - **Active Signals**: Media mentions and alerts
 - **Crisis Status**: Active incidents (Data Breach Alert)
 - **Recent Activity**: Timeline of system events
 
 **Key metrics to observe:**
+
 - Reputation score from Brand Health (78-82 range)
 - Any active crisis incidents highlighted
 - Media sentiment distribution
 
 **What to verify:**
+
 - KPIs/metrics are non-empty
 - No "No data" placeholders in critical sections
 - Charts render with the seeded data
@@ -105,16 +111,19 @@ This is the core intelligence synthesis feature.
 2. You should see two narratives:
 
 ### Narrative A: "Q4 2024 Company Performance Narrative"
+
 - **Type**: Quarterly Review
 - **Status**: Published
 - **Format**: Comprehensive
 
 Click to open and observe:
+
 - **Executive Summary**: "Company demonstrated resilient performance in Q4..."
 - **Source Systems**: PR, Crisis, Reputation, Strategy icons/badges
 - **Sections**: Multiple sections pulling from different domains
 
 ### Narrative B: "Crisis Response Narrative - Security Incident"
+
 - **Type**: Crisis Response
 - **Status**: Draft
 - **Format**: Executive
@@ -122,6 +131,7 @@ Click to open and observe:
 This narrative is specifically tied to the security incident.
 
 **What to verify:**
+
 - Both narratives appear in the list
 - Clicking a narrative shows its sections
 - Source system attribution is visible
@@ -136,6 +146,7 @@ This narrative is specifically tied to the security incident.
    - "Weekly Executive Digest - Week 48"
 
 Click to view:
+
 - **Key Insights** (3 items):
   1. Revenue up 12% YoY
   2. New market expansion on track
@@ -144,6 +155,7 @@ Click to view:
 - **Status**: Published
 
 **What to verify:**
+
 - Digest loads with key insights
 - Period dates are correct
 - Same narrative thread as Unified Narratives
@@ -159,6 +171,7 @@ Click to view:
 This represents the quarterly board-ready package.
 
 **What to verify:**
+
 - Report appears with correct status
 - Executive summary aligns with the Q4 narrative
 - Can view/edit the report structure
@@ -174,6 +187,7 @@ This represents the quarterly board-ready package.
 This is the CEO-level strategic view.
 
 **What to verify:**
+
 - Report shows market position insights
 - Period covers ~90 days
 - Status is Published
@@ -184,15 +198,15 @@ This is the CEO-level strategic view.
 
 The demo data tells a coherent story:
 
-| System | Data Point | Story Element |
-|--------|-----------|---------------|
-| Media | Positive TechCrunch mention | Product launch success |
-| Media | Negative blog post | Industry challenges awareness |
-| Crisis | Security incident (active) | Ongoing risk management |
-| Reputation | Score 78-82 | Generally healthy brand |
-| Narrative | Q4 Performance | Synthesizes all above |
-| Digest | Week 48 | Actionable summary |
-| Board Report | Q4 Draft | Board-ready presentation |
+| System       | Data Point                  | Story Element                 |
+| ------------ | --------------------------- | ----------------------------- |
+| Media        | Positive TechCrunch mention | Product launch success        |
+| Media        | Negative blog post          | Industry challenges awareness |
+| Crisis       | Security incident (active)  | Ongoing risk management       |
+| Reputation   | Score 78-82                 | Generally healthy brand       |
+| Narrative    | Q4 Performance              | Synthesizes all above         |
+| Digest       | Week 48                     | Actionable summary            |
+| Board Report | Q4 Draft                    | Board-ready presentation      |
 
 ---
 
@@ -222,15 +236,18 @@ To verify AI regeneration works:
 ## Troubleshooting
 
 **No data showing:**
+
 - Verify seed script ran successfully
 - Check API logs for database errors
 - Confirm org_id matches in the database
 
 **Auth issues:**
+
 - For local dev, consider using Supabase Auth bypass
 - Ensure user is linked to demo-org
 
 **API errors:**
+
 - Check health endpoints: `curl http://localhost:3001/health/ready`
 - Verify Supabase credentials in `.env`
 
@@ -239,5 +256,6 @@ To verify AI regeneration works:
 ## Next Steps
 
 After completing this flow:
+
 1. Proceed to **Golden Path #2**: Crisis → Reality Maps → Conflicts
 2. Complete the **UAT Checklist** in `docs/UAT_CHECKLIST_V1.md`

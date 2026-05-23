@@ -27,7 +27,9 @@ import { createMediaMonitoringService } from '../../services/mediaMonitoringServ
 /**
  * Register media monitoring routes
  */
-export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<void> {
+export async function mediaMonitoringRoutes(
+  server: FastifyInstance
+): Promise<void> {
   // Check feature flag
   if (!FLAGS.ENABLE_MEDIA_MONITORING) {
     server.log.info('Media monitoring routes disabled by feature flag');
@@ -36,7 +38,10 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
 
   // Create Supabase client (S100.2 fix)
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   /**
    * Helper to get user's org ID
@@ -85,97 +90,117 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   // POST /api/v1/media-monitoring/sources - Create a new monitoring source
   server.post<{
     Body: CreateSourceInput;
-  }>('/api/v1/media-monitoring/sources', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/sources',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = createSourceSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const source = await monitoringService.createSource(
+          orgId,
+          validation.data
+        );
+
+        return reply.status(201).send({
+          success: true,
+          data: { source },
+        });
+      } catch (error) {
+        console.error('Failed to create source:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to create source',
           },
         });
       }
-
-      const validation = createSourceSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const source = await monitoringService.createSource(orgId, validation.data);
-
-      return reply.status(201).send({
-        success: true,
-        data: { source },
-      });
-    } catch (error) {
-      console.error('Failed to create source:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to create source',
-        },
-      });
     }
-  });
+  );
 
   // GET /api/v1/media-monitoring/sources - List monitoring sources
   server.get<{
     Querystring: Record<string, string | undefined>;
-  }>('/api/v1/media-monitoring/sources', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/sources',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = listSourcesSchema.safeParse(request.query);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
+            },
+          });
+        }
+
+        const result = await monitoringService.listSources(
+          orgId,
+          validation.data
+        );
+
+        return reply.send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to list sources:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error ? error.message : 'Failed to list sources',
           },
         });
       }
-
-      const validation = listSourcesSchema.safeParse(request.query);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid query parameters',
-          },
-        });
-      }
-
-      const result = await monitoringService.listSources(orgId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to list sources:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to list sources',
-        },
-      });
     }
-  });
+  );
 
   // GET /api/v1/media-monitoring/sources/:id - Get a single source
   server.get<{
@@ -198,7 +223,10 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           });
         }
 
-        const source = await monitoringService.getSource(orgId, request.params.id);
+        const source = await monitoringService.getSource(
+          orgId,
+          request.params.id
+        );
 
         if (!source) {
           return reply.status(404).send({
@@ -220,7 +248,8 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to get source',
+            message:
+              error instanceof Error ? error.message : 'Failed to get source',
           },
         });
       }
@@ -276,7 +305,10 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to update source',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to update source',
           },
         });
       }
@@ -316,7 +348,10 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to deactivate source',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to deactivate source',
           },
         });
       }
@@ -329,102 +364,131 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
 
   // POST /api/v1/media-monitoring/ingest - Ingest an article
   server.post<{
-    Body: { url: string; sourceId?: string; title?: string; author?: string; content?: string };
-  }>('/api/v1/media-monitoring/ingest', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+    Body: {
+      url: string;
+      sourceId?: string;
+      title?: string;
+      author?: string;
+      content?: string;
+    };
+  }>(
+    '/api/v1/media-monitoring/ingest',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = ingestArticleSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+            },
+          });
+        }
+
+        const result = await monitoringService.ingestArticle(
+          orgId,
+          validation.data.url,
+          {
+            sourceId: validation.data.sourceId,
+            title: validation.data.title,
+            author: validation.data.author,
+            content: validation.data.content,
+          }
+        );
+
+        return reply.status(201).send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to ingest article:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to ingest article',
           },
         });
       }
-
-      const validation = ingestArticleSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-          },
-        });
-      }
-
-      const result = await monitoringService.ingestArticle(orgId, validation.data.url, {
-        sourceId: validation.data.sourceId,
-        title: validation.data.title,
-        author: validation.data.author,
-        content: validation.data.content,
-      });
-
-      return reply.status(201).send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to ingest article:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to ingest article',
-        },
-      });
     }
-  });
+  );
 
   // GET /api/v1/media-monitoring/articles - List articles
   server.get<{
     Querystring: Record<string, string | undefined>;
-  }>('/api/v1/media-monitoring/articles', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/articles',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = listArticlesSchema.safeParse(request.query);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
+            },
+          });
+        }
+
+        const result = await monitoringService.listArticles(
+          orgId,
+          validation.data
+        );
+
+        return reply.send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to list articles:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list articles',
           },
         });
       }
-
-      const validation = listArticlesSchema.safeParse(request.query);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid query parameters',
-          },
-        });
-      }
-
-      const result = await monitoringService.listArticles(orgId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to list articles:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to list articles',
-        },
-      });
     }
-  });
+  );
 
   // GET /api/v1/media-monitoring/articles/:id - Get article with mentions
   server.get<{
@@ -447,7 +511,10 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           });
         }
 
-        const article = await monitoringService.getArticleWithMentions(orgId, request.params.id);
+        const article = await monitoringService.getArticleWithMentions(
+          orgId,
+          request.params.id
+        );
 
         if (!article) {
           return reply.status(404).send({
@@ -469,7 +536,8 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to get article',
+            message:
+              error instanceof Error ? error.message : 'Failed to get article',
           },
         });
       }
@@ -482,7 +550,11 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
 
   // POST /api/v1/media-monitoring/detect-mentions - Detect mentions in an article
   server.post<{
-    Body: { articleId: string; entities: string[]; detectCompetitors?: boolean };
+    Body: {
+      articleId: string;
+      entities: string[];
+      detectCompetitors?: boolean;
+    };
   }>(
     '/api/v1/media-monitoring/detect-mentions',
     { preHandler: requireUser },
@@ -529,7 +601,10 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to detect mentions',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to detect mentions',
           },
         });
       }
@@ -539,85 +614,102 @@ export async function mediaMonitoringRoutes(server: FastifyInstance): Promise<vo
   // GET /api/v1/media-monitoring/mentions - List mentions
   server.get<{
     Querystring: Record<string, string | undefined>;
-  }>('/api/v1/media-monitoring/mentions', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/mentions',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = listMentionsSchema.safeParse(request.query);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
+            },
+          });
+        }
+
+        const result = await monitoringService.listMentions(
+          orgId,
+          validation.data
+        );
+
+        return reply.send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to list mentions:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list mentions',
           },
         });
       }
-
-      const validation = listMentionsSchema.safeParse(request.query);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid query parameters',
-          },
-        });
-      }
-
-      const result = await monitoringService.listMentions(orgId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to list mentions:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to list mentions',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // STATS ENDPOINT
   // ============================================================================
 
   // GET /api/v1/media-monitoring/stats - Get monitoring statistics
-  server.get('/api/v1/media-monitoring/stats', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  server.get(
+    '/api/v1/media-monitoring/stats',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const stats = await monitoringService.getStats(orgId);
+
+        return reply.send({
+          success: true,
+          data: { stats },
+        });
+      } catch (error) {
+        console.error('Failed to get stats:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error ? error.message : 'Failed to get stats',
           },
         });
       }
-
-      const stats = await monitoringService.getStats(orgId);
-
-      return reply.send({
-        success: true,
-        data: { stats },
-      });
-    } catch (error) {
-      console.error('Failed to get stats:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to get stats',
-        },
-      });
     }
-  });
+  );
 }

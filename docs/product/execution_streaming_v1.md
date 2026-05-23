@@ -5,6 +5,7 @@
 Sprint S21 introduces real-time execution streaming for playbook runs using Server-Sent Events (SSE). This replaces the previous polling-only approach with a push-based event system that delivers execution updates to the frontend in real-time.
 
 **Key Benefits:**
+
 - Real-time updates with sub-second latency
 - Reduced server load (no constant polling)
 - Better user experience with live status indicators
@@ -74,6 +75,7 @@ The `ExecutionEventBus` is a lightweight in-memory pub/sub system that enables d
 **Location:** `apps/api/src/events/eventBus.ts`
 
 **Key Features:**
+
 - **Subscription Management:** Subscriptions keyed by `runId` for efficient routing
 - **Synchronous Publish:** Events delivered synchronously within the same process
 - **Error Isolation:** Subscriber errors don't affect other subscribers
@@ -88,7 +90,10 @@ class ExecutionEventBus {
    * Subscribe to events for a specific runId
    * @returns Unsubscribe function
    */
-  subscribe(runId: string, handler: (event: ExecutionEvent) => void): () => void;
+  subscribe(
+    runId: string,
+    handler: (event: ExecutionEvent) => void
+  ): () => void;
 
   /**
    * Publish an event to all subscribers of the runId
@@ -146,6 +151,7 @@ unsubscribe();
 **Authorization:** User must belong to organization that owns the run
 
 **Response Headers:**
+
 ```
 Content-Type: text/event-stream
 Cache-Control: no-cache
@@ -193,9 +199,11 @@ Connections automatically close after 10 minutes (600,000ms) to prevent resource
 ### Run-Level Events
 
 #### `run.updated`
+
 Fired when run-level state changes (status, progress, current step).
 
 **Payload:**
+
 ```typescript
 {
   status?: string;           // Run status (QUEUED, RUNNING, SUCCEEDED, FAILED)
@@ -205,36 +213,42 @@ Fired when run-level state changes (status, progress, current step).
 ```
 
 #### `run.completed`
+
 Fired when the run completes successfully.
 
 **Payload:**
+
 ```typescript
 {
   status: 'COMPLETED';
-  completedAt: string;       // ISO 8601 timestamp
-  totalSteps: number;        // Total number of steps
-  successfulSteps: number;   // Number of successful steps
+  completedAt: string; // ISO 8601 timestamp
+  totalSteps: number; // Total number of steps
+  successfulSteps: number; // Number of successful steps
 }
 ```
 
 #### `run.failed`
+
 Fired when the run fails.
 
 **Payload:**
+
 ```typescript
 {
   status: 'FAILED';
-  error: string;             // Error message
-  failedAt: string;          // ISO 8601 timestamp
+  error: string; // Error message
+  failedAt: string; // ISO 8601 timestamp
 }
 ```
 
 ### Step-Level Events
 
 #### `step.updated`
+
 Fired when a step starts or its status changes.
 
 **Payload:**
+
 ```typescript
 {
   status: string;            // Step status (QUEUED, RUNNING, SUCCEEDED, FAILED)
@@ -243,9 +257,11 @@ Fired when a step starts or its status changes.
 ```
 
 #### `step.completed`
+
 Fired when a step completes successfully.
 
 **Payload:**
+
 ```typescript
 {
   status: 'SUCCESS';
@@ -255,29 +271,33 @@ Fired when a step completes successfully.
 ```
 
 #### `step.failed`
+
 Fired when a step fails.
 
 **Payload:**
+
 ```typescript
 {
   status: 'FAILED';
-  error: string;             // Error message
-  failedAt: string;          // ISO 8601 timestamp
-  attempt: number;           // Attempt number (for retries)
-  willRetry: boolean;        // Whether the step will be retried
+  error: string; // Error message
+  failedAt: string; // ISO 8601 timestamp
+  attempt: number; // Attempt number (for retries)
+  willRetry: boolean; // Whether the step will be retried
 }
 ```
 
 #### `step.log.appended`
+
 Fired when a log entry is added to a step.
 
 **Payload:**
+
 ```typescript
 {
   logEntry: {
-    level: string;           // Log level (INFO, WARN, ERROR)
-    message: string;         // Log message
-    timestamp: string;       // ISO 8601 timestamp
+    level: string; // Log level (INFO, WARN, ERROR)
+    message: string; // Log message
+    timestamp: string; // ISO 8601 timestamp
   }
 }
 ```
@@ -291,6 +311,7 @@ Fired when a log entry is added to a step.
 **Purpose:** React hook for managing SSE connection lifecycle and event handling.
 
 **Usage:**
+
 ```typescript
 import { useExecutionStream } from '@/hooks/useExecutionStream';
 
@@ -324,10 +345,10 @@ function MyComponent({ runId }: { runId: string }) {
 The hook implements exponential backoff for reconnection:
 
 1. **Initial failure:** Wait 3 seconds (base delay)
-2. **Second attempt:** Wait 6 seconds (2^1 * base)
-3. **Third attempt:** Wait 12 seconds (2^2 * base)
-4. **Fourth attempt:** Wait 24 seconds (2^3 * base)
-5. **Fifth attempt:** Wait 48 seconds (2^4 * base)
+2. **Second attempt:** Wait 6 seconds (2^1 \* base)
+3. **Third attempt:** Wait 12 seconds (2^2 \* base)
+4. **Fourth attempt:** Wait 24 seconds (2^3 \* base)
+5. **Fifth attempt:** Wait 48 seconds (2^4 \* base)
 6. **Max retries reached:** Stop reconnecting, show error
 
 **Manual Retry:** Users can call `retry()` to reset the counter and attempt reconnection.
@@ -340,7 +361,7 @@ The frontend uses the native browser `EventSource` API for SSE connections:
 
 ```typescript
 const eventSource = new EventSource(streamUrl, {
-  withCredentials: true,  // Include cookies for auth
+  withCredentials: true, // Include cookies for auth
 });
 
 eventSource.addEventListener('step.updated', (e: MessageEvent) => {
@@ -352,7 +373,7 @@ eventSource.onerror = (error) => {
   // Handle error, attempt reconnection
 };
 
-eventSource.close();  // Cleanup
+eventSource.close(); // Cleanup
 ```
 
 ### Connection States
@@ -385,6 +406,7 @@ The frontend automatically falls back to polling when:
 **Endpoint:** `GET /api/v1/playbook-runs/:id`
 
 **Behavior:**
+
 - Fetches full run state including all steps
 - Updates entire UI state (not delta-based like SSE)
 - Stops polling when run reaches terminal state (success, failed, canceled)
@@ -398,6 +420,7 @@ The execution viewer uses a hybrid approach:
 3. **Fallback Mode:** If SSE fails, resume polling
 
 **Visual Indicator:**
+
 - **Green "LIVE" badge:** SSE connected and streaming
 - **Yellow "Polling" badge:** Polling active (SSE unavailable or disabled)
 - **Gray "Paused" badge:** Updates paused by user
@@ -411,6 +434,7 @@ The in-memory EventBus only works within a single API server process. If you sca
 **Problem:** Events published on server A won't reach SSE clients connected to server B.
 
 **Future Solution (V2):**
+
 - Use Redis Pub/Sub for cross-instance communication
 - Or use message queue (RabbitMQ, SQS)
 - Or use WebSocket with sticky sessions
@@ -420,10 +444,12 @@ The in-memory EventBus only works within a single API server process. If you sca
 V1 uses Server-Sent Events (SSE), which is unidirectional (server → client only).
 
 **Limitations:**
+
 - No client-to-server messages over the stream
 - Cannot pause/resume execution via the stream
 
 **Future Enhancement (V2):**
+
 - Add WebSocket support for bidirectional communication
 - Enable real-time execution control (pause, cancel, retry)
 
@@ -434,6 +460,7 @@ If a client disconnects and reconnects, they miss events that occurred during th
 **Current Workaround:** Full state fetch on initial load provides the complete picture.
 
 **Future Enhancement (V2):**
+
 - Store recent events in Redis with TTL
 - Support "last-event-id" header for event replay
 - Implement event sourcing pattern
@@ -445,6 +472,7 @@ SSE events are sent as plain text without compression.
 **Impact:** Higher bandwidth usage for log-heavy executions.
 
 **Future Enhancement (V2):**
+
 - Implement binary protocol (WebSocket + protobuf)
 - Add gzip compression for large payloads
 
@@ -455,11 +483,13 @@ The EventBus stores all subscriptions in memory. With thousands of concurrent vi
 **Potential Issue:** Memory usage scales with number of active connections.
 
 **Mitigation:**
+
 - 10-minute timeout auto-disconnects idle clients
 - Subscription cleanup on disconnect
 - No event history stored in EventBus
 
 **Future Enhancement (V2):**
+
 - Move to Redis-backed pub/sub
 - Implement connection pooling
 
@@ -470,6 +500,7 @@ The EventBus stores all subscriptions in memory. With thousands of concurrent vi
 **Location:** `apps/api/__tests__/eventBus.test.ts`
 
 **Coverage:**
+
 - Subscribe/publish/unsubscribe mechanics
 - Multiple subscribers per runId
 - Subscription leak prevention
@@ -479,6 +510,7 @@ The EventBus stores all subscriptions in memory. With thousands of concurrent vi
 - Clear all subscriptions
 
 **Run Tests:**
+
 ```bash
 cd apps/api
 pnpm test eventBus
@@ -487,6 +519,7 @@ pnpm test eventBus
 ### SSE Endpoint Testing
 
 **Manual Test with curl:**
+
 ```bash
 curl -N \
   -H "Cookie: your-session-cookie" \
@@ -494,6 +527,7 @@ curl -N \
 ```
 
 **Expected Output:**
+
 ```
 event: connected
 data: {"message":"Connected to execution stream"}
@@ -513,10 +547,12 @@ data: {"type":"step.updated","runId":"run-123","stepKey":"step1","timestamp":"20
 **Default:** `true`
 
 **Behavior:**
+
 - **When `true`:** Frontend attempts SSE connection, falls back to polling on failure
 - **When `false`:** Frontend uses polling only, SSE endpoint still available but not used
 
 **Toggling at Runtime:**
+
 ```typescript
 import { FLAGS } from '@pravado/feature-flags';
 
@@ -537,11 +573,13 @@ if (FLAGS.ENABLE_EXECUTION_STREAMING) {
 ### Server Load
 
 **Polling (per active viewer):**
+
 - 30 requests/minute
 - 1800 requests/hour
 - Full state fetch each time
 
 **SSE (per active viewer):**
+
 - 1 initial connection
 - 2 heartbeats/minute
 - Delta events only (much smaller payloads)
@@ -551,10 +589,12 @@ if (FLAGS.ENABLE_EXECUTION_STREAMING) {
 ### Scalability
 
 **Current (Single Instance):**
+
 - Supports ~1000 concurrent SSE connections per instance
 - Memory usage: ~1-2MB per connection
 
 **Future (Multi-Instance):**
+
 - With Redis Pub/Sub: 10,000+ concurrent connections
 - With WebSocket: 50,000+ connections per instance
 
@@ -563,6 +603,7 @@ if (FLAGS.ENABLE_EXECUTION_STREAMING) {
 ### For Frontend Developers
 
 **Old Approach (Polling Only):**
+
 ```typescript
 useEffect(() => {
   const interval = setInterval(fetchRun, 2000);
@@ -571,12 +612,13 @@ useEffect(() => {
 ```
 
 **New Approach (SSE + Polling Fallback):**
+
 ```typescript
 const { connected, lastEvent } = useExecutionStream(runId);
 
 useEffect(() => {
   if (lastEvent) {
-    applyEvent(lastEvent);  // Delta update
+    applyEvent(lastEvent); // Delta update
   }
 }, [lastEvent]);
 
@@ -592,6 +634,7 @@ useEffect(() => {
 ### For Backend Developers
 
 **Publishing Events from Execution Engine:**
+
 ```typescript
 import { executionEventBus } from '@/events/eventBus';
 
@@ -615,6 +658,7 @@ executionEventBus.publish({
 **Symptoms:** Yellow "Polling" badge instead of green "LIVE"
 
 **Checks:**
+
 1. Verify feature flag: `FLAGS.ENABLE_EXECUTION_STREAMING === true`
 2. Check browser console for EventSource errors
 3. Verify authentication (session cookie present)
@@ -626,6 +670,7 @@ executionEventBus.publish({
 **Symptoms:** SSE connected but UI not updating
 
 **Checks:**
+
 1. Verify `applyEvent` function is called on `lastEvent` change
 2. Check browser console for event parsing errors
 3. Confirm event type matches expected types
@@ -636,11 +681,13 @@ executionEventBus.publish({
 **Symptoms:** Constant reconnection attempts
 
 **Possible Causes:**
+
 1. **Proxy/Firewall Timeout:** Heartbeat not reaching client
 2. **Server Restart:** API instance restarting frequently
 3. **Network Issues:** Unstable network connection
 
 **Solutions:**
+
 1. Check proxy/firewall SSE support
 2. Increase heartbeat frequency (reduce interval)
 3. Monitor server health and logs
@@ -650,12 +697,14 @@ executionEventBus.publish({
 **Symptoms:** API server memory growing over time
 
 **Checks:**
+
 1. Check subscription count: `eventBus.getTotalSubscriptionCount()`
 2. Monitor active SSE connections
 3. Verify cleanup on disconnect (check logs)
 4. Look for subscription leaks in custom code
 
 **Mitigation:**
+
 1. Reduce connection timeout (currently 10 minutes)
 2. Implement connection limits per user
 3. Add memory alerts and monitoring

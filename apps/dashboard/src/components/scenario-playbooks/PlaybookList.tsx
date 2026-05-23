@@ -5,11 +5,24 @@
  * Displays a list of scenario playbooks with filtering and pagination
  */
 
+import type {
+  ScenarioPlaybook,
+  ScenarioListPlaybooksQuery,
+} from '@pravado/types';
+import {
+  SCENARIO_PLAYBOOK_STATUS_LABELS,
+  SCENARIO_TRIGGER_TYPE_LABELS,
+  SCENARIO_RISK_LEVEL_LABELS,
+} from '@pravado/types';
 import { useState, useEffect } from 'react';
-import type { ScenarioPlaybook, ScenarioListPlaybooksQuery } from '@pravado/types';
-import { SCENARIO_PLAYBOOK_STATUS_LABELS, SCENARIO_TRIGGER_TYPE_LABELS, SCENARIO_RISK_LEVEL_LABELS } from '@pravado/types';
+
 import { PlaybookCard } from './PlaybookCard';
-import { listPlaybooks, activatePlaybook, archivePlaybook, deletePlaybook } from '../../lib/scenarioPlaybookApi';
+import {
+  listPlaybooks,
+  activatePlaybook,
+  archivePlaybook,
+  deletePlaybook,
+} from '../../lib/scenarioPlaybookApi';
 
 interface PlaybookListProps {
   onView?: (playbook: ScenarioPlaybook) => void;
@@ -17,7 +30,11 @@ interface PlaybookListProps {
   onCreateNew?: () => void;
 }
 
-export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps) {
+export function PlaybookList({
+  onView,
+  onEdit,
+  onCreateNew,
+}: PlaybookListProps) {
   const [playbooks, setPlaybooks] = useState<ScenarioPlaybook[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +56,16 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
       const query: ScenarioListPlaybooksQuery = {
         limit,
         offset: page * limit,
-        ...(statusFilter && { status: statusFilter as ScenarioListPlaybooksQuery['status'] }),
-        ...(riskFilter && { riskLevel: riskFilter as ScenarioListPlaybooksQuery['riskLevel'] }),
-        ...(triggerFilter && { triggerType: triggerFilter as ScenarioListPlaybooksQuery['triggerType'] }),
+        ...(statusFilter && {
+          status: statusFilter as ScenarioListPlaybooksQuery['status'],
+        }),
+        ...(riskFilter && {
+          riskLevel: riskFilter as ScenarioListPlaybooksQuery['riskLevel'],
+        }),
+        ...(triggerFilter && {
+          triggerType:
+            triggerFilter as ScenarioListPlaybooksQuery['triggerType'],
+        }),
         ...(searchQuery && { search: searchQuery }),
         sortBy: 'updated_at',
         sortOrder: 'desc',
@@ -78,7 +102,9 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
       await activatePlaybook(playbook.id);
       fetchPlaybooks();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to activate playbook');
+      setError(
+        err instanceof Error ? err.message : 'Failed to activate playbook'
+      );
     }
   };
 
@@ -87,7 +113,9 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
       await archivePlaybook(playbook.id);
       fetchPlaybooks();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to archive playbook');
+      setError(
+        err instanceof Error ? err.message : 'Failed to archive playbook'
+      );
     }
   };
 
@@ -100,7 +128,9 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
       await deletePlaybook(playbook.id);
       fetchPlaybooks();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete playbook');
+      setError(
+        err instanceof Error ? err.message : 'Failed to delete playbook'
+      );
     }
   };
 
@@ -126,9 +156,13 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Statuses</option>
-          {Object.entries(SCENARIO_PLAYBOOK_STATUS_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
+          {Object.entries(SCENARIO_PLAYBOOK_STATUS_LABELS).map(
+            ([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            )
+          )}
         </select>
 
         <select
@@ -138,7 +172,9 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
         >
           <option value="">All Risk Levels</option>
           {Object.entries(SCENARIO_RISK_LEVEL_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
+            <option key={value} value={value}>
+              {label}
+            </option>
           ))}
         </select>
 
@@ -148,9 +184,13 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Triggers</option>
-          {Object.entries(SCENARIO_TRIGGER_TYPE_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
+          {Object.entries(SCENARIO_TRIGGER_TYPE_LABELS).map(
+            ([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            )
+          )}
         </select>
 
         {onCreateNew && (
@@ -174,7 +214,10 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+            <div
+              key={i}
+              className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
+            >
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
               <div className="h-4 bg-gray-100 rounded w-full mb-2" />
               <div className="h-4 bg-gray-100 rounded w-2/3" />
@@ -196,7 +239,9 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No playbooks found</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            No playbooks found
+          </h3>
           <p className="mt-1 text-sm text-gray-500">
             {searchQuery || statusFilter || riskFilter || triggerFilter
               ? 'Try adjusting your filters'
@@ -231,7 +276,8 @@ export function PlaybookList({ onView, onEdit, onCreateNew }: PlaybookListProps)
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
               <p className="text-sm text-gray-600">
-                Showing {page * limit + 1} - {Math.min((page + 1) * limit, total)} of {total}
+                Showing {page * limit + 1} -{' '}
+                {Math.min((page + 1) * limit, total)} of {total}
               </p>
               <div className="flex items-center gap-2">
                 <button

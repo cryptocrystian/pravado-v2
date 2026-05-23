@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type { CrisisBrief, CrisisBriefSectionType } from '@pravado/types';
 import {
   FileText,
   RefreshCw,
@@ -20,22 +20,23 @@ import {
   Edit2,
   Sparkles,
 } from 'lucide-react';
-import type {
-  CrisisBrief,
-  CrisisBriefSectionType,
-} from '@pravado/types';
-import { BRIEF_FORMAT_LABELS, formatTimeAgo } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { BRIEF_FORMAT_LABELS, formatTimeAgo } from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisBriefPanelProps {
   brief: CrisisBrief | null;
   onGenerate?: () => Promise<void>;
-  onRegenerateSection?: (sectionId: string, instructions?: string) => Promise<void>;
+  onRegenerateSection?: (
+    sectionId: string,
+    instructions?: string
+  ) => Promise<void>;
   onUpdateSection?: (sectionId: string, content: string) => Promise<void>;
   onExport?: (format: 'pdf' | 'docx' | 'txt') => Promise<void>;
   onApprove?: () => Promise<void>;
@@ -186,9 +187,7 @@ export default function CrisisBriefPanel({
               <CardTitle className="text-lg truncate">{brief.title}</CardTitle>
             </div>
             {brief.subtitle && (
-              <p className="text-sm text-white/50 truncate">
-                {brief.subtitle}
-              </p>
+              <p className="text-sm text-white/50 truncate">{brief.subtitle}</p>
             )}
           </div>
 
@@ -250,7 +249,9 @@ export default function CrisisBriefPanel({
                             : 'bg-gray-50 border-gray-300'
                       )}
                     >
-                      <div className="font-medium text-sm">{takeaway.title}</div>
+                      <div className="font-medium text-sm">
+                        {takeaway.title}
+                      </div>
                       <p className="text-sm text-white/50 mt-1">
                         {takeaway.content}
                       </p>
@@ -268,7 +269,8 @@ export default function CrisisBriefPanel({
                 const isExpanded = expandedSections.has(section.sectionType);
                 const isRegenerating = regeneratingSectionId === section.id;
                 const icon = SECTION_ICONS[section.sectionType] || '📄';
-                const label = SECTION_LABELS[section.sectionType] || section.sectionType;
+                const label =
+                  SECTION_LABELS[section.sectionType] || section.sectionType;
 
                 return (
                   <div
@@ -287,7 +289,10 @@ export default function CrisisBriefPanel({
                         <span>{icon}</span>
                         <span className="font-medium text-sm">{label}</span>
                         {section.isManuallyEdited && (
-                          <Badge variant="outline" className="text-xs bg-yellow-50">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-yellow-50"
+                          >
                             <Edit2 className="h-3 w-3 mr-1" />
                             Edited
                           </Badge>
@@ -405,11 +410,7 @@ export default function CrisisBriefPanel({
 
             {/* Export */}
             {onExport && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onExport('pdf')}
-              >
+              <Button variant="ghost" size="sm" onClick={() => onExport('pdf')}>
                 <Download className="h-4 w-4 mr-1" />
                 Export
               </Button>

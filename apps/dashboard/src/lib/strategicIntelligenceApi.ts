@@ -120,17 +120,21 @@ export async function createStrategicReport(
     body: JSON.stringify(input),
   });
 
-  if (!response.ok) throw new Error(`Failed to create report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to create report: ${response.statusText}`);
   return response.json();
 }
 
 /**
  * Get a strategic intelligence report by ID
  */
-export async function getStrategicReport(reportId: string): Promise<StrategicReportWithSections> {
+export async function getStrategicReport(
+  reportId: string
+): Promise<StrategicReportWithSections> {
   const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}`);
 
-  if (!response.ok) throw new Error(`Failed to fetch report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch report: ${response.statusText}`);
   return response.json();
 }
 
@@ -147,7 +151,8 @@ export async function updateStrategicReport(
     body: JSON.stringify(updates),
   });
 
-  if (!response.ok) throw new Error(`Failed to update report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to update report: ${response.statusText}`);
   return response.json();
 }
 
@@ -159,7 +164,8 @@ export async function deleteStrategicReport(reportId: string): Promise<void> {
     method: 'DELETE',
   });
 
-  if (!response.ok) throw new Error(`Failed to delete report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to delete report: ${response.statusText}`);
 }
 
 /**
@@ -181,7 +187,8 @@ export async function listStrategicReports(
 
   const response = await fetch(`${BASE_URL}${API_PREFIX}/reports?${params}`);
 
-  if (!response.ok) throw new Error(`Failed to list reports: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to list reports: ${response.statusText}`);
   return response.json();
 }
 
@@ -206,7 +213,8 @@ export async function updateStrategicSection(
     }
   );
 
-  if (!response.ok) throw new Error(`Failed to update section: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to update section: ${response.statusText}`);
   return response.json();
 }
 
@@ -227,7 +235,8 @@ export async function regenerateStrategicSection(
     }
   );
 
-  if (!response.ok) throw new Error(`Failed to regenerate section: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to regenerate section: ${response.statusText}`);
   return response.json();
 }
 
@@ -238,13 +247,17 @@ export async function reorderStrategicSections(
   reportId: string,
   input: ReorderStrategicSections
 ): Promise<StrategicReportWithSections> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/sections/reorder`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/sections/reorder`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to reorder sections: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to reorder sections: ${response.statusText}`);
   return response.json();
 }
 
@@ -259,13 +272,17 @@ export async function generateStrategicReport(
   reportId: string,
   input: GenerateStrategicReport
 ): Promise<GenerateStrategicReportResponse> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/generate`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to generate report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to generate report: ${response.statusText}`);
   return response.json();
 }
 
@@ -282,13 +299,17 @@ export async function refreshStrategicInsights(
     updateSummary: true,
     ...input,
   };
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/refresh-insights`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(fullInput),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/refresh-insights`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fullInput),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to refresh insights: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to refresh insights: ${response.statusText}`);
   return response.json();
 }
 
@@ -303,13 +324,17 @@ export async function approveStrategicReport(
   reportId: string,
   input: ApproveStrategicReport = {}
 ): Promise<StrategicIntelligenceReport> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/approve`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/approve`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to approve report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to approve report: ${response.statusText}`);
   return response.json();
 }
 
@@ -325,13 +350,17 @@ export async function publishStrategicReport(
     generatePptx: false,
     ...input,
   };
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/publish`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(fullInput),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/publish`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fullInput),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to publish report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to publish report: ${response.statusText}`);
   return response.json();
 }
 
@@ -342,13 +371,17 @@ export async function archiveStrategicReport(
   reportId: string,
   input: ArchiveStrategicReport = {}
 ): Promise<StrategicIntelligenceReport> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/archive`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/archive`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to archive report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to archive report: ${response.statusText}`);
   return response.json();
 }
 
@@ -363,13 +396,17 @@ export async function addStrategicSource(
   reportId: string,
   input: AddStrategicSource
 ): Promise<StrategicSource> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/sources`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/sources`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to add source: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to add source: ${response.statusText}`);
   return response.json();
 }
 
@@ -390,20 +427,25 @@ export async function updateStrategicSource(
     }
   );
 
-  if (!response.ok) throw new Error(`Failed to update source: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to update source: ${response.statusText}`);
   return response.json();
 }
 
 /**
  * Remove a source from a report
  */
-export async function removeStrategicSource(reportId: string, sourceId: string): Promise<void> {
+export async function removeStrategicSource(
+  reportId: string,
+  sourceId: string
+): Promise<void> {
   const response = await fetch(
     `${BASE_URL}${API_PREFIX}/reports/${reportId}/sources/${sourceId}`,
     { method: 'DELETE' }
   );
 
-  if (!response.ok) throw new Error(`Failed to remove source: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to remove source: ${response.statusText}`);
 }
 
 /**
@@ -421,7 +463,8 @@ export async function listStrategicSources(
     `${BASE_URL}${API_PREFIX}/reports/${reportId}/sources?${params}`
   );
 
-  if (!response.ok) throw new Error(`Failed to list sources: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to list sources: ${response.statusText}`);
   return response.json();
 }
 
@@ -445,21 +488,25 @@ export async function listStrategicAuditLogs(
     `${BASE_URL}${API_PREFIX}/reports/${reportId}/audit-logs?${params}`
   );
 
-  if (!response.ok) throw new Error(`Failed to list audit logs: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to list audit logs: ${response.statusText}`);
   return response.json();
 }
 
 /**
  * Get statistics for a report (or global stats if no reportId provided)
  */
-export async function getStrategicReportStats(reportId?: string): Promise<StrategicReportStats> {
+export async function getStrategicReportStats(
+  reportId?: string
+): Promise<StrategicReportStats> {
   const endpoint = reportId
     ? `${BASE_URL}${API_PREFIX}/reports/${reportId}/stats`
     : `${BASE_URL}${API_PREFIX}/stats`;
 
   const response = await fetch(endpoint);
 
-  if (!response.ok) throw new Error(`Failed to fetch report stats: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch report stats: ${response.statusText}`);
   return response.json();
 }
 
@@ -469,7 +516,10 @@ export async function getStrategicReportStats(reportId?: string): Promise<Strate
 export async function getAggregatedStrategicInsights(): Promise<AggregatedStrategicInsights> {
   const response = await fetch(`${BASE_URL}${API_PREFIX}/insights/aggregated`);
 
-  if (!response.ok) throw new Error(`Failed to fetch aggregated insights: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(
+      `Failed to fetch aggregated insights: ${response.statusText}`
+    );
   return response.json();
 }
 
@@ -484,27 +534,37 @@ export async function exportStrategicReport(
   reportId: string,
   input: ExportStrategicReport
 ): Promise<Blob> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/reports/${reportId}/export`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/reports/${reportId}/export`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to export report: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to export report: ${response.statusText}`);
   return response.blob();
 }
 
 /**
  * Compare two periods
  */
-export async function comparePeriods(input: ComparePeriods): Promise<PeriodComparison> {
-  const response = await fetch(`${BASE_URL}${API_PREFIX}/insights/compare-periods`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+export async function comparePeriods(
+  input: ComparePeriods
+): Promise<PeriodComparison> {
+  const response = await fetch(
+    `${BASE_URL}${API_PREFIX}/insights/compare-periods`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    }
+  );
 
-  if (!response.ok) throw new Error(`Failed to compare periods: ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(`Failed to compare periods: ${response.statusText}`);
   return response.json();
 }
 
@@ -641,7 +701,9 @@ export function formatScore(score: number | null | undefined): string {
 /**
  * Get color for a score
  */
-export function getScoreColor(score: number | null | undefined): 'green' | 'blue' | 'yellow' | 'red' | 'gray' {
+export function getScoreColor(
+  score: number | null | undefined
+): 'green' | 'blue' | 'yellow' | 'red' | 'gray' {
   if (score === null || score === undefined) return 'gray';
   if (score >= 0.8) return 'green';
   if (score >= 0.6) return 'blue';
@@ -653,7 +715,10 @@ export function getScoreColor(score: number | null | undefined): 'green' | 'blue
 /**
  * Format a period range
  */
-export function formatPeriodRange(startDate: string | Date, endDate: string | Date): string {
+export function formatPeriodRange(
+  startDate: string | Date,
+  endDate: string | Date
+): string {
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
   const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
 

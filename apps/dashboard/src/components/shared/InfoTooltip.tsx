@@ -33,7 +33,7 @@ export function InfoTooltip({ content, size = 13 }: InfoTooltipProps) {
         type="button"
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
-        onClick={() => setShow(s => !s)}
+        onClick={() => setShow((s) => !s)}
         className="inline-flex items-center justify-center rounded-full text-white/30 hover:text-white/60 transition-colors focus:outline-none"
         aria-label="More info"
       >

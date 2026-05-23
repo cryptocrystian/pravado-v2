@@ -5,9 +5,27 @@ import { useState, useEffect } from 'react';
 export const dynamic = 'force-dynamic';
 
 const PLANS = [
-  { id: 'starter', name: 'Starter', price: 99, users: 1, features: ['Basic SAGE proposals', 'Content editor', 'PR outreach'] },
-  { id: 'pro', name: 'Pro', price: 299, users: 3, features: ['Full SAGE + CiteMind', 'Manual CRAFT', '3 team members'] },
-  { id: 'growth', name: 'Growth', price: 799, users: 10, features: ['Full stack + Autopilot', '10 team members', 'Priority support'] },
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: 99,
+    users: 1,
+    features: ['Basic SAGE proposals', 'Content editor', 'PR outreach'],
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: 299,
+    users: 3,
+    features: ['Full SAGE + CiteMind', 'Manual CRAFT', '3 team members'],
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    price: 799,
+    users: 10,
+    features: ['Full stack + Autopilot', '10 team members', 'Priority support'],
+  },
 ];
 
 interface Subscription {
@@ -28,8 +46,12 @@ export default function BillingSettingsPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/billing/subscription').then(r => r.json()).catch(() => null),
-      fetch('/api/billing/usage').then(r => r.json()).catch(() => null),
+      fetch('/api/billing/subscription')
+        .then((r) => r.json())
+        .catch(() => null),
+      fetch('/api/billing/usage')
+        .then((r) => r.json())
+        .catch(() => null),
     ]).then(([sub, use]) => {
       if (sub?.success) setSubscription(sub.data);
       if (use?.success) setUsage(use.data);
@@ -82,10 +104,18 @@ export default function BillingSettingsPage() {
         <div className="bg-slate-2 border border-slate-4 rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Current Plan</p>
-              <p className="text-xl font-bold text-white">{subscription.plan}</p>
+              <p className="text-xs text-white/40 uppercase tracking-wider mb-1">
+                Current Plan
+              </p>
+              <p className="text-xl font-bold text-white">
+                {subscription.plan}
+              </p>
               <p className="text-xs text-white/50 mt-1">
-                {subscription.status === 'active' ? 'Active' : subscription.status} — renews {new Date(subscription.current_period_end).toLocaleDateString()}
+                {subscription.status === 'active'
+                  ? 'Active'
+                  : subscription.status}{' '}
+                — renews{' '}
+                {new Date(subscription.current_period_end).toLocaleDateString()}
               </p>
             </div>
             <button
@@ -100,16 +130,30 @@ export default function BillingSettingsPage() {
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-4">
               <div>
                 <p className="text-xs text-white/40 mb-1">SAGE Proposals</p>
-                <p className="text-sm text-white/80">{usage.sage_proposals.used} / {usage.sage_proposals.limit}</p>
+                <p className="text-sm text-white/80">
+                  {usage.sage_proposals.used} / {usage.sage_proposals.limit}
+                </p>
                 <div className="h-1 bg-slate-4 rounded-full mt-1.5 overflow-hidden">
-                  <div className="h-full bg-brand-iris rounded-full" style={{ width: `${Math.min((usage.sage_proposals.used / usage.sage_proposals.limit) * 100, 100)}%` }} />
+                  <div
+                    className="h-full bg-brand-iris rounded-full"
+                    style={{
+                      width: `${Math.min((usage.sage_proposals.used / usage.sage_proposals.limit) * 100, 100)}%`,
+                    }}
+                  />
                 </div>
               </div>
               <div>
                 <p className="text-xs text-white/40 mb-1">CiteMind Scores</p>
-                <p className="text-sm text-white/80">{usage.citemind_scores.used} / {usage.citemind_scores.limit}</p>
+                <p className="text-sm text-white/80">
+                  {usage.citemind_scores.used} / {usage.citemind_scores.limit}
+                </p>
                 <div className="h-1 bg-slate-4 rounded-full mt-1.5 overflow-hidden">
-                  <div className="h-full bg-brand-cyan rounded-full" style={{ width: `${Math.min((usage.citemind_scores.used / usage.citemind_scores.limit) * 100, 100)}%` }} />
+                  <div
+                    className="h-full bg-brand-cyan rounded-full"
+                    style={{
+                      width: `${Math.min((usage.citemind_scores.used / usage.citemind_scores.limit) * 100, 100)}%`,
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -117,17 +161,31 @@ export default function BillingSettingsPage() {
         </div>
       ) : (
         <div className="mb-6">
-          <p className="text-sm text-white/50 mb-4">Choose a plan to get started</p>
+          <p className="text-sm text-white/50 mb-4">
+            Choose a plan to get started
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {PLANS.map(plan => (
-              <div key={plan.id} className="bg-slate-2 border border-slate-4 rounded-xl p-5">
+            {PLANS.map((plan) => (
+              <div
+                key={plan.id}
+                className="bg-slate-2 border border-slate-4 rounded-xl p-5"
+              >
                 <p className="text-lg font-bold text-white mb-1">{plan.name}</p>
-                <p className="text-2xl font-bold text-white mb-1">${plan.price}<span className="text-sm text-white/40 font-normal">/mo</span></p>
-                <p className="text-xs text-white/40 mb-4">{plan.users} user{plan.users > 1 ? 's' : ''}</p>
+                <p className="text-2xl font-bold text-white mb-1">
+                  ${plan.price}
+                  <span className="text-sm text-white/40 font-normal">/mo</span>
+                </p>
+                <p className="text-xs text-white/40 mb-4">
+                  {plan.users} user{plan.users > 1 ? 's' : ''}
+                </p>
                 <ul className="space-y-1.5 mb-5">
-                  {plan.features.map(f => (
-                    <li key={f} className="text-xs text-white/60 flex items-center gap-2">
-                      <span className="text-semantic-success">&#10003;</span> {f}
+                  {plan.features.map((f) => (
+                    <li
+                      key={f}
+                      className="text-xs text-white/60 flex items-center gap-2"
+                    >
+                      <span className="text-semantic-success">&#10003;</span>{' '}
+                      {f}
                     </li>
                   ))}
                 </ul>

@@ -1,12 +1,28 @@
 'use client';
 
+import type {
+  CompetitorMetricsSnapshot,
+  CISentimentTrend,
+} from '@pravado/types';
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import type { CompetitorMetricsSnapshot, CISentimentTrend } from '@pravado/types';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { formatNumber } from '@/lib/competitorIntelligenceApi';
-import { TrendingUp, TrendingDown, Minus, ArrowUp, ArrowDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CompetitorTrendChartProps {
   snapshots: CompetitorMetricsSnapshot[];
@@ -24,7 +40,11 @@ export function CompetitorTrendChart({
   className,
 }: CompetitorTrendChartProps) {
   const sortedSnapshots = useMemo(
-    () => [...snapshots].sort((a, b) => new Date(a.snapshotAt).getTime() - new Date(b.snapshotAt).getTime()),
+    () =>
+      [...snapshots].sort(
+        (a, b) =>
+          new Date(a.snapshotAt).getTime() - new Date(b.snapshotAt).getTime()
+      ),
     [snapshots]
   );
 
@@ -34,7 +54,8 @@ export function CompetitorTrendChart({
         case 'mentions':
           return snapshot.mentionCount;
         case 'sentiment':
-          return snapshot.avgSentiment !== null && snapshot.avgSentiment !== undefined
+          return snapshot.avgSentiment !== null &&
+            snapshot.avgSentiment !== undefined
             ? snapshot.avgSentiment * 100
             : 0;
         case 'evi':
@@ -52,7 +73,8 @@ export function CompetitorTrendChart({
   const range = maxValue - minValue || 1;
 
   const trend = useMemo(() => {
-    if (chartData.length < 2) return { direction: 'stable' as const, change: 0, changePct: 0 };
+    if (chartData.length < 2)
+      return { direction: 'stable' as const, change: 0, changePct: 0 };
 
     const firstHalf = chartData.slice(0, Math.floor(chartData.length / 2));
     const secondHalf = chartData.slice(Math.floor(chartData.length / 2));
@@ -77,27 +99,38 @@ export function CompetitorTrendChart({
     reach: { title: 'Estimated Reach', unit: '' },
   };
 
-  const TrendIcon = trend.direction === 'up' ? TrendingUp : trend.direction === 'down' ? TrendingDown : Minus;
+  const TrendIcon =
+    trend.direction === 'up'
+      ? TrendingUp
+      : trend.direction === 'down'
+        ? TrendingDown
+        : Minus;
   const trendColor =
     metric === 'sentiment'
       ? trend.direction === 'up'
         ? 'text-green-600'
         : trend.direction === 'down'
-        ? 'text-red-600'
-        : 'text-gray-600'
+          ? 'text-red-600'
+          : 'text-gray-600'
       : trend.direction === 'up'
-      ? 'text-green-600'
-      : trend.direction === 'down'
-      ? 'text-red-600'
-      : 'text-gray-600';
+        ? 'text-green-600'
+        : trend.direction === 'down'
+          ? 'text-red-600'
+          : 'text-gray-600';
 
   return (
     <Card className={className}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base">{title || metricLabels[metric].title}</CardTitle>
-            {description && <CardDescription className="text-xs">{description}</CardDescription>}
+            <CardTitle className="text-base">
+              {title || metricLabels[metric].title}
+            </CardTitle>
+            {description && (
+              <CardDescription className="text-xs">
+                {description}
+              </CardDescription>
+            )}
           </div>
           <div className={cn('flex items-center gap-1', trendColor)}>
             <TrendIcon className="h-4 w-4" />
@@ -149,15 +182,21 @@ export function CompetitorTrendChart({
             <p className="text-white/50">Average</p>
             <p className="font-medium">
               {metric === 'reach'
-                ? formatNumber(chartData.reduce((a, b) => a + b, 0) / chartData.length)
-                : (chartData.reduce((a, b) => a + b, 0) / chartData.length).toFixed(1)}
+                ? formatNumber(
+                    chartData.reduce((a, b) => a + b, 0) / chartData.length
+                  )
+                : (
+                    chartData.reduce((a, b) => a + b, 0) / chartData.length
+                  ).toFixed(1)}
               {metricLabels[metric].unit}
             </p>
           </div>
           <div className="rounded bg-muted p-2">
             <p className="text-white/50">Peak</p>
             <p className="font-medium">
-              {metric === 'reach' ? formatNumber(maxValue) : maxValue.toFixed(1)}
+              {metric === 'reach'
+                ? formatNumber(maxValue)
+                : maxValue.toFixed(1)}
               {metricLabels[metric].unit}
             </p>
           </div>
@@ -172,7 +211,10 @@ interface SentimentTrendDisplayProps {
   className?: string;
 }
 
-export function SentimentTrendDisplay({ trend, className }: SentimentTrendDisplayProps) {
+export function SentimentTrendDisplay({
+  trend,
+  className,
+}: SentimentTrendDisplayProps) {
   const directionIcon = {
     improving: ArrowUp,
     declining: ArrowDown,
@@ -193,12 +235,18 @@ export function SentimentTrendDisplay({ trend, className }: SentimentTrendDispla
     <div className={cn('flex items-center gap-2', className)}>
       <div className="flex items-center gap-1">
         <Icon className={cn('h-4 w-4', directionColor[trend.direction])} />
-        <span className={cn('text-sm font-medium', directionColor[trend.direction])}>
+        <span
+          className={cn('text-sm font-medium', directionColor[trend.direction])}
+        >
           {trend.direction.charAt(0).toUpperCase() + trend.direction.slice(1)}
         </span>
       </div>
       <Badge variant="outline" className="text-xs">
-        {(trend.current * 100).toFixed(0)}% ({trend.changePct ? `${trend.changePct > 0 ? '+' : ''}${trend.changePct.toFixed(1)}%` : 'No change'})
+        {(trend.current * 100).toFixed(0)}% (
+        {trend.changePct
+          ? `${trend.changePct > 0 ? '+' : ''}${trend.changePct.toFixed(1)}%`
+          : 'No change'}
+        )
       </Badge>
       <Badge variant="outline" className="text-xs">
         Stability: {trend.stabilityScore.toFixed(0)}%

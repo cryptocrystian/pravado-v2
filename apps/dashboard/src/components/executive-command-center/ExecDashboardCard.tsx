@@ -5,15 +5,6 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  type ExecDashboardWithCounts,
-  getTimeWindowLabel,
-  getPrimaryFocusLabel,
-  formatRelativeTime,
-} from '@/lib/executiveCommandCenterApi';
-import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   Clock,
@@ -23,6 +14,16 @@ import {
   Star,
   Archive,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  type ExecDashboardWithCounts,
+  getTimeWindowLabel,
+  getPrimaryFocusLabel,
+  formatRelativeTime,
+} from '@/lib/executiveCommandCenterApi';
+import { cn } from '@/lib/utils';
 
 interface ExecDashboardCardProps {
   dashboard: ExecDashboardWithCounts;
@@ -83,13 +84,19 @@ export function ExecDashboardCard({
           </div>
           <div className="flex flex-col items-end gap-1">
             {dashboard.isDefault && (
-              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+              <Badge
+                variant="outline"
+                className="bg-yellow-50 text-yellow-700 border-yellow-200"
+              >
                 <Star className="h-3 w-3 mr-1" />
                 Default
               </Badge>
             )}
             {dashboard.isArchived && (
-              <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
+              <Badge
+                variant="outline"
+                className="bg-gray-50 text-gray-600 border-gray-200"
+              >
                 <Archive className="h-3 w-3 mr-1" />
                 Archived
               </Badge>
@@ -99,7 +106,10 @@ export function ExecDashboardCard({
 
         {/* Focus & Time Window */}
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className={getFocusColor(dashboard.primaryFocus)}>
+          <Badge
+            variant="outline"
+            className={getFocusColor(dashboard.primaryFocus)}
+          >
             <Target className="h-3 w-3 mr-1" />
             {getPrimaryFocusLabel(dashboard.primaryFocus)}
           </Badge>
@@ -112,11 +122,15 @@ export function ExecDashboardCard({
         <div className="grid grid-cols-3 gap-2 text-xs">
           <div className="text-center p-2 rounded bg-gray-50">
             <div className="text-gray-500">KPIs</div>
-            <div className="font-medium text-gray-900">{dashboard.kpisCount}</div>
+            <div className="font-medium text-gray-900">
+              {dashboard.kpisCount}
+            </div>
           </div>
           <div className="text-center p-2 rounded bg-gray-50">
             <div className="text-gray-500">Insights</div>
-            <div className="font-medium text-gray-900">{dashboard.insightsCount}</div>
+            <div className="font-medium text-gray-900">
+              {dashboard.insightsCount}
+            </div>
           </div>
           <div className="text-center p-2 rounded bg-gray-50">
             <div className="text-gray-500">Narrative</div>
@@ -135,7 +149,8 @@ export function ExecDashboardCard({
           <div className="flex items-center gap-2 pt-2 border-t text-xs text-gray-600">
             <Activity className="h-3 w-3" />
             <span>
-              {dashboard.summary.topRisksCount || 0} risks, {dashboard.summary.topOpportunitiesCount || 0} opportunities
+              {dashboard.summary.topRisksCount || 0} risks,{' '}
+              {dashboard.summary.topOpportunitiesCount || 0} opportunities
             </span>
           </div>
         )}

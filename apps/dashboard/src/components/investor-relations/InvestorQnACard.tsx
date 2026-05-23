@@ -5,18 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import {
-  type InvestorQnA,
-  getQnACategoryLabel,
-  formatRelativeTime,
-} from '@/lib/investorRelationsApi';
-import { cn } from '@/lib/utils';
 import {
   HelpCircle,
   MessageSquare,
@@ -30,6 +18,19 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  type InvestorQnA,
+  getQnACategoryLabel,
+  formatRelativeTime,
+} from '@/lib/investorRelationsApi';
+import { cn } from '@/lib/utils';
 
 interface InvestorQnACardProps {
   qna: InvestorQnA;
@@ -145,11 +146,7 @@ export function InvestorQnACard({
                 <X className="h-4 w-4 mr-1" />
                 Cancel
               </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={isSaving}
-              >
+              <Button size="sm" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                 ) : (
@@ -172,16 +169,24 @@ export function InvestorQnACard({
                   <Badge variant="secondary" className="text-xs">
                     {getQnACategoryLabel(qna.category)}
                   </Badge>
-                  <Badge variant="secondary" className={cn('text-xs', getStatusColor())}>
+                  <Badge
+                    variant="secondary"
+                    className={cn('text-xs', getStatusColor())}
+                  >
                     {qna.status}
                   </Badge>
                   {qna.isLlmGenerated && (
-                    <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">
+                    <Badge
+                      variant="secondary"
+                      className="text-xs bg-purple-100 text-purple-700"
+                    >
                       <Sparkles className="h-3 w-3 mr-1" />
                       AI Generated
                     </Badge>
                   )}
-                  <span className={cn('text-xs font-medium', getConfidenceColor())}>
+                  <span
+                    className={cn('text-xs font-medium', getConfidenceColor())}
+                  >
                     {qna.confidence}% confidence
                   </span>
                 </div>

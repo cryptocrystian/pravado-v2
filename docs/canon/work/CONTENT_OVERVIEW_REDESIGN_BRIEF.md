@@ -1,4 +1,5 @@
 # WORK ORDER: Content Hub Overview — Full Visual Redesign
+
 **Status:** READY FOR IMPLEMENTATION  
 **Priority:** P0 — Blocks all Content surface progress  
 **Architect:** Claude (claude.ai)  
@@ -29,6 +30,7 @@ Do NOT modify the shell, mock data, or route page. Those are correct.
 **The mental model:** A senior editor at a Bloomberg terminal who runs PR, Content, and SEO simultaneously. Every pixel earns its place. Information is surfaced at exact weight. The interface communicates that a powerful system is working on the user's behalf.
 
 **What this is NOT:**
+
 - Not a rounded-card analytics dashboard
 - Not a friendly SaaS tool with warm whitespace
 - Not a notification feed with priority labels
@@ -59,6 +61,7 @@ All zones render above the fold on a 1280px+ screen. Below-fold content scrolls 
 The CiteMind score is the primary metric for the Content pillar. It must read like an instrument reading, not a stat widget.
 
 **Design requirements:**
+
 - Background: `bg-slate-1` with a left border stripe `border-l-2 border-brand-iris` and a subtle ambient glow `shadow-[inset_0_0_40px_rgba(168,85,247,0.04)]`
 - Label: `text-[11px] font-bold uppercase tracking-wider text-white/50` — "CONTENT CITEMIND SCORE"
 - Score number: `text-5xl font-bold tabular-nums` colored by range:
@@ -83,9 +86,11 @@ Do NOT use a card inside a card. Zone A IS the card. The sub-metrics sit directl
 This is the most important zone. The competitive gap language is the highest-value content on the entire surface. It must read with visual gravity.
 
 **Zone header:**
+
 ```
 ⚡ SAGE Action Queue                                    [3 badge]
 ```
+
 - `⚡` in `text-brand-iris`
 - "SAGE Action Queue" in `text-sm font-semibold text-white/90`
 - Badge: `px-2 py-0.5 text-[11px] font-bold rounded-full bg-brand-iris/20 text-brand-iris border border-brand-iris/30`
@@ -95,6 +100,7 @@ This is the most important zone. The competitive gap language is the highest-val
 Background: `bg-slate-1 border border-border-subtle rounded-xl` with `hover:border-slate-5 hover:shadow-[0_0_0_1px_rgba(168,85,247,0.15)]` on hover — edge glow, not physical lift.
 
 Left border stripe using `border-l-2` colored by priority:
+
 - critical: `border-l-semantic-danger`
 - high: `border-l-semantic-warning`
 - medium: `border-l-brand-cyan`
@@ -102,23 +108,28 @@ Left border stripe using `border-l-2` colored by priority:
 **Card internal layout (top to bottom, no wasted space):**
 
 Row 1 — Badges + EVI impact (space-between):
+
 ```
 [CRITICAL badge] [Guide · AEO Strategy]          [+8–12 EVI pts]
 ```
+
 - Priority badge: `text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border` with semantic-danger colors for critical
 - Content type + topic: `text-[13px] text-white/50` separated by `·`
 - EVI impact: `text-base font-bold text-semantic-success tabular-nums` — this is the reward. Make it land. Right-aligned. The range format `+8–12` with `text-[11px] text-white/40 ml-0.5` for "EVI pts"
 
 Row 2 — Proposal title:
+
 - `text-[15px] font-semibold text-white/90 leading-snug mt-2`
 
 Row 3 — Competitive gap text:
+
 - This is the key differentiator. Use `text-sm text-white/65 leading-relaxed mt-1.5`
 - The ⚡ icon at start: `text-brand-iris opacity-80`
 - 3 lines max — `line-clamp-3`
 - This must be readable. Do NOT reduce below 14px. Do NOT apply opacity below /60.
 
 Row 4 — Effort + CTA (space-between, aligned bottom):
+
 - Left: `text-[13px] text-white/40` — "High effort · 6–8 hours"
 - Right: Primary button — `px-4 py-2 text-sm font-semibold bg-brand-iris text-white rounded-lg hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.2)] transition-all duration-150`
 - Button text: "Create from Brief →"
@@ -132,21 +143,25 @@ Row 4 — Effort + CTA (space-between, aligned bottom):
 Four stat cells stacked vertically, separated by `border-t border-border-subtle`:
 
 **Cell 1 — In Progress**
+
 - Number: `text-3xl font-bold text-white/90 tabular-nums`
 - Label: `text-[11px] font-bold uppercase tracking-wider text-white/40`
 - Sub-label: "active drafts" in `text-[13px] text-white/40`
 
 **Cell 2 — Published This Month**
+
 - Number: `text-3xl font-bold text-white/90 tabular-nums`
 - Same label pattern
 
 **Cell 3 — Top CiteMind This Month**
+
 - Label: `text-[11px] font-bold uppercase tracking-wider text-semantic-success/80` — use success color for "TOP CITEMIND"
 - Asset title: `text-sm font-semibold text-white/85` — truncated at 2 lines
 - Score: `text-xl font-bold text-semantic-success tabular-nums` inline after title
 - Score label: `text-[11px] text-semantic-success/70`
 
 **Cell 4 — Needs Attention**
+
 - If count > 0: Number in `text-2xl font-bold text-semantic-warning`
 - Sub-label: "assets with CiteMind issues" in `text-[13px] text-semantic-warning/70`
 - Resolve link: `text-[13px] text-semantic-warning/70 hover:text-semantic-warning underline`
@@ -157,9 +172,11 @@ Four stat cells stacked vertically, separated by `border-t border-border-subtle`
 Full-width horizontal scroll strip below the three zones. `mt-6` spacing.
 
 Header row:
+
 ```
 ACTIVE THEMES    [→ See all]
 ```
+
 - "ACTIVE THEMES": `text-[11px] font-bold uppercase tracking-wider text-white/50`
 - "See all": `text-[13px] text-white/40 hover:text-white/70`
 
@@ -167,6 +184,7 @@ Theme cards (horizontal scroll, `gap-3`, `overflow-x-auto`, hide scrollbar):
 Each card: `flex-shrink-0 w-[180px] bg-slate-1 border border-border-subtle rounded-lg px-4 py-3 hover:border-slate-5 transition-all duration-150`
 
 Inside each theme card:
+
 - Theme name: `text-sm font-semibold text-white/85`
 - Asset count: `text-[13px] text-white/50 mt-0.5` — "7 assets"
 - CiteMind score: `text-2xl font-bold tabular-nums mt-2` colored by range (same rules as Zone A)
@@ -177,9 +195,11 @@ Inside each theme card:
 Left half of the below-fold section. `w-1/2 pr-4`.
 
 Header:
+
 ```
 CROSS-PILLAR ATTRIBUTION
 ```
+
 `text-[11px] font-bold uppercase tracking-wider text-white/50`
 
 Each event row: `flex items-start gap-3 py-3 border-b border-border-subtle`
@@ -199,6 +219,7 @@ Each event row: `flex items-start gap-3 py-3 border-b border-border-subtle`
 Right half of the below-fold section. `w-1/2 pl-4 border-l border-border-subtle`.
 
 Header row:
+
 ```
 RECENT ASSETS                                    [View library →]
 ```
@@ -227,23 +248,27 @@ Card: `bg-slate-1 border border-border-subtle rounded-xl p-4 flex flex-col gap-2
 **Row 1 — Top strip (space-between):**
 Left: Status badge
 Right: **CiteMind block:**
+
 ```
 [score]
 CITEMIND
 [status text]
 ```
+
 - Score: `text-2xl font-bold tabular-nums` — colored by range
 - "CITEMIND" label: `text-[11px] font-bold uppercase tracking-wider` — same color, /70 opacity
 - Status text: `text-[11px]` — same color, /60 opacity — "Citation-ready" / "Good standing" / "Needs work" / "Low eligibility"
 - Wrap the score block in `flex flex-col items-end`
 
 Score color rules:
+
 - 80+: `text-semantic-success`
 - 60–79: `text-brand-cyan`
 - 40–59: `text-semantic-warning`
 - <40: `text-semantic-danger`
 
 Status badge (left side of Row 1):
+
 - Use the `text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border` pattern with appropriate semantic colors for the asset status (published, draft, needs_review, etc.)
 
 **Row 2 — Title:**
@@ -253,7 +278,7 @@ Status badge (left side of Row 1):
 `text-[13px] text-white/55 leading-snug line-clamp-1`
 
 **Row 4 — Secondary metrics (horizontal, compact):**
-`text-[13px] text-white/50` — "87 AI Ingestion  84 Cross-Pillar" with a `·` separator and the metric names dimmer than the numbers.
+`text-[13px] text-white/50` — "87 AI Ingestion 84 Cross-Pillar" with a `·` separator and the metric names dimmer than the numbers.
 
 **Row 5 — Footer (space-between):**
 Left: Entity tag pills — `px-2 py-0.5 text-[11px] font-bold rounded bg-brand-iris/10 text-brand-iris border border-brand-iris/20` — max 2 visible + "+N" overflow
@@ -287,11 +312,13 @@ Row layout: `flex items-center gap-3 px-3 py-2.5 bg-slate-1 border border-border
 Before marking this complete, every item must pass:
 
 **5-Second Test:**
+
 1. Open `/app/content` cold
 2. In 5 seconds without clicking, can you identify: (a) the Content CiteMind score, (b) the most critical SAGE proposal, (c) which assets need attention?
 3. If no to any, the design has failed
 
 **Hierarchy Test:**
+
 1. Take a screenshot
 2. Convert to grayscale
 3. The CiteMind score in Zone A must still read as the visually heaviest element in that zone
@@ -299,6 +326,7 @@ Before marking this complete, every item must pass:
 5. If not, typography or weight is wrong
 
 **DS Compliance:**
+
 ```
 [ ] No phantom hex values (run Section 1A of DS_v3_COMPLIANCE_CHECKLIST.md)
 [ ] No bg-gray-*, text-gray-*, bg-zinc-* classes
@@ -314,6 +342,7 @@ Before marking this complete, every item must pass:
 ```
 
 **Visual Quality Check:**
+
 - Does the surface feel like a command center or a dashboard?
 - Do the SAGE proposals communicate urgency and competitive intelligence, or do they feel like notifications?
 - Is the CiteMind score the first thing your eye goes to in Zone A?

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 /**
  * Billing History Page (Sprint S34)
  * Displays invoice list with ability to view details and download PDFs
@@ -8,8 +9,9 @@
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+
 import {
   getBillingHistory,
   syncInvoices,
@@ -24,7 +26,9 @@ export default function BillingHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
-  const [sortField, setSortField] = useState<'date' | 'amount' | 'status'>('date');
+  const [sortField, setSortField] = useState<'date' | 'amount' | 'status'>(
+    'date'
+  );
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   // Load billing history
@@ -78,7 +82,9 @@ export default function BillingHistoryPage() {
 
       switch (sortField) {
         case 'date':
-          comparison = new Date(a.periodStart).getTime() - new Date(b.periodStart).getTime();
+          comparison =
+            new Date(a.periodStart).getTime() -
+            new Date(b.periodStart).getTime();
           break;
         case 'amount':
           comparison = a.amountDue - b.amountDue;
@@ -156,7 +162,9 @@ export default function BillingHistoryPage() {
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold mb-2">Billing History</h1>
-          <p className="text-gray-600">View past invoices and payment history</p>
+          <p className="text-gray-600">
+            View past invoices and payment history
+          </p>
         </div>
         <div className="flex gap-3">
           <Link
@@ -178,7 +186,9 @@ export default function BillingHistoryPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white shadow rounded-lg p-6">
-          <div className="text-sm text-gray-600 mb-1">Total Paid (12 Months)</div>
+          <div className="text-sm text-gray-600 mb-1">
+            Total Paid (12 Months)
+          </div>
           <div className="text-2xl font-bold text-gray-900">
             {formatCurrency(summary.totalPaid12Mo)}
           </div>
@@ -210,9 +220,14 @@ export default function BillingHistoryPage() {
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => toggleSort('date')}
                 >
-                  Invoice Period {sortField === 'date' && (sortDirection === 'asc' ? '↑' : '↓')}
+                  Invoice Period{' '}
+                  {sortField === 'date' &&
+                    (sortDirection === 'asc' ? '↑' : '↓')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Invoice Number
                 </th>
                 <th
@@ -220,16 +235,23 @@ export default function BillingHistoryPage() {
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => toggleSort('amount')}
                 >
-                  Amount {sortField === 'amount' && (sortDirection === 'asc' ? '↑' : '↓')}
+                  Amount{' '}
+                  {sortField === 'amount' &&
+                    (sortDirection === 'asc' ? '↑' : '↓')}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => toggleSort('status')}
                 >
-                  Status {sortField === 'status' && (sortDirection === 'asc' ? '↑' : '↓')}
+                  Status{' '}
+                  {sortField === 'status' &&
+                    (sortDirection === 'asc' ? '↑' : '↓')}
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Actions
                 </th>
               </tr>
@@ -237,24 +259,39 @@ export default function BillingHistoryPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {sortedInvoices.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    No invoices found. Invoices will appear here once billing begins.
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
+                    No invoices found. Invoices will appear here once billing
+                    begins.
                   </td>
                 </tr>
               ) : (
                 sortedInvoices.map((invoice) => (
                   <tr key={invoice.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatInvoicePeriod(invoice.periodStart, invoice.periodEnd)}
+                      {formatInvoicePeriod(
+                        invoice.periodStart,
+                        invoice.periodEnd
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {invoice.invoiceNumber || 'Draft'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {formatCurrency(invoice.amountDue)}
-                      {summary.overageCostsPerInvoice[invoice.stripeInvoiceId] && (
+                      {summary.overageCostsPerInvoice[
+                        invoice.stripeInvoiceId
+                      ] && (
                         <span className="ml-2 text-xs text-orange-600">
-                          (+{formatCurrency(summary.overageCostsPerInvoice[invoice.stripeInvoiceId])} overage)
+                          (+
+                          {formatCurrency(
+                            summary.overageCostsPerInvoice[
+                              invoice.stripeInvoiceId
+                            ]
+                          )}{' '}
+                          overage)
                         </span>
                       )}
                     </td>
@@ -305,7 +342,8 @@ export default function BillingHistoryPage() {
       {sortedInvoices.length === 0 && (
         <div className="mt-8 text-center">
           <p className="text-gray-600 mb-4">
-            You don't have any invoices yet. They will appear here once you start a paid subscription.
+            You don't have any invoices yet. They will appear here once you
+            start a paid subscription.
           </p>
           <Link
             href="/app/billing"

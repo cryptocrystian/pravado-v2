@@ -9,7 +9,6 @@
  * @see /docs/skills/PRAVADO_DESIGN_SKILL.md
  */
 
-import { useState } from 'react';
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react';
 import {
   Robot,
@@ -23,6 +22,8 @@ import {
   CaretUp,
   TrendUp,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import type { AutomationMode, CreationContentType } from '../types';
 import { CREATION_TYPE_CONFIG } from '../types';
 
@@ -56,21 +57,24 @@ const SAGE_BRIEFS_MOCK: SAGEBrief[] = [
     title: 'Enterprise AEO Implementation Guide',
     priority: 'critical',
     eviImpact: '+8–12 EVI pts',
-    reason: 'A competitor is cited 134x on ChatGPT for this topic. No competing content exists.',
+    reason:
+      'A competitor is cited 134x on ChatGPT for this topic. No competing content exists.',
   },
   {
     id: 'sb-2',
     title: 'AI Citation Tracking for B2B SaaS',
     priority: 'high',
     eviImpact: '+5–8 EVI pts',
-    reason: 'Search volume up 340% QoQ. Top 3 competitors have published in the last 30 days.',
+    reason:
+      'Search volume up 340% QoQ. Top 3 competitors have published in the last 30 days.',
   },
   {
     id: 'sb-3',
     title: 'Share of Model Benchmarking Report',
     priority: 'medium',
     eviImpact: '+3–5 EVI pts',
-    reason: 'Unique angle available — no competitor has published methodology content.',
+    reason:
+      'Unique angle available — no competitor has published methodology content.',
   },
 ];
 
@@ -102,13 +106,17 @@ export function CreationStage1Entry({
     return (
       <div className="flex-1 flex items-center justify-center px-8 py-16">
         <div className="text-center max-w-md">
-          <Robot className="w-10 h-10 text-brand-iris/60 mx-auto mb-4" weight="regular" />
+          <Robot
+            className="w-10 h-10 text-brand-iris/60 mx-auto mb-4"
+            weight="regular"
+          />
           <h2 className="text-lg font-semibold text-white/90 mb-2">
             SAGE manages content creation automatically
           </h2>
           <p className="text-[13px] text-white/60 leading-relaxed mb-8">
-            In Autopilot mode, SAGE generates and schedules content based on your authority gaps.
-            To override and create manually, continue below.
+            In Autopilot mode, SAGE generates and schedules content based on
+            your authority gaps. To override and create manually, continue
+            below.
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
@@ -137,7 +145,9 @@ export function CreationStage1Entry({
     <div className="px-8 py-8">
       <div className="flex gap-0">
         {/* LEFT ZONE — SAGE Brief Queue */}
-        <div className={`${isCopilot ? 'flex-[55]' : 'flex-[45]'} min-w-0 pr-4`}>
+        <div
+          className={`${isCopilot ? 'flex-[55]' : 'flex-[45]'} min-w-0 pr-4`}
+        >
           <div className="flex items-center gap-1.5 mb-4">
             <Lightning className="w-3.5 h-3.5 text-brand-iris" weight="fill" />
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris">
@@ -163,7 +173,9 @@ export function CreationStage1Entry({
 
           {/* Copilot mode heading */}
           {isCopilot && (
-            <p className="text-sm text-white/70 mb-4">SAGE has prepared these for you</p>
+            <p className="text-sm text-white/70 mb-4">
+              SAGE has prepared these for you
+            </p>
           )}
 
           {/* Brief cards */}
@@ -181,8 +193,8 @@ export function CreationStage1Entry({
                         brief.priority === 'critical'
                           ? 'bg-semantic-danger/10 text-semantic-danger border border-semantic-danger/20'
                           : brief.priority === 'high'
-                          ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                          : 'bg-white/5 text-white/50 border border-white/10'
+                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                            : 'bg-white/5 text-white/50 border border-white/10'
                       }`}
                     >
                       {brief.priority}
@@ -194,10 +206,14 @@ export function CreationStage1Entry({
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-[15px] font-semibold text-white/90 mb-1">{brief.title}</h3>
+                  <h3 className="text-[15px] font-semibold text-white/90 mb-1">
+                    {brief.title}
+                  </h3>
 
                   {/* Reason */}
-                  <p className="text-[13px] text-white/60 truncate mb-3">{brief.reason}</p>
+                  <p className="text-[13px] text-white/60 truncate mb-3">
+                    {brief.reason}
+                  </p>
 
                   {/* Select CTA */}
                   <button
@@ -217,38 +233,50 @@ export function CreationStage1Entry({
         <div className="w-px bg-white/[0.08] self-stretch mx-4 shrink-0" />
 
         {/* RIGHT ZONE — Manual Type Selection */}
-        <div className={`${isCopilot ? 'flex-[40]' : 'flex-[45]'} min-w-0 pl-4`}>
+        <div
+          className={`${isCopilot ? 'flex-[40]' : 'flex-[45]'} min-w-0 pl-4`}
+        >
           <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-4 block">
             {isCopilot ? 'Or start from scratch' : 'Start Fresh'}
           </span>
 
           <div className="space-y-1">
-            {(Object.entries(CREATION_TYPE_CONFIG) as [CreationContentType, typeof CREATION_TYPE_CONFIG[CreationContentType]][]).map(
-              ([key, config]) => {
-                const IconComponent = ICON_MAP[config.iconName];
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => onContentTypeSelect(key)}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors text-left"
-                  >
-                    {IconComponent && (
-                      <IconComponent className="w-5 h-5 text-brand-iris/70 shrink-0" weight="regular" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-white/85">{config.label}</div>
-                      <div className="text-[13px] text-white/50">{config.description}</div>
+            {(
+              Object.entries(CREATION_TYPE_CONFIG) as [
+                CreationContentType,
+                (typeof CREATION_TYPE_CONFIG)[CreationContentType],
+              ][]
+            ).map(([key, config]) => {
+              const IconComponent = ICON_MAP[config.iconName];
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => onContentTypeSelect(key)}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors text-left"
+                >
+                  {IconComponent && (
+                    <IconComponent
+                      className="w-5 h-5 text-brand-iris/70 shrink-0"
+                      weight="regular"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-white/85">
+                      {config.label}
                     </div>
-                    {config.crossPillarNote && (
-                      <span className="text-[11px] text-brand-magenta/70 shrink-0">
-                        {config.crossPillarNote}
-                      </span>
-                    )}
-                  </button>
-                );
-              }
-            )}
+                    <div className="text-[13px] text-white/50">
+                      {config.description}
+                    </div>
+                  </div>
+                  {config.crossPillarNote && (
+                    <span className="text-[11px] text-brand-magenta/70 shrink-0">
+                      {config.crossPillarNote}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

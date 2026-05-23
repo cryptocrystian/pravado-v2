@@ -18,6 +18,9 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import useSWR from 'swr';
+
+import { ContactFormModal } from '../components/ContactFormModal';
+import { prAccent, buttonStyles, typography } from '../prWorkSurfaceStyles';
 import type {
   MediaContact,
   EntityType,
@@ -30,12 +33,6 @@ import type {
   SavedSegment,
   DataQualityStats,
 } from '../types';
-import {
-  prAccent,
-  buttonStyles,
-  typography,
-} from '../prWorkSurfaceStyles';
-import { ContactFormModal } from '../components/ContactFormModal';
 
 // ============================================
 // API TYPES & FETCHER
@@ -115,11 +112,19 @@ function mapJournalistToContact(profile: JournalistProfile): MediaContact & {
   // Determine outlet tier based on outlet name (simplified heuristic)
   const getOutletTier = (outlet: string | null): OutletTier => {
     if (!outlet) return 'niche';
-    const tier1 = ['techcrunch', 'wired', 'forbes', 'nytimes', 'wsj', 'bloomberg', 'reuters'];
+    const tier1 = [
+      'techcrunch',
+      'wired',
+      'forbes',
+      'nytimes',
+      'wsj',
+      'bloomberg',
+      'reuters',
+    ];
     const tier2 = ['venturebeat', 'zdnet', 'cnet', 'engadget', 'theverge'];
     const outletLower = outlet.toLowerCase();
-    if (tier1.some(t => outletLower.includes(t))) return 't1';
-    if (tier2.some(t => outletLower.includes(t))) return 't2';
+    if (tier1.some((t) => outletLower.includes(t))) return 't1';
+    if (tier2.some((t) => outletLower.includes(t))) return 't2';
     return 't3';
   };
 
@@ -449,7 +454,11 @@ const ENTITY_TYPE_OPTIONS: { value: EntityType; label: string }[] = [
   { value: 'outlet', label: 'Outlet' },
 ];
 
-const RELATIONSHIP_STAGE_OPTIONS: { value: RelationshipStage; label: string; color: string }[] = [
+const RELATIONSHIP_STAGE_OPTIONS: {
+  value: RelationshipStage;
+  label: string;
+  color: string;
+}[] = [
   { value: 'cold', label: 'Cold', color: 'white' },
   { value: 'warm', label: 'Warm', color: 'warning' },
   { value: 'engaged', label: 'Engaged', color: 'success' },
@@ -466,7 +475,11 @@ const OUTLET_TYPE_OPTIONS: { value: OutletType; label: string }[] = [
   { value: 'newsletter', label: 'Newsletter' },
 ];
 
-const OUTLET_TIER_OPTIONS: { value: OutletTier; label: string; description: string }[] = [
+const OUTLET_TIER_OPTIONS: {
+  value: OutletTier;
+  label: string;
+  description: string;
+}[] = [
   { value: 't1', label: 'Tier 1', description: 'Top-tier national/global' },
   { value: 't2', label: 'Tier 2', description: 'Major regional/industry' },
   { value: 't3', label: 'Tier 3', description: 'Local/niche' },
@@ -474,7 +487,11 @@ const OUTLET_TIER_OPTIONS: { value: OutletTier; label: string; description: stri
   { value: 'niche', label: 'Niche', description: 'Specialized audience' },
 ];
 
-const VERIFICATION_STATUS_OPTIONS: { value: VerificationStatus; label: string; color: string }[] = [
+const VERIFICATION_STATUS_OPTIONS: {
+  value: VerificationStatus;
+  label: string;
+  color: string;
+}[] = [
   { value: 'verified', label: 'Verified', color: 'success' },
   { value: 'unverified', label: 'Unverified', color: 'white' },
   { value: 'outdated', label: 'Outdated', color: 'warning' },
@@ -498,21 +515,48 @@ const LANGUAGE_OPTIONS = ['en', 'de', 'fr', 'es', 'pt', 'ja', 'zh'];
 function RelationshipBadge({ stage }: { stage: RelationshipStage }) {
   const config = {
     cold: { color: 'bg-white/10 text-white/60 border-white/20', label: 'Cold' },
-    warm: { color: 'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30', label: 'Warm' },
-    engaged: { color: 'bg-semantic-success/15 text-semantic-success border-semantic-success/30', label: 'Engaged' },
-    advocate: { color: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30', label: 'Advocate' },
+    warm: {
+      color:
+        'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
+      label: 'Warm',
+    },
+    engaged: {
+      color:
+        'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
+      label: 'Engaged',
+    },
+    advocate: {
+      color: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30',
+      label: 'Advocate',
+    },
   };
   const { color, label } = config[stage];
-  return <span className={`px-2 py-0.5 text-[13px] font-medium rounded border ${color}`}>{label}</span>;
+  return (
+    <span
+      className={`px-2 py-0.5 text-[13px] font-medium rounded border ${color}`}
+    >
+      {label}
+    </span>
+  );
 }
 
 function EntityTypeBadge({ type }: { type: EntityType }) {
   const config = {
-    journalist: { color: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30' },
+    journalist: {
+      color: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
+    },
     podcast: { color: 'bg-brand-iris/15 text-brand-iris border-brand-iris/30' },
-    influencer: { color: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30' },
-    kol: { color: 'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30' },
-    outlet: { color: 'bg-semantic-success/15 text-semantic-success border-semantic-success/30' },
+    influencer: {
+      color: 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30',
+    },
+    kol: {
+      color:
+        'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
+    },
+    outlet: {
+      color:
+        'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
+    },
   };
   const { color } = config[type];
   const labels = {
@@ -523,7 +567,9 @@ function EntityTypeBadge({ type }: { type: EntityType }) {
     outlet: 'Outlet',
   };
   return (
-    <span className={`px-2 py-0.5 text-[13px] font-medium rounded border ${color}`}>
+    <span
+      className={`px-2 py-0.5 text-[13px] font-medium rounded border ${color}`}
+    >
       {labels[type]}
     </span>
   );
@@ -538,10 +584,22 @@ function VerificationBadge({ status }: { status: VerificationStatus }) {
   };
   const { color, icon } = config[status];
   return (
-    <span className={`w-5 h-5 flex items-center justify-center text-[13px] rounded ${color}`}>
+    <span
+      className={`w-5 h-5 flex items-center justify-center text-[13px] rounded ${color}`}
+    >
       {icon === 'check' && (
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       )}
       {icon === 'question' && '?'}
@@ -550,15 +608,36 @@ function VerificationBadge({ status }: { status: VerificationStatus }) {
   );
 }
 
-function TopicCurrencyIndicator({ value, showLabel = true }: { value: number; showLabel?: boolean }) {
-  const color = value >= 80 ? 'bg-semantic-success' : value >= 50 ? 'bg-semantic-warning' : 'bg-semantic-danger';
-  const textColor = value >= 80 ? 'text-semantic-success' : value >= 50 ? 'text-semantic-warning' : 'text-semantic-danger';
+function TopicCurrencyIndicator({
+  value,
+  showLabel = true,
+}: {
+  value: number;
+  showLabel?: boolean;
+}) {
+  const color =
+    value >= 80
+      ? 'bg-semantic-success'
+      : value >= 50
+        ? 'bg-semantic-warning'
+        : 'bg-semantic-danger';
+  const textColor =
+    value >= 80
+      ? 'text-semantic-success'
+      : value >= 50
+        ? 'text-semantic-warning'
+        : 'text-semantic-danger';
   return (
     <div className="flex items-center gap-2">
       <div className="w-16 h-1.5 rounded-full bg-slate-4 overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
+        <div
+          className={`h-full rounded-full ${color}`}
+          style={{ width: `${value}%` }}
+        />
       </div>
-      {showLabel && <span className={`text-xs font-medium ${textColor}`}>{value}%</span>}
+      {showLabel && (
+        <span className={`text-xs font-medium ${textColor}`}>{value}%</span>
+      )}
     </div>
   );
 }
@@ -589,18 +668,40 @@ function FilterChip({
       }`}
     >
       {label}
-      {count !== undefined && <span className="ml-1.5 opacity-60">({count})</span>}
+      {count !== undefined && (
+        <span className="ml-1.5 opacity-60">({count})</span>
+      )}
     </button>
   );
 }
 
-function ActiveFilterTag({ label, onRemove }: { label: string; onRemove: () => void }) {
+function ActiveFilterTag({
+  label,
+  onRemove,
+}: {
+  label: string;
+  onRemove: () => void;
+}) {
   return (
     <span className="inline-flex items-center gap-1 px-2 py-1 text-[13px] font-medium rounded-full bg-brand-magenta/15 text-brand-magenta border border-brand-magenta/30">
       {label}
-      <button type="button" onClick={onRemove} className="hover:text-white transition-colors">
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      <button
+        type="button"
+        onClick={onRemove}
+        className="hover:text-white transition-colors"
+      >
+        <svg
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </span>
@@ -619,7 +720,13 @@ interface FilterDrawerProps {
   availableBeats: string[];
 }
 
-function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeats }: FilterDrawerProps) {
+function FilterDrawer({
+  isOpen,
+  onClose,
+  filters,
+  onFiltersChange,
+  availableBeats,
+}: FilterDrawerProps) {
   const [localFilters, setLocalFilters] = useState(filters);
 
   useEffect(() => {
@@ -636,22 +743,39 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
   };
 
   const toggleArrayValue = <T extends string>(array: T[], value: T): T[] => {
-    return array.includes(value) ? array.filter((v) => v !== value) : [...array, value];
+    return array.includes(value)
+      ? array.filter((v) => v !== value)
+      : [...array, value];
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-page/70 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-page/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div className="relative w-full max-w-md bg-panel border-l border-border-subtle overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-panel border-b border-border-subtle px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg ${prAccent.bg} flex items-center justify-center`}>
-                <svg className={`w-4 h-4 ${prAccent.text}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              <div
+                className={`w-8 h-8 rounded-lg ${prAccent.bg} flex items-center justify-center`}
+              >
+                <svg
+                  className={`w-4 h-4 ${prAccent.text}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  />
                 </svg>
               </div>
               <h2 className={typography.titleMedium}>Advanced Filters</h2>
@@ -661,8 +785,18 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
               onClick={onClose}
               className="p-2 text-white/55 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -677,7 +811,12 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 <button
                   key={geo}
                   type="button"
-                  onClick={() => setLocalFilters({ ...localFilters, geos: toggleArrayValue(localFilters.geos, geo) })}
+                  onClick={() =>
+                    setLocalFilters({
+                      ...localFilters,
+                      geos: toggleArrayValue(localFilters.geos, geo),
+                    })
+                  }
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.geos.includes(geo)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
@@ -698,7 +837,12 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 <button
                   key={lang}
                   type="button"
-                  onClick={() => setLocalFilters({ ...localFilters, languages: toggleArrayValue(localFilters.languages, lang) })}
+                  onClick={() =>
+                    setLocalFilters({
+                      ...localFilters,
+                      languages: toggleArrayValue(localFilters.languages, lang),
+                    })
+                  }
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.languages.includes(lang)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
@@ -719,7 +863,15 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => setLocalFilters({ ...localFilters, outletTypes: toggleArrayValue(localFilters.outletTypes, opt.value) })}
+                  onClick={() =>
+                    setLocalFilters({
+                      ...localFilters,
+                      outletTypes: toggleArrayValue(
+                        localFilters.outletTypes,
+                        opt.value
+                      ),
+                    })
+                  }
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.outletTypes.includes(opt.value)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
@@ -740,7 +892,15 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => setLocalFilters({ ...localFilters, outletTiers: toggleArrayValue(localFilters.outletTiers, opt.value) })}
+                  onClick={() =>
+                    setLocalFilters({
+                      ...localFilters,
+                      outletTiers: toggleArrayValue(
+                        localFilters.outletTiers,
+                        opt.value
+                      ),
+                    })
+                  }
                   className={`w-full px-3 py-2.5 text-left rounded-lg border transition-all ${
                     localFilters.outletTiers.includes(opt.value)
                       ? 'bg-brand-magenta/10 border-brand-magenta/30'
@@ -748,16 +908,28 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${localFilters.outletTiers.includes(opt.value) ? 'text-brand-magenta' : 'text-white/90'}`}>
+                    <span
+                      className={`text-sm font-medium ${localFilters.outletTiers.includes(opt.value) ? 'text-brand-magenta' : 'text-white/90'}`}
+                    >
                       {opt.label}
                     </span>
                     {localFilters.outletTiers.includes(opt.value) && (
-                      <svg className="w-4 h-4 text-brand-magenta" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="w-4 h-4 text-brand-magenta"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     )}
                   </div>
-                  <p className="text-xs text-white/50 mt-0.5">{opt.description}</p>
+                  <p className="text-xs text-white/50 mt-0.5">
+                    {opt.description}
+                  </p>
                 </button>
               ))}
             </div>
@@ -771,7 +943,12 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 <button
                   key={beat}
                   type="button"
-                  onClick={() => setLocalFilters({ ...localFilters, beatTags: toggleArrayValue(localFilters.beatTags, beat) })}
+                  onClick={() =>
+                    setLocalFilters({
+                      ...localFilters,
+                      beatTags: toggleArrayValue(localFilters.beatTags, beat),
+                    })
+                  }
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.beatTags.includes(beat)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
@@ -786,7 +963,9 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
 
           {/* Topic Currency Range (Slider) */}
           <div>
-            <h3 className={`${typography.titleSmall} mb-3`}>Topic Currency Threshold</h3>
+            <h3 className={`${typography.titleSmall} mb-3`}>
+              Topic Currency Threshold
+            </h3>
             <div className="space-y-3">
               <input
                 type="range"
@@ -796,7 +975,10 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    topicCurrencyRange: { ...localFilters.topicCurrencyRange, min: Number(e.target.value) || undefined },
+                    topicCurrencyRange: {
+                      ...localFilters.topicCurrencyRange,
+                      min: Number(e.target.value) || undefined,
+                    },
                   })
                 }
                 className="w-full h-2 bg-slate-4 rounded-lg appearance-none cursor-pointer accent-brand-magenta"
@@ -821,7 +1003,10 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    pitchScoreRange: { ...localFilters.pitchScoreRange, min: e.target.value ? Number(e.target.value) : undefined },
+                    pitchScoreRange: {
+                      ...localFilters.pitchScoreRange,
+                      min: e.target.value ? Number(e.target.value) : undefined,
+                    },
                   })
                 }
                 className="w-20 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50"
@@ -836,7 +1021,10 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    pitchScoreRange: { ...localFilters.pitchScoreRange, max: e.target.value ? Number(e.target.value) : undefined },
+                    pitchScoreRange: {
+                      ...localFilters.pitchScoreRange,
+                      max: e.target.value ? Number(e.target.value) : undefined,
+                    },
                   })
                 }
                 className="w-20 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white placeholder:text-white/40 focus:outline-none focus:border-brand-magenta/50"
@@ -854,7 +1042,10 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    lastTouchRange: { ...localFilters.lastTouchRange, from: e.target.value || undefined },
+                    lastTouchRange: {
+                      ...localFilters.lastTouchRange,
+                      from: e.target.value || undefined,
+                    },
                   })
                 }
                 className="flex-1 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50"
@@ -866,7 +1057,10 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    lastTouchRange: { ...localFilters.lastTouchRange, to: e.target.value || undefined },
+                    lastTouchRange: {
+                      ...localFilters.lastTouchRange,
+                      to: e.target.value || undefined,
+                    },
                   })
                 }
                 className="flex-1 px-3 py-2 text-sm rounded-lg bg-slate-1 border border-border-subtle text-white focus:outline-none focus:border-brand-magenta/50"
@@ -876,22 +1070,35 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
 
           {/* Verification Status */}
           <div>
-            <h3 className={`${typography.titleSmall} mb-3`}>Verification Status</h3>
+            <h3 className={`${typography.titleSmall} mb-3`}>
+              Verification Status
+            </h3>
             <div className="flex flex-wrap gap-2">
               {VERIFICATION_STATUS_OPTIONS.map((opt) => {
                 const colorClasses = {
-                  success: 'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
+                  success:
+                    'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
                   white: 'bg-white/10 text-white/70 border-white/20',
-                  warning: 'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
-                  danger: 'bg-semantic-danger/15 text-semantic-danger border-semantic-danger/30',
+                  warning:
+                    'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
+                  danger:
+                    'bg-semantic-danger/15 text-semantic-danger border-semantic-danger/30',
                 };
-                const isActive = localFilters.verificationStatuses.includes(opt.value);
+                const isActive = localFilters.verificationStatuses.includes(
+                  opt.value
+                );
                 return (
                   <button
                     key={opt.value}
                     type="button"
                     onClick={() =>
-                      setLocalFilters({ ...localFilters, verificationStatuses: toggleArrayValue(localFilters.verificationStatuses, opt.value) })
+                      setLocalFilters({
+                        ...localFilters,
+                        verificationStatuses: toggleArrayValue(
+                          localFilters.verificationStatuses,
+                          opt.value
+                        ),
+                      })
                     }
                     className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                       isActive
@@ -908,13 +1115,23 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
 
           {/* Audience Signals */}
           <div>
-            <h3 className={`${typography.titleSmall} mb-3`}>Audience Signals</h3>
+            <h3 className={`${typography.titleSmall} mb-3`}>
+              Audience Signals
+            </h3>
             <div className="flex flex-wrap gap-2">
               {AUDIENCE_SIGNAL_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => setLocalFilters({ ...localFilters, audienceSignals: toggleArrayValue(localFilters.audienceSignals, opt.value) })}
+                  onClick={() =>
+                    setLocalFilters({
+                      ...localFilters,
+                      audienceSignals: toggleArrayValue(
+                        localFilters.audienceSignals,
+                        opt.value
+                      ),
+                    })
+                  }
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                     localFilters.audienceSignals.includes(opt.value)
                       ? 'bg-brand-magenta/15 text-brand-magenta border-brand-magenta/30'
@@ -930,7 +1147,11 @@ function FilterDrawer({ isOpen, onClose, filters, onFiltersChange, availableBeat
 
         {/* Footer Actions */}
         <div className="sticky bottom-0 bg-panel border-t border-border-subtle px-6 py-4 flex items-center justify-between">
-          <button type="button" onClick={handleReset} className="text-sm text-white/55 hover:text-white transition-colors">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="text-sm text-white/55 hover:text-white transition-colors"
+          >
             Reset all
           </button>
           <div className="flex items-center gap-3">
@@ -966,13 +1187,20 @@ interface SavedSegmentsPanelProps {
   onSaveCurrentFilters: () => void;
 }
 
-function SavedSegmentsPanel({ segments, activeSegmentId, onSelectSegment, onSaveCurrentFilters }: SavedSegmentsPanelProps) {
+function SavedSegmentsPanel({
+  segments,
+  activeSegmentId,
+  onSelectSegment,
+  onSaveCurrentFilters,
+}: SavedSegmentsPanelProps) {
   const colorMap: Record<string, string> = {
     magenta: 'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/30',
     iris: 'bg-brand-iris/10 text-brand-iris border-brand-iris/30',
     cyan: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30',
-    warning: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/30',
-    success: 'bg-semantic-success/10 text-semantic-success border-semantic-success/30',
+    warning:
+      'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/30',
+    success:
+      'bg-semantic-success/10 text-semantic-success border-semantic-success/30',
   };
 
   return (
@@ -999,7 +1227,11 @@ function SavedSegmentsPanel({ segments, activeSegmentId, onSelectSegment, onSave
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className={`text-sm font-medium ${activeSegmentId === null ? 'text-white/90' : 'text-white/70'}`}>All Contacts</span>
+            <span
+              className={`text-sm font-medium ${activeSegmentId === null ? 'text-white/90' : 'text-white/70'}`}
+            >
+              All Contacts
+            </span>
           </div>
         </button>
 
@@ -1018,11 +1250,21 @@ function SavedSegmentsPanel({ segments, activeSegmentId, onSelectSegment, onSave
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {segment.isPinned && <span className="text-[13px]">*</span>}
-                <span className={`text-sm font-medium ${activeSegmentId === segment.id ? '' : 'text-white/70'}`}>{segment.name}</span>
+                <span
+                  className={`text-sm font-medium ${activeSegmentId === segment.id ? '' : 'text-white/70'}`}
+                >
+                  {segment.name}
+                </span>
               </div>
-              <span className="text-xs text-white/50">{segment.contactCount}</span>
+              <span className="text-xs text-white/50">
+                {segment.contactCount}
+              </span>
             </div>
-            {segment.description && <p className="text-xs text-white/50 mt-0.5">{segment.description}</p>}
+            {segment.description && (
+              <p className="text-xs text-white/50 mt-0.5">
+                {segment.description}
+              </p>
+            )}
           </button>
         ))}
       </div>
@@ -1040,20 +1282,41 @@ interface DataQualityPanelProps {
   onToggle: () => void;
 }
 
-function DataQualityPanel({ stats, isDataQualityMode, onToggle }: DataQualityPanelProps) {
-  const qualityColor = stats.qualityScore >= 80 ? 'text-semantic-success' : stats.qualityScore >= 60 ? 'text-semantic-warning' : 'text-semantic-danger';
-  const qualityBg = stats.qualityScore >= 80 ? 'bg-semantic-success' : stats.qualityScore >= 60 ? 'bg-semantic-warning' : 'bg-semantic-danger';
+function DataQualityPanel({
+  stats,
+  isDataQualityMode,
+  onToggle,
+}: DataQualityPanelProps) {
+  const qualityColor =
+    stats.qualityScore >= 80
+      ? 'text-semantic-success'
+      : stats.qualityScore >= 60
+        ? 'text-semantic-warning'
+        : 'text-semantic-danger';
+  const qualityBg =
+    stats.qualityScore >= 80
+      ? 'bg-semantic-success'
+      : stats.qualityScore >= 60
+        ? 'bg-semantic-warning'
+        : 'bg-semantic-danger';
 
   return (
-    <div className={`p-4 rounded-xl border transition-colors ${isDataQualityMode ? 'bg-semantic-warning/10 border-semantic-warning/30' : 'bg-panel border-border-subtle'}`}>
+    <div
+      className={`p-4 rounded-xl border transition-colors ${isDataQualityMode ? 'bg-semantic-warning/10 border-semantic-warning/30' : 'bg-panel border-border-subtle'}`}
+    >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <h3 className={typography.titleSmall}>Data Quality</h3>
           <div className="flex items-center gap-2">
             <div className={`w-8 h-2 rounded-full bg-slate-4 overflow-hidden`}>
-              <div className={`h-full rounded-full ${qualityBg}`} style={{ width: `${stats.qualityScore}%` }} />
+              <div
+                className={`h-full rounded-full ${qualityBg}`}
+                style={{ width: `${stats.qualityScore}%` }}
+              />
             </div>
-            <span className={`text-sm font-bold ${qualityColor}`}>{stats.qualityScore}%</span>
+            <span className={`text-sm font-bold ${qualityColor}`}>
+              {stats.qualityScore}%
+            </span>
           </div>
         </div>
         <button
@@ -1072,19 +1335,27 @@ function DataQualityPanel({ stats, isDataQualityMode, onToggle }: DataQualityPan
       {isDataQualityMode && (
         <div className="grid grid-cols-2 gap-2 mt-3">
           <div className="p-2 rounded-lg bg-slate-1">
-            <div className="text-lg font-bold text-semantic-success">{stats.verifiedCount}</div>
+            <div className="text-lg font-bold text-semantic-success">
+              {stats.verifiedCount}
+            </div>
             <div className="text-[13px] text-white/50">Verified</div>
           </div>
           <div className="p-2 rounded-lg bg-slate-1">
-            <div className="text-lg font-bold text-semantic-warning">{stats.outdatedCount}</div>
+            <div className="text-lg font-bold text-semantic-warning">
+              {stats.outdatedCount}
+            </div>
             <div className="text-[13px] text-white/50">Outdated</div>
           </div>
           <div className="p-2 rounded-lg bg-slate-1">
-            <div className="text-lg font-bold text-semantic-danger">{stats.missingEmailCount}</div>
+            <div className="text-lg font-bold text-semantic-danger">
+              {stats.missingEmailCount}
+            </div>
             <div className="text-[13px] text-white/50">Missing Email</div>
           </div>
           <div className="p-2 rounded-lg bg-slate-1">
-            <div className="text-lg font-bold text-white/55">{stats.lowTopicCurrencyCount}</div>
+            <div className="text-lg font-bold text-white/55">
+              {stats.lowTopicCurrencyCount}
+            </div>
             <div className="text-[13px] text-white/50">Low Currency</div>
           </div>
         </div>
@@ -1093,7 +1364,9 @@ function DataQualityPanel({ stats, isDataQualityMode, onToggle }: DataQualityPan
       {!isDataQualityMode && (
         <div className="flex items-center gap-4 text-xs text-white/50">
           <span>{stats.verifiedCount} verified</span>
-          <span className="text-semantic-warning">{stats.outdatedCount + stats.unverifiedCount} need attention</span>
+          <span className="text-semantic-warning">
+            {stats.outdatedCount + stats.unverifiedCount} need attention
+          </span>
         </div>
       )}
     </div>
@@ -1111,7 +1384,12 @@ interface ColumnChooserProps {
   onDensityChange: (density: DensityMode) => void;
 }
 
-function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: ColumnChooserProps) {
+function ColumnChooser({
+  columns,
+  onToggleColumn,
+  density,
+  onDensityChange,
+}: ColumnChooserProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -1121,39 +1399,58 @@ function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: Co
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white/55 border border-border-subtle rounded-lg hover:text-white/80 hover:border-slate-5 transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+          />
         </svg>
         Columns
       </button>
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
           <div className="absolute right-0 top-full mt-2 w-64 p-4 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-2 z-50">
             {/* Density Toggle */}
             <div className="mb-4 pb-4 border-b border-border-subtle">
-              <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">Density</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">
+                Density
+              </p>
               <div className="flex gap-1">
-                {(['compact', 'comfortable', 'spacious'] as DensityMode[]).map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => onDensityChange(d)}
-                    className={`flex-1 px-2 py-1.5 text-[13px] font-medium rounded transition-all ${
-                      density === d
-                        ? 'bg-brand-magenta/15 text-brand-magenta'
-                        : 'text-white/55 hover:text-white/80'
-                    }`}
-                  >
-                    {d.charAt(0).toUpperCase() + d.slice(1)}
-                  </button>
-                ))}
+                {(['compact', 'comfortable', 'spacious'] as DensityMode[]).map(
+                  (d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => onDensityChange(d)}
+                      className={`flex-1 px-2 py-1.5 text-[13px] font-medium rounded transition-all ${
+                        density === d
+                          ? 'bg-brand-magenta/15 text-brand-magenta'
+                          : 'text-white/55 hover:text-white/80'
+                      }`}
+                    >
+                      {d.charAt(0).toUpperCase() + d.slice(1)}
+                    </button>
+                  )
+                )}
               </div>
             </div>
 
             {/* Column Toggles */}
-            <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">Visible Columns</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">
+              Visible Columns
+            </p>
             <div className="space-y-1">
               {columns.map((col) => (
                 <button
@@ -1162,13 +1459,31 @@ function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: Co
                   onClick={() => onToggleColumn(col.id)}
                   className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-white/5 transition-colors"
                 >
-                  <span className={`text-xs ${col.visible ? 'text-white/85' : 'text-white/40'}`}>{col.label}</span>
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                    col.visible ? 'bg-brand-magenta border-brand-magenta' : 'border-white/30'
-                  }`}>
+                  <span
+                    className={`text-xs ${col.visible ? 'text-white/85' : 'text-white/40'}`}
+                  >
+                    {col.label}
+                  </span>
+                  <div
+                    className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                      col.visible
+                        ? 'bg-brand-magenta border-brand-magenta'
+                        : 'border-white/30'
+                    }`}
+                  >
                     {col.visible && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     )}
                   </div>
@@ -1188,18 +1503,25 @@ function ColumnChooser({ columns, onToggleColumn, density, onDensityChange }: Co
 
 export function PRDatabase() {
   // Fetch journalists from real API
-  const { data: journalistsData, error: journalistsError, isLoading: isLoadingJournalists, mutate: mutateJournalists } = useSWR<JournalistProfilesResponse>(
+  const {
+    data: journalistsData,
+    error: journalistsError,
+    isLoading: isLoadingJournalists,
+    mutate: mutateJournalists,
+  } = useSWR<JournalistProfilesResponse>(
     '/api/pr/journalists?limit=100',
     fetcher,
     { revalidateOnFocus: false }
   );
 
   // Fetch saved segments (media lists) from real API
-  const { data: listsData, error: listsError, isLoading: isLoadingLists } = useSWR<MediaListsResponse>(
-    '/api/pr/lists',
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+  const {
+    data: listsData,
+    error: listsError,
+    isLoading: isLoadingLists,
+  } = useSWR<MediaListsResponse>('/api/pr/lists', fetcher, {
+    revalidateOnFocus: false,
+  });
 
   // Map API data to UI format, fallback to mock data if no results
   const contacts = useMemo(() => {
@@ -1221,9 +1543,12 @@ export function PRDatabase() {
   const isLoading = isLoadingJournalists || isLoadingLists;
   const hasError = journalistsError || listsError;
 
-  const [filters, setFilters] = useState<DatabaseFilterState>(INITIAL_FILTER_STATE);
+  const [filters, setFilters] =
+    useState<DatabaseFilterState>(INITIAL_FILTER_STATE);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
-  const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
+  const [selectedContactId, setSelectedContactId] = useState<string | null>(
+    null
+  );
   const [showContactModal, setShowContactModal] = useState(false);
   const [editingContactId, setEditingContactId] = useState<string | null>(null);
   const [activeSegmentId, setActiveSegmentId] = useState<string | null>(null);
@@ -1258,14 +1583,26 @@ export function PRDatabase() {
   // Calculate data quality stats
   const dataQualityStats = useMemo<DataQualityStats>(() => {
     const total = contacts.length;
-    const verified = contacts.filter((c) => c.verificationStatus === 'verified').length;
-    const unverified = contacts.filter((c) => c.verificationStatus === 'unverified').length;
-    const outdated = contacts.filter((c) => c.verificationStatus === 'outdated' || c.verificationStatus === 'needs_review').length;
+    const verified = contacts.filter(
+      (c) => c.verificationStatus === 'verified'
+    ).length;
+    const unverified = contacts.filter(
+      (c) => c.verificationStatus === 'unverified'
+    ).length;
+    const outdated = contacts.filter(
+      (c) =>
+        c.verificationStatus === 'outdated' ||
+        c.verificationStatus === 'needs_review'
+    ).length;
     const missingEmail = contacts.filter((c) => !c.email).length;
     const missingBeats = contacts.filter((c) => c.beats.length === 0).length;
     const lowCurrency = contacts.filter((c) => c.topicCurrency < 50).length;
 
-    const qualityScore = Math.round(((verified * 2 + (total - missingEmail) + (total - lowCurrency)) / (total * 4)) * 100);
+    const qualityScore = Math.round(
+      ((verified * 2 + (total - missingEmail) + (total - lowCurrency)) /
+        (total * 4)) *
+        100
+    );
 
     return {
       totalContacts: total,
@@ -1295,75 +1632,126 @@ export function PRDatabase() {
       }
 
       // Entity types
-      if (filters.entityTypes.length > 0 && !filters.entityTypes.includes(contact.entityType)) {
+      if (
+        filters.entityTypes.length > 0 &&
+        !filters.entityTypes.includes(contact.entityType)
+      ) {
         return false;
       }
 
       // Relationship stages
-      if (filters.relationshipStages.length > 0 && !filters.relationshipStages.includes(contact.relationshipStage)) {
+      if (
+        filters.relationshipStages.length > 0 &&
+        !filters.relationshipStages.includes(contact.relationshipStage)
+      ) {
         return false;
       }
 
       // Geos
-      if (filters.geos.length > 0 && contact.geo && !filters.geos.includes(contact.geo)) {
+      if (
+        filters.geos.length > 0 &&
+        contact.geo &&
+        !filters.geos.includes(contact.geo)
+      ) {
         return false;
       }
 
       // Languages
-      if (filters.languages.length > 0 && contact.language && !filters.languages.includes(contact.language)) {
+      if (
+        filters.languages.length > 0 &&
+        contact.language &&
+        !filters.languages.includes(contact.language)
+      ) {
         return false;
       }
 
       // Outlet types
-      if (filters.outletTypes.length > 0 && contact.outletType && !filters.outletTypes.includes(contact.outletType)) {
+      if (
+        filters.outletTypes.length > 0 &&
+        contact.outletType &&
+        !filters.outletTypes.includes(contact.outletType)
+      ) {
         return false;
       }
 
       // Outlet tiers
-      if (filters.outletTiers.length > 0 && contact.outletTier && !filters.outletTiers.includes(contact.outletTier)) {
+      if (
+        filters.outletTiers.length > 0 &&
+        contact.outletTier &&
+        !filters.outletTiers.includes(contact.outletTier)
+      ) {
         return false;
       }
 
       // Beat tags
-      if (filters.beatTags.length > 0 && !contact.beats.some((b) => filters.beatTags.includes(b))) {
+      if (
+        filters.beatTags.length > 0 &&
+        !contact.beats.some((b) => filters.beatTags.includes(b))
+      ) {
         return false;
       }
 
       // Topic currency range
-      if (filters.topicCurrencyRange.min !== undefined && contact.topicCurrency < filters.topicCurrencyRange.min) {
+      if (
+        filters.topicCurrencyRange.min !== undefined &&
+        contact.topicCurrency < filters.topicCurrencyRange.min
+      ) {
         return false;
       }
-      if (filters.topicCurrencyRange.max !== undefined && contact.topicCurrency > filters.topicCurrencyRange.max) {
+      if (
+        filters.topicCurrencyRange.max !== undefined &&
+        contact.topicCurrency > filters.topicCurrencyRange.max
+      ) {
         return false;
       }
 
       // Pitch score range
-      if (filters.pitchScoreRange.min !== undefined && contact.pitchEligibilityScore < filters.pitchScoreRange.min) {
+      if (
+        filters.pitchScoreRange.min !== undefined &&
+        contact.pitchEligibilityScore < filters.pitchScoreRange.min
+      ) {
         return false;
       }
-      if (filters.pitchScoreRange.max !== undefined && contact.pitchEligibilityScore > filters.pitchScoreRange.max) {
+      if (
+        filters.pitchScoreRange.max !== undefined &&
+        contact.pitchEligibilityScore > filters.pitchScoreRange.max
+      ) {
         return false;
       }
 
       // Last touch range
       if (filters.lastTouchRange.from && contact.lastInteraction) {
-        if (new Date(contact.lastInteraction) < new Date(filters.lastTouchRange.from)) {
+        if (
+          new Date(contact.lastInteraction) <
+          new Date(filters.lastTouchRange.from)
+        ) {
           return false;
         }
       }
       if (filters.lastTouchRange.to && contact.lastInteraction) {
-        if (new Date(contact.lastInteraction) > new Date(filters.lastTouchRange.to)) {
+        if (
+          new Date(contact.lastInteraction) >
+          new Date(filters.lastTouchRange.to)
+        ) {
           return false;
         }
       }
 
       // Verification status
-      if (filters.verificationStatuses.length > 0 && contact.verificationStatus && !filters.verificationStatuses.includes(contact.verificationStatus)) {
+      if (
+        filters.verificationStatuses.length > 0 &&
+        contact.verificationStatus &&
+        !filters.verificationStatuses.includes(contact.verificationStatus)
+      ) {
         return false;
       }
 
       // Audience signals
-      if (filters.audienceSignals.length > 0 && contact.audienceSignal && !filters.audienceSignals.includes(contact.audienceSignal)) {
+      if (
+        filters.audienceSignals.length > 0 &&
+        contact.audienceSignal &&
+        !filters.audienceSignals.includes(contact.audienceSignal)
+      ) {
         return false;
       }
 
@@ -1388,8 +1776,16 @@ export function PRDatabase() {
     if (filters.outletTypes.length) count++;
     if (filters.outletTiers.length) count++;
     if (filters.beatTags.length) count++;
-    if (filters.topicCurrencyRange.min !== undefined || filters.topicCurrencyRange.max !== undefined) count++;
-    if (filters.pitchScoreRange.min !== undefined || filters.pitchScoreRange.max !== undefined) count++;
+    if (
+      filters.topicCurrencyRange.min !== undefined ||
+      filters.topicCurrencyRange.max !== undefined
+    )
+      count++;
+    if (
+      filters.pitchScoreRange.min !== undefined ||
+      filters.pitchScoreRange.max !== undefined
+    )
+      count++;
     if (filters.lastTouchRange.from || filters.lastTouchRange.to) count++;
     if (filters.verificationStatuses.length) count++;
     if (filters.audienceSignals.length) count++;
@@ -1430,38 +1826,48 @@ export function PRDatabase() {
 
   const toggleColumn = (columnId: string) => {
     setColumns((prev) =>
-      prev.map((col) => (col.id === columnId ? { ...col, visible: !col.visible } : col))
+      prev.map((col) =>
+        col.id === columnId ? { ...col, visible: !col.visible } : col
+      )
     );
   };
 
   // Contact form handlers
-  const handleSaveContact = useCallback(async (formData: {
-    fullName: string;
-    primaryEmail: string;
-    primaryOutlet: string;
-    beat: string;
-    twitterHandle: string;
-    linkedinUrl: string;
-  }, id?: string) => {
-    const url = id ? `/api/pr/journalists/${id}` : '/api/pr/journalists';
-    const method = id ? 'PATCH' : 'POST';
+  const handleSaveContact = useCallback(
+    async (
+      formData: {
+        fullName: string;
+        primaryEmail: string;
+        primaryOutlet: string;
+        beat: string;
+        twitterHandle: string;
+        linkedinUrl: string;
+      },
+      id?: string
+    ) => {
+      const url = id ? `/api/pr/journalists/${id}` : '/api/pr/journalists';
+      const method = id ? 'PATCH' : 'POST';
 
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || 'Failed to save contact');
-    }
+      if (!response.ok) {
+        const error = await response
+          .json()
+          .catch(() => ({ error: 'Unknown error' }));
+        throw new Error(error.error || 'Failed to save contact');
+      }
 
-    // Revalidate the journalists list
-    await mutateJournalists();
-    setShowContactModal(false);
-    setEditingContactId(null);
-  }, [mutateJournalists]);
+      // Revalidate the journalists list
+      await mutateJournalists();
+      setShowContactModal(false);
+      setEditingContactId(null);
+    },
+    [mutateJournalists]
+  );
 
   const handleEditContact = useCallback((contactId: string) => {
     setEditingContactId(contactId);
@@ -1476,7 +1882,9 @@ export function PRDatabase() {
   // Get editing contact data for the modal
   const editingContactData = useMemo(() => {
     if (!editingContactId || !journalistsData?.profiles) return undefined;
-    const profile = journalistsData.profiles.find(p => p.id === editingContactId);
+    const profile = journalistsData.profiles.find(
+      (p) => p.id === editingContactId
+    );
     if (!profile) return undefined;
     return {
       id: profile.id,
@@ -1532,10 +1940,14 @@ export function PRDatabase() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h2 className="text-base font-semibold text-white/95">Media Database</h2>
+        <h2 className="text-base font-semibold text-white/95">
+          Media Database
+        </h2>
         <p className="text-xs text-white/40 mt-0.5">
           Select the right relationships to engage
-          {isLoading && <span className="ml-2 text-brand-magenta">Loading...</span>}
+          {isLoading && (
+            <span className="ml-2 text-brand-magenta">Loading...</span>
+          )}
         </p>
       </div>
 
@@ -1543,10 +1955,22 @@ export function PRDatabase() {
       {hasError && (
         <div className="p-4 rounded-lg bg-semantic-danger/10 border border-semantic-danger/30">
           <div className="flex items-center gap-2 text-semantic-danger">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            <span className="text-sm font-medium">Failed to load data from server. Showing demo data.</span>
+            <span className="text-sm font-medium">
+              Failed to load data from server. Showing demo data.
+            </span>
           </div>
         </div>
       )}
@@ -1554,8 +1978,18 @@ export function PRDatabase() {
       {/* Top Bar: Search + Quick Actions */}
       <div className="flex items-center gap-4">
         <div className="flex-1 relative">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           <input
             type="text"
@@ -1577,12 +2011,24 @@ export function PRDatabase() {
               : 'bg-white/5 border-border-subtle text-white/55 hover:text-white/80 hover:border-slate-5'
           }`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
           </svg>
           Filters
           {activeFilterCount > 0 && (
-            <span className="px-1.5 py-0.5 text-[13px] font-bold rounded-full bg-brand-magenta text-white/95">{activeFilterCount}</span>
+            <span className="px-1.5 py-0.5 text-[13px] font-bold rounded-full bg-brand-magenta text-white/95">
+              {activeFilterCount}
+            </span>
           )}
         </button>
         <ColumnChooser
@@ -1602,7 +2048,9 @@ export function PRDatabase() {
 
       {/* Quick Filter Chips */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-white/55 mr-2">Type:</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-white/55 mr-2">
+          Type:
+        </span>
         {ENTITY_TYPE_OPTIONS.map((opt) => (
           <FilterChip
             key={opt.value}
@@ -1612,7 +2060,9 @@ export function PRDatabase() {
           />
         ))}
         <div className="w-px h-5 bg-slate-4 mx-2" />
-        <span className="text-xs font-semibold uppercase tracking-wide text-white/55 mr-2">Stage:</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-white/55 mr-2">
+          Stage:
+        </span>
         {RELATIONSHIP_STAGE_OPTIONS.map((opt) => (
           <FilterChip
             key={opt.value}
@@ -1628,22 +2078,79 @@ export function PRDatabase() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-white/50">Active filters:</span>
           {filters.geos.map((geo) => (
-            <ActiveFilterTag key={geo} label={`Geo: ${geo}`} onRemove={() => setFilters((f) => ({ ...f, geos: f.geos.filter((g) => g !== geo) }))} />
+            <ActiveFilterTag
+              key={geo}
+              label={`Geo: ${geo}`}
+              onRemove={() =>
+                setFilters((f) => ({
+                  ...f,
+                  geos: f.geos.filter((g) => g !== geo),
+                }))
+              }
+            />
           ))}
           {filters.languages.map((lang) => (
-            <ActiveFilterTag key={lang} label={`Lang: ${lang.toUpperCase()}`} onRemove={() => setFilters((f) => ({ ...f, languages: f.languages.filter((l) => l !== lang) }))} />
+            <ActiveFilterTag
+              key={lang}
+              label={`Lang: ${lang.toUpperCase()}`}
+              onRemove={() =>
+                setFilters((f) => ({
+                  ...f,
+                  languages: f.languages.filter((l) => l !== lang),
+                }))
+              }
+            />
           ))}
           {filters.outletTiers.map((tier) => (
-            <ActiveFilterTag key={tier} label={`Tier: ${tier.toUpperCase()}`} onRemove={() => setFilters((f) => ({ ...f, outletTiers: f.outletTiers.filter((t) => t !== tier) }))} />
+            <ActiveFilterTag
+              key={tier}
+              label={`Tier: ${tier.toUpperCase()}`}
+              onRemove={() =>
+                setFilters((f) => ({
+                  ...f,
+                  outletTiers: f.outletTiers.filter((t) => t !== tier),
+                }))
+              }
+            />
           ))}
           {filters.topicCurrencyRange.min !== undefined && (
-            <ActiveFilterTag label={`Currency >= ${filters.topicCurrencyRange.min}%`} onRemove={() => setFilters((f) => ({ ...f, topicCurrencyRange: { ...f.topicCurrencyRange, min: undefined } }))} />
+            <ActiveFilterTag
+              label={`Currency >= ${filters.topicCurrencyRange.min}%`}
+              onRemove={() =>
+                setFilters((f) => ({
+                  ...f,
+                  topicCurrencyRange: {
+                    ...f.topicCurrencyRange,
+                    min: undefined,
+                  },
+                }))
+              }
+            />
           )}
           {filters.pitchScoreRange.min !== undefined && (
-            <ActiveFilterTag label={`Score >= ${filters.pitchScoreRange.min}`} onRemove={() => setFilters((f) => ({ ...f, pitchScoreRange: { ...f.pitchScoreRange, min: undefined } }))} />
+            <ActiveFilterTag
+              label={`Score >= ${filters.pitchScoreRange.min}`}
+              onRemove={() =>
+                setFilters((f) => ({
+                  ...f,
+                  pitchScoreRange: { ...f.pitchScoreRange, min: undefined },
+                }))
+              }
+            />
           )}
           {filters.verificationStatuses.map((status) => (
-            <ActiveFilterTag key={status} label={status} onRemove={() => setFilters((f) => ({ ...f, verificationStatuses: f.verificationStatuses.filter((s) => s !== status) }))} />
+            <ActiveFilterTag
+              key={status}
+              label={status}
+              onRemove={() =>
+                setFilters((f) => ({
+                  ...f,
+                  verificationStatuses: f.verificationStatuses.filter(
+                    (s) => s !== status
+                  ),
+                }))
+              }
+            />
           ))}
           <button
             type="button"
@@ -1663,7 +2170,8 @@ export function PRDatabase() {
         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-brand-magenta/10 border border-brand-magenta/30">
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-brand-magenta">
-              {selectedIds.size} contact{selectedIds.size !== 1 ? 's' : ''} selected
+              {selectedIds.size} contact{selectedIds.size !== 1 ? 's' : ''}{' '}
+              selected
             </span>
             <button
               type="button"
@@ -1704,15 +2212,27 @@ export function PRDatabase() {
               console.log('Save current filters as segment');
             }}
           />
-          <DataQualityPanel stats={dataQualityStats} isDataQualityMode={isDataQualityMode} onToggle={() => setIsDataQualityMode(!isDataQualityMode)} />
+          <DataQualityPanel
+            stats={dataQualityStats}
+            isDataQualityMode={isDataQualityMode}
+            onToggle={() => setIsDataQualityMode(!isDataQualityMode)}
+          />
         </div>
 
         {/* Table Area */}
         <div className="flex-1">
           {/* Results count */}
           <div className="text-sm text-white/55 mb-4">
-            Showing <span className="text-white font-medium">{filteredContacts.length}</span> of {contacts.length} contacts
-            {isDataQualityMode && <span className="ml-2 text-semantic-warning">(Data Quality Mode)</span>}
+            Showing{' '}
+            <span className="text-white font-medium">
+              {filteredContacts.length}
+            </span>{' '}
+            of {contacts.length} contacts
+            {isDataQualityMode && (
+              <span className="ml-2 text-semantic-warning">
+                (Data Quality Mode)
+              </span>
+            )}
           </div>
 
           {/* Table */}
@@ -1726,45 +2246,74 @@ export function PRDatabase() {
                       type="button"
                       onClick={toggleSelectAll}
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                        selectedIds.size === filteredContacts.length && filteredContacts.length > 0
+                        selectedIds.size === filteredContacts.length &&
+                        filteredContacts.length > 0
                           ? 'bg-brand-magenta border-brand-magenta'
                           : selectedIds.size > 0
-                          ? 'bg-brand-magenta/50 border-brand-magenta/50'
-                          : 'border-white/30 hover:border-white/50'
+                            ? 'bg-brand-magenta/50 border-brand-magenta/50'
+                            : 'border-white/30 hover:border-white/50'
                       }`}
                     >
-                      {selectedIds.size === filteredContacts.length && filteredContacts.length > 0 && (
-                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                      {selectedIds.size > 0 && selectedIds.size < filteredContacts.length && (
-                        <div className="w-2 h-0.5 bg-white rounded" />
-                      )}
+                      {selectedIds.size === filteredContacts.length &&
+                        filteredContacts.length > 0 && (
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      {selectedIds.size > 0 &&
+                        selectedIds.size < filteredContacts.length && (
+                          <div className="w-2 h-0.5 bg-white rounded" />
+                        )}
                     </button>
                   </th>
                   {visibleColumns.some((c) => c.id === 'contact') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Contact</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Contact
+                    </th>
                   )}
                   {visibleColumns.some((c) => c.id === 'type') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Type</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Type
+                    </th>
                   )}
                   {visibleColumns.some((c) => c.id === 'beats') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Beats</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Beats
+                    </th>
                   )}
                   {visibleColumns.some((c) => c.id === 'currency') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Currency</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Currency
+                    </th>
                   )}
                   {visibleColumns.some((c) => c.id === 'relationship') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Relationship</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Relationship
+                    </th>
                   )}
                   {visibleColumns.some((c) => c.id === 'score') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Score</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Score
+                    </th>
                   )}
                   {visibleColumns.some((c) => c.id === 'lastTouch') && (
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">Last Touch</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-white/55">
+                      Last Touch
+                    </th>
                   )}
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-white/55">Actions</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-white/55">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
@@ -1774,9 +2323,10 @@ export function PRDatabase() {
                     className={`transition-colors cursor-pointer ${
                       selectedIds.has(contact.id)
                         ? 'bg-brand-magenta/5'
-                        : isDataQualityMode && contact.verificationStatus !== 'verified'
-                        ? 'bg-semantic-warning/5 hover:bg-semantic-warning/10'
-                        : 'bg-slate-1 hover:bg-slate-2'
+                        : isDataQualityMode &&
+                            contact.verificationStatus !== 'verified'
+                          ? 'bg-semantic-warning/5 hover:bg-semantic-warning/10'
+                          : 'bg-slate-1 hover:bg-slate-2'
                     }`}
                     onClick={() => setSelectedContactId(contact.id)}
                   >
@@ -1792,8 +2342,18 @@ export function PRDatabase() {
                         }`}
                       >
                         {selectedIds.has(contact.id) && (
-                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                         )}
                       </button>
@@ -1801,13 +2361,29 @@ export function PRDatabase() {
                     {visibleColumns.some((c) => c.id === 'contact') && (
                       <td className={`px-4 ${rowPadding[density]}`}>
                         <div className="flex items-start gap-2">
-                          {contact.verificationStatus && <VerificationBadge status={contact.verificationStatus} />}
+                          {contact.verificationStatus && (
+                            <VerificationBadge
+                              status={contact.verificationStatus}
+                            />
+                          )}
                           <div>
-                            <div className="font-medium text-white/90">{contact.name}</div>
-                            {contact.outlet && <div className="text-sm text-white/55">{contact.outlet}</div>}
-                            {contact.email && <div className="text-xs text-white/40">{contact.email}</div>}
+                            <div className="font-medium text-white/90">
+                              {contact.name}
+                            </div>
+                            {contact.outlet && (
+                              <div className="text-sm text-white/55">
+                                {contact.outlet}
+                              </div>
+                            )}
+                            {contact.email && (
+                              <div className="text-xs text-white/40">
+                                {contact.email}
+                              </div>
+                            )}
                             {!contact.email && isDataQualityMode && (
-                              <div className="text-xs text-semantic-danger">Missing email</div>
+                              <div className="text-xs text-semantic-danger">
+                                Missing email
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1822,12 +2398,17 @@ export function PRDatabase() {
                       <td className={`px-4 ${rowPadding[density]}`}>
                         <div className="flex flex-wrap gap-1">
                           {contact.beats.slice(0, 2).map((beat) => (
-                            <span key={beat} className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">
+                            <span
+                              key={beat}
+                              className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle"
+                            >
                               {beat}
                             </span>
                           ))}
                           {contact.beats.length > 2 && (
-                            <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">+{contact.beats.length - 2}</span>
+                            <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">
+                              +{contact.beats.length - 2}
+                            </span>
                           )}
                         </div>
                       </td>
@@ -1844,7 +2425,9 @@ export function PRDatabase() {
                     )}
                     {visibleColumns.some((c) => c.id === 'score') && (
                       <td className={`px-4 ${rowPadding[density]}`}>
-                        <span className={`text-sm font-medium ${contact.pitchEligibilityScore >= 80 ? 'text-semantic-success' : contact.pitchEligibilityScore >= 60 ? 'text-semantic-warning' : 'text-white/55'}`}>
+                        <span
+                          className={`text-sm font-medium ${contact.pitchEligibilityScore >= 80 ? 'text-semantic-success' : contact.pitchEligibilityScore >= 60 ? 'text-semantic-warning' : 'text-white/55'}`}
+                        >
                           {contact.pitchEligibilityScore}
                         </span>
                       </td>
@@ -1853,7 +2436,12 @@ export function PRDatabase() {
                       <td className={`px-4 ${rowPadding[density]}`}>
                         {contact.lastInteraction ? (
                           <span className="text-sm text-white/55">
-                            {Math.floor((Date.now() - new Date(contact.lastInteraction).getTime()) / (24 * 3600000))}d ago
+                            {Math.floor(
+                              (Date.now() -
+                                new Date(contact.lastInteraction).getTime()) /
+                                (24 * 3600000)
+                            )}
+                            d ago
                           </span>
                         ) : (
                           <span className="text-sm text-white/40">Never</span>
@@ -1905,12 +2493,24 @@ export function PRDatabase() {
             {filteredContacts.length === 0 && (
               <div className="p-12 text-center bg-slate-1">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-panel border border-border-subtle flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg
+                    className="w-8 h-8 text-white/30"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
                   </svg>
                 </div>
                 <h3 className={typography.titleMedium}>No contacts found</h3>
-                <p className="text-sm text-white/55 mt-1">Try adjusting your filters or search query</p>
+                <p className="text-sm text-white/55 mt-1">
+                  Try adjusting your filters or search query
+                </p>
               </div>
             )}
           </div>
@@ -1941,31 +2541,59 @@ export function PRDatabase() {
                   onClick={() => setSelectedContactId(null)}
                   className="p-2 text-white/55 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
               {(() => {
-                const contact = contacts.find((c) => c.id === selectedContactId);
+                const contact = contacts.find(
+                  (c) => c.id === selectedContactId
+                );
                 if (!contact) return null;
                 return (
                   <div className="space-y-6">
                     <div className="flex items-start gap-3">
-                      {contact.verificationStatus && <VerificationBadge status={contact.verificationStatus} />}
+                      {contact.verificationStatus && (
+                        <VerificationBadge
+                          status={contact.verificationStatus}
+                        />
+                      )}
                       <div>
-                        <h3 className="text-xl font-bold text-white/95">{contact.name}</h3>
-                        {contact.outlet && <p className="text-white/55">{contact.outlet}</p>}
+                        <h3 className="text-xl font-bold text-white/95">
+                          {contact.name}
+                        </h3>
+                        {contact.outlet && (
+                          <p className="text-white/55">{contact.outlet}</p>
+                        )}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
                       <EntityTypeBadge type={contact.entityType} />
                       <RelationshipBadge stage={contact.relationshipStage} />
-                      {contact.geo && <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">{contact.geo}</span>}
+                      {contact.geo && (
+                        <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">
+                          {contact.geo}
+                        </span>
+                      )}
                       {contact.outletTier && (
                         <span className="px-2 py-0.5 text-[13px] rounded bg-white/5 text-white/55 border border-border-subtle">
-                          {OUTLET_TIER_OPTIONS.find((o) => o.value === contact.outletTier)?.label}
+                          {
+                            OUTLET_TIER_OPTIONS.find(
+                              (o) => o.value === contact.outletTier
+                            )?.label
+                          }
                         </span>
                       )}
                     </div>
@@ -1973,18 +2601,30 @@ export function PRDatabase() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         <div className="text-xs text-white/50">Pitch Score</div>
-                        <div className="text-2xl font-bold text-white/95">{contact.pitchEligibilityScore}</div>
+                        <div className="text-2xl font-bold text-white/95">
+                          {contact.pitchEligibilityScore}
+                        </div>
                       </div>
                       <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
-                        <div className="text-xs text-white/50">Topic Currency</div>
-                        <div className="text-2xl font-bold text-white/95">{contact.topicCurrency}%</div>
+                        <div className="text-xs text-white/50">
+                          Topic Currency
+                        </div>
+                        <div className="text-2xl font-bold text-white/95">
+                          {contact.topicCurrency}%
+                        </div>
                       </div>
                       <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
-                        <div className="text-xs text-white/50">AI Citation Score</div>
-                        <div className="text-2xl font-bold text-white/95">{contact.aiCitationScore || 'N/A'}</div>
+                        <div className="text-xs text-white/50">
+                          AI Citation Score
+                        </div>
+                        <div className="text-2xl font-bold text-white/95">
+                          {contact.aiCitationScore || 'N/A'}
+                        </div>
                       </div>
                       <div className="p-3 rounded-lg bg-slate-1 border border-border-subtle">
-                        <div className="text-xs text-white/50">Audience Signal</div>
+                        <div className="text-xs text-white/50">
+                          Audience Signal
+                        </div>
                         <div className="text-lg font-bold text-white/95 capitalize">
                           {contact.audienceSignal || 'Unknown'}
                         </div>
@@ -1992,10 +2632,15 @@ export function PRDatabase() {
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Beats</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+                        Beats
+                      </h4>
                       <div className="flex flex-wrap gap-2">
                         {contact.beats.map((beat) => (
-                          <span key={beat} className="px-3 py-1 text-sm rounded-lg bg-brand-magenta/10 text-brand-magenta border border-brand-magenta/30">
+                          <span
+                            key={beat}
+                            className="px-3 py-1 text-sm rounded-lg bg-brand-magenta/10 text-brand-magenta border border-brand-magenta/30"
+                          >
                             {beat}
                           </span>
                         ))}
@@ -2003,23 +2648,31 @@ export function PRDatabase() {
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Contact Info</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+                        Contact Info
+                      </h4>
                       <div className="space-y-2 p-3 rounded-lg bg-slate-1 border border-border-subtle">
                         {contact.email && (
                           <div className="flex items-center gap-2 text-sm">
                             <span className="text-white/50">Email:</span>
-                            <span className="text-white/90">{contact.email}</span>
+                            <span className="text-white/90">
+                              {contact.email}
+                            </span>
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-sm">
                           <span className="text-white/50">Preferred:</span>
-                          <span className="text-white/90 capitalize">{contact.preferredChannels.join(', ')}</span>
+                          <span className="text-white/90 capitalize">
+                            {contact.preferredChannels.join(', ')}
+                          </span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Timeline</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
+                        Timeline
+                      </h4>
                       <div className="text-sm text-white/50 italic p-4 rounded-lg bg-slate-1 border border-border-subtle">
                         Interaction history timeline would appear here
                       </div>
@@ -2042,14 +2695,15 @@ export function PRDatabase() {
                       >
                         Edit Contact
                       </button>
-                      {isDataQualityMode && contact.verificationStatus !== 'verified' && (
-                        <button
-                          type="button"
-                          className="w-full px-4 py-2.5 text-sm font-semibold text-semantic-warning bg-semantic-warning/10 rounded-lg hover:bg-semantic-warning/20 transition-colors border border-semantic-warning/30"
-                        >
-                          Verify Contact
-                        </button>
-                      )}
+                      {isDataQualityMode &&
+                        contact.verificationStatus !== 'verified' && (
+                          <button
+                            type="button"
+                            className="w-full px-4 py-2.5 text-sm font-semibold text-semantic-warning bg-semantic-warning/10 rounded-lg hover:bg-semantic-warning/20 transition-colors border border-semantic-warning/30"
+                          >
+                            Verify Contact
+                          </button>
+                        )}
                     </div>
                   </div>
                 );

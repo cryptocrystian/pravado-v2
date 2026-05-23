@@ -19,7 +19,11 @@ interface ArticleDrawerProps {
   articleId: string | null;
 }
 
-export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps) {
+export function ArticleDrawer({
+  isOpen,
+  onClose,
+  articleId,
+}: ArticleDrawerProps) {
   const [article, setArticle] = useState<ArticleWithMentions | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,13 +108,25 @@ export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-900">Article Details</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Article Details
+            </h2>
             <button
               onClick={onClose}
               className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -131,12 +147,12 @@ export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps
                     {article.title}
                   </h1>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                    {article.author && (
-                      <span>By {article.author}</span>
-                    )}
+                    {article.author && <span>By {article.author}</span>}
                     <span>{formatDate(article.publishedAt)}</span>
                     {article.source && (
-                      <span className="text-blue-600">{article.source.name}</span>
+                      <span className="text-blue-600">
+                        {article.source.name}
+                      </span>
                     )}
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -153,7 +169,9 @@ export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps
                 {/* Keywords */}
                 {article.keywords.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Keywords</h3>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                      Keywords
+                    </h3>
                     <div className="flex flex-wrap gap-2">
                       {article.keywords.map((keyword) => (
                         <span
@@ -202,7 +220,9 @@ export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps
                 {/* Summary */}
                 {article.summary && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Summary</h3>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                      Summary
+                    </h3>
                     <p className="text-gray-600">{article.summary}</p>
                   </div>
                 )}
@@ -210,11 +230,16 @@ export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps
                 {/* Content */}
                 {article.content && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Full Content</h3>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                      Full Content
+                    </h3>
                     <div
                       className="prose prose-sm max-w-none text-gray-600"
                       dangerouslySetInnerHTML={{
-                        __html: highlightMentions(article.content, article.mentions),
+                        __html: highlightMentions(
+                          article.content,
+                          article.mentions
+                        ),
                       }}
                     />
                   </div>
@@ -229,8 +254,18 @@ export function ArticleDrawer({ isOpen, onClose, articleId }: ArticleDrawerProps
                     className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
                   >
                     View Original Article
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
                     </svg>
                   </a>
                 </div>

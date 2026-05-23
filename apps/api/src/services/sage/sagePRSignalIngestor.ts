@@ -7,8 +7,8 @@
  * 3. Recent relationship events that create pitch windows
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('sage:pr-ingestor');
 
@@ -32,11 +32,13 @@ export async function ingestPRSignals(
 ): Promise<PRSignal[]> {
   const signals: PRSignal[] = [];
 
-  const [staleFollowUps, highValueUnpitched, recentWindows] = await Promise.all([
-    findStaleFollowUps(supabase, orgId),
-    findHighValueUnpitchedJournalists(supabase, orgId),
-    findRecentPitchWindows(supabase, orgId),
-  ]);
+  const [staleFollowUps, highValueUnpitched, recentWindows] = await Promise.all(
+    [
+      findStaleFollowUps(supabase, orgId),
+      findHighValueUnpitchedJournalists(supabase, orgId),
+      findRecentPitchWindows(supabase, orgId),
+    ]
+  );
 
   signals.push(...staleFollowUps, ...highValueUnpitched, ...recentWindows);
   logger.info(`PR ingestor found ${signals.length} signals for org ${orgId}`);
@@ -52,18 +54,22 @@ async function findStaleFollowUps(
   supabase: SupabaseClient,
   orgId: string
 ): Promise<PRSignal[]> {
-  const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString();
+  const fiveDaysAgo = new Date(
+    Date.now() - 5 * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   // Get pitch contacts that were sent but never got a reply
   const { data: staleContacts } = await supabase
     .from('pr_pitch_contacts')
-    .select(`
+    .select(
+      `
       id,
       journalist_id,
       status,
       sequence_id,
       pr_pitch_sequences!inner (id, org_id, subject, created_at)
-    `)
+    `
+    )
     .eq('pr_pitch_sequences.org_id', orgId)
     .eq('status', 'sent')
     .lt('pr_pitch_sequences.created_at', fiveDaysAgo);
@@ -95,13 +101,16 @@ async function findStaleFollowUps(
           subject: seq?.subject,
           sent_at: seq?.created_at,
           days_since_sent: Math.floor(
-            (Date.now() - new Date(seq?.created_at || '').getTime()) / (24 * 60 * 60 * 1000)
+            (Date.now() - new Date(seq?.created_at || '').getTime()) /
+              (24 * 60 * 60 * 1000)
           ),
         },
         evi_impact_estimate: 2.5,
         confidence: 0.7,
         priority: 'medium',
-        expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(
+          Date.now() + 14 * 24 * 60 * 60 * 1000
+        ).toISOString(),
       });
     }
   }
@@ -121,7 +130,9 @@ async function findHighValueUnpitchedJournalists(
   // Get journalist_profiles with high engagement or relevance scores
   const { data: highValueJournalists } = await supabase
     .from('journalist_profiles')
-    .select('id, journalist_id, engagement_score, responsiveness_score, relevance_score')
+    .select(
+      'id, journalist_id, engagement_score, responsiveness_score, relevance_score'
+    )
     .eq('org_id', orgId)
     .gt('engagement_score', 70);
 
@@ -130,14 +141,18 @@ async function findHighValueUnpitchedJournalists(
   // Get all journalist_ids already pitched by this org
   const { data: pitchedContacts } = await supabase
     .from('pr_pitch_contacts')
-    .select(`
+    .select(
+      `
       journalist_id,
       pr_pitch_sequences!inner (org_id)
-    `)
+    `
+    )
     .eq('pr_pitch_sequences.org_id', orgId);
 
   const pitchedJournalistIds = new Set(
-    (pitchedContacts ?? []).map((c: { journalist_id: string }) => c.journalist_id)
+    (pitchedContacts ?? []).map(
+      (c: { journalist_id: string }) => c.journalist_id
+    )
   );
 
   const signals: PRSignal[] = [];
@@ -173,11 +188,15 @@ async function findRecentPitchWindows(
   supabase: SupabaseClient,
   orgId: string
 ): Promise<PRSignal[]> {
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const sevenDaysAgo = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   const { data: recentEvents } = await supabase
     .from('journalist_relationship_events')
-    .select('id, journalist_id, event_type, relevance_score, relationship_impact, sentiment, created_at')
+    .select(
+      'id, journalist_id, event_type, relevance_score, relationship_impact, sentiment, created_at'
+    )
     .eq('org_id', orgId)
     .gte('created_at', sevenDaysAgo)
     .in('sentiment', ['positive', 'very_positive'])

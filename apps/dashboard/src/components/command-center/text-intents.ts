@@ -30,7 +30,8 @@
 export const titlePage = 'text-2xl font-bold text-white/95 tracking-tight';
 
 /** Section heading — major content areas within a surface */
-export const titleSection = 'text-xl font-semibold text-white/95 tracking-tight';
+export const titleSection =
+  'text-xl font-semibold text-white/95 tracking-tight';
 
 /** Pane / panel title — tri-pane pane titles, modal/drawer headers */
 export const titlePane = 'text-lg font-semibold text-white/90 tracking-tight';
@@ -92,7 +93,8 @@ export const mutedCaption = 'text-[13px] text-white/45';
 export const microText = 'text-[11px] text-white/55'; // typography-allow: micro — uppercase required
 
 /** Micro label — badge/chip labels */
-export const microLabel = 'text-[11px] font-bold uppercase tracking-wider text-white/70'; // typography-allow: micro
+export const microLabel =
+  'text-[11px] font-bold uppercase tracking-wider text-white/70'; // typography-allow: micro
 
 /** Micro muted — least prominent, timestamps */
 export const microMuted = 'text-xs text-white/40'; // 12px, uppercase tracking if standalone
@@ -128,7 +130,8 @@ export const infoText = 'text-sm text-brand-cyan';
 // ============================================
 
 /** Link text — inline links, navigation */
-export const linkText = 'text-sm font-medium text-brand-cyan hover:text-brand-cyan/80 transition-colors cursor-pointer';
+export const linkText =
+  'text-sm font-medium text-brand-cyan hover:text-brand-cyan/80 transition-colors cursor-pointer';
 
 /** Button text primary */
 export const buttonPrimary = 'text-sm font-semibold';
@@ -150,7 +153,8 @@ export const metricValueHero = 'text-2xl font-bold text-white/95 tabular-nums';
 export const metricValue = 'text-lg font-bold text-white/90 tabular-nums';
 
 /** Metric value compact — inline metrics */
-export const metricValueCompact = 'text-base font-bold text-white/90 tabular-nums';
+export const metricValueCompact =
+  'text-base font-bold text-white/90 tabular-nums';
 
 /** Metric label */
 export const metricLabel = 'text-xs text-white/55 uppercase tracking-wide'; // typography-allow: metric
@@ -163,10 +167,12 @@ export const metricDelta = 'text-[13px] font-bold'; // typography-allow: metric 
 // ============================================
 
 /** Section header — uppercase section labels */
-export const sectionHeader = 'text-xs font-semibold text-white/55 uppercase tracking-wide';
+export const sectionHeader =
+  'text-xs font-semibold text-white/55 uppercase tracking-wide';
 
 /** Section header small — compact section labels */
-export const sectionHeaderSm = 'text-[11px] font-semibold text-white/50 uppercase tracking-wider'; // typography-allow: section
+export const sectionHeaderSm =
+  'text-[11px] font-semibold text-white/50 uppercase tracking-wider'; // typography-allow: section
 
 /** Divider label */
 export const dividerLabel = 'text-xs text-white/35 uppercase tracking-wider';
@@ -175,7 +181,9 @@ export const dividerLabel = 'text-xs text-white/35 uppercase tracking-wider';
 // UTILITY FUNCTIONS
 // ============================================
 
-export function combineIntents(...intents: (string | undefined | false | null)[]): string {
+export function combineIntents(
+  ...intents: (string | undefined | false | null)[]
+): string {
   return intents.filter(Boolean).join(' ');
 }
 
@@ -188,7 +196,9 @@ export function pillarText(pillar: 'pr' | 'content' | 'seo'): string {
   return colors[pillar];
 }
 
-export function priorityText(priority: 'critical' | 'high' | 'medium' | 'low'): string {
+export function priorityText(
+  priority: 'critical' | 'high' | 'medium' | 'low'
+): string {
   const colors = {
     critical: 'text-semantic-danger',
     high: 'text-semantic-warning',

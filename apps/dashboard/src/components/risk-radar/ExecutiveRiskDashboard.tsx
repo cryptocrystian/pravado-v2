@@ -5,12 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { RiskLevelBadge } from './RiskLevelBadge';
-import type { RiskRadarSnapshot, RiskRadarForecast } from '@/lib/riskRadarApi';
-import { formatRelativeTime } from '@/lib/riskRadarApi';
 import {
   Radar,
   TrendingUp,
@@ -26,6 +20,14 @@ import {
   BarChart3,
 } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { RiskRadarSnapshot, RiskRadarForecast } from '@/lib/riskRadarApi';
+import { formatRelativeTime } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
+
+import { RiskLevelBadge } from './RiskLevelBadge';
+
 interface ExecutiveRiskDashboardProps {
   snapshot?: RiskRadarSnapshot;
   forecast?: RiskRadarForecast;
@@ -34,7 +36,10 @@ interface ExecutiveRiskDashboardProps {
   className?: string;
 }
 
-function getTrendIndicator(current: number, previous: number): {
+function getTrendIndicator(
+  current: number,
+  previous: number
+): {
   direction: 'up' | 'down' | 'stable';
   change: number;
   color: string;
@@ -46,7 +51,11 @@ function getTrendIndicator(current: number, previous: number): {
   if (change > 0) {
     return { direction: 'up', change, color: 'text-red-500' }; // Risk increasing is bad
   }
-  return { direction: 'down', change: Math.abs(change), color: 'text-green-500' }; // Risk decreasing is good
+  return {
+    direction: 'down',
+    change: Math.abs(change),
+    color: 'text-green-500',
+  }; // Risk decreasing is good
 }
 
 export function ExecutiveRiskDashboard({
@@ -75,7 +84,10 @@ export function ExecutiveRiskDashboard({
   }
 
   const trend = previousSnapshot
-    ? getTrendIndicator(snapshot.overallRiskIndex, previousSnapshot.overallRiskIndex)
+    ? getTrendIndicator(
+        snapshot.overallRiskIndex,
+        previousSnapshot.overallRiskIndex
+      )
     : null;
 
   return (
@@ -275,7 +287,9 @@ export function ExecutiveRiskDashboard({
                   className="flex items-center gap-2 text-sm p-2 bg-red-50 rounded border border-red-100"
                 >
                   <RiskLevelBadge level={concern.severity} size="sm" />
-                  <span className="text-gray-800 truncate">{concern.title}</span>
+                  <span className="text-gray-800 truncate">
+                    {concern.title}
+                  </span>
                 </div>
               ))}
             </div>

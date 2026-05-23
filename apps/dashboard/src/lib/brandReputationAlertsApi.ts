@@ -119,8 +119,12 @@ export async function listAlertRules(
 /**
  * Get a single alert rule by ID
  */
-export async function getAlertRule(ruleId: string): Promise<BrandReputationAlertRule> {
-  const result = await apiClient<BrandReputationAlertRule>(`/alert-rules/${ruleId}`);
+export async function getAlertRule(
+  ruleId: string
+): Promise<BrandReputationAlertRule> {
+  const result = await apiClient<BrandReputationAlertRule>(
+    `/alert-rules/${ruleId}`
+  );
   return result.data!;
 }
 
@@ -131,10 +135,13 @@ export async function updateAlertRule(
   ruleId: string,
   data: UpdateReputationAlertRuleInput
 ): Promise<BrandReputationAlertRule> {
-  const result = await apiClient<BrandReputationAlertRule>(`/alert-rules/${ruleId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(data),
-  });
+  const result = await apiClient<BrandReputationAlertRule>(
+    `/alert-rules/${ruleId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }
+  );
   return result.data!;
 }
 
@@ -177,8 +184,12 @@ export async function listAlertEvents(
 /**
  * Get a single alert event by ID
  */
-export async function getAlertEvent(eventId: string): Promise<BrandReputationAlertEvent> {
-  const result = await apiClient<BrandReputationAlertEvent>(`/alert-events/${eventId}`);
+export async function getAlertEvent(
+  eventId: string
+): Promise<BrandReputationAlertEvent> {
+  const result = await apiClient<BrandReputationAlertEvent>(
+    `/alert-events/${eventId}`
+  );
   return result.data!;
 }
 
@@ -219,7 +230,9 @@ export async function resolveAlertEvent(
 /**
  * Mute an alert event
  */
-export async function muteAlertEvent(eventId: string): Promise<BrandReputationAlertEvent> {
+export async function muteAlertEvent(
+  eventId: string
+): Promise<BrandReputationAlertEvent> {
   const result = await apiClient<BrandReputationAlertEvent>(
     `/alert-events/${eventId}/mute`,
     {
@@ -253,7 +266,9 @@ export async function listReports(
   query: ListReputationReportsQuery = {}
 ): Promise<ListReputationReportsResponse> {
   const queryString = buildQueryString(query);
-  const result = await apiClient<ListReputationReportsResponse>(`/reports?${queryString}`);
+  const result = await apiClient<ListReputationReportsResponse>(
+    `/reports?${queryString}`
+  );
   return result.data!;
 }
 
@@ -406,7 +421,9 @@ export function getAlertStatusIcon(status: ReputationAlertStatus): string {
 /**
  * Get label for report frequency
  */
-export function getReportFrequencyLabel(frequency: ReputationReportFrequency): string {
+export function getReportFrequencyLabel(
+  frequency: ReputationReportFrequency
+): string {
   const labels: Record<ReputationReportFrequency, string> = {
     ad_hoc: 'Ad Hoc',
     weekly: 'Weekly',
@@ -486,7 +503,9 @@ export function getReportStatusIcon(status: ReputationReportStatus): string {
 /**
  * Get label for report section type
  */
-export function getSectionTypeLabel(sectionType: ReputationReportSectionType): string {
+export function getSectionTypeLabel(
+  sectionType: ReputationReportSectionType
+): string {
   const labels: Record<ReputationReportSectionType, string> = {
     overview: 'Executive Overview',
     highlights: 'Key Highlights',
@@ -502,7 +521,9 @@ export function getSectionTypeLabel(sectionType: ReputationReportSectionType): s
 /**
  * Get icon for report section type
  */
-export function getSectionTypeIcon(sectionType: ReputationReportSectionType): string {
+export function getSectionTypeIcon(
+  sectionType: ReputationReportSectionType
+): string {
   const icons: Record<ReputationReportSectionType, string> = {
     overview: '📊',
     highlights: '⭐',
@@ -611,14 +632,17 @@ export function formatDelta(delta: number | null | undefined): {
   }
   const sign = delta >= 0 ? '+' : '';
   const text = `${sign}${delta.toFixed(1)}`;
-  const colorClass = delta > 0 ? 'text-green-600' : delta < 0 ? 'text-red-600' : 'text-gray-600';
+  const colorClass =
+    delta > 0 ? 'text-green-600' : delta < 0 ? 'text-red-600' : 'text-gray-600';
   return { text, colorClass };
 }
 
 /**
  * Get trend direction from delta
  */
-export function getTrendFromDelta(delta: number | null | undefined): 'up' | 'down' | 'flat' {
+export function getTrendFromDelta(
+  delta: number | null | undefined
+): 'up' | 'down' | 'flat' {
   if (delta === null || delta === undefined) return 'flat';
   if (delta > 2) return 'up';
   if (delta < -2) return 'down';
@@ -684,7 +708,9 @@ export function formatDateTime(date: string | Date | null | undefined): string {
 /**
  * Format relative time (e.g., "2 hours ago")
  */
-export function formatRelativeTime(date: string | Date | null | undefined): string {
+export function formatRelativeTime(
+  date: string | Date | null | undefined
+): string {
   if (!date) return 'N/A';
   const d = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();

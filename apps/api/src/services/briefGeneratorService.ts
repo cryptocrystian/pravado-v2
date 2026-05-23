@@ -53,10 +53,16 @@ export class BriefGeneratorService {
     const context = await this.buildGenerationContext(orgId, userId, input);
 
     // Step 2: Run the brief generation playbook
-    const playbookRun = await this.runBriefGenerationPlaybook(orgId, userId, context);
+    const playbookRun = await this.runBriefGenerationPlaybook(
+      orgId,
+      userId,
+      context
+    );
 
     // Step 3: Extract the generated brief from playbook output
-    const generatedBrief = this.extractBriefFromPlaybookOutput(playbookRun.output);
+    const generatedBrief = this.extractBriefFromPlaybookOutput(
+      playbookRun.output
+    );
 
     // Step 4: Save the generated brief
     const savedBrief = await this.saveBrief(orgId, {
@@ -80,7 +86,10 @@ export class BriefGeneratorService {
   /**
    * Get a generated brief by ID
    */
-  async getGeneratedBrief(orgId: string, id: string): Promise<GeneratedBrief | null> {
+  async getGeneratedBrief(
+    orgId: string,
+    id: string
+  ): Promise<GeneratedBrief | null> {
     const { data, error } = await this.supabase
       .from('content_generated_briefs')
       .select('*')
@@ -150,14 +159,19 @@ export class BriefGeneratorService {
     targetIntent: string | null;
   }> {
     // Parallel fetch of all context data
-    const [contentItem, seoContext, memoryContext, contentContext, personality] =
-      await Promise.all([
-        this.getContentItem(orgId, input.contentItemId),
-        this.assembleSEOContext(orgId, input.targetKeyword, input.targetIntent),
-        this.assembleMemoryContext(orgId, _userId),
-        this.assembleContentContext(orgId),
-        this.getPersonality(orgId, input.personalityId),
-      ]);
+    const [
+      contentItem,
+      seoContext,
+      memoryContext,
+      contentContext,
+      personality,
+    ] = await Promise.all([
+      this.getContentItem(orgId, input.contentItemId),
+      this.assembleSEOContext(orgId, input.targetKeyword, input.targetIntent),
+      this.assembleMemoryContext(orgId, _userId),
+      this.assembleContentContext(orgId),
+      this.getPersonality(orgId, input.personalityId),
+    ]);
 
     return {
       contentItem,
@@ -254,7 +268,9 @@ export class BriefGeneratorService {
   /**
    * Assemble content context (recent content, clusters, gaps)
    */
-  private async assembleContentContext(orgId: string): Promise<Record<string, unknown>> {
+  private async assembleContentContext(
+    orgId: string
+  ): Promise<Record<string, unknown>> {
     const contentService = new ContentService(this.supabase);
 
     // Get recent content items
@@ -300,24 +316,31 @@ export class BriefGeneratorService {
       personality = await personalityStore.getPersonality(orgId, personalityId);
     } else {
       // Get default personality for content generation
-      const personalities = await personalityStore.listPersonalities(orgId, 50, 0);
+      const personalities = await personalityStore.listPersonalities(
+        orgId,
+        50,
+        0
+      );
 
       // Filter for personalities tagged with 'content' or 'writing'
       const contentPersonalities = personalities.filter(
         (p) => p.slug.includes('content') || p.slug.includes('writer')
       );
 
-      personality = contentPersonalities.length > 0 ? contentPersonalities[0] : null;
+      personality =
+        contentPersonalities.length > 0 ? contentPersonalities[0] : null;
     }
 
     // Cast AgentPersonality to our simplified type
     return personality
       ? {
-          configuration: personality.configuration as unknown as Record<string, unknown>,
+          configuration: personality.configuration as unknown as Record<
+            string,
+            unknown
+          >,
         }
       : null;
   }
-
 
   // ========================================
   // PRIVATE METHODS - PLAYBOOK EXECUTION
@@ -402,7 +425,9 @@ export class BriefGeneratorService {
   /**
    * Generate outline using LLM (S16)
    */
-  private async generateOutlineWithLLM(context: any): Promise<Record<string, unknown> | null> {
+  private async generateOutlineWithLLM(
+    context: any
+  ): Promise<Record<string, unknown> | null> {
     if (!this.llmRouter) {
       return null;
     }
@@ -447,11 +472,15 @@ Please provide a JSON response with the following structure:
 
       // Parse JSON response
       const outline = JSON.parse(response.completion);
-      logger.info('Generated outline using LLM', { provider: response.provider });
+      logger.info('Generated outline using LLM', {
+        provider: response.provider,
+      });
 
       return { outline };
     } catch (error) {
-      logger.warn('Failed to generate outline with LLM, will use stub', { error });
+      logger.warn('Failed to generate outline with LLM, will use stub', {
+        error,
+      });
       return null;
     }
   }
@@ -534,7 +563,9 @@ Please provide a JSON response with the following structure:
 
       return { brief };
     } catch (error) {
-      logger.warn('Failed to generate brief with LLM, will use stub', { error });
+      logger.warn('Failed to generate brief with LLM, will use stub', {
+        error,
+      });
       return null;
     }
   }
@@ -592,7 +623,9 @@ Always respond with valid JSON matching the requested structure.`;
    * Generate stub brief output (S13 - deterministic for testing)
    * Updated in S16 to use LLM when available, with fallback to stub
    */
-  private async generateStubBriefOutput(context: any): Promise<Record<string, unknown>> {
+  private async generateStubBriefOutput(
+    context: any
+  ): Promise<Record<string, unknown>> {
     const keyword = context.targetKeyword || 'content strategy';
     const intent = context.targetIntent || 'informational';
 
@@ -693,9 +726,12 @@ Always respond with valid JSON matching the requested structure.`;
           seoGuidelines: {
             primaryKeyword: keyword,
             secondaryKeywords:
-              context.seoContext.relatedKeywords?.slice(0, 5).map((kw: any) => kw.keyword) || [],
+              context.seoContext.relatedKeywords
+                ?.slice(0, 5)
+                .map((kw: any) => kw.keyword) || [],
             metaDescription: `Learn everything about ${keyword}. Discover best practices, avoid common mistakes, and implement proven strategies.`,
-            targetSearchVolume: context.seoContext.relatedKeywords?.[0]?.searchVolume || null,
+            targetSearchVolume:
+              context.seoContext.relatedKeywords?.[0]?.searchVolume || null,
           },
           createdBy: 'AI Brief Generator V1',
           createdAt: new Date().toISOString(),

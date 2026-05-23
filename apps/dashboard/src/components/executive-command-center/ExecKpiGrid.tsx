@@ -5,15 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  type ExecDashboardKpi,
-  getSourceSystemLabel,
-  getSourceSystemColor,
-  getTrendIconClass,
-} from '@/lib/executiveCommandCenterApi';
-import { cn } from '@/lib/utils';
 import {
   TrendingUp,
   TrendingDown,
@@ -21,6 +12,16 @@ import {
   BarChart3,
   Loader2,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  type ExecDashboardKpi,
+  getSourceSystemLabel,
+  getSourceSystemColor,
+  getTrendIconClass,
+} from '@/lib/executiveCommandCenterApi';
+import { cn } from '@/lib/utils';
 
 interface ExecKpiGridProps {
   kpis: ExecDashboardKpi[];
@@ -129,7 +130,10 @@ export function ExecKpiGrid({ kpis, loading, className }: ExecKpiGridProps) {
               {kpi.sourceSystem && (
                 <Badge
                   variant="outline"
-                  className={cn('text-xs mb-2', getSourceSystemColor(kpi.sourceSystem))}
+                  className={cn(
+                    'text-xs mb-2',
+                    getSourceSystemColor(kpi.sourceSystem)
+                  )}
                 >
                   {getSourceSystemLabel(kpi.sourceSystem)}
                 </Badge>
@@ -171,9 +175,13 @@ export function ExecKpiGrid({ kpis, loading, className }: ExecKpiGridProps) {
               </div>
 
               {/* Unit */}
-              {kpi.metricUnit && kpi.metricUnit !== 'count' && kpi.metricUnit !== 'score' && (
-                <div className="text-xs text-gray-400 mt-1">{kpi.metricUnit}</div>
-              )}
+              {kpi.metricUnit &&
+                kpi.metricUnit !== 'count' &&
+                kpi.metricUnit !== 'score' && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    {kpi.metricUnit}
+                  </div>
+                )}
             </div>
           ))}
         </div>

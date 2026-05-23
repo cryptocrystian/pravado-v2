@@ -36,7 +36,10 @@ export class NotificationService {
    * @param orgId - Organization ID
    * @param alertRecord - Alert record to send notification for
    */
-  async sendOrgAlertEmail(orgId: string, alertRecord: BillingAlertRecord): Promise<void> {
+  async sendOrgAlertEmail(
+    orgId: string,
+    alertRecord: BillingAlertRecord
+  ): Promise<void> {
     logger.info('Dispatching org alert email', {
       orgId,
       alertId: alertRecord.id,

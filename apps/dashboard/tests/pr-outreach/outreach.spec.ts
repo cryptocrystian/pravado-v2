@@ -33,14 +33,20 @@ test.describe('PR Outreach Page', () => {
     });
 
     test('should display New Sequence button', async ({ page }) => {
-      await expect(page.getByRole('button', { name: /new sequence/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /new sequence/i })
+      ).toBeVisible();
     });
   });
 
   test.describe('Outreach Sequences', () => {
     test('should display sequences list or empty state', async ({ page }) => {
-      const hasSequences = await page.locator('[class*="bg-white border"]').count();
-      const hasEmptyState = await page.getByText('No sequences found').isVisible();
+      const hasSequences = await page
+        .locator('[class*="bg-white border"]')
+        .count();
+      const hasEmptyState = await page
+        .getByText('No sequences found')
+        .isVisible();
 
       expect(hasSequences > 0 || hasEmptyState).toBeTruthy();
     });
@@ -60,14 +66,18 @@ test.describe('PR Outreach Page', () => {
       await expect(page.getByPlaceholder(/campaign/i)).toBeVisible();
       await expect(page.getByText('Description')).toBeVisible();
       await expect(page.getByText('Max Runs Per Day')).toBeVisible();
-      await expect(page.getByText('Stop sequence on journalist reply')).toBeVisible();
+      await expect(
+        page.getByText('Stop sequence on journalist reply')
+      ).toBeVisible();
     });
 
     test('should allow adding email steps', async ({ page }) => {
       await page.click('button:has-text("+ New Sequence")');
 
       // Add step button should be visible
-      await expect(page.getByRole('button', { name: /add step/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /add step/i })
+      ).toBeVisible();
 
       // Click add step
       await page.click('button:has-text("+ Add Step")');
@@ -91,16 +101,22 @@ test.describe('PR Outreach Page', () => {
 
   test.describe('Outreach Runs', () => {
     test('should display runs list or empty state', async ({ page }) => {
-      const hasRuns = await page.locator('[class*="bg-white border rounded-lg"]').count();
+      const hasRuns = await page
+        .locator('[class*="bg-white border rounded-lg"]')
+        .count();
       const hasEmptyState = await page.getByText('No runs found').isVisible();
 
       expect(hasRuns > 0 || hasEmptyState).toBeTruthy();
     });
 
-    test('should show empty state message when no sequence selected', async ({ page }) => {
+    test('should show empty state message when no sequence selected', async ({
+      page,
+    }) => {
       const emptyState = await page.getByText('No runs found').isVisible();
       if (emptyState) {
-        await expect(page.getByText('Select a sequence to view runs')).toBeVisible();
+        await expect(
+          page.getByText('Select a sequence to view runs')
+        ).toBeVisible();
       }
     });
   });

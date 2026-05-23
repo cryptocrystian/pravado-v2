@@ -22,6 +22,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
 import type { AIPerceptualState } from '../ai-perception';
 import { AI_PERCEPTUAL_SIGNALS } from '../ai-perception';
 
@@ -81,9 +82,8 @@ export function AmbientAIIndicator({
   };
 
   // Ready state gets one-time scale animation on transition
-  const readyTransition = state === 'ready' && isTransitioning
-    ? 'scale-125'
-    : '';
+  const readyTransition =
+    state === 'ready' && isTransitioning ? 'scale-125' : '';
 
   return (
     <div
@@ -139,7 +139,10 @@ interface LocalAIIndicatorProps {
  * Per canon §2.2: The visual distinction between Evaluating and Executing
  * must be unambiguous.
  */
-export function LocalAIIndicator({ state, className = '' }: LocalAIIndicatorProps) {
+export function LocalAIIndicator({
+  state,
+  className = '',
+}: LocalAIIndicatorProps) {
   const signal = AI_PERCEPTUAL_SIGNALS[state];
 
   // Idle state shows nothing - per §2.2: Idle is absence of indicators
@@ -218,11 +221,7 @@ export function AIStateRing({
 
   // Idle state: minimal styling
   if (state === 'idle') {
-    return (
-      <div className={`relative ${className}`}>
-        {children}
-      </div>
-    );
+    return <div className={`relative ${className}`}>{children}</div>;
   }
 
   return (
@@ -329,7 +328,11 @@ interface AIStateDotProps {
  * The simplest form of state indication - just a colored dot.
  * Use for compact layouts or as secondary indicator.
  */
-export function AIStateDot({ state, size = 'sm', className = '' }: AIStateDotProps) {
+export function AIStateDot({
+  state,
+  size = 'sm',
+  className = '',
+}: AIStateDotProps) {
   const signal = AI_PERCEPTUAL_SIGNALS[state];
 
   // Idle shows a very subtle dot

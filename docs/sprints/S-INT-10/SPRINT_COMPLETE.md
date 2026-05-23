@@ -21,6 +21,7 @@ Final sprint before beta launch. Implemented TOTP MFA via Supabase Auth, session
 Security settings page with two sections:
 
 **MFA Section:**
+
 - If not enrolled: "Enable Two-Factor Authentication" button
 - On click: `supabase.auth.mfa.enroll({ factorType: 'totp' })` — shows QR code
 - 6-digit code input for verification via `supabase.auth.mfa.challengeAndVerify()`
@@ -33,6 +34,7 @@ Security settings page with two sections:
 **File:** `apps/dashboard/src/app/login/page.tsx` (modified)
 
 After successful password login:
+
 1. `checkAndHandleMFA()` calls `supabase.auth.mfa.listFactors()`
 2. If verified TOTP factors exist: shows MFA challenge screen (6-digit input)
 3. Challenge + verify via `supabase.auth.mfa.challenge()` + `.verify()`
@@ -45,6 +47,7 @@ After successful password login:
 **Migration 87:** `ALTER TABLE orgs ADD COLUMN IF NOT EXISTS require_mfa boolean DEFAULT false`
 
 Middleware enforcement (`apps/dashboard/src/middleware.ts`):
+
 - If `orgs.require_mfa = true` and user has no verified TOTP factors:
   redirect to `/app/settings/security` with requirement banner
 - Skip for users already on the security settings page
@@ -56,6 +59,7 @@ Middleware enforcement (`apps/dashboard/src/middleware.ts`):
 ### Active Sessions View
 
 In the Security settings page:
+
 - Current session info: browser name (parsed from user-agent), expiry time
 - "Sign out this device" button: `supabase.auth.signOut()`
 - "Sign out all devices" button: `supabase.auth.signOut({ scope: 'global' })`
@@ -76,6 +80,7 @@ In the Security settings page:
 ### C1. Security Headers
 
 **Dashboard** (`next.config.js`):
+
 ```
 X-DNS-Prefetch-Control: on
 Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
@@ -84,21 +89,24 @@ X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
+
 Applied to all routes via `headers()` in Next.js config.
 
 **API** (`server.ts`):
+
 - `@fastify/helmet` installed and registered with `contentSecurityPolicy: false`
 - Sets X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, etc.
 
 ### C2. Input Validation Audit
 
-| Metric | Count |
-|--------|-------|
-| Total POST/PUT/PATCH handlers | 127 |
-| Handlers WITH validation | 122 (96%) |
-| Handlers WITHOUT validation | 5 (4%) |
+| Metric                        | Count     |
+| ----------------------------- | --------- |
+| Total POST/PUT/PATCH handlers | 127       |
+| Handlers WITH validation      | 122 (96%) |
+| Handlers WITHOUT validation   | 5 (4%)    |
 
 **Files with missing validation (all low-risk):**
+
 1. `citeMind/index.ts` — POST `/score/:contentItemId` (param-only, no body)
 2. `sage/index.ts` — POST `/scan` (no body needed)
 3. `integrations/gsc.ts` — GET `/callback` (OAuth callback, query params)
@@ -112,11 +120,13 @@ Assessment: 96% coverage. Missing routes are either param-only or have manual va
 **Before:** `origin: config.CORS_ORIGIN` — used string from env var.
 
 **After (S-INT-10):**
+
 ```typescript
 origin: config.NODE_ENV === 'production'
   ? config.CORS_ORIGIN.split(',').map((o) => o.trim())
-  : true  // allow all in development
+  : true; // allow all in development
 ```
+
 Production restricts to comma-separated whitelist. Development allows all origins.
 
 ### C4. Dependency Audit
@@ -127,6 +137,7 @@ Severity: 6 low | 10 moderate | 29 high | 3 critical
 ```
 
 **3 Critical vulnerabilities (all in transitive deps, NOT in production API/dashboard):**
+
 1. `@remix-run/node` (path traversal) — via `apps/mobile` (Expo), not in API or dashboard
 2. `fast-xml-parser` (entity encoding bypass) — via `apps/mobile` (Expo), not in API or dashboard
 3. `fast-xml-parser` (duplicate) — same as above
@@ -138,6 +149,7 @@ Severity: 6 low | 10 moderate | 29 high | 3 critical
 ### C5. Environment Variable Validation
 
 **Already implemented** in `packages/validators/src/env.ts` + `apps/api/src/config.ts`:
+
 - `apiEnvSchema` defines all env vars with Zod types and defaults
 - `config = getConfig()` validates eagerly at import time
 - Missing required vars (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) crash the server at startup with a clear error message
@@ -148,6 +160,7 @@ Severity: 6 low | 10 moderate | 29 high | 3 critical
 **File:** `apps/api/src/routes/health.ts` (upgraded)
 
 `GET /health/` now returns:
+
 ```json
 {
   "status": "healthy",
@@ -170,6 +183,7 @@ Severity: 6 low | 10 moderate | 29 high | 3 critical
 **File:** `docs/api/README.md`
 
 Summary of all 50+ API route groups organized by domain:
+
 - Infrastructure, Core Pillars, Intelligence Layer, PR Operations, Integrations
 - Billing, Beta/Onboarding, Executive Intelligence, Crisis/Reputation
 - Analytics, Governance, Simulation
@@ -179,20 +193,20 @@ Summary of all 50+ API route groups organized by domain:
 
 ## Final Checklist
 
-| Item | Status |
-|------|--------|
-| Sentry receives test errors from both dashboard and API | PASS — ErrorBoundary + server error handler wired (S-INT-08) |
-| PostHog receives onboarding events from a test run | PASS — 16 typed events wired (S-INT-08) |
-| Rate limiting returns 429 on abuse | PASS — global 200/min + route-level (S-INT-08) |
-| MFA TOTP setup flow works end to end | PASS — enroll, QR, verify, unenroll |
-| MFA challenge appears on login for enrolled users | PASS — 5-attempt limit with 30min lockout |
-| "Sign out of all devices" works | PASS — `signOut({ scope: 'global' })` |
-| Security headers present in production build | PASS — HSTS, X-Frame, X-Content-Type, Referrer, Permissions |
-| No HIGH/CRITICAL npm vulnerabilities in production apps | PASS — 0 in API + dashboard (3 critical in mobile only) |
-| Required env vars missing at startup causes crash with clear error | PASS — apiEnvSchema validated at import time |
-| Health check endpoint returns 200 with database + redis status | PASS — /health/ with dependency checks |
-| pnpm audit run and results documented | PASS — See C4 above |
-| Zero new TypeScript errors | PASS — 11 pre-existing in PR/SEO files, 0 new |
+| Item                                                               | Status                                                       |
+| ------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Sentry receives test errors from both dashboard and API            | PASS — ErrorBoundary + server error handler wired (S-INT-08) |
+| PostHog receives onboarding events from a test run                 | PASS — 16 typed events wired (S-INT-08)                      |
+| Rate limiting returns 429 on abuse                                 | PASS — global 200/min + route-level (S-INT-08)               |
+| MFA TOTP setup flow works end to end                               | PASS — enroll, QR, verify, unenroll                          |
+| MFA challenge appears on login for enrolled users                  | PASS — 5-attempt limit with 30min lockout                    |
+| "Sign out of all devices" works                                    | PASS — `signOut({ scope: 'global' })`                        |
+| Security headers present in production build                       | PASS — HSTS, X-Frame, X-Content-Type, Referrer, Permissions  |
+| No HIGH/CRITICAL npm vulnerabilities in production apps            | PASS — 0 in API + dashboard (3 critical in mobile only)      |
+| Required env vars missing at startup causes crash with clear error | PASS — apiEnvSchema validated at import time                 |
+| Health check endpoint returns 200 with database + redis status     | PASS — /health/ with dependency checks                       |
+| pnpm audit run and results documented                              | PASS — See C4 above                                          |
+| Zero new TypeScript errors                                         | PASS — 11 pre-existing in PR/SEO files, 0 new                |
 
 ---
 

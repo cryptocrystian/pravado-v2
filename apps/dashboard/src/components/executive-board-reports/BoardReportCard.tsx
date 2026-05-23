@@ -5,8 +5,10 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { FileText, Users, Calendar, Clock } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
   type ExecBoardReportWithCounts,
@@ -19,12 +21,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  Users,
-  Calendar,
-  Clock,
-} from 'lucide-react';
 
 interface BoardReportCardProps {
   report: ExecBoardReportWithCounts;
@@ -32,7 +28,11 @@ interface BoardReportCardProps {
   onSelect?: (report: ExecBoardReportWithCounts) => void;
 }
 
-export function BoardReportCard({ report, isSelected, onSelect }: BoardReportCardProps) {
+export function BoardReportCard({
+  report,
+  isSelected,
+  onSelect,
+}: BoardReportCardProps) {
   const progress = getReportProgress(report);
   const statusColor = getStatusColor(report.status);
 
@@ -48,7 +48,9 @@ export function BoardReportCard({ report, isSelected, onSelect }: BoardReportCar
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-indigo-600" />
-            <span className="font-medium text-gray-900 line-clamp-1">{report.title}</span>
+            <span className="font-medium text-gray-900 line-clamp-1">
+              {report.title}
+            </span>
           </div>
           <Badge
             variant="secondary"

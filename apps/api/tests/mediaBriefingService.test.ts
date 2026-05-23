@@ -32,10 +32,7 @@ describe('MediaBriefingService', () => {
       .from('mb_briefing_audit_log')
       .delete()
       .eq('org_id', testOrgId);
-    await supabase
-      .from('mb_talking_points')
-      .delete()
-      .eq('org_id', testOrgId);
+    await supabase.from('mb_talking_points').delete().eq('org_id', testOrgId);
     await supabase
       .from('mb_source_references')
       .delete()
@@ -44,10 +41,7 @@ describe('MediaBriefingService', () => {
       .from('mb_briefing_sections')
       .delete()
       .eq('org_id', testOrgId);
-    await supabase
-      .from('mb_briefings')
-      .delete()
-      .eq('org_id', testOrgId);
+    await supabase.from('mb_briefings').delete().eq('org_id', testOrgId);
   });
 
   describe('Briefing CRUD Operations', () => {
@@ -59,7 +53,11 @@ describe('MediaBriefingService', () => {
         focusAreas: ['product launch', 'innovation'],
       };
 
-      const briefing = await service.createBriefing(testOrgId, testUserId, request);
+      const briefing = await service.createBriefing(
+        testOrgId,
+        testUserId,
+        request
+      );
 
       expect(briefing).toBeDefined();
       expect(briefing.id).toBeDefined();
@@ -84,13 +82,21 @@ describe('MediaBriefingService', () => {
         customInstructions: 'Emphasize our green initiatives',
       };
 
-      const briefing = await service.createBriefing(testOrgId, testUserId, request);
+      const briefing = await service.createBriefing(
+        testOrgId,
+        testUserId,
+        request
+      );
 
       expect(briefing).toBeDefined();
-      expect(briefing.subtitle).toBe('Key messages for interview with Sarah Chen');
+      expect(briefing.subtitle).toBe(
+        'Key messages for interview with Sarah Chen'
+      );
       expect(briefing.format).toBe('executive_summary');
       expect(briefing.exclusions).toContain('layoffs');
-      expect(briefing.customInstructions).toBe('Emphasize our green initiatives');
+      expect(briefing.customInstructions).toBe(
+        'Emphasize our green initiatives'
+      );
 
       // Clean up this extra briefing
       await service.deleteBriefing(testOrgId, testUserId, briefing.id);
@@ -115,24 +121,43 @@ describe('MediaBriefingService', () => {
     });
 
     it('should list briefings with status filter', async () => {
-      const result = await service.getBriefings(testOrgId, { status: ['draft'] }, 20, 0);
+      const result = await service.getBriefings(
+        testOrgId,
+        { status: ['draft'] },
+        20,
+        0
+      );
 
       expect(result.briefings).toBeDefined();
       expect(result.briefings.every((b) => b.status === 'draft')).toBe(true);
     });
 
     it('should list briefings with format filter', async () => {
-      const result = await service.getBriefings(testOrgId, { format: ['full_brief'] }, 20, 0);
+      const result = await service.getBriefings(
+        testOrgId,
+        { format: ['full_brief'] },
+        20,
+        0
+      );
 
       expect(result.briefings).toBeDefined();
-      expect(result.briefings.every((b) => b.format === 'full_brief')).toBe(true);
+      expect(result.briefings.every((b) => b.format === 'full_brief')).toBe(
+        true
+      );
     });
 
     it('should list briefings with search query', async () => {
-      const result = await service.getBriefings(testOrgId, { searchQuery: 'Product Launch' }, 20, 0);
+      const result = await service.getBriefings(
+        testOrgId,
+        { searchQuery: 'Product Launch' },
+        20,
+        0
+      );
 
       expect(result.briefings).toBeDefined();
-      expect(result.briefings.some((b) => b.title.includes('Product Launch'))).toBe(true);
+      expect(
+        result.briefings.some((b) => b.title.includes('Product Launch'))
+      ).toBe(true);
     });
 
     it('should update briefing details', async () => {
@@ -142,18 +167,30 @@ describe('MediaBriefingService', () => {
         focusAreas: ['product launch', 'innovation', 'market expansion'],
       };
 
-      const updated = await service.updateBriefing(testOrgId, testUserId, testBriefingId, updateRequest);
+      const updated = await service.updateBriefing(
+        testOrgId,
+        testUserId,
+        testBriefingId,
+        updateRequest
+      );
 
       expect(updated).toBeDefined();
       expect(updated.title).toBe('Q4 Product Launch Media Brief - Updated');
-      expect(updated.subtitle).toBe('Comprehensive briefing for all media interactions');
+      expect(updated.subtitle).toBe(
+        'Comprehensive briefing for all media interactions'
+      );
       expect(updated.focusAreas).toContain('market expansion');
     });
 
     it('should update briefing status', async () => {
-      const updated = await service.updateBriefing(testOrgId, testUserId, testBriefingId, {
-        status: 'generated' as BriefingStatus,
-      });
+      const updated = await service.updateBriefing(
+        testOrgId,
+        testUserId,
+        testBriefingId,
+        {
+          status: 'generated' as BriefingStatus,
+        }
+      );
 
       expect(updated.status).toBe('generated');
 
@@ -171,7 +208,11 @@ describe('MediaBriefingService', () => {
         status: 'generated' as BriefingStatus,
       });
 
-      const reviewed = await service.reviewBriefing(testOrgId, testUserId, testBriefingId);
+      const reviewed = await service.reviewBriefing(
+        testOrgId,
+        testUserId,
+        testBriefingId
+      );
 
       expect(reviewed).toBeDefined();
       expect(reviewed.status).toBe('reviewed');
@@ -180,7 +221,11 @@ describe('MediaBriefingService', () => {
     });
 
     it('should approve briefing', async () => {
-      const approved = await service.approveBriefing(testOrgId, testUserId, testBriefingId);
+      const approved = await service.approveBriefing(
+        testOrgId,
+        testUserId,
+        testBriefingId
+      );
 
       expect(approved).toBeDefined();
       expect(approved.status).toBe('approved');
@@ -189,7 +234,11 @@ describe('MediaBriefingService', () => {
     });
 
     it('should archive briefing', async () => {
-      const archived = await service.archiveBriefing(testOrgId, testUserId, testBriefingId);
+      const archived = await service.archiveBriefing(
+        testOrgId,
+        testUserId,
+        testBriefingId
+      );
 
       expect(archived).toBeDefined();
       expect(archived.status).toBe('archived');
@@ -209,9 +258,14 @@ describe('MediaBriefingService', () => {
         briefingId: testBriefingId,
         category: 'primary_message' as TalkingPointCategory,
         headline: 'Our innovation drives market leadership',
-        content: 'We have consistently delivered breakthrough products that reshape the industry.',
+        content:
+          'We have consistently delivered breakthrough products that reshape the industry.',
         supportingFacts: [
-          { fact: '3x growth in R&D investment', verifiable: true, source: 'annual report' },
+          {
+            fact: '3x growth in R&D investment',
+            verifiable: true,
+            source: 'annual report',
+          },
           { fact: '50+ patents filed this year', verifiable: true },
         ],
         priorityScore: 90,
@@ -219,11 +273,17 @@ describe('MediaBriefingService', () => {
         targetAudience: 'Technology journalists',
       };
 
-      const talkingPoint = await service.createTalkingPoint(testOrgId, testUserId, request);
+      const talkingPoint = await service.createTalkingPoint(
+        testOrgId,
+        testUserId,
+        request
+      );
 
       expect(talkingPoint).toBeDefined();
       expect(talkingPoint.id).toBeDefined();
-      expect(talkingPoint.headline).toBe('Our innovation drives market leadership');
+      expect(talkingPoint.headline).toBe(
+        'Our innovation drives market leadership'
+      );
       expect(talkingPoint.category).toBe('primary_message');
       expect(talkingPoint.priorityScore).toBe(90);
       expect(talkingPoint.supportingFacts).toHaveLength(2);
@@ -238,27 +298,39 @@ describe('MediaBriefingService', () => {
         briefingId: testBriefingId,
         category: 'defensive_point' as TalkingPointCategory,
         headline: 'Addressing market concerns',
-        content: 'While the market faces challenges, our diversified approach minimizes risk.',
+        content:
+          'While the market faces challenges, our diversified approach minimizes risk.',
         priorityScore: 75,
         contextNotes: 'Use when directly asked about market volatility',
       };
 
-      const talkingPoint = await service.createTalkingPoint(testOrgId, testUserId, request);
+      const talkingPoint = await service.createTalkingPoint(
+        testOrgId,
+        testUserId,
+        request
+      );
 
       expect(talkingPoint).toBeDefined();
       expect(talkingPoint.category).toBe('defensive_point');
-      expect(talkingPoint.contextNotes).toBe('Use when directly asked about market volatility');
+      expect(talkingPoint.contextNotes).toBe(
+        'Use when directly asked about market volatility'
+      );
 
       // Clean up
       await service.deleteTalkingPoint(testOrgId, talkingPoint.id);
     });
 
     it('should get talking point by ID', async () => {
-      const talkingPoint = await service.getTalkingPoint(testOrgId, testTalkingPointId);
+      const talkingPoint = await service.getTalkingPoint(
+        testOrgId,
+        testTalkingPointId
+      );
 
       expect(talkingPoint).toBeDefined();
       expect(talkingPoint.id).toBe(testTalkingPointId);
-      expect(talkingPoint.headline).toBe('Our innovation drives market leadership');
+      expect(talkingPoint.headline).toBe(
+        'Our innovation drives market leadership'
+      );
     });
 
     it('should list talking points for briefing', async () => {
@@ -271,7 +343,9 @@ describe('MediaBriefingService', () => {
 
       expect(result.talkingPoints).toBeDefined();
       expect(result.total).toBeGreaterThan(0);
-      expect(result.talkingPoints.some((tp) => tp.id === testTalkingPointId)).toBe(true);
+      expect(
+        result.talkingPoints.some((tp) => tp.id === testTalkingPointId)
+      ).toBe(true);
     });
 
     it('should list talking points by category', async () => {
@@ -283,7 +357,9 @@ describe('MediaBriefingService', () => {
       );
 
       expect(result.talkingPoints).toBeDefined();
-      expect(result.talkingPoints.every((tp) => tp.category === 'primary_message')).toBe(true);
+      expect(
+        result.talkingPoints.every((tp) => tp.category === 'primary_message')
+      ).toBe(true);
     });
 
     it('should update talking point', async () => {
@@ -293,19 +369,33 @@ describe('MediaBriefingService', () => {
         targetAudience: 'Business and technology journalists',
       };
 
-      const updated = await service.updateTalkingPoint(testOrgId, testUserId, testTalkingPointId, updateRequest);
+      const updated = await service.updateTalkingPoint(
+        testOrgId,
+        testUserId,
+        testTalkingPointId,
+        updateRequest
+      );
 
       expect(updated).toBeDefined();
-      expect(updated.headline).toBe('Our innovation drives market leadership - Enhanced');
+      expect(updated.headline).toBe(
+        'Our innovation drives market leadership - Enhanced'
+      );
       expect(updated.priorityScore).toBe(95);
-      expect(updated.targetAudience).toBe('Business and technology journalists');
+      expect(updated.targetAudience).toBe(
+        'Business and technology journalists'
+      );
     });
 
     it('should approve talking point', async () => {
       // First update to set approver (done via updateTalkingPoint with isApproved)
-      const approved = await service.updateTalkingPoint(testOrgId, testUserId, testTalkingPointId, {
-        isApproved: true,
-      });
+      const approved = await service.updateTalkingPoint(
+        testOrgId,
+        testUserId,
+        testTalkingPointId,
+        {
+          isApproved: true,
+        }
+      );
 
       expect(approved).toBeDefined();
       expect(approved.isApproved).toBe(true);
@@ -336,7 +426,11 @@ describe('MediaBriefingService', () => {
     });
 
     it('should get section by ID', async () => {
-      const section = await service.getSection(testOrgId, testBriefingId, testSectionId);
+      const section = await service.getSection(
+        testOrgId,
+        testBriefingId,
+        testSectionId
+      );
 
       expect(section).toBeDefined();
       expect(section.id).toBe(testSectionId);
@@ -345,19 +439,33 @@ describe('MediaBriefingService', () => {
     });
 
     it('should update section content', async () => {
-      const updated = await service.updateSection(testOrgId, testUserId, testBriefingId, testSectionId, {
-        content: 'Updated content for the executive summary section.',
-      });
+      const updated = await service.updateSection(
+        testOrgId,
+        testUserId,
+        testBriefingId,
+        testSectionId,
+        {
+          content: 'Updated content for the executive summary section.',
+        }
+      );
 
       expect(updated).toBeDefined();
-      expect(updated.content).toBe('Updated content for the executive summary section.');
+      expect(updated.content).toBe(
+        'Updated content for the executive summary section.'
+      );
       expect(updated.isManuallyEdited).toBe(true);
     });
 
     it('should update section title', async () => {
-      const updated = await service.updateSection(testOrgId, testUserId, testBriefingId, testSectionId, {
-        title: 'Executive Summary - Key Points',
-      });
+      const updated = await service.updateSection(
+        testOrgId,
+        testUserId,
+        testBriefingId,
+        testSectionId,
+        {
+          title: 'Executive Summary - Key Points',
+        }
+      );
 
       expect(updated).toBeDefined();
       expect(updated.title).toBe('Executive Summary - Key Points');
@@ -368,14 +476,18 @@ describe('MediaBriefingService', () => {
     let testSourceId: string;
 
     it('should add source reference to briefing', async () => {
-      const source = await service.addSourceReference(testOrgId, testBriefingId, {
-        sourceType: 'press_release' as any,
-        sourceId: 'test-press-release-123',
-        title: 'Q4 Product Launch Announcement',
-        relevanceScore: 0.95,
-        extractedContent: 'Key announcement details...',
-        usedInSectionIds: [testSectionId],
-      });
+      const source = await service.addSourceReference(
+        testOrgId,
+        testBriefingId,
+        {
+          sourceType: 'press_release' as any,
+          sourceId: 'test-press-release-123',
+          title: 'Q4 Product Launch Announcement',
+          relevanceScore: 0.95,
+          extractedContent: 'Key announcement details...',
+          usedInSectionIds: [testSectionId],
+        }
+      );
 
       expect(source).toBeDefined();
       expect(source.id).toBeDefined();
@@ -386,7 +498,10 @@ describe('MediaBriefingService', () => {
     });
 
     it('should get sources for briefing', async () => {
-      const sources = await service.getBriefingSources(testOrgId, testBriefingId);
+      const sources = await service.getBriefingSources(
+        testOrgId,
+        testBriefingId
+      );
 
       expect(sources).toBeDefined();
       expect(sources.length).toBeGreaterThan(0);
@@ -394,7 +509,11 @@ describe('MediaBriefingService', () => {
     });
 
     it('should filter sources by type', async () => {
-      const sources = await service.getBriefingSources(testOrgId, testBriefingId, 'press_release' as any);
+      const sources = await service.getBriefingSources(
+        testOrgId,
+        testBriefingId,
+        'press_release' as any
+      );
 
       expect(sources).toBeDefined();
       expect(sources.every((s) => s.sourceType === 'press_release')).toBe(true);
@@ -425,10 +544,16 @@ describe('MediaBriefingService', () => {
 
     it('should delete briefing and cascade to related records', async () => {
       // Delete the briefing
-      await service.deleteBriefing(testOrgId, testUserId, deletionTestBriefingId);
+      await service.deleteBriefing(
+        testOrgId,
+        testUserId,
+        deletionTestBriefingId
+      );
 
       // Verify briefing is deleted
-      await expect(service.getBriefing(testOrgId, deletionTestBriefingId)).rejects.toThrow();
+      await expect(
+        service.getBriefing(testOrgId, deletionTestBriefingId)
+      ).rejects.toThrow();
 
       // Verify talking points are cascade deleted
       const talkingPoints = await service.getTalkingPoints(
@@ -443,7 +568,9 @@ describe('MediaBriefingService', () => {
 
   describe('Edge Cases and Validation', () => {
     it('should handle non-existent briefing ID gracefully', async () => {
-      await expect(service.getBriefing(testOrgId, 'non-existent-id-123')).rejects.toThrow();
+      await expect(
+        service.getBriefing(testOrgId, 'non-existent-id-123')
+      ).rejects.toThrow();
     });
 
     it('should handle empty search results', async () => {
@@ -499,7 +626,11 @@ describe('MediaBriefingService', () => {
       // The service should either clamp or reject invalid values
       // This tests the implementation behavior
       try {
-        const tp = await service.createTalkingPoint(testOrgId, testUserId, request);
+        const tp = await service.createTalkingPoint(
+          testOrgId,
+          testUserId,
+          request
+        );
         // If it succeeds, priority should be clamped to 100
         expect(tp.priorityScore).toBeLessThanOrEqual(100);
         await service.deleteTalkingPoint(testOrgId, tp.id);
@@ -514,13 +645,17 @@ describe('MediaBriefingService', () => {
     it('should delete test talking point', async () => {
       await service.deleteTalkingPoint(testOrgId, testTalkingPointId);
 
-      await expect(service.getTalkingPoint(testOrgId, testTalkingPointId)).rejects.toThrow();
+      await expect(
+        service.getTalkingPoint(testOrgId, testTalkingPointId)
+      ).rejects.toThrow();
     });
 
     it('should delete main test briefing', async () => {
       await service.deleteBriefing(testOrgId, testUserId, testBriefingId);
 
-      await expect(service.getBriefing(testOrgId, testBriefingId)).rejects.toThrow();
+      await expect(
+        service.getBriefing(testOrgId, testBriefingId)
+      ).rejects.toThrow();
     });
   });
 });

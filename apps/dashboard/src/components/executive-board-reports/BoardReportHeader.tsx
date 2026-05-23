@@ -5,8 +5,22 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
+import {
+  FileText,
+  RefreshCw,
+  Send,
+  Download,
+  Edit,
+  Archive,
+  Trash2,
+  MoreVertical,
+  CheckCircle,
+  Clock,
+  Loader2,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,19 +38,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveBoardReportApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  RefreshCw,
-  Send,
-  Download,
-  Edit,
-  Archive,
-  Trash2,
-  MoreVertical,
-  CheckCircle,
-  Clock,
-  Loader2,
-} from 'lucide-react';
 
 interface BoardReportHeaderProps {
   report: ExecBoardReport;
@@ -84,11 +85,15 @@ export function BoardReportHeader({
           <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
             <span>{getFormatLabel(report.format)}</span>
             <span>|</span>
-            <span>{formatPeriodRange(report.periodStart, report.periodEnd)}</span>
+            <span>
+              {formatPeriodRange(report.periodStart, report.periodEnd)}
+            </span>
             {report.fiscalQuarter && (
               <>
                 <span>|</span>
-                <span>{formatFiscalQuarter(report.fiscalQuarter, report.fiscalYear)}</span>
+                <span>
+                  {formatFiscalQuarter(report.fiscalQuarter, report.fiscalYear)}
+                </span>
               </>
             )}
           </div>
@@ -125,11 +130,7 @@ export function BoardReportHeader({
           )}
 
           {canPublish && (
-            <Button
-              size="sm"
-              onClick={onPublish}
-              disabled={isPublishing}
-            >
+            <Button size="sm" onClick={onPublish} disabled={isPublishing}>
               {isPublishing ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (

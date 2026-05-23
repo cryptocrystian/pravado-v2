@@ -5,10 +5,18 @@
  * Displays a list of AI scenario simulations with filtering and pagination
  */
 
+import type {
+  AIScenarioSimulation,
+  ListAISimulationsQuery,
+} from '@pravado/types';
 import { useState, useEffect } from 'react';
-import type { AIScenarioSimulation, ListAISimulationsQuery } from '@pravado/types';
+
 import { SimulationCard } from './SimulationCard';
-import { listSimulations, deleteSimulation, startRun } from '../../lib/aiScenarioSimulationApi';
+import {
+  listSimulations,
+  deleteSimulation,
+  startRun,
+} from '../../lib/aiScenarioSimulationApi';
 
 interface SimulationListProps {
   onView?: (simulation: AIScenarioSimulation) => void;
@@ -68,8 +76,13 @@ export function SimulationList({
       const query: Partial<ListAISimulationsQuery> = {
         limit,
         offset: page * limit,
-        ...(objectiveFilter && { objectiveType: objectiveFilter as ListAISimulationsQuery['objectiveType'] }),
-        ...(statusFilter && { status: statusFilter as ListAISimulationsQuery['status'] }),
+        ...(objectiveFilter && {
+          objectiveType:
+            objectiveFilter as ListAISimulationsQuery['objectiveType'],
+        }),
+        ...(statusFilter && {
+          status: statusFilter as ListAISimulationsQuery['status'],
+        }),
         ...(searchQuery && { search: searchQuery }),
         sortBy: 'updated_at',
         sortOrder: 'desc',
@@ -79,7 +92,9 @@ export function SimulationList({
       setSimulations(response.simulations);
       setTotal(response.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load simulations');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load simulations'
+      );
     } finally {
       setLoading(false);
     }
@@ -110,7 +125,9 @@ export function SimulationList({
       await deleteSimulation(simulation.id);
       fetchSimulations();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete simulation');
+      setError(
+        err instanceof Error ? err.message : 'Failed to delete simulation'
+      );
     }
   };
 
@@ -133,7 +150,9 @@ export function SimulationList({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">AI Scenario Simulations</h2>
+        <h2 className="text-xl font-semibold text-gray-900">
+          AI Scenario Simulations
+        </h2>
         {onCreateNew && (
           <button
             onClick={onCreateNew}
@@ -228,7 +247,8 @@ export function SimulationList({
       {!loading && totalPages > 1 && (
         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           <p className="text-sm text-gray-500">
-            Showing {page * limit + 1} to {Math.min((page + 1) * limit, total)} of {total} simulations
+            Showing {page * limit + 1} to {Math.min((page + 1) * limit, total)}{' '}
+            of {total} simulations
           </p>
           <div className="flex gap-2">
             <button

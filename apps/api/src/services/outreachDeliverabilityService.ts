@@ -108,7 +108,11 @@ abstract class EmailProviderBase {
   constructor(protected config: ProviderConfig) {}
 
   abstract send(request: SendEmailRequest): Promise<SendEmailResponse>;
-  abstract validateWebhookSignature(payload: string, signature?: string, timestamp?: string): Promise<boolean>;
+  abstract validateWebhookSignature(
+    payload: string,
+    signature?: string,
+    timestamp?: string
+  ): Promise<boolean>;
   abstract normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null>;
 }
 
@@ -127,7 +131,11 @@ class StubEmailProvider extends EmailProviderBase {
     };
   }
 
-  async validateWebhookSignature(_payload: string, _signature?: string, _timestamp?: string): Promise<boolean> {
+  async validateWebhookSignature(
+    _payload: string,
+    _signature?: string,
+    _timestamp?: string
+  ): Promise<boolean> {
     return true; // Always valid for stub
   }
 
@@ -174,8 +182,12 @@ class SendGridEmailProvider extends EmailProviderBase {
           name: this.config.fromName || 'Pravado',
         },
         content: [
-          ...(request.bodyText ? [{ type: 'text/plain', value: request.bodyText }] : []),
-          ...(request.bodyHtml ? [{ type: 'text/html', value: request.bodyHtml }] : []),
+          ...(request.bodyText
+            ? [{ type: 'text/plain', value: request.bodyText }]
+            : []),
+          ...(request.bodyHtml
+            ? [{ type: 'text/html', value: request.bodyHtml }]
+            : []),
         ],
         // Enable click and open tracking
         tracking_settings: {
@@ -183,17 +195,19 @@ class SendGridEmailProvider extends EmailProviderBase {
           open_tracking: { enable: true },
         },
         // Add custom metadata for webhook correlation
-        custom_args: request.metadata ? {
-          runId: request.metadata.runId || '',
-          sequenceId: request.metadata.sequenceId || '',
-          journalistId: request.metadata.journalistId || '',
-        } : {},
+        custom_args: request.metadata
+          ? {
+              runId: request.metadata.runId || '',
+              sequenceId: request.metadata.sequenceId || '',
+              journalistId: request.metadata.journalistId || '',
+            }
+          : {},
       };
 
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.apiKey}`,
+          Authorization: `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(sendgridPayload),
@@ -202,7 +216,8 @@ class SendGridEmailProvider extends EmailProviderBase {
       if (response.status === 202) {
         // SendGrid returns 202 Accepted on success
         // Extract message ID from X-Message-Id header
-        const messageId = response.headers.get('X-Message-Id') ||
+        const messageId =
+          response.headers.get('X-Message-Id') ||
           `sg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
         return {
@@ -242,13 +257,17 @@ class SendGridEmailProvider extends EmailProviderBase {
     // If no webhook verification key configured, skip validation (dev mode)
     const verificationKey = this.config.webhookKey;
     if (!verificationKey) {
-      console.warn('[SendGrid] No webhook verification key configured, skipping signature validation');
+      console.warn(
+        '[SendGrid] No webhook verification key configured, skipping signature validation'
+      );
       return true;
     }
 
     // Require signature and timestamp for validation
     if (!signature || !timestamp) {
-      console.error('[SendGrid] Missing signature or timestamp for webhook validation');
+      console.error(
+        '[SendGrid] Missing signature or timestamp for webhook validation'
+      );
       return false;
     }
 
@@ -304,7 +323,9 @@ class SendGridEmailProvider extends EmailProviderBase {
     return {
       messageId: payload.sg_message_id || payload['smtp-id'],
       eventType,
-      timestamp: payload.timestamp ? new Date(payload.timestamp * 1000) : new Date(),
+      timestamp: payload.timestamp
+        ? new Date(payload.timestamp * 1000)
+        : new Date(),
       recipientEmail: payload.email,
       metadata: {
         sendgridEvent: payload.event,
@@ -348,7 +369,11 @@ class MailgunEmailProvider extends EmailProviderBase {
     }
   }
 
-  async validateWebhookSignature(_payload: string, _signature?: string, _timestamp?: string): Promise<boolean> {
+  async validateWebhookSignature(
+    _payload: string,
+    _signature?: string,
+    _timestamp?: string
+  ): Promise<boolean> {
     // TODO: Implement Mailgun webhook signature validation
     // For now, return true (implement proper validation in production)
     return true;
@@ -378,7 +403,9 @@ class MailgunEmailProvider extends EmailProviderBase {
     return {
       messageId: payload['message-id'],
       eventType,
-      timestamp: payload.timestamp ? new Date(payload.timestamp * 1000) : new Date(),
+      timestamp: payload.timestamp
+        ? new Date(payload.timestamp * 1000)
+        : new Date(),
       recipientEmail: payload.recipient,
       metadata: {
         mailgunEvent: payload.event,
@@ -421,7 +448,11 @@ class SESEmailProvider extends EmailProviderBase {
     }
   }
 
-  async validateWebhookSignature(_payload: string, _signature?: string, _timestamp?: string): Promise<boolean> {
+  async validateWebhookSignature(
+    _payload: string,
+    _signature?: string,
+    _timestamp?: string
+  ): Promise<boolean> {
     // TODO: Implement AWS SNS signature validation
     // For now, return true (implement proper validation in production)
     return true;
@@ -449,7 +480,9 @@ class SESEmailProvider extends EmailProviderBase {
     return {
       messageId: payload.mail.messageId,
       eventType,
-      timestamp: payload.mail.timestamp ? new Date(payload.mail.timestamp) : new Date(),
+      timestamp: payload.mail.timestamp
+        ? new Date(payload.mail.timestamp)
+        : new Date(),
       recipientEmail: payload.mail.destination?.[0] || '',
       metadata: {
         sesEventType: payload.eventType,
@@ -522,7 +555,10 @@ export class OutreachDeliverabilityService {
   /**
    * Get an email message by ID
    */
-  async getEmailMessage(messageId: string, orgId: string): Promise<EmailMessage | null> {
+  async getEmailMessage(
+    messageId: string,
+    orgId: string
+  ): Promise<EmailMessage | null> {
     const { data, error } = await this.supabase
       .from('pr_outreach_email_messages')
       .select('*')
@@ -587,7 +623,9 @@ export class OutreachDeliverabilityService {
     // Apply pagination
     const limit = query.limit || 20;
     const offset = query.offset || 0;
-    dbQuery = dbQuery.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    dbQuery = dbQuery
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data, error, count } = await dbQuery;
 
@@ -609,14 +647,18 @@ export class OutreachDeliverabilityService {
   ): Promise<EmailMessage> {
     const updateData: any = {};
 
-    if (input.providerMessageId !== undefined) updateData.provider_message_id = input.providerMessageId;
-    if (input.sendStatus !== undefined) updateData.send_status = input.sendStatus;
+    if (input.providerMessageId !== undefined)
+      updateData.provider_message_id = input.providerMessageId;
+    if (input.sendStatus !== undefined)
+      updateData.send_status = input.sendStatus;
     if (input.sentAt !== undefined) updateData.sent_at = input.sentAt;
-    if (input.deliveredAt !== undefined) updateData.delivered_at = input.deliveredAt;
+    if (input.deliveredAt !== undefined)
+      updateData.delivered_at = input.deliveredAt;
     if (input.openedAt !== undefined) updateData.opened_at = input.openedAt;
     if (input.clickedAt !== undefined) updateData.clicked_at = input.clickedAt;
     if (input.bouncedAt !== undefined) updateData.bounced_at = input.bouncedAt;
-    if (input.complainedAt !== undefined) updateData.complained_at = input.complainedAt;
+    if (input.complainedAt !== undefined)
+      updateData.complained_at = input.complainedAt;
     if (input.rawEvent !== undefined) updateData.raw_event = input.rawEvent;
     if (input.metadata !== undefined) updateData.metadata = input.metadata;
 
@@ -678,7 +720,8 @@ export class OutreachDeliverabilityService {
   ): Promise<EngagementMetricsListResponse> {
     let dbQuery = this.supabase
       .from('pr_outreach_engagement_metrics')
-      .select(`
+      .select(
+        `
         *,
         journalists!inner (
           id,
@@ -686,7 +729,9 @@ export class OutreachDeliverabilityService {
           email,
           outlet
         )
-      `, { count: 'exact' })
+      `,
+        { count: 'exact' }
+      )
       .eq('org_id', orgId);
 
     // Apply filters
@@ -700,14 +745,18 @@ export class OutreachDeliverabilityService {
     // Apply pagination
     const limit = query.limit || 20;
     const offset = query.offset || 0;
-    dbQuery = dbQuery.order('engagement_score', { ascending: false }).range(offset, offset + limit - 1);
+    dbQuery = dbQuery
+      .order('engagement_score', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data, error, count } = await dbQuery;
 
     if (error) throw error;
 
     const metrics = (data || []).map((row) => {
-      const journalist = Array.isArray(row.journalists) ? row.journalists[0] : row.journalists;
+      const journalist = Array.isArray(row.journalists)
+        ? row.journalists[0]
+        : row.journalists;
       return mapDbJournalistEngagement({
         ...row,
         journalist_name: journalist?.name,
@@ -735,10 +784,13 @@ export class OutreachDeliverabilityService {
     const previousScore = currentMetrics?.engagementScore || 0;
 
     // Call the database function to recalculate metrics
-    const { error } = await this.supabase.rpc('update_journalist_engagement_metrics', {
-      p_org_id: orgId,
-      p_journalist_id: journalistId,
-    });
+    const { error } = await this.supabase.rpc(
+      'update_journalist_engagement_metrics',
+      {
+        p_org_id: orgId,
+        p_journalist_id: journalistId,
+      }
+    );
 
     if (error) throw error;
 
@@ -780,7 +832,8 @@ export class OutreachDeliverabilityService {
     const bounceRate = totalBounced / totalSent;
 
     // Formula: (open_rate * 0.2) + (click_rate * 0.4) + (reply_rate * 0.3) - (bounce_rate * 0.3)
-    let score = openRate * 0.2 + clickRate * 0.4 + replyRate * 0.3 - bounceRate * 0.3;
+    let score =
+      openRate * 0.2 + clickRate * 0.4 + replyRate * 0.3 - bounceRate * 0.3;
 
     // Clamp between 0 and 1
     score = Math.max(0, Math.min(1, score));
@@ -842,7 +895,11 @@ export class OutreachDeliverabilityService {
 
     // Validate webhook signature (use raw body for ECDSA validation)
     const payloadForValidation = rawBody || JSON.stringify(payload);
-    const isValid = await provider.validateWebhookSignature(payloadForValidation, signature, timestamp);
+    const isValid = await provider.validateWebhookSignature(
+      payloadForValidation,
+      signature,
+      timestamp
+    );
     if (!isValid) {
       // Webhook signature validation failed
       return { success: false, messageId: null };
@@ -856,7 +913,10 @@ export class OutreachDeliverabilityService {
     }
 
     // Find the email message by provider message ID
-    const message = await this.getEmailMessageByProviderMessageId(normalized.messageId, orgId);
+    const message = await this.getEmailMessageByProviderMessageId(
+      normalized.messageId,
+      orgId
+    );
     if (!message) {
       // Email message not found for provider message ID
       return { success: false, messageId: null };
@@ -910,10 +970,15 @@ export class OutreachDeliverabilityService {
   /**
    * Get deliverability summary statistics
    */
-  async getDeliverabilitySummary(orgId: string): Promise<DeliverabilitySummary> {
-    const { data, error } = await this.supabase.rpc('get_deliverability_summary', {
-      p_org_id: orgId,
-    });
+  async getDeliverabilitySummary(
+    orgId: string
+  ): Promise<DeliverabilitySummary> {
+    const { data, error } = await this.supabase.rpc(
+      'get_deliverability_summary',
+      {
+        p_org_id: orgId,
+      }
+    );
 
     if (error) throw error;
 
@@ -957,7 +1022,8 @@ export class OutreachDeliverabilityService {
   ): Promise<JournalistEngagement | null> {
     const { data, error } = await this.supabase
       .from('pr_outreach_engagement_metrics')
-      .select(`
+      .select(
+        `
         *,
         journalists!inner (
           id,
@@ -965,7 +1031,8 @@ export class OutreachDeliverabilityService {
           email,
           outlet
         )
-      `)
+      `
+      )
       .eq('journalist_id', journalistId)
       .eq('org_id', orgId)
       .maybeSingle();
@@ -973,7 +1040,9 @@ export class OutreachDeliverabilityService {
     if (error) throw error;
     if (!data) return null;
 
-    const journalist = Array.isArray(data.journalists) ? data.journalists[0] : data.journalists;
+    const journalist = Array.isArray(data.journalists)
+      ? data.journalists[0]
+      : data.journalists;
 
     return mapDbJournalistEngagement({
       ...data,

@@ -21,15 +21,27 @@ const mockSupabase = {
   single: vi.fn(),
 };
 
-import { AuditReplayService, replayEventEmitter } from '../src/services/auditReplayService';
-import type { AuditLogEntry, AuditSeverity, ActorType, AuditEventType } from '@pravado/types';
+import {
+  AuditReplayService,
+  replayEventEmitter,
+} from '../src/services/auditReplayService';
+import type {
+  AuditLogEntry,
+  AuditSeverity,
+  ActorType,
+  AuditEventType,
+} from '@pravado/types';
 
 describe('AuditReplayService', () => {
   let replayService: AuditReplayService;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    replayService = new AuditReplayService(mockSupabase as unknown as Parameters<typeof AuditReplayService.prototype.constructor>[0]);
+    replayService = new AuditReplayService(
+      mockSupabase as unknown as Parameters<
+        typeof AuditReplayService.prototype.constructor
+      >[0]
+    );
   });
 
   describe('createReplayJob', () => {
@@ -51,7 +63,11 @@ describe('AuditReplayService', () => {
 
       mockSupabase.single.mockResolvedValueOnce({ data: mockJob, error: null });
 
-      const result = await replayService.createReplayJob('org-456', 'user-789', {});
+      const result = await replayService.createReplayJob(
+        'org-456',
+        'user-789',
+        {}
+      );
 
       expect(result).not.toBeNull();
       expect(result?.id).toBe('job-123');
@@ -226,9 +242,13 @@ describe('AuditReplayService', () => {
     it('should update job status successfully', async () => {
       mockSupabase.eq.mockResolvedValueOnce({ error: null });
 
-      const result = await replayService.updateReplayJobStatus('job-123', 'running', {
-        startedAt: new Date().toISOString(),
-      });
+      const result = await replayService.updateReplayJobStatus(
+        'job-123',
+        'running',
+        {
+          startedAt: new Date().toISOString(),
+        }
+      );
 
       expect(result).toBe(true);
       expect(mockSupabase.from).toHaveBeenCalledWith('audit_replay_runs');
@@ -238,7 +258,10 @@ describe('AuditReplayService', () => {
     it('should return false on error', async () => {
       mockSupabase.eq.mockResolvedValueOnce({ error: { message: 'Error' } });
 
-      const result = await replayService.updateReplayJobStatus('job-123', 'failed');
+      const result = await replayService.updateReplayJobStatus(
+        'job-123',
+        'failed'
+      );
 
       expect(result).toBe(false);
     });
@@ -356,7 +379,11 @@ describe('Replay Result Summary', () => {
   let replayService: AuditReplayService;
 
   beforeEach(() => {
-    replayService = new AuditReplayService(mockSupabase as unknown as Parameters<typeof AuditReplayService.prototype.constructor>[0]);
+    replayService = new AuditReplayService(
+      mockSupabase as unknown as Parameters<
+        typeof AuditReplayService.prototype.constructor
+      >[0]
+    );
   });
 
   it('should generate human-readable summary', () => {

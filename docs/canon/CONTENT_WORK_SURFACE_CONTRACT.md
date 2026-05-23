@@ -15,6 +15,7 @@
 This document defines the **V1 frozen contract** for the Content Work Surface. All implementations must conform to this specification. Any deviation requires a Canon Amendment PR.
 
 **Governs:**
+
 - Content pillar routes and navigation
 - Work surface layout and component structure
 - Canonical object UI bindings
@@ -26,6 +27,7 @@ This document defines the **V1 frozen contract** for the Content Work Surface. A
 ### 1.2 What This Contract Forbids
 
 The Content Work Surface is **NOT**:
+
 - A generic AI writing tool (no chat-style drafting canvas)
 - A social media scheduler clone (no time-slot publishing grid)
 - A keyword stuffing engine (no density/frequency optimizers)
@@ -37,6 +39,7 @@ The Content Work Surface is **NOT**:
 ### 1.3 Contract Inheritance
 
 This contract inherits all constraints from:
+
 - `CONTENT_PILLAR_CANON.md` (Product definition — AUTHORITATIVE)
 - `CONTENT_PILLAR_SYSTEM.md` (System model)
 - `DS_v3_1_EXPRESSION.md` (Design tokens)
@@ -50,35 +53,35 @@ This contract inherits all constraints from:
 
 ### 2.1 Content Pillar Routes (V1)
 
-| Route | Component | Layout | Description |
-|-------|-----------|--------|-------------|
-| `/app/content` | `ContentWorkSurface` | Surface-appropriate (see §3.2) | Main work surface with tabbed views |
-| `/app/content/calendar` | `ContentCalendarView` | Full-width | Multi-format calendar with themes |
-| `/app/content/library` | `ContentLibraryView` | Filter sidebar + main grid | Asset library with filters |
-| `/app/content/asset/[id]` | `ContentAssetEditor` | Two-pane + CiteMind drawer | Structured asset editor |
-| `/app/content/brief/[id]` | `ContentBriefEditor` | Two-pane | Brief viewer/editor |
-| `/app/content/insights` | `ContentInsightsView` | Full-width | Authority analytics |
+| Route                     | Component             | Layout                         | Description                         |
+| ------------------------- | --------------------- | ------------------------------ | ----------------------------------- |
+| `/app/content`            | `ContentWorkSurface`  | Surface-appropriate (see §3.2) | Main work surface with tabbed views |
+| `/app/content/calendar`   | `ContentCalendarView` | Full-width                     | Multi-format calendar with themes   |
+| `/app/content/library`    | `ContentLibraryView`  | Filter sidebar + main grid     | Asset library with filters          |
+| `/app/content/asset/[id]` | `ContentAssetEditor`  | Two-pane + CiteMind drawer     | Structured asset editor             |
+| `/app/content/brief/[id]` | `ContentBriefEditor`  | Two-pane                       | Brief viewer/editor                 |
+| `/app/content/insights`   | `ContentInsightsView` | Full-width                     | Authority analytics                 |
 
 ### 2.2 API Route Handlers (Existing)
 
-| Endpoint | Methods | Purpose |
-|----------|---------|---------|
-| `/api/content/items` | GET, POST | List/create content assets |
-| `/api/content/briefs` | GET, POST | List/create content briefs |
-| `/api/content/briefs/[id]` | GET, PATCH | Individual brief CRUD |
-| `/api/content/briefs/generate` | POST | Generate brief from inputs |
-| `/api/content/clusters` | GET | Topic clusters |
-| `/api/content/gaps` | GET | Content opportunity gaps |
-| `/api/content/quality/analyze` | POST | Quality analysis |
+| Endpoint                       | Methods    | Purpose                    |
+| ------------------------------ | ---------- | -------------------------- |
+| `/api/content/items`           | GET, POST  | List/create content assets |
+| `/api/content/briefs`          | GET, POST  | List/create content briefs |
+| `/api/content/briefs/[id]`     | GET, PATCH | Individual brief CRUD      |
+| `/api/content/briefs/generate` | POST       | Generate brief from inputs |
+| `/api/content/clusters`        | GET        | Topic clusters             |
+| `/api/content/gaps`            | GET        | Content opportunity gaps   |
+| `/api/content/quality/analyze` | POST       | Quality analysis           |
 
 ### 2.3 API Route Handlers (Required for V1)
 
-| Endpoint | Methods | Purpose |
-|----------|---------|---------|
-| `/api/content/items/[id]` | GET, PATCH, DELETE | Individual asset CRUD |
-| `/api/content/calendar` | GET | Calendar entries with cross-pillar |
-| `/api/content/derivatives/[assetId]` | GET, POST | Derivative surfaces |
-| `/api/content/authority-signals` | GET | Authority signal records |
+| Endpoint                             | Methods            | Purpose                            |
+| ------------------------------------ | ------------------ | ---------------------------------- |
+| `/api/content/items/[id]`            | GET, PATCH, DELETE | Individual asset CRUD              |
+| `/api/content/calendar`              | GET                | Calendar entries with cross-pillar |
+| `/api/content/derivatives/[assetId]` | GET, POST          | Derivative surfaces                |
+| `/api/content/authority-signals`     | GET                | Authority signal records           |
 
 ---
 
@@ -91,6 +94,7 @@ This contract inherits all constraints from:
 Content is a workflow-centric surface. Each view should use the layout that best serves its workflow, not a forced three-pane structure. Layout must be earned by the content's needs.
 
 **Per D019 Layout Laws:**
+
 - Width is earned by content, not assumed from container
 - Whitespace separates semantic sections or is breathing room — no other purpose
 - Cards are decision units (one action), not data containers
@@ -98,24 +102,24 @@ Content is a workflow-centric surface. Each view should use the layout that best
 
 ### 3.2 View-Specific Layout Specifications
 
-| View | Layout | Rationale |
-|------|--------|-----------|
-| **Overview** | Full-width dashboard (no forced panes) | Authority metrics and proposals read as a strategic dashboard, not a work surface |
-| **Library** | Two-pane: filter sidebar (280px) + main grid | Filters are always contextually relevant to the browsing task |
-| **Calendar** | Full-width with top legend strip | Calendar grids need full horizontal space to be readable |
-| **Asset Editor** | Two-pane: outline nav (240px) + editor; CiteMind intelligence panel slides in from right as overlay/drawer on demand | Editor needs full width; CiteMind panel is contextual, not always needed |
-| **Brief Editor** | Two-pane: brief sections nav (240px) + brief content | Same principle as asset editor |
-| **Insights** | Full-width dashboard | Charts and delta comparisons need full horizontal space |
+| View             | Layout                                                                                                               | Rationale                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **Overview**     | Full-width dashboard (no forced panes)                                                                               | Authority metrics and proposals read as a strategic dashboard, not a work surface |
+| **Library**      | Two-pane: filter sidebar (280px) + main grid                                                                         | Filters are always contextually relevant to the browsing task                     |
+| **Calendar**     | Full-width with top legend strip                                                                                     | Calendar grids need full horizontal space to be readable                          |
+| **Asset Editor** | Two-pane: outline nav (240px) + editor; CiteMind intelligence panel slides in from right as overlay/drawer on demand | Editor needs full width; CiteMind panel is contextual, not always needed          |
+| **Brief Editor** | Two-pane: brief sections nav (240px) + brief content                                                                 | Same principle as asset editor                                                    |
+| **Insights**     | Full-width dashboard                                                                                                 | Charts and delta comparisons need full horizontal space                           |
 
 **Important:** A view may use TriPaneShell if its specific workflow genuinely requires three simultaneous panels. The principle is fitness-for-purpose, not avoidance of TriPaneShell. It simply cannot be the default imposed on all views.
 
 ### 3.3 Responsive Breakpoints (All Views)
 
-| Breakpoint | Behavior |
-|------------|----------|
-| Desktop (lg+) | Layout as specified per view above |
+| Breakpoint     | Behavior                                        |
+| -------------- | ----------------------------------------------- |
+| Desktop (lg+)  | Layout as specified per view above              |
 | Tablet (md-lg) | Collapse secondary panels to toggleable drawers |
-| Mobile (-md) | Single panel with bottom navigation tabs |
+| Mobile (-md)   | Single panel with bottom navigation tabs        |
 
 ### 3.4 Pillar Accent
 
@@ -144,38 +148,38 @@ content: {
 
 **UI Required Fields:**
 
-| Field | Type | Display | Requirement |
-|-------|------|---------|-------------|
-| `id` | UUID | Hidden | Required |
-| `title` | string | Prominent | Required |
-| `contentType` | enum | Badge | Required |
-| `status` | enum | Status badge | Required |
-| `authorityIntent` | string | Subtitle | V1 Required |
-| `citeMindStatus` | enum | Gate indicator | V1 Required |
-| `entityAssociations` | string[] | Tag chips | V1 Required |
-| `wordCount` | number | Metadata | Optional |
-| `publishedAt` | timestamp | Metadata | Optional |
-| `authorityScore` | number (0-100) | Metric tile | V1 Required |
+| Field                | Type           | Display        | Requirement |
+| -------------------- | -------------- | -------------- | ----------- |
+| `id`                 | UUID           | Hidden         | Required    |
+| `title`              | string         | Prominent      | Required    |
+| `contentType`        | enum           | Badge          | Required    |
+| `status`             | enum           | Status badge   | Required    |
+| `authorityIntent`    | string         | Subtitle       | V1 Required |
+| `citeMindStatus`     | enum           | Gate indicator | V1 Required |
+| `entityAssociations` | string[]       | Tag chips      | V1 Required |
+| `wordCount`          | number         | Metadata       | Optional    |
+| `publishedAt`        | timestamp      | Metadata       | Optional    |
+| `authorityScore`     | number (0-100) | Metric tile    | V1 Required |
 
 **Status Values:**
 
-| Status | Badge Color | Semantic |
-|--------|-------------|----------|
-| `draft` | `semantic-warning` | Work in progress |
-| `review` | `brand-iris` | Awaiting approval |
-| `approved` | `brand-cyan` | Ready to publish |
-| `published` | `semantic-success` | Live |
-| `archived` | `muted` | Inactive |
+| Status      | Badge Color        | Semantic          |
+| ----------- | ------------------ | ----------------- |
+| `draft`     | `semantic-warning` | Work in progress  |
+| `review`    | `brand-iris`       | Awaiting approval |
+| `approved`  | `brand-cyan`       | Ready to publish  |
+| `published` | `semantic-success` | Live              |
+| `archived`  | `muted`            | Inactive          |
 
 **CiteMind Status Values:**
 
-| Status | Badge | Behavior |
-|--------|-------|----------|
-| `pending` | Gray dot | Analysis not run |
-| `analyzing` | Cyan pulse | In progress |
-| `passed` | Green checkmark | Eligible for publish |
-| `warning` | Amber warning | Issues found, can proceed |
-| `blocked` | Red X | Cannot publish until resolved |
+| Status      | Badge           | Behavior                      |
+| ----------- | --------------- | ----------------------------- |
+| `pending`   | Gray dot        | Analysis not run              |
+| `analyzing` | Cyan pulse      | In progress                   |
+| `passed`    | Green checkmark | Eligible for publish          |
+| `warning`   | Amber warning   | Issues found, can proceed     |
+| `blocked`   | Red X           | Cannot publish until resolved |
 
 ### 4.2 Content Brief
 
@@ -183,17 +187,17 @@ content: {
 
 **UI Required Fields:**
 
-| Field | Type | Display | Requirement |
-|-------|------|---------|-------------|
-| `id` | UUID | Hidden | Required |
-| `title` | string | Prominent | Required |
-| `status` | enum | Badge | Required |
-| `targetKeyword` | string | Tag | Optional |
-| `targetIntent` | enum | Badge | Required |
-| `strategicObjective` | string | Section | V1 Required |
-| `allowedAssertions` | string[] | Checklist | V1 Required |
-| `requiredCitations` | string[] | Checklist | V1 Required |
-| `derivativeMap` | object | Visual map | V1 Required |
+| Field                | Type     | Display    | Requirement |
+| -------------------- | -------- | ---------- | ----------- |
+| `id`                 | UUID     | Hidden     | Required    |
+| `title`              | string   | Prominent  | Required    |
+| `status`             | enum     | Badge      | Required    |
+| `targetKeyword`      | string   | Tag        | Optional    |
+| `targetIntent`       | enum     | Badge      | Required    |
+| `strategicObjective` | string   | Section    | V1 Required |
+| `allowedAssertions`  | string[] | Checklist  | V1 Required |
+| `requiredCitations`  | string[] | Checklist  | V1 Required |
+| `derivativeMap`      | object   | Visual map | V1 Required |
 
 ### 4.3 Derivative Surface
 
@@ -201,22 +205,22 @@ content: {
 
 **UI Required Fields:**
 
-| Field | Type | Display | Requirement |
-|-------|------|---------|-------------|
-| `id` | UUID | Hidden | Required |
-| `parentAssetId` | UUID | Link to parent | Required |
-| `surfaceType` | enum | Badge | Required |
-| `content` | string | Preview | Required |
-| `valid` | boolean | Status indicator | Required |
+| Field           | Type    | Display          | Requirement |
+| --------------- | ------- | ---------------- | ----------- |
+| `id`            | UUID    | Hidden           | Required    |
+| `parentAssetId` | UUID    | Link to parent   | Required    |
+| `surfaceType`   | enum    | Badge            | Required    |
+| `content`       | string  | Preview          | Required    |
+| `valid`         | boolean | Status indicator | Required    |
 
 **Surface Types:**
 
-| Type | Description | Pillar |
-|------|-------------|--------|
-| `pr_pitch_excerpt` | Pitch-ready excerpt | PR |
-| `aeo_snippet` | AI-optimized snippet | SEO |
-| `ai_summary` | AI-ready summary | Cross-pillar |
-| `social_fragment` | Social post content | Cross-pillar |
+| Type               | Description          | Pillar       |
+| ------------------ | -------------------- | ------------ |
+| `pr_pitch_excerpt` | Pitch-ready excerpt  | PR           |
+| `aeo_snippet`      | AI-optimized snippet | SEO          |
+| `ai_summary`       | AI-ready summary     | Cross-pillar |
+| `social_fragment`  | Social post content  | Cross-pillar |
 
 **Invalidation Rule:**
 When parent asset is edited, all derivatives show `valid: false` with warning and regeneration prompt.
@@ -227,15 +231,15 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 
 **UI Required Fields:**
 
-| Field | Type | Display | Requirement |
-|-------|------|---------|-------------|
-| `id` | UUID | Hidden | Required |
-| `assetId` | UUID | Link | Required |
-| `scheduledAt` | timestamp | Calendar position | Required |
-| `campaign` | string | Lane grouping | Optional |
-| `theme` | string | Color coding | Optional |
-| `crossPillarDeps` | object[] | Dependency indicators | V1 Required |
-| `automationMode` | enum | Mode badge | Required |
+| Field             | Type      | Display               | Requirement |
+| ----------------- | --------- | --------------------- | ----------- |
+| `id`              | UUID      | Hidden                | Required    |
+| `assetId`         | UUID      | Link                  | Required    |
+| `scheduledAt`     | timestamp | Calendar position     | Required    |
+| `campaign`        | string    | Lane grouping         | Optional    |
+| `theme`           | string    | Color coding          | Optional    |
+| `crossPillarDeps` | object[]  | Dependency indicators | V1 Required |
+| `automationMode`  | enum      | Mode badge            | Required    |
 
 ### 4.5 Authority Signal Record
 
@@ -243,15 +247,15 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 
 **UI Required Fields:**
 
-| Field | Type | Display | Requirement |
-|-------|------|---------|-------------|
-| `assetId` | UUID | Link | Required |
-| `authorityContributionScore` | number (0-100) | Primary metric | Required |
-| `citationEligibilityScore` | number (0-100) | Secondary metric | Required |
-| `aiIngestionLikelihood` | number (0-100) | Secondary metric | Required |
-| `crossPillarImpact` | number (0-100) | Secondary metric | Required |
-| `competitiveAuthorityDelta` | number (-100 to 100) | Comparison metric | Required |
-| `measuredAt` | timestamp | Time context | Required |
+| Field                        | Type                 | Display           | Requirement |
+| ---------------------------- | -------------------- | ----------------- | ----------- |
+| `assetId`                    | UUID                 | Link              | Required    |
+| `authorityContributionScore` | number (0-100)       | Primary metric    | Required    |
+| `citationEligibilityScore`   | number (0-100)       | Secondary metric  | Required    |
+| `aiIngestionLikelihood`      | number (0-100)       | Secondary metric  | Required    |
+| `crossPillarImpact`          | number (0-100)       | Secondary metric  | Required    |
+| `competitiveAuthorityDelta`  | number (-100 to 100) | Comparison metric | Required    |
+| `measuredAt`                 | timestamp            | Time context      | Required    |
 
 ---
 
@@ -262,6 +266,7 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 **Route:** `/app/content` (default tab)
 
 **Primary Interactions:**
+
 - View authority contribution summary (primary KPI)
 - See active themes with asset counts
 - View AI ingestion readiness aggregate
@@ -269,11 +274,13 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 - Navigate to specific assets/briefs
 
 **Layout:**
+
 - **Left pane:** View tabs, quick filters, recent assets
 - **Center pane:** Authority dashboard cards, active themes grid, proposals list
 - **Right pane:** Cross-pillar hooks, AI status, quick insights
 
 **Required Components:**
+
 - `AuthorityDashboard` - Primary metrics display
 - `ActiveThemesGrid` - Theme cards with asset counts
 - `ContentProposalsList` - SAGE-generated proposals
@@ -284,6 +291,7 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 **Route:** `/app/content/library` or `/app/content` with `?view=library`
 
 **Primary Interactions:**
+
 - Browse all content assets
 - Filter by entity, theme, pillar, status
 - Search by keyword/title
@@ -291,11 +299,13 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 - See derivative visibility
 
 **Layout:**
+
 - **Left pane:** Filters panel (entity, theme, status, type)
 - **Center pane:** Asset grid/list with density-adaptive display
 - **Right pane:** Selected asset preview, quick actions
 
 **Required Components:**
+
 - `ContentFiltersPanel` - Multi-facet filtering
 - `ContentAssetGrid` - Density-adaptive asset cards
 - `ContentAssetCard` - Individual asset display
@@ -303,17 +313,18 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 
 **Density Levels (following ActionCard pattern):**
 
-| Level | Card Count | Card Height | Content |
-|-------|------------|-------------|---------|
-| Comfortable | ≤12 | 180px | Full preview, all metrics |
-| Standard | 13-24 | 120px | Title, status, key metric |
-| Compact | 25+ | 48px | Row layout, title + status only |
+| Level       | Card Count | Card Height | Content                         |
+| ----------- | ---------- | ----------- | ------------------------------- |
+| Comfortable | ≤12        | 180px       | Full preview, all metrics       |
+| Standard    | 13-24      | 120px       | Title, status, key metric       |
+| Compact     | 25+        | 48px        | Row layout, title + status only |
 
 ### 5.3 Content Calendar
 
 **Route:** `/app/content/calendar`
 
 **Primary Interactions:**
+
 - View multi-format calendar (week/month/quarter)
 - See campaign/theme groupings
 - Identify cross-pillar dependencies
@@ -321,11 +332,13 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 - Drag-drop rescheduling (Copilot mode)
 
 **Layout:**
+
 - **Left pane:** Calendar navigation, theme legend, view controls
 - **Center pane:** Calendar grid with asset entries
 - **Right pane:** Selected day detail, dependencies, automation status
 
 **Required Components:**
+
 - `ContentCalendarGrid` - Main calendar display
 - `CalendarEntryCard` - Individual entry with mode badge
 - `ThemeLegend` - Campaign/theme color key
@@ -336,6 +349,7 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 **Route:** `/app/content/asset/[id]`
 
 **Primary Interactions:**
+
 - Edit structured content sections (NOT freeform)
 - View inline CiteMind qualification feedback
 - See entity grounding indicators
@@ -343,11 +357,13 @@ When parent asset is edited, all derivatives show `valid: false` with warning an
 - Generate/regenerate derivatives
 
 **Layout:**
+
 - **Left pane:** Section navigation, outline view
 - **Center pane:** Structured editor with CiteMind inline
 - **Right pane:** CiteMind status, entity associations, derivatives
 
 **Required Components:**
+
 - `StructuredContentEditor` - Section-based editing
 - `CiteMindInlineIndicator` - Qualification feedback per section
 - `EntityGroundingPanel` - Associated entities
@@ -361,6 +377,7 @@ No chat-style AI canvas. Editor is **structured sections** with CiteMind feedbac
 **Route:** `/app/content/brief/[id]`
 
 **Primary Interactions:**
+
 - View/edit brief components
 - See strategic objective (SAGE-derived)
 - Manage allowed assertions and required citations
@@ -368,11 +385,13 @@ No chat-style AI canvas. Editor is **structured sections** with CiteMind feedbac
 - Generate draft from brief
 
 **Layout:**
+
 - **Left pane:** Brief sections navigation
 - **Center pane:** Brief content with validation
 - **Right pane:** SAGE context, derivative map preview
 
 **Required Components:**
+
 - `BriefSectionsEditor` - Structured brief editing
 - `AssertionChecklist` - Allowed assertions with validation
 - `CitationChecklist` - Required citations
@@ -383,6 +402,7 @@ No chat-style AI canvas. Editor is **structured sections** with CiteMind feedbac
 **Route:** `/app/content/insights`
 
 **Primary Interactions:**
+
 - View authority deltas over time
 - Identify citation readiness gaps
 - Compare competitive authority
@@ -390,11 +410,13 @@ No chat-style AI canvas. Editor is **structured sections** with CiteMind feedbac
 - Access optimization recommendations
 
 **Layout:**
+
 - **Left pane:** Time range, metric selection
 - **Center pane:** Charts and delta displays
 - **Right pane:** AI recommendations, gap alerts
 
 **Required Components:**
+
 - `AuthorityDeltaChart` - Time-series authority changes
 - `CitationGapsPanel` - Citation readiness gaps
 - `CompetitiveAuthorityPanel` - Competitive comparison
@@ -408,17 +430,18 @@ No chat-style AI canvas. Editor is **structured sections** with CiteMind feedbac
 
 These metrics MUST appear in the Content Work Surface, even if initially mocked/placeholder.
 
-| Metric | Description | Display Location |
-|--------|-------------|------------------|
-| **Authority Contribution Score** | 0-100, primary content KPI | Overview, Library cards, Asset detail |
-| **Citation Eligibility Score** | 0-100, CiteMind readiness | Asset detail, Insights |
-| **AI Ingestion Likelihood** | 0-100, AI discoverability | Asset detail, Insights |
-| **Cross-Pillar Impact** | 0-100, PR+SEO reinforcement | Overview, Asset detail |
-| **Competitive Authority Delta** | -100 to +100, vs competitors | Insights, Asset detail |
+| Metric                           | Description                  | Display Location                      |
+| -------------------------------- | ---------------------------- | ------------------------------------- |
+| **Authority Contribution Score** | 0-100, primary content KPI   | Overview, Library cards, Asset detail |
+| **Citation Eligibility Score**   | 0-100, CiteMind readiness    | Asset detail, Insights                |
+| **AI Ingestion Likelihood**      | 0-100, AI discoverability    | Asset detail, Insights                |
+| **Cross-Pillar Impact**          | 0-100, PR+SEO reinforcement  | Overview, Asset detail                |
+| **Competitive Authority Delta**  | -100 to +100, vs competitors | Insights, Asset detail                |
 
 ### 6.2 Metric Display Patterns
 
 **Overview Dashboard:**
+
 ```
 ┌─────────────────────────────────────────────┐
 │  AUTHORITY IMPACT                           │
@@ -431,6 +454,7 @@ These metrics MUST appear in the Content Work Surface, even if initially mocked/
 ```
 
 **Asset Card (Comfortable Density):**
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Article Title Here                    [Pub]│
@@ -444,12 +468,12 @@ These metrics MUST appear in the Content Work Surface, even if initially mocked/
 
 ### 6.3 Metric Color Coding
 
-| Score Range | Color | Semantic |
-|-------------|-------|----------|
-| 80-100 | `semantic-success` | Excellent |
-| 60-79 | `brand-cyan` | Good |
-| 40-59 | `semantic-warning` | Needs attention |
-| 0-39 | `semantic-danger` | Critical |
+| Score Range | Color              | Semantic        |
+| ----------- | ------------------ | --------------- |
+| 80-100      | `semantic-success` | Excellent       |
+| 60-79       | `brand-cyan`       | Good            |
+| 40-59       | `semantic-warning` | Needs attention |
+| 0-39        | `semantic-danger`  | Critical        |
 
 ---
 
@@ -459,16 +483,17 @@ These metrics MUST appear in the Content Work Surface, even if initially mocked/
 
 All content assets must pass CiteMind qualification before publishing.
 
-| Gate | Condition | UI Behavior |
-|------|-----------|-------------|
-| **Claims verified** | All claims have sources | Block if unverified claims |
-| **Entities grounded** | Assertions link to entities | Block if orphan assertions |
-| **Citations present** | Required citations included | Block if missing citations |
-| **Repetition intentional** | No spam patterns detected | Warn if repetition detected |
+| Gate                       | Condition                   | UI Behavior                 |
+| -------------------------- | --------------------------- | --------------------------- |
+| **Claims verified**        | All claims have sources     | Block if unverified claims  |
+| **Entities grounded**      | Assertions link to entities | Block if orphan assertions  |
+| **Citations present**      | Required citations included | Block if missing citations  |
+| **Repetition intentional** | No spam patterns detected   | Warn if repetition detected |
 
 ### 7.2 Gate Enforcement UI
 
 **Blocked State:**
+
 ```
 ┌─────────────────────────────────────────────┐
 │  🔴 CiteMind: BLOCKED                       │
@@ -482,6 +507,7 @@ All content assets must pass CiteMind qualification before publishing.
 ```
 
 **Warning State:**
+
 ```
 ┌─────────────────────────────────────────────┐
 │  🟡 CiteMind: WARNING                       │
@@ -494,6 +520,7 @@ All content assets must pass CiteMind qualification before publishing.
 ```
 
 **Passed State:**
+
 ```
 ┌─────────────────────────────────────────────┐
 │  🟢 CiteMind: PASSED                        │
@@ -507,13 +534,14 @@ All content assets must pass CiteMind qualification before publishing.
 
 ### 7.3 Derivative Invalidation Rules
 
-| Parent Event | Derivative Behavior |
-|--------------|---------------------|
-| Parent edited | All derivatives marked `valid: false` |
-| Parent status change | Derivatives re-validated |
-| Parent deleted | Derivatives orphaned (warning state) |
+| Parent Event         | Derivative Behavior                   |
+| -------------------- | ------------------------------------- |
+| Parent edited        | All derivatives marked `valid: false` |
+| Parent status change | Derivatives re-validated              |
+| Parent deleted       | Derivatives orphaned (warning state)  |
 
 **Invalidation UI:**
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ⚠️ DERIVATIVE OUTDATED                     │
@@ -527,17 +555,18 @@ All content assets must pass CiteMind qualification before publishing.
 
 ### 7.4 Automation Mode Ceilings (Content)
 
-| Action | Manual | Copilot | Autopilot | V1 Default |
-|--------|--------|---------|-----------|------------|
-| Brief generation | Yes | Yes | No | Copilot |
-| Draft creation | Yes | Yes | No | Copilot |
-| Quality analysis | Yes | Yes | Yes | Autopilot |
-| Derivative generation | Yes | Yes | No | Copilot |
-| Publishing | Yes | No | No | Manual |
-| Calendar scheduling | Yes | Yes | No | Copilot |
-| Optimization suggestions | Yes | Yes | Yes | Autopilot |
+| Action                   | Manual | Copilot | Autopilot | V1 Default |
+| ------------------------ | ------ | ------- | --------- | ---------- |
+| Brief generation         | Yes    | Yes     | No        | Copilot    |
+| Draft creation           | Yes    | Yes     | No        | Copilot    |
+| Quality analysis         | Yes    | Yes     | Yes       | Autopilot  |
+| Derivative generation    | Yes    | Yes     | No        | Copilot    |
+| Publishing               | Yes    | No      | No        | Manual     |
+| Calendar scheduling      | Yes    | Yes     | No        | Copilot    |
+| Optimization suggestions | Yes    | Yes     | Yes       | Autopilot  |
 
 **Hard Ceilings:**
+
 - **Publishing** = Manual only (irreversible, brand-affecting)
 - **Draft creation** = Copilot max (human must review)
 
@@ -547,51 +576,51 @@ All content assets must pass CiteMind qualification before publishing.
 
 ### 8.1 Reuse from Command Center
 
-| Component | Source Path | Usage |
-|-----------|-------------|-------|
-| `TriPaneShell` | `components/command-center/TriPaneShell.tsx` | Main layout |
+| Component           | Source Path                                   | Usage          |
+| ------------------- | --------------------------------------------- | -------------- |
+| `TriPaneShell`      | `components/command-center/TriPaneShell.tsx`  | Main layout    |
 | `pillar-accents.ts` | `components/command-center/pillar-accents.ts` | Styling tokens |
-| `modeStyles` | `components/command-center/pillar-accents.ts` | Mode badges |
-| `surfaceTokens` | `components/command-center/pillar-accents.ts` | Surface colors |
+| `modeStyles`        | `components/command-center/pillar-accents.ts` | Mode badges    |
+| `surfaceTokens`     | `components/command-center/pillar-accents.ts` | Surface colors |
 
 ### 8.2 Reuse from PR Work Surface
 
-| Component | Source Path | Usage |
-|-----------|-------------|-------|
-| `ImpactStrip` | `components/pr-work-surface/components/ImpactStrip.tsx` | SAGE/EVI indicator |
-| `ModeBadge` | `components/pr-work-surface/components/ImpactStrip.tsx` | Automation mode |
-| `EVIIndicator` | `components/pr-work-surface/components/ImpactStrip.tsx` | Authority impact |
+| Component      | Source Path                                             | Usage              |
+| -------------- | ------------------------------------------------------- | ------------------ |
+| `ImpactStrip`  | `components/pr-work-surface/components/ImpactStrip.tsx` | SAGE/EVI indicator |
+| `ModeBadge`    | `components/pr-work-surface/components/ImpactStrip.tsx` | Automation mode    |
+| `EVIIndicator` | `components/pr-work-surface/components/ImpactStrip.tsx` | Authority impact   |
 
 ### 8.3 Reuse from UI Primitives
 
-| Component | Source Path | Usage |
-|-----------|-------------|-------|
-| `Card` | `components/ui/card.tsx` | Container |
-| `Badge` | `components/ui/badge.tsx` | Status/type indicators |
-| `Tabs` | `components/ui/tabs.tsx` | View navigation |
-| `Sheet` | `components/ui/sheet.tsx` | Detail drawers |
-| `Dialog` | `components/ui/dialog.tsx` | Modals |
-| `Progress` | `components/ui/progress.tsx` | Metric bars |
-| `ScrollArea` | `components/ui/scroll-area.tsx` | Custom scrollbars |
-| `HoverCard` | `components/ui/hover-card.tsx` | Quick previews |
+| Component    | Source Path                     | Usage                  |
+| ------------ | ------------------------------- | ---------------------- |
+| `Card`       | `components/ui/card.tsx`        | Container              |
+| `Badge`      | `components/ui/badge.tsx`       | Status/type indicators |
+| `Tabs`       | `components/ui/tabs.tsx`        | View navigation        |
+| `Sheet`      | `components/ui/sheet.tsx`       | Detail drawers         |
+| `Dialog`     | `components/ui/dialog.tsx`      | Modals                 |
+| `Progress`   | `components/ui/progress.tsx`    | Metric bars            |
+| `ScrollArea` | `components/ui/scroll-area.tsx` | Custom scrollbars      |
+| `HoverCard`  | `components/ui/hover-card.tsx`  | Quick previews         |
 
 ### 8.4 Create New (Content-Specific)
 
-| Component | Target Path | Purpose |
-|-----------|-------------|---------|
-| `ContentWorkSurfaceShell` | `components/content/ContentWorkSurfaceShell.tsx` | Main shell with tabs |
-| `ContentOverviewView` | `components/content/views/ContentOverviewView.tsx` | Overview tab |
-| `ContentLibraryView` | `components/content/views/ContentLibraryView.tsx` | Library tab |
-| `ContentCalendarView` | `components/content/views/ContentCalendarView.tsx` | Calendar tab |
-| `ContentInsightsView` | `components/content/views/ContentInsightsView.tsx` | Insights tab |
-| `ContentAssetCard` | `components/content/components/ContentAssetCard.tsx` | Density-adaptive card |
-| `ContentFiltersPanel` | `components/content/components/ContentFiltersPanel.tsx` | Filter controls |
-| `AuthorityDashboard` | `components/content/components/AuthorityDashboard.tsx` | Metrics display |
-| `CiteMindStatusIndicator` | `components/content/components/CiteMindStatusIndicator.tsx` | Gate status |
-| `DerivativePanel` | `components/content/components/DerivativePanel.tsx` | Derivatives list |
-| `StructuredContentEditor` | `components/content/components/StructuredContentEditor.tsx` | Section editor |
-| `ContentEmptyState` | `components/content/components/ContentEmptyState.tsx` | Empty states |
-| `ContentLoadingSkeleton` | `components/content/components/ContentLoadingSkeleton.tsx` | Loading states |
+| Component                 | Target Path                                                 | Purpose               |
+| ------------------------- | ----------------------------------------------------------- | --------------------- |
+| `ContentWorkSurfaceShell` | `components/content/ContentWorkSurfaceShell.tsx`            | Main shell with tabs  |
+| `ContentOverviewView`     | `components/content/views/ContentOverviewView.tsx`          | Overview tab          |
+| `ContentLibraryView`      | `components/content/views/ContentLibraryView.tsx`           | Library tab           |
+| `ContentCalendarView`     | `components/content/views/ContentCalendarView.tsx`          | Calendar tab          |
+| `ContentInsightsView`     | `components/content/views/ContentInsightsView.tsx`          | Insights tab          |
+| `ContentAssetCard`        | `components/content/components/ContentAssetCard.tsx`        | Density-adaptive card |
+| `ContentFiltersPanel`     | `components/content/components/ContentFiltersPanel.tsx`     | Filter controls       |
+| `AuthorityDashboard`      | `components/content/components/AuthorityDashboard.tsx`      | Metrics display       |
+| `CiteMindStatusIndicator` | `components/content/components/CiteMindStatusIndicator.tsx` | Gate status           |
+| `DerivativePanel`         | `components/content/components/DerivativePanel.tsx`         | Derivatives list      |
+| `StructuredContentEditor` | `components/content/components/StructuredContentEditor.tsx` | Section editor        |
+| `ContentEmptyState`       | `components/content/components/ContentEmptyState.tsx`       | Empty states          |
+| `ContentLoadingSkeleton`  | `components/content/components/ContentLoadingSkeleton.tsx`  | Loading states        |
 
 ### 8.5 Component File Structure
 
@@ -625,10 +654,29 @@ apps/dashboard/src/components/content/
 ```typescript
 // types.ts
 
-export type ContentStatus = 'draft' | 'review' | 'approved' | 'published' | 'archived';
-export type ContentType = 'blog_post' | 'long_form' | 'landing_page' | 'guide' | 'case_study';
-export type CiteMindStatus = 'pending' | 'analyzing' | 'passed' | 'warning' | 'blocked';
-export type DerivativeType = 'pr_pitch_excerpt' | 'aeo_snippet' | 'ai_summary' | 'social_fragment';
+export type ContentStatus =
+  | 'draft'
+  | 'review'
+  | 'approved'
+  | 'published'
+  | 'archived';
+export type ContentType =
+  | 'blog_post'
+  | 'long_form'
+  | 'landing_page'
+  | 'guide'
+  | 'case_study';
+export type CiteMindStatus =
+  | 'pending'
+  | 'analyzing'
+  | 'passed'
+  | 'warning'
+  | 'blocked';
+export type DerivativeType =
+  | 'pr_pitch_excerpt'
+  | 'aeo_snippet'
+  | 'ai_summary'
+  | 'social_fragment';
 
 export interface ContentAsset {
   id: string;
@@ -646,11 +694,11 @@ export interface ContentAsset {
 }
 
 export interface AuthoritySignals {
-  authorityContributionScore: number;       // 0-100
-  citationEligibilityScore: number;         // 0-100
-  aiIngestionLikelihood: number;            // 0-100
-  crossPillarImpact: number;                // 0-100
-  competitiveAuthorityDelta: number;        // -100 to 100
+  authorityContributionScore: number; // 0-100
+  citationEligibilityScore: number; // 0-100
+  aiIngestionLikelihood: number; // 0-100
+  crossPillarImpact: number; // 0-100
+  competitiveAuthorityDelta: number; // -100 to 100
   measuredAt: string;
 }
 
@@ -659,7 +707,11 @@ export interface ContentBrief {
   title: string;
   status: 'draft' | 'approved' | 'in_progress' | 'completed';
   targetKeyword?: string;
-  targetIntent: 'informational' | 'navigational' | 'commercial' | 'transactional';
+  targetIntent:
+    | 'informational'
+    | 'navigational'
+    | 'commercial'
+    | 'transactional';
   strategicObjective: string;
   allowedAssertions: string[];
   requiredCitations: string[];
@@ -723,11 +775,21 @@ export interface ContentCluster {
 // hooks/useContentData.ts
 
 // List hooks (plural noun)
-export function useContentItems(params?: ContentItemsParams): SWRResponse<ContentAsset[]>;
-export function useContentBriefs(params?: ContentBriefsParams): SWRResponse<ContentBrief[]>;
-export function useContentGaps(params?: ContentGapsParams): SWRResponse<ContentGap[]>;
-export function useContentClusters(params?: ContentClustersParams): SWRResponse<ContentCluster[]>;
-export function useContentCalendar(params?: ContentCalendarParams): SWRResponse<ContentCalendarEntry[]>;
+export function useContentItems(
+  params?: ContentItemsParams
+): SWRResponse<ContentAsset[]>;
+export function useContentBriefs(
+  params?: ContentBriefsParams
+): SWRResponse<ContentBrief[]>;
+export function useContentGaps(
+  params?: ContentGapsParams
+): SWRResponse<ContentGap[]>;
+export function useContentClusters(
+  params?: ContentClustersParams
+): SWRResponse<ContentCluster[]>;
+export function useContentCalendar(
+  params?: ContentCalendarParams
+): SWRResponse<ContentCalendarEntry[]>;
 
 // Single item hooks (singular noun + Id)
 export function useContentItem(id: string): SWRResponse<ContentAsset>;
@@ -735,9 +797,13 @@ export function useContentBrief(id: string): SWRResponse<ContentBrief>;
 
 // Mutation hooks (action verb)
 export function useCreateContentItem(): SWRMutationResponse<ContentAsset>;
-export function useUpdateContentItem(id: string): SWRMutationResponse<ContentAsset>;
+export function useUpdateContentItem(
+  id: string
+): SWRMutationResponse<ContentAsset>;
 export function useGenerateBrief(): SWRMutationResponse<ContentBrief>;
-export function useAnalyzeQuality(assetId: string): SWRMutationResponse<QualityAnalysis>;
+export function useAnalyzeQuality(
+  assetId: string
+): SWRMutationResponse<QualityAnalysis>;
 ```
 
 ### 9.3 API Response Wrapper
@@ -755,6 +821,7 @@ All API responses use the standard wrapper:
 ### 9.4 Error/Empty/Loading Patterns
 
 **Loading State:**
+
 ```typescript
 function ContentLoadingSkeleton({ density }: { density: DensityLevel }) {
   const skeletonCount = density === 'compact' ? 8 : density === 'standard' ? 5 : 3;
@@ -771,6 +838,7 @@ function ContentLoadingSkeleton({ density }: { density: DensityLevel }) {
 ```
 
 **Empty State:**
+
 ```typescript
 function ContentEmptyState({ view }: { view: 'library' | 'calendar' | 'briefs' }) {
   const messages = {
@@ -792,6 +860,7 @@ function ContentEmptyState({ view }: { view: 'library' | 'calendar' | 'briefs' }
 ```
 
 **Error State:**
+
 ```typescript
 function ContentErrorState({ error, onRetry }: { error: Error; onRetry: () => void }) {
   return (
@@ -817,6 +886,7 @@ These requirements are derived from COMPETITIVE_INTELLIGENCE_2026.md and represe
 The Content Work Surface must treat **AEO citation potential** as the primary content quality metric, not NLP term coverage, word count, or keyword density. This directly contradicts every legacy content tool and defines Pravado's differentiation.
 
 **Required expressions:**
+
 - CiteMind score must be visually primary on every content asset card — more prominent than word count or publish date
 - Content Editor must include passage-level AEO guidance: entity-rich definitions, direct Q&A formatting, structured data recommendations — this is the writing feedback layer that replaces NLP term highlighting
 - Before publishing, the CiteMind gate must show the citation potential score alongside the governance pass/fail status
@@ -827,6 +897,7 @@ The Content Work Surface must treat **AEO citation potential** as the primary co
 Content decisions must visibly connect to PR and AEO outcomes. This is the feature no competitor can replicate.
 
 **Required expressions:**
+
 - Every content asset must display its **Cross-Pillar Impact** score showing PR contribution and AEO citation lift
 - SAGE briefs must show the competitive gap they're closing ("CompetitorX is cited 134x/week on this topic; you are not. Closing this gap: +8–12 EVI pts.")
 - After publishing, CiteMind must update the asset's citation tracking within 7–14 days and show which AI engines have cited the piece
@@ -837,6 +908,7 @@ Content decisions must visibly connect to PR and AEO outcomes. This is the featu
 Every content asset must be structured to produce cross-pillar derivatives automatically. This is structural reuse, not manual repurposing — and it's a capability no single-pillar tool can offer.
 
 **Required expressions:**
+
 - Brief generation must produce a derivative map showing: PR pitch excerpt targets, AEO snippet targets, AI-ready summary, social fragments
 - The editor must show derivative status in a right-rail panel (or accessible drawer): which derivatives exist, which are stale, which need regeneration
 - Derivative generation must be a one-click Copilot action per asset — not a separate workflow
@@ -847,6 +919,7 @@ Every content asset must be structured to produce cross-pillar derivatives autom
 The Asset Editor must be purpose-built for AEO citation-worthiness, not a standard rich text editor with AI suggestions bolted on.
 
 **Required expressions:**
+
 - Passage-level CiteMind feedback: each paragraph/section gets a citation readiness indicator, not just the whole document
 - Structured sections enforced: every long-form asset has defined sections (Introduction, Entity Definition, Evidence, FAQ, Related Concepts) — these are the structural units AI engines extract from
 - FAQ section must be a first-class editor component with schema markup generation
@@ -857,6 +930,7 @@ The Asset Editor must be purpose-built for AEO citation-worthiness, not a standa
 SAGE content proposals must be surfaced in the library and overview views, not in a separate "briefs" area that users have to navigate to. The insight must come to the user.
 
 **Required expressions:**
+
 - SAGE proposal cards in the Overview must show the competitive gap, estimated EVI impact, and a one-click "Create from Brief" action
 - In the Library view, assets with available SAGE optimization recommendations should show an indicator badge
 - SAGE must provide at least one content proposal per active topic cluster per week (automation via CRAFT in Autopilot mode)
@@ -867,25 +941,25 @@ SAGE content proposals must be surfaced in the library and overview views, not i
 
 The Content Work Surface will **NEVER**:
 
-| Anti-Pattern | Why Prohibited |
-|--------------|----------------|
-| **Social scheduler clone** | Timing ≠ authority; volume focus violates canon |
-| **Keyword stuffing interface** | Density optimization is spam, not authority |
-| **Viral content generator** | Trending hooks ≠ durable authority |
-| **Chat-style AI writing** | Unstructured generation bypasses CiteMind |
-| **Generic CMS replacement** | Pravado is authority infrastructure, not a blog editor |
-| **Output volume metrics** | Word count/frequency are explicitly non-goals per canon |
+| Anti-Pattern                   | Why Prohibited                                          |
+| ------------------------------ | ------------------------------------------------------- |
+| **Social scheduler clone**     | Timing ≠ authority; volume focus violates canon         |
+| **Keyword stuffing interface** | Density optimization is spam, not authority             |
+| **Viral content generator**    | Trending hooks ≠ durable authority                      |
+| **Chat-style AI writing**      | Unstructured generation bypasses CiteMind               |
+| **Generic CMS replacement**    | Pravado is authority infrastructure, not a blog editor  |
+| **Output volume metrics**      | Word count/frequency are explicitly non-goals per canon |
 
 ### 10.2 CI Guardrails
 
 The following CI checks must pass for Content Work Surface changes:
 
-| Check | Script | Validates |
-|-------|--------|-----------|
-| `check-content-no-chat-canvas.mjs` | Content components | No freeform AI chat patterns |
-| `check-content-citemind-gates.mjs` | Publish flows | CiteMind gate enforcement |
-| `check-content-authority-metrics.mjs` | Display components | Authority metrics present |
-| `check-content-structured-editor.mjs` | Editor components | Section-based, not freeform |
+| Check                                 | Script             | Validates                    |
+| ------------------------------------- | ------------------ | ---------------------------- |
+| `check-content-no-chat-canvas.mjs`    | Content components | No freeform AI chat patterns |
+| `check-content-citemind-gates.mjs`    | Publish flows      | CiteMind gate enforcement    |
+| `check-content-authority-metrics.mjs` | Display components | Authority metrics present    |
+| `check-content-structured-editor.mjs` | Editor components  | Section-based, not freeform  |
 
 ### 10.3 Code Review Checklist
 
@@ -915,12 +989,14 @@ All Content surfaces MUST display the **Impact Strip** (adapted from PR pillar):
 ```
 
 **Display Locations:**
+
 - Overview dashboard header
 - Library view header
 - Asset detail header
 - Calendar entry cards
 
 **Components to import:**
+
 - `SAGETag` from `pr-work-surface/components/ImpactStrip.tsx`
 - `EVIIndicator` from `pr-work-surface/components/ImpactStrip.tsx`
 - `ModeBadge` from `pr-work-surface/components/ImpactStrip.tsx`
@@ -955,6 +1031,7 @@ V1 Content Work Surface MUST satisfy:
 ### 13.1 Contract Authority
 
 This document defines the V1 frozen contract. Any implementation that deviates requires a Canon Amendment PR with:
+
 1. Justification for deviation
 2. Product review sign-off
 3. Update to this contract document
@@ -962,6 +1039,7 @@ This document defines the V1 frozen contract. Any implementation that deviates r
 ### 13.2 Amendment Process
 
 To modify this contract:
+
 1. Create PR with proposed changes
 2. Tag as `canon-amendment`
 3. Require product owner approval
@@ -971,7 +1049,7 @@ To modify this contract:
 
 ## 14. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-25 | 1.0 | Initial V1 Content Work Surface Contract |
-| 2026-03-02 | 2.0 | Removed mandatory TriPaneShell (D022); Added competitive moat requirements §9B; Added view-specific layout specs §3.2; Updated amendment metadata |
+| Date       | Version | Change                                                                                                                                            |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-01-25 | 1.0     | Initial V1 Content Work Surface Contract                                                                                                          |
+| 2026-03-02 | 2.0     | Removed mandatory TriPaneShell (D022); Added competitive moat requirements §9B; Added view-specific layout specs §3.2; Updated amendment metadata |

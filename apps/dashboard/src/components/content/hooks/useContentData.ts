@@ -10,6 +10,7 @@
  */
 
 import useSWR from 'swr';
+
 import type {
   ContentAsset,
   ContentBrief,

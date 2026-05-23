@@ -5,7 +5,6 @@
  * and providing reputation insights that build on S56 Brand Reputation Intelligence.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   DEFAULT_REPORT_SECTION_ORDER,
   DEFAULT_SECTION_TITLES,
@@ -50,6 +49,7 @@ import type {
   GenerateReportResponse,
   RegenerateSectionResponse,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // CONSTANTS
@@ -122,23 +122,38 @@ export class BrandReputationAlertsService {
     const updates: Record<string, unknown> = {};
 
     if (input.name !== undefined) updates.name = input.name;
-    if (input.description !== undefined) updates.description = input.description;
+    if (input.description !== undefined)
+      updates.description = input.description;
     if (input.isActive !== undefined) updates.is_active = input.isActive;
     if (input.channel !== undefined) updates.channel = input.channel;
-    if (input.minOverallScore !== undefined) updates.min_overall_score = input.minOverallScore;
-    if (input.maxOverallScore !== undefined) updates.max_overall_score = input.maxOverallScore;
-    if (input.minDeltaOverallScore !== undefined) updates.min_delta_overall_score = input.minDeltaOverallScore;
-    if (input.maxDeltaOverallScore !== undefined) updates.max_delta_overall_score = input.maxDeltaOverallScore;
-    if (input.componentKey !== undefined) updates.component_key = input.componentKey;
-    if (input.minComponentScore !== undefined) updates.min_component_score = input.minComponentScore;
-    if (input.competitorSlug !== undefined) updates.competitor_slug = input.competitorSlug;
-    if (input.minCompetitorGap !== undefined) updates.min_competitor_gap = input.minCompetitorGap;
-    if (input.maxCompetitorGap !== undefined) updates.max_competitor_gap = input.maxCompetitorGap;
-    if (input.minIncidentSeverity !== undefined) updates.min_incident_severity = input.minIncidentSeverity;
-    if (input.linkCrisisIncidents !== undefined) updates.link_crisis_incidents = input.linkCrisisIncidents;
-    if (input.timeWindowMinutes !== undefined) updates.time_window_minutes = input.timeWindowMinutes;
-    if (input.cooldownMinutes !== undefined) updates.cooldown_minutes = input.cooldownMinutes;
-    if (input.notificationConfig !== undefined) updates.notification_config = input.notificationConfig;
+    if (input.minOverallScore !== undefined)
+      updates.min_overall_score = input.minOverallScore;
+    if (input.maxOverallScore !== undefined)
+      updates.max_overall_score = input.maxOverallScore;
+    if (input.minDeltaOverallScore !== undefined)
+      updates.min_delta_overall_score = input.minDeltaOverallScore;
+    if (input.maxDeltaOverallScore !== undefined)
+      updates.max_delta_overall_score = input.maxDeltaOverallScore;
+    if (input.componentKey !== undefined)
+      updates.component_key = input.componentKey;
+    if (input.minComponentScore !== undefined)
+      updates.min_component_score = input.minComponentScore;
+    if (input.competitorSlug !== undefined)
+      updates.competitor_slug = input.competitorSlug;
+    if (input.minCompetitorGap !== undefined)
+      updates.min_competitor_gap = input.minCompetitorGap;
+    if (input.maxCompetitorGap !== undefined)
+      updates.max_competitor_gap = input.maxCompetitorGap;
+    if (input.minIncidentSeverity !== undefined)
+      updates.min_incident_severity = input.minIncidentSeverity;
+    if (input.linkCrisisIncidents !== undefined)
+      updates.link_crisis_incidents = input.linkCrisisIncidents;
+    if (input.timeWindowMinutes !== undefined)
+      updates.time_window_minutes = input.timeWindowMinutes;
+    if (input.cooldownMinutes !== undefined)
+      updates.cooldown_minutes = input.cooldownMinutes;
+    if (input.notificationConfig !== undefined)
+      updates.notification_config = input.notificationConfig;
 
     const { data, error } = await this.supabase
       .from('brand_reputation_alert_rules')
@@ -158,7 +173,10 @@ export class BrandReputationAlertsService {
   /**
    * Get a single alert rule by ID
    */
-  async getAlertRule(orgId: string, ruleId: string): Promise<BrandReputationAlertRule | null> {
+  async getAlertRule(
+    orgId: string,
+    ruleId: string
+  ): Promise<BrandReputationAlertRule | null> {
     const { data, error } = await this.supabase
       .from('brand_reputation_alert_rules')
       .select('*')
@@ -199,8 +217,12 @@ export class BrandReputationAlertsService {
     }
 
     // Map sortBy to db column
-    const sortColumn = sortBy === 'createdAt' ? 'created_at' :
-                       sortBy === 'lastTriggeredAt' ? 'last_triggered_at' : 'name';
+    const sortColumn =
+      sortBy === 'createdAt'
+        ? 'created_at'
+        : sortBy === 'lastTriggeredAt'
+          ? 'last_triggered_at'
+          : 'name';
 
     const { data, error, count } = await dbQuery
       .order(sortColumn, { ascending: sortOrder === 'asc' })
@@ -278,7 +300,12 @@ export class BrandReputationAlertsService {
         rulesTriggered++;
 
         // Create alert event
-        const event = await this.createAlertEvent(orgId, rule, evaluation, context);
+        const event = await this.createAlertEvent(
+          orgId,
+          rule,
+          evaluation,
+          context
+        );
         eventsCreated.push(event);
 
         // Update last_triggered_at
@@ -360,16 +387,26 @@ export class BrandReputationAlertsService {
     const reasons: string[] = [];
 
     // Check overall score thresholds
-    if (rule.minOverallScore !== undefined && current.overallScore < rule.minOverallScore) {
-      reasons.push(`Overall score ${current.overallScore.toFixed(1)} below minimum ${rule.minOverallScore}`);
+    if (
+      rule.minOverallScore !== undefined &&
+      current.overallScore < rule.minOverallScore
+    ) {
+      reasons.push(
+        `Overall score ${current.overallScore.toFixed(1)} below minimum ${rule.minOverallScore}`
+      );
       result.scoreData = {
         overallBefore: previous?.overallScore,
         overallAfter: current.overallScore,
       };
     }
 
-    if (rule.maxOverallScore !== undefined && current.overallScore > rule.maxOverallScore) {
-      reasons.push(`Overall score ${current.overallScore.toFixed(1)} above maximum ${rule.maxOverallScore}`);
+    if (
+      rule.maxOverallScore !== undefined &&
+      current.overallScore > rule.maxOverallScore
+    ) {
+      reasons.push(
+        `Overall score ${current.overallScore.toFixed(1)} above maximum ${rule.maxOverallScore}`
+      );
       result.scoreData = {
         overallBefore: previous?.overallScore,
         overallAfter: current.overallScore,
@@ -380,7 +417,9 @@ export class BrandReputationAlertsService {
     if (previous && rule.minDeltaOverallScore !== undefined) {
       const delta = current.overallScore - previous.overallScore;
       if (delta < rule.minDeltaOverallScore) {
-        reasons.push(`Score dropped by ${Math.abs(delta).toFixed(1)} (threshold: ${rule.minDeltaOverallScore})`);
+        reasons.push(
+          `Score dropped by ${Math.abs(delta).toFixed(1)} (threshold: ${rule.minDeltaOverallScore})`
+        );
         result.scoreData = {
           overallBefore: previous.overallScore,
           overallAfter: current.overallScore,
@@ -391,7 +430,9 @@ export class BrandReputationAlertsService {
     if (previous && rule.maxDeltaOverallScore !== undefined) {
       const delta = current.overallScore - previous.overallScore;
       if (delta > rule.maxDeltaOverallScore) {
-        reasons.push(`Score increased by ${delta.toFixed(1)} (threshold: ${rule.maxDeltaOverallScore})`);
+        reasons.push(
+          `Score increased by ${delta.toFixed(1)} (threshold: ${rule.maxDeltaOverallScore})`
+        );
         result.scoreData = {
           overallBefore: previous.overallScore,
           overallAfter: current.overallScore,
@@ -402,12 +443,19 @@ export class BrandReputationAlertsService {
     // Check component thresholds
     if (rule.componentKey && rule.minComponentScore !== undefined) {
       const componentScore = this.getComponentScore(current, rule.componentKey);
-      if (componentScore !== undefined && componentScore < rule.minComponentScore) {
-        reasons.push(`${rule.componentKey} score ${componentScore.toFixed(1)} below minimum ${rule.minComponentScore}`);
+      if (
+        componentScore !== undefined &&
+        componentScore < rule.minComponentScore
+      ) {
+        reasons.push(
+          `${rule.componentKey} score ${componentScore.toFixed(1)} below minimum ${rule.minComponentScore}`
+        );
         result.scoreData = {
           ...result.scoreData,
           componentKey: rule.componentKey,
-          componentBefore: previous ? this.getComponentScore(previous, rule.componentKey) : undefined,
+          componentBefore: previous
+            ? this.getComponentScore(previous, rule.componentKey)
+            : undefined,
           componentAfter: componentScore,
         };
       }
@@ -419,8 +467,13 @@ export class BrandReputationAlertsService {
       const previousGap = context.previousCompetitorGaps?.[rule.competitorSlug];
 
       if (currentGap !== undefined) {
-        if (rule.minCompetitorGap !== undefined && currentGap < rule.minCompetitorGap) {
-          reasons.push(`Competitor gap ${currentGap.toFixed(1)} below minimum ${rule.minCompetitorGap}`);
+        if (
+          rule.minCompetitorGap !== undefined &&
+          currentGap < rule.minCompetitorGap
+        ) {
+          reasons.push(
+            `Competitor gap ${currentGap.toFixed(1)} below minimum ${rule.minCompetitorGap}`
+          );
           result.scoreData = {
             ...result.scoreData,
             competitorSlug: rule.competitorSlug,
@@ -429,8 +482,13 @@ export class BrandReputationAlertsService {
           };
         }
 
-        if (rule.maxCompetitorGap !== undefined && currentGap > rule.maxCompetitorGap) {
-          reasons.push(`Competitor gap ${currentGap.toFixed(1)} above maximum ${rule.maxCompetitorGap}`);
+        if (
+          rule.maxCompetitorGap !== undefined &&
+          currentGap > rule.maxCompetitorGap
+        ) {
+          reasons.push(
+            `Competitor gap ${currentGap.toFixed(1)} above maximum ${rule.maxCompetitorGap}`
+          );
           result.scoreData = {
             ...result.scoreData,
             competitorSlug: rule.competitorSlug,
@@ -444,11 +502,14 @@ export class BrandReputationAlertsService {
     // Check crisis incident severity
     if (rule.linkCrisisIncidents && context.activeIncidents?.length) {
       const matchingIncidents = context.activeIncidents.filter(
-        (inc) => !rule.minIncidentSeverity || inc.severity >= rule.minIncidentSeverity
+        (inc) =>
+          !rule.minIncidentSeverity || inc.severity >= rule.minIncidentSeverity
       );
 
       if (matchingIncidents.length > 0) {
-        reasons.push(`${matchingIncidents.length} crisis incident(s) with severity >= ${rule.minIncidentSeverity || 1}`);
+        reasons.push(
+          `${matchingIncidents.length} crisis incident(s) with severity >= ${rule.minIncidentSeverity || 1}`
+        );
         result.matchedIncidents = matchingIncidents;
       }
     }
@@ -469,12 +530,18 @@ export class BrandReputationAlertsService {
     componentKey: ReputationComponentKey
   ): number | undefined {
     switch (componentKey) {
-      case 'sentiment': return snapshot.sentimentScore;
-      case 'coverage': return snapshot.coverageScore;
-      case 'crisis_impact': return snapshot.crisisImpactScore;
-      case 'competitive_position': return snapshot.competitivePositionScore;
-      case 'engagement': return snapshot.engagementScore;
-      default: return undefined;
+      case 'sentiment':
+        return snapshot.sentimentScore;
+      case 'coverage':
+        return snapshot.coverageScore;
+      case 'crisis_impact':
+        return snapshot.crisisImpactScore;
+      case 'competitive_position':
+        return snapshot.competitivePositionScore;
+      case 'engagement':
+        return snapshot.engagementScore;
+      default:
+        return undefined;
     }
   }
 
@@ -494,19 +561,25 @@ export class BrandReputationAlertsService {
         rule_id: rule.id,
         status: 'new',
         overall_score_before: evaluation.scoreData?.overallBefore,
-        overall_score_after: evaluation.scoreData?.overallAfter ?? context.currentSnapshot.overallScore,
-        component_scores_before: context.previousSnapshot ? {
-          sentiment: context.previousSnapshot.sentimentScore,
-          coverage: context.previousSnapshot.coverageScore,
-          crisis_impact: context.previousSnapshot.crisisImpactScore,
-          competitive_position: context.previousSnapshot.competitivePositionScore,
-          engagement: context.previousSnapshot.engagementScore,
-        } : {},
+        overall_score_after:
+          evaluation.scoreData?.overallAfter ??
+          context.currentSnapshot.overallScore,
+        component_scores_before: context.previousSnapshot
+          ? {
+              sentiment: context.previousSnapshot.sentimentScore,
+              coverage: context.previousSnapshot.coverageScore,
+              crisis_impact: context.previousSnapshot.crisisImpactScore,
+              competitive_position:
+                context.previousSnapshot.competitivePositionScore,
+              engagement: context.previousSnapshot.engagementScore,
+            }
+          : {},
         component_scores_after: {
           sentiment: context.currentSnapshot.sentimentScore,
           coverage: context.currentSnapshot.coverageScore,
           crisis_impact: context.currentSnapshot.crisisImpactScore,
-          competitive_position: context.currentSnapshot.competitivePositionScore,
+          competitive_position:
+            context.currentSnapshot.competitivePositionScore,
           engagement: context.currentSnapshot.engagementScore,
         },
         competitor_gap_before: evaluation.scoreData?.gapBefore,
@@ -573,8 +646,12 @@ export class BrandReputationAlertsService {
     }
 
     // Map sortBy to db column
-    const sortColumn = sortBy === 'triggeredAt' ? 'triggered_at' :
-                       sortBy === 'overallScoreAfter' ? 'overall_score_after' : 'status';
+    const sortColumn =
+      sortBy === 'triggeredAt'
+        ? 'triggered_at'
+        : sortBy === 'overallScoreAfter'
+          ? 'overall_score_after'
+          : 'status';
 
     const { data, error, count } = await dbQuery
       .order(sortColumn, { ascending: sortOrder === 'asc' })
@@ -616,7 +693,10 @@ export class BrandReputationAlertsService {
   /**
    * Get a single alert event by ID
    */
-  async getAlertEvent(orgId: string, eventId: string): Promise<BrandReputationAlertEvent | null> {
+  async getAlertEvent(
+    orgId: string,
+    eventId: string
+  ): Promise<BrandReputationAlertEvent | null> {
     const { data, error } = await this.supabase
       .from('brand_reputation_alert_events')
       .select('*')
@@ -648,11 +728,13 @@ export class BrandReputationAlertsService {
         status: 'acknowledged',
         acknowledged_at: now,
         acknowledged_by: userId,
-        context: notes ? this.supabase.rpc('jsonb_set_lax', {
-          target: 'context',
-          path: '{acknowledgmentNotes}',
-          new_value: JSON.stringify(notes),
-        }) : undefined,
+        context: notes
+          ? this.supabase.rpc('jsonb_set_lax', {
+              target: 'context',
+              path: '{acknowledgmentNotes}',
+              new_value: JSON.stringify(notes),
+            })
+          : undefined,
       })
       .eq('id', eventId)
       .eq('org_id', orgId)
@@ -757,16 +839,14 @@ export class BrandReputationAlertsService {
     // Add recipients if provided
     if (input.recipients?.length) {
       for (const recipient of input.recipients) {
-        await this.supabase
-          .from('brand_reputation_report_recipients')
-          .insert({
-            report_id: report.id,
-            org_id: orgId,
-            channel: recipient.channel,
-            target: recipient.target,
-            recipient_name: recipient.recipientName,
-            is_primary: recipient.isPrimary ?? false,
-          });
+        await this.supabase.from('brand_reputation_report_recipients').insert({
+          report_id: report.id,
+          org_id: orgId,
+          channel: recipient.channel,
+          target: recipient.target,
+          recipient_name: recipient.recipientName,
+          is_primary: recipient.isPrimary ?? false,
+        });
       }
     }
 
@@ -786,7 +866,9 @@ export class BrandReputationAlertsService {
     const startTime = Date.now();
 
     // Create the report first
-    const title = input.title || `Brand Reputation Report - ${new Date(input.reportPeriodStart).toLocaleDateString()} to ${new Date(input.reportPeriodEnd).toLocaleDateString()}`;
+    const title =
+      input.title ||
+      `Brand Reputation Report - ${new Date(input.reportPeriodStart).toLocaleDateString()} to ${new Date(input.reportPeriodEnd).toLocaleDateString()}`;
 
     const { data: report, error: reportError } = await this.supabase
       .from('brand_reputation_reports')
@@ -811,20 +893,26 @@ export class BrandReputationAlertsService {
 
     try {
       // Fetch S56 reputation scores for the period
-      const { data: scoresData } = await this.supabase.rpc('get_brand_reputation_scores_for_period', {
-        p_org_id: orgId,
-        p_start_date: input.reportPeriodStart,
-        p_end_date: input.reportPeriodEnd,
-      });
+      const { data: scoresData } = await this.supabase.rpc(
+        'get_brand_reputation_scores_for_period',
+        {
+          p_org_id: orgId,
+          p_start_date: input.reportPeriodStart,
+          p_end_date: input.reportPeriodEnd,
+        }
+      );
 
       const scores = scoresData?.[0] || {};
 
       // Fetch trend data
-      const { data: trendData } = await this.supabase.rpc('get_brand_reputation_trend', {
-        p_org_id: orgId,
-        p_interval: 'day',
-        p_limit: 30,
-      });
+      const { data: trendData } = await this.supabase.rpc(
+        'get_brand_reputation_trend',
+        {
+          p_org_id: orgId,
+          p_interval: 'day',
+          p_limit: 30,
+        }
+      );
 
       // Fetch competitor data if requested
       let competitorSnapshot: CompetitorReputationSnapshot[] = [];
@@ -908,24 +996,26 @@ export class BrandReputationAlertsService {
 
       // Generate sections
       const sections: BrandReputationReportSection[] = [];
-      const sectionTypes = input.format === 'detailed'
-        ? DEFAULT_REPORT_SECTION_ORDER
-        : ['overview', 'highlights', 'recommendations'] as ReputationReportSectionType[];
+      const sectionTypes =
+        input.format === 'detailed'
+          ? DEFAULT_REPORT_SECTION_ORDER
+          : ([
+              'overview',
+              'highlights',
+              'recommendations',
+            ] as ReputationReportSectionType[]);
 
       for (let i = 0; i < sectionTypes.length; i++) {
         const sectionType = sectionTypes[i];
-        const sectionContent = await this.generateSectionContent(
-          sectionType,
-          {
-            scores: overallScoreSnapshot,
-            componentScores: componentScoresSnapshot,
-            competitors: competitorSnapshot,
-            crisisIncidents,
-            keyMetrics,
-            periodStart: input.reportPeriodStart,
-            periodEnd: input.reportPeriodEnd,
-          }
-        );
+        const sectionContent = await this.generateSectionContent(sectionType, {
+          scores: overallScoreSnapshot,
+          componentScores: componentScoresSnapshot,
+          competitors: competitorSnapshot,
+          crisisIncidents,
+          keyMetrics,
+          periodStart: input.reportPeriodStart,
+          periodEnd: input.reportPeriodEnd,
+        });
 
         const { data: section, error: sectionError } = await this.supabase
           .from('brand_reputation_report_sections')
@@ -975,7 +1065,9 @@ export class BrandReputationAlertsService {
         .single();
 
       if (updateError) {
-        throw new Error(`Failed to update report status: ${updateError.message}`);
+        throw new Error(
+          `Failed to update report status: ${updateError.message}`
+        );
       }
 
       return {
@@ -989,7 +1081,8 @@ export class BrandReputationAlertsService {
         .from('brand_reputation_reports')
         .update({
           status: 'draft',
-          generation_error: err instanceof Error ? err.message : 'Unknown error',
+          generation_error:
+            err instanceof Error ? err.message : 'Unknown error',
         })
         .eq('id', report.id);
 
@@ -1152,8 +1245,12 @@ export class BrandReputationAlertsService {
     }
 
     // Map sortBy to db column
-    const sortColumn = sortBy === 'createdAt' ? 'created_at' :
-                       sortBy === 'reportPeriodStart' ? 'report_period_start' : 'status';
+    const sortColumn =
+      sortBy === 'createdAt'
+        ? 'created_at'
+        : sortBy === 'reportPeriodStart'
+          ? 'report_period_start'
+          : 'status';
 
     const { data, error, count } = await dbQuery
       .order(sortColumn, { ascending: sortOrder === 'asc' })
@@ -1174,7 +1271,10 @@ export class BrandReputationAlertsService {
   /**
    * Get a single report with sections and recipients
    */
-  async getReputationReport(orgId: string, reportId: string): Promise<GetReportResponse | null> {
+  async getReputationReport(
+    orgId: string,
+    reportId: string
+  ): Promise<GetReportResponse | null> {
     const { data: report, error } = await this.supabase
       .from('brand_reputation_reports')
       .select('*')
@@ -1222,7 +1322,9 @@ export class BrandReputationAlertsService {
     query: GetReputationInsightsQuery = {}
   ): Promise<GetReputationReportInsightsResponse> {
     const periodEnd = query.periodEnd || new Date().toISOString();
-    const periodStart = query.periodStart || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const periodStart =
+      query.periodStart ||
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const maxDrivers = query.maxDrivers ?? 3;
 
     // Get current scores from most recent snapshot
@@ -1234,19 +1336,34 @@ export class BrandReputationAlertsService {
       .limit(1)
       .single();
 
-    const currentOverallScore = latestSnapshot?.overall_score ? parseFloat(latestSnapshot.overall_score) : 50;
+    const currentOverallScore = latestSnapshot?.overall_score
+      ? parseFloat(latestSnapshot.overall_score)
+      : 50;
     const componentScores: ComponentScoresMap = {
-      sentiment: latestSnapshot?.sentiment_score ? parseFloat(latestSnapshot.sentiment_score) : 50,
-      coverage: latestSnapshot?.coverage_score ? parseFloat(latestSnapshot.coverage_score) : 50,
-      crisis_impact: latestSnapshot?.crisis_impact_score ? parseFloat(latestSnapshot.crisis_impact_score) : 50,
-      competitive_position: latestSnapshot?.competitive_position_score ? parseFloat(latestSnapshot.competitive_position_score) : 50,
-      engagement: latestSnapshot?.engagement_score ? parseFloat(latestSnapshot.engagement_score) : 50,
+      sentiment: latestSnapshot?.sentiment_score
+        ? parseFloat(latestSnapshot.sentiment_score)
+        : 50,
+      coverage: latestSnapshot?.coverage_score
+        ? parseFloat(latestSnapshot.coverage_score)
+        : 50,
+      crisis_impact: latestSnapshot?.crisis_impact_score
+        ? parseFloat(latestSnapshot.crisis_impact_score)
+        : 50,
+      competitive_position: latestSnapshot?.competitive_position_score
+        ? parseFloat(latestSnapshot.competitive_position_score)
+        : 50,
+      engagement: latestSnapshot?.engagement_score
+        ? parseFloat(latestSnapshot.engagement_score)
+        : 50,
     };
 
     // Get previous period scores for comparison
     const prevPeriodEnd = periodStart;
-    const periodLength = new Date(periodEnd).getTime() - new Date(periodStart).getTime();
-    const prevPeriodStart = new Date(new Date(periodStart).getTime() - periodLength).toISOString();
+    const periodLength =
+      new Date(periodEnd).getTime() - new Date(periodStart).getTime();
+    const prevPeriodStart = new Date(
+      new Date(periodStart).getTime() - periodLength
+    ).toISOString();
 
     const { data: prevSnapshot } = await this.supabase
       .from('brand_reputation_snapshots')
@@ -1258,8 +1375,13 @@ export class BrandReputationAlertsService {
       .limit(1)
       .single();
 
-    const previousOverallScore = prevSnapshot?.overall_score ? parseFloat(prevSnapshot.overall_score) : undefined;
-    const scoreDelta = previousOverallScore !== undefined ? currentOverallScore - previousOverallScore : 0;
+    const previousOverallScore = prevSnapshot?.overall_score
+      ? parseFloat(prevSnapshot.overall_score)
+      : undefined;
+    const scoreDelta =
+      previousOverallScore !== undefined
+        ? currentOverallScore - previousOverallScore
+        : 0;
     const trend = scoreDelta > 2 ? 'up' : scoreDelta < -2 ? 'down' : 'flat';
 
     // Get top drivers from reputation events
@@ -1283,7 +1405,9 @@ export class BrandReputationAlertsService {
       .order('delta', { ascending: true })
       .limit(maxDrivers);
 
-    const topPositiveDrivers: ReputationInsightDriver[] = (positiveEvents || []).map((e) => ({
+    const topPositiveDrivers: ReputationInsightDriver[] = (
+      positiveEvents || []
+    ).map((e) => ({
       id: e.id,
       title: e.title,
       description: e.description,
@@ -1293,7 +1417,9 @@ export class BrandReputationAlertsService {
       occurredAt: e.event_timestamp,
     }));
 
-    const topNegativeDrivers: ReputationInsightDriver[] = (negativeEvents || []).map((e) => ({
+    const topNegativeDrivers: ReputationInsightDriver[] = (
+      negativeEvents || []
+    ).map((e) => ({
       id: e.id,
       title: e.title,
       description: e.description,
@@ -1326,9 +1452,12 @@ export class BrandReputationAlertsService {
     }
 
     // Get alert summary
-    const { data: alertCounts } = await this.supabase.rpc('get_active_reputation_alert_count', {
-      p_org_id: orgId,
-    });
+    const { data: alertCounts } = await this.supabase.rpc(
+      'get_active_reputation_alert_count',
+      {
+        p_org_id: orgId,
+      }
+    );
 
     const alertSummary = {
       newAlerts: alertCounts?.[0]?.new_count || 0,
@@ -1347,14 +1476,22 @@ export class BrandReputationAlertsService {
         .gte('created_at', periodStart);
 
       if (crisisData?.length) {
-        const activeIncidents = crisisData.filter((i) => i.status === 'active').length;
-        const resolvedThisPeriod = crisisData.filter((i) => i.status === 'resolved').length;
-        const totalSeverity = crisisData.reduce((sum, i) => sum + (i.severity || 0), 0);
+        const activeIncidents = crisisData.filter(
+          (i) => i.status === 'active'
+        ).length;
+        const resolvedThisPeriod = crisisData.filter(
+          (i) => i.status === 'resolved'
+        ).length;
+        const totalSeverity = crisisData.reduce(
+          (sum, i) => sum + (i.severity || 0),
+          0
+        );
 
         crisisSummary = {
           activeIncidents,
           resolvedThisPeriod,
-          averageSeverity: crisisData.length > 0 ? totalSeverity / crisisData.length : 0,
+          averageSeverity:
+            crisisData.length > 0 ? totalSeverity / crisisData.length : 0,
         };
       }
     }
@@ -1380,7 +1517,9 @@ export class BrandReputationAlertsService {
   // DB MAPPERS
   // ==========================================================================
 
-  private mapRuleFromDb(row: Record<string, unknown>): BrandReputationAlertRule {
+  private mapRuleFromDb(
+    row: Record<string, unknown>
+  ): BrandReputationAlertRule {
     return {
       id: row.id as string,
       orgId: row.org_id as string,
@@ -1388,39 +1527,68 @@ export class BrandReputationAlertsService {
       description: row.description as string | undefined,
       isActive: row.is_active as boolean,
       channel: row.channel as ReputationAlertChannel,
-      minOverallScore: row.min_overall_score ? parseFloat(row.min_overall_score as string) : undefined,
-      maxOverallScore: row.max_overall_score ? parseFloat(row.max_overall_score as string) : undefined,
-      minDeltaOverallScore: row.min_delta_overall_score ? parseFloat(row.min_delta_overall_score as string) : undefined,
-      maxDeltaOverallScore: row.max_delta_overall_score ? parseFloat(row.max_delta_overall_score as string) : undefined,
+      minOverallScore: row.min_overall_score
+        ? parseFloat(row.min_overall_score as string)
+        : undefined,
+      maxOverallScore: row.max_overall_score
+        ? parseFloat(row.max_overall_score as string)
+        : undefined,
+      minDeltaOverallScore: row.min_delta_overall_score
+        ? parseFloat(row.min_delta_overall_score as string)
+        : undefined,
+      maxDeltaOverallScore: row.max_delta_overall_score
+        ? parseFloat(row.max_delta_overall_score as string)
+        : undefined,
       componentKey: row.component_key as ReputationComponentKey | undefined,
-      minComponentScore: row.min_component_score ? parseFloat(row.min_component_score as string) : undefined,
+      minComponentScore: row.min_component_score
+        ? parseFloat(row.min_component_score as string)
+        : undefined,
       competitorSlug: row.competitor_slug as string | undefined,
-      minCompetitorGap: row.min_competitor_gap ? parseFloat(row.min_competitor_gap as string) : undefined,
-      maxCompetitorGap: row.max_competitor_gap ? parseFloat(row.max_competitor_gap as string) : undefined,
+      minCompetitorGap: row.min_competitor_gap
+        ? parseFloat(row.min_competitor_gap as string)
+        : undefined,
+      maxCompetitorGap: row.max_competitor_gap
+        ? parseFloat(row.max_competitor_gap as string)
+        : undefined,
       minIncidentSeverity: row.min_incident_severity as number | undefined,
       linkCrisisIncidents: row.link_crisis_incidents as boolean,
       timeWindowMinutes: row.time_window_minutes as number,
       cooldownMinutes: row.cooldown_minutes as number,
       lastTriggeredAt: row.last_triggered_at as string | undefined,
-      notificationConfig: row.notification_config as BrandReputationAlertRule['notificationConfig'],
+      notificationConfig:
+        row.notification_config as BrandReputationAlertRule['notificationConfig'],
       createdAt: row.created_at as string,
       updatedAt: row.updated_at as string,
       createdBy: row.created_by as string | undefined,
     };
   }
 
-  private mapEventFromDb(row: Record<string, unknown>): BrandReputationAlertEvent {
+  private mapEventFromDb(
+    row: Record<string, unknown>
+  ): BrandReputationAlertEvent {
     return {
       id: row.id as string,
       orgId: row.org_id as string,
       ruleId: row.rule_id as string,
       status: row.status as ReputationAlertStatus,
-      overallScoreBefore: row.overall_score_before ? parseFloat(row.overall_score_before as string) : undefined,
-      overallScoreAfter: row.overall_score_after ? parseFloat(row.overall_score_after as string) : undefined,
-      componentScoresBefore: row.component_scores_before as ComponentScoresMap | undefined,
-      componentScoresAfter: row.component_scores_after as ComponentScoresMap | undefined,
-      competitorGapBefore: row.competitor_gap_before ? parseFloat(row.competitor_gap_before as string) : undefined,
-      competitorGapAfter: row.competitor_gap_after ? parseFloat(row.competitor_gap_after as string) : undefined,
+      overallScoreBefore: row.overall_score_before
+        ? parseFloat(row.overall_score_before as string)
+        : undefined,
+      overallScoreAfter: row.overall_score_after
+        ? parseFloat(row.overall_score_after as string)
+        : undefined,
+      componentScoresBefore: row.component_scores_before as
+        | ComponentScoresMap
+        | undefined,
+      componentScoresAfter: row.component_scores_after as
+        | ComponentScoresMap
+        | undefined,
+      competitorGapBefore: row.competitor_gap_before
+        ? parseFloat(row.competitor_gap_before as string)
+        : undefined,
+      competitorGapAfter: row.competitor_gap_after
+        ? parseFloat(row.competitor_gap_after as string)
+        : undefined,
       competitorSlug: row.competitor_slug as string | undefined,
       incidentIds: (row.incident_ids as string[]) || [],
       triggerReason: row.trigger_reason as string | undefined,
@@ -1447,9 +1615,15 @@ export class BrandReputationAlertsService {
       frequency: row.frequency as ReputationReportFrequency,
       format: row.format as ReputationReportFormat,
       status: row.status as ReputationReportStatus,
-      overallScoreSnapshot: row.overall_score_snapshot as BrandReputationScoreSnapshot | undefined,
-      componentScoresSnapshot: row.component_scores_snapshot as ComponentScoresMap | undefined,
-      competitorSnapshot: row.competitor_snapshot as CompetitorReputationSnapshot[] | undefined,
+      overallScoreSnapshot: row.overall_score_snapshot as
+        | BrandReputationScoreSnapshot
+        | undefined,
+      componentScoresSnapshot: row.component_scores_snapshot as
+        | ComponentScoresMap
+        | undefined,
+      competitorSnapshot: row.competitor_snapshot as
+        | CompetitorReputationSnapshot[]
+        | undefined,
       keyMetrics: row.key_metrics as BrandReputationReport['keyMetrics'],
       trendData: row.trend_data as BrandReputationReport['trendData'],
       generationStartedAt: row.generation_started_at as string | undefined,
@@ -1462,7 +1636,9 @@ export class BrandReputationAlertsService {
     };
   }
 
-  private mapSectionFromDb(row: Record<string, unknown>): BrandReputationReportSection {
+  private mapSectionFromDb(
+    row: Record<string, unknown>
+  ): BrandReputationReportSection {
     return {
       id: row.id as string,
       reportId: row.report_id as string,
@@ -1474,8 +1650,12 @@ export class BrandReputationAlertsService {
       metadata: row.metadata as Record<string, unknown> | undefined,
       generatedAt: row.generated_at as string | undefined,
       generationModel: row.generation_model as string | undefined,
-      generationPromptTokens: row.generation_prompt_tokens as number | undefined,
-      generationCompletionTokens: row.generation_completion_tokens as number | undefined,
+      generationPromptTokens: row.generation_prompt_tokens as
+        | number
+        | undefined,
+      generationCompletionTokens: row.generation_completion_tokens as
+        | number
+        | undefined,
       lastEditedAt: row.last_edited_at as string | undefined,
       lastEditedBy: row.last_edited_by as string | undefined,
       createdAt: row.created_at as string,
@@ -1483,7 +1663,9 @@ export class BrandReputationAlertsService {
     };
   }
 
-  private mapRecipientFromDb(row: Record<string, unknown>): BrandReputationReportRecipient {
+  private mapRecipientFromDb(
+    row: Record<string, unknown>
+  ): BrandReputationReportRecipient {
     return {
       id: row.id as string,
       reportId: row.report_id as string,

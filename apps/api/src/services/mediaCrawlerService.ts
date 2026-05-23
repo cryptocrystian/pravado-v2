@@ -78,7 +78,10 @@ export class MediaCrawlerService {
   /**
    * Add a new RSS feed
    */
-  async addRSSFeed(orgId: string, input: CreateRSSFeedInput): Promise<MediaRSSFeed> {
+  async addRSSFeed(
+    orgId: string,
+    input: CreateRSSFeedInput
+  ): Promise<MediaRSSFeed> {
     if (this.debugMode) {
       console.log('[MediaCrawler] Adding RSS feed:', { orgId, url: input.url });
     }
@@ -111,7 +114,10 @@ export class MediaCrawlerService {
   /**
    * List RSS feeds
    */
-  async listRSSFeeds(orgId: string, query?: ListRSSFeedsQuery): Promise<RSSFeedListResponse> {
+  async listRSSFeeds(
+    orgId: string,
+    query?: ListRSSFeedsQuery
+  ): Promise<RSSFeedListResponse> {
     const limit = query?.limit ?? 50;
     const offset = query?.offset ?? 0;
 
@@ -128,7 +134,9 @@ export class MediaCrawlerService {
       queryBuilder = queryBuilder.eq('active', query.active);
     }
 
-    queryBuilder = queryBuilder.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    queryBuilder = queryBuilder
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data, error, count } = await queryBuilder;
 
@@ -157,7 +165,10 @@ export class MediaCrawlerService {
   /**
    * Get a single RSS feed
    */
-  async getRSSFeed(orgId: string, feedId: string): Promise<MediaRSSFeed | null> {
+  async getRSSFeed(
+    orgId: string,
+    feedId: string
+  ): Promise<MediaRSSFeed | null> {
     const { data, error } = await this.supabase
       .from('media_rss_feeds')
       .select()
@@ -194,7 +205,8 @@ export class MediaCrawlerService {
     if (input.url !== undefined) updateData.url = input.url;
     if (input.sourceId !== undefined) updateData.source_id = input.sourceId;
     if (input.title !== undefined) updateData.title = input.title;
-    if (input.description !== undefined) updateData.description = input.description;
+    if (input.description !== undefined)
+      updateData.description = input.description;
     if (input.active !== undefined) updateData.active = input.active;
     if (input.fetchFrequencyHours !== undefined)
       updateData.fetch_frequency_hours = input.fetchFrequencyHours;
@@ -252,7 +264,8 @@ export class MediaCrawlerService {
         signal: controller.signal,
         headers: {
           'User-Agent': 'Pravado Media Monitor/1.0 (+https://pravado.com)',
-          'Accept': 'application/rss+xml, application/xml, text/xml, application/atom+xml',
+          Accept:
+            'application/rss+xml, application/xml, text/xml, application/atom+xml',
         },
       });
 
@@ -279,6 +292,7 @@ export class MediaCrawlerService {
    */
   private parseRSSXML(xmlContent: string, feedUrl: string): RSSArticleItem[] {
     // Dynamic import to avoid issues with ESM
+    // eslint-disable-next-line @typescript-eslint/no-var-requires -- intentional CommonJS require for fast-xml-parser (avoids ESM dual-package issues)
     const { XMLParser } = require('fast-xml-parser');
 
     const parser = new XMLParser({
@@ -296,7 +310,9 @@ export class MediaCrawlerService {
       // Handle RSS 2.0 format
       if (result.rss?.channel) {
         const channel = result.rss.channel;
-        const items = Array.isArray(channel.item) ? channel.item : [channel.item].filter(Boolean);
+        const items = Array.isArray(channel.item)
+          ? channel.item
+          : [channel.item].filter(Boolean);
 
         for (const item of items) {
           const article = this.parseRSSItem(item, feedUrl);
@@ -308,7 +324,9 @@ export class MediaCrawlerService {
 
       // Handle Atom format
       if (result.feed?.entry) {
-        const entries = Array.isArray(result.feed.entry) ? result.feed.entry : [result.feed.entry];
+        const entries = Array.isArray(result.feed.entry)
+          ? result.feed.entry
+          : [result.feed.entry];
 
         for (const entry of entries) {
           const article = this.parseAtomEntry(entry, feedUrl);
@@ -333,7 +351,9 @@ export class MediaCrawlerService {
       }
 
       if (this.debugMode) {
-        console.log(`[MediaCrawler] Parsed ${articles.length} articles from ${feedUrl}`);
+        console.log(
+          `[MediaCrawler] Parsed ${articles.length} articles from ${feedUrl}`
+        );
       }
 
       return articles;
@@ -348,7 +368,10 @@ export class MediaCrawlerService {
   /**
    * Parse a single RSS item
    */
-  private parseRSSItem(item: Record<string, unknown>, feedUrl: string): RSSArticleItem | null {
+  private parseRSSItem(
+    item: Record<string, unknown>,
+    feedUrl: string
+  ): RSSArticleItem | null {
     if (!item) return null;
 
     const title = this.extractText(item.title);
@@ -358,9 +381,10 @@ export class MediaCrawlerService {
 
     // Parse publication date
     let publishedAt: Date | null = null;
-    const pubDate = this.extractText(item.pubDate) ||
-                    this.extractText(item['dc:date']) ||
-                    this.extractText(item.date);
+    const pubDate =
+      this.extractText(item.pubDate) ||
+      this.extractText(item['dc:date']) ||
+      this.extractText(item.date);
 
     if (pubDate) {
       const parsed = new Date(pubDate);
@@ -370,24 +394,29 @@ export class MediaCrawlerService {
     }
 
     // Extract author
-    const author = this.extractText(item.author) ||
-                   this.extractText(item['dc:creator']) ||
-                   null;
+    const author =
+      this.extractText(item.author) ||
+      this.extractText(item['dc:creator']) ||
+      null;
 
     // Extract description
-    const description = this.extractText(item.description) ||
-                        this.extractText(item['content:encoded']) ||
-                        null;
+    const description =
+      this.extractText(item.description) ||
+      this.extractText(item['content:encoded']) ||
+      null;
 
     // Extract guid (unique identifier)
-    const guid = this.extractText(item.guid) ||
-                 this.hashString(`${feedUrl}-${link}`).toString();
+    const guid =
+      this.extractText(item.guid) ||
+      this.hashString(`${feedUrl}-${link}`).toString();
 
     return {
       title,
       link: this.normalizeURL(link),
       publishedAt: publishedAt || new Date(),
-      description: description ? this.stripHtml(description).substring(0, 500) : null,
+      description: description
+        ? this.stripHtml(description).substring(0, 500)
+        : null,
       author,
       guid,
     };
@@ -396,7 +425,10 @@ export class MediaCrawlerService {
   /**
    * Parse a single Atom entry
    */
-  private parseAtomEntry(entry: Record<string, unknown>, feedUrl: string): RSSArticleItem | null {
+  private parseAtomEntry(
+    entry: Record<string, unknown>,
+    feedUrl: string
+  ): RSSArticleItem | null {
     if (!entry) return null;
 
     const title = this.extractText(entry.title);
@@ -407,8 +439,9 @@ export class MediaCrawlerService {
 
     if (Array.isArray(linkObj)) {
       // Find alternate link or first link
-      const alternate = linkObj.find((l: Record<string, unknown>) =>
-        l['@_rel'] === 'alternate' || !l['@_rel']
+      const alternate = linkObj.find(
+        (l: Record<string, unknown>) =>
+          l['@_rel'] === 'alternate' || !l['@_rel']
       );
       link = alternate?.['@_href'] || linkObj[0]?.['@_href'];
     } else if (typeof linkObj === 'object' && linkObj !== null) {
@@ -421,8 +454,8 @@ export class MediaCrawlerService {
 
     // Parse publication date
     let publishedAt: Date | null = null;
-    const pubDate = this.extractText(entry.published) ||
-                    this.extractText(entry.updated);
+    const pubDate =
+      this.extractText(entry.published) || this.extractText(entry.updated);
 
     if (pubDate) {
       const parsed = new Date(pubDate);
@@ -435,24 +468,30 @@ export class MediaCrawlerService {
     let author: string | null = null;
     if (entry.author) {
       if (typeof entry.author === 'object' && entry.author !== null) {
-        author = this.extractText((entry.author as Record<string, unknown>).name);
+        author = this.extractText(
+          (entry.author as Record<string, unknown>).name
+        );
       }
     }
 
     // Extract description/summary
-    const description = this.extractText(entry.summary) ||
-                        this.extractText(entry.content) ||
-                        null;
+    const description =
+      this.extractText(entry.summary) ||
+      this.extractText(entry.content) ||
+      null;
 
     // Extract guid
-    const guid = this.extractText(entry.id) ||
-                 this.hashString(`${feedUrl}-${link}`).toString();
+    const guid =
+      this.extractText(entry.id) ||
+      this.hashString(`${feedUrl}-${link}`).toString();
 
     return {
       title,
       link: this.normalizeURL(link),
       publishedAt: publishedAt || new Date(),
-      description: description ? this.stripHtml(description).substring(0, 500) : null,
+      description: description
+        ? this.stripHtml(description).substring(0, 500)
+        : null,
       author,
       guid,
     };
@@ -531,11 +570,17 @@ export class MediaCrawlerService {
   /**
    * Create a crawl job
    */
-  async createCrawlJob(orgId: string, input: CreateCrawlJobInput): Promise<MediaCrawlJob> {
+  async createCrawlJob(
+    orgId: string,
+    input: CreateCrawlJobInput
+  ): Promise<MediaCrawlJob> {
     const normalizedUrl = this.normalizeURL(input.url);
 
     if (this.debugMode) {
-      console.log('[MediaCrawler] Creating crawl job:', { orgId, url: normalizedUrl });
+      console.log('[MediaCrawler] Creating crawl job:', {
+        orgId,
+        url: normalizedUrl,
+      });
     }
 
     // Check if job already exists for this URL
@@ -592,7 +637,10 @@ export class MediaCrawlerService {
   /**
    * List crawl jobs
    */
-  async listCrawlJobs(orgId: string, query?: ListCrawlJobsQuery): Promise<CrawlJobListResponse> {
+  async listCrawlJobs(
+    orgId: string,
+    query?: ListCrawlJobsQuery
+  ): Promise<CrawlJobListResponse> {
     const limit = query?.limit ?? 50;
     const offset = query?.offset ?? 0;
     const sortBy = query?.sortBy ?? 'created_at';
@@ -637,7 +685,9 @@ export class MediaCrawlerService {
       const job = transformCrawlJobRecord(record as MediaCrawlJobRecord);
       return {
         ...job,
-        feed: record.media_rss_feeds ? transformRSSFeedRecord(record.media_rss_feeds) : null,
+        feed: record.media_rss_feeds
+          ? transformRSSFeedRecord(record.media_rss_feeds)
+          : null,
       };
     });
 
@@ -652,7 +702,10 @@ export class MediaCrawlerService {
   /**
    * Get a single crawl job
    */
-  async getCrawlJob(orgId: string, jobId: string): Promise<MediaCrawlJob | null> {
+  async getCrawlJob(
+    orgId: string,
+    jobId: string
+  ): Promise<MediaCrawlJob | null> {
     const { data, error } = await this.supabase
       .from('media_crawl_jobs')
       .select()
@@ -724,7 +777,9 @@ export class MediaCrawlerService {
       .eq('org_id', orgId);
 
     if (updateError) {
-      throw new Error(`Failed to update crawl job status: ${updateError.message}`);
+      throw new Error(
+        `Failed to update crawl job status: ${updateError.message}`
+      );
     }
   }
 
@@ -735,7 +790,10 @@ export class MediaCrawlerService {
   /**
    * Fetch RSS feed and create crawl jobs for articles
    */
-  async ingestFromRSSFeed(orgId: string, feedId: string): Promise<RSSIngestionResult> {
+  async ingestFromRSSFeed(
+    orgId: string,
+    feedId: string
+  ): Promise<RSSIngestionResult> {
     if (this.debugMode) {
       console.log('[MediaCrawler] Ingesting from RSS feed:', feedId);
     }
@@ -780,7 +838,9 @@ export class MediaCrawlerService {
           jobsCreated++;
         } catch (error) {
           const errorMsg =
-            error instanceof Error ? error.message : 'Unknown error creating crawl job';
+            error instanceof Error
+              ? error.message
+              : 'Unknown error creating crawl job';
           errors.push(`Failed to create job for ${article.link}: ${errorMsg}`);
         }
       }
@@ -792,7 +852,8 @@ export class MediaCrawlerService {
         errors,
       };
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error fetching RSS';
+      const errorMsg =
+        error instanceof Error ? error.message : 'Unknown error fetching RSS';
       errors.push(errorMsg);
 
       // Update feed with error
@@ -845,7 +906,10 @@ export class MediaCrawlerService {
   /**
    * Trigger fetch for all active feeds
    */
-  async fetchAllActiveFeeds(orgId: string, feedIds?: string[]): Promise<RSSIngestionResult[]> {
+  async fetchAllActiveFeeds(
+    orgId: string,
+    feedIds?: string[]
+  ): Promise<RSSIngestionResult[]> {
     const results: RSSIngestionResult[] = [];
 
     let feeds: MediaRSSFeed[];
@@ -859,10 +923,15 @@ export class MediaCrawlerService {
         .in('id', feedIds)
         .eq('active', true);
 
-      feeds = (data || []).map((r) => transformRSSFeedRecord(r as MediaRSSFeedRecord));
+      feeds = (data || []).map((r) =>
+        transformRSSFeedRecord(r as MediaRSSFeedRecord)
+      );
     } else {
       // Fetch all active feeds
-      const response = await this.listRSSFeeds(orgId, { active: true, limit: 100 });
+      const response = await this.listRSSFeeds(orgId, {
+        active: true,
+        limit: 100,
+      });
       feeds = response.feeds;
     }
 
@@ -913,7 +982,8 @@ export class MediaCrawlerService {
         signal: controller.signal,
         headers: {
           'User-Agent': 'Pravado Media Monitor/1.0 (+https://pravado.com)',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5',
         },
       });
@@ -1017,7 +1087,9 @@ export class MediaCrawlerService {
   /**
    * Extract author from HTML using multiple strategies
    */
-  private extractAuthor($: ReturnType<typeof import('cheerio').load>): string | null {
+  private extractAuthor(
+    $: ReturnType<typeof import('cheerio').load>
+  ): string | null {
     // Try Open Graph author
     const ogAuthor = $('meta[property="article:author"]').attr('content');
     if (ogAuthor?.trim()) return ogAuthor.trim();
@@ -1056,7 +1128,9 @@ export class MediaCrawlerService {
   /**
    * Extract publication date from HTML
    */
-  private extractPublishedDate($: ReturnType<typeof import('cheerio').load>): Date | null {
+  private extractPublishedDate(
+    $: ReturnType<typeof import('cheerio').load>
+  ): Date | null {
     // Try Open Graph published time
     const ogTime = $('meta[property="article:published_time"]').attr('content');
     if (ogTime) {
@@ -1065,16 +1139,18 @@ export class MediaCrawlerService {
     }
 
     // Try schema.org datePublished
-    const schemaDate = $('[itemprop="datePublished"]').attr('content') ||
-                       $('[itemprop="datePublished"]').attr('datetime');
+    const schemaDate =
+      $('[itemprop="datePublished"]').attr('content') ||
+      $('[itemprop="datePublished"]').attr('datetime');
     if (schemaDate) {
       const parsed = new Date(schemaDate);
       if (!isNaN(parsed.getTime())) return parsed;
     }
 
     // Try time element with datetime attribute
-    const timeElement = $('article time[datetime]').first().attr('datetime') ||
-                        $('time[datetime]').first().attr('datetime');
+    const timeElement =
+      $('article time[datetime]').first().attr('datetime') ||
+      $('time[datetime]').first().attr('datetime');
     if (timeElement) {
       const parsed = new Date(timeElement);
       if (!isNaN(parsed.getTime())) return parsed;
@@ -1101,9 +1177,13 @@ export class MediaCrawlerService {
   /**
    * Extract main content from HTML
    */
-  private extractMainContent($: ReturnType<typeof import('cheerio').load>): string {
+  private extractMainContent(
+    $: ReturnType<typeof import('cheerio').load>
+  ): string {
     // Remove unwanted elements
-    $('script, style, nav, header, footer, aside, iframe, noscript, .ad, .ads, .advertisement, .social-share, .comments, .related-posts').remove();
+    $(
+      'script, style, nav, header, footer, aside, iframe, noscript, .ad, .ads, .advertisement, .social-share, .comments, .related-posts'
+    ).remove();
 
     // Try to find article content using common patterns
     const contentSelectors = [
@@ -1131,7 +1211,8 @@ export class MediaCrawlerService {
         const paragraphs: string[] = [];
         element.find('p').each((_, el) => {
           const text = $(el).text().trim();
-          if (text.length > 20) { // Filter out very short paragraphs
+          if (text.length > 20) {
+            // Filter out very short paragraphs
             paragraphs.push(text);
           }
         });
@@ -1166,13 +1247,15 @@ export class MediaCrawlerService {
   /**
    * Extract keywords from meta tags
    */
-  private extractKeywords($: ReturnType<typeof import('cheerio').load>): string[] {
+  private extractKeywords(
+    $: ReturnType<typeof import('cheerio').load>
+  ): string[] {
     const keywords: Set<string> = new Set();
 
     // Try keywords meta tag
     const metaKeywords = $('meta[name="keywords"]').attr('content');
     if (metaKeywords) {
-      metaKeywords.split(',').forEach(k => {
+      metaKeywords.split(',').forEach((k) => {
         const keyword = k.trim().toLowerCase();
         if (keyword.length > 2 && keyword.length < 50) {
           keywords.add(keyword);
@@ -1192,7 +1275,7 @@ export class MediaCrawlerService {
     // Try news keywords
     const newsKeywords = $('meta[name="news_keywords"]').attr('content');
     if (newsKeywords) {
-      newsKeywords.split(',').forEach(k => {
+      newsKeywords.split(',').forEach((k) => {
         const keyword = k.trim().toLowerCase();
         if (keyword.length > 2 && keyword.length < 50) {
           keywords.add(keyword);
@@ -1253,12 +1336,16 @@ export class MediaCrawlerService {
       const crawledData = await this.crawlURL(job.url);
 
       // Ingest through S40 pipeline
-      const ingestionResult = await this.monitoringService.ingestArticle(orgId, job.url, {
-        sourceId: job.sourceId || undefined,
-        title: crawledData.title,
-        author: crawledData.author || undefined,
-        content: crawledData.content,
-      });
+      const ingestionResult = await this.monitoringService.ingestArticle(
+        orgId,
+        job.url,
+        {
+          sourceId: job.sourceId || undefined,
+          title: crawledData.title,
+          author: crawledData.author || undefined,
+          content: crawledData.content,
+        }
+      );
 
       // Mark job as success
       await this.updateCrawlJobStatus(
@@ -1280,10 +1367,14 @@ export class MediaCrawlerService {
         error: null,
       };
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error during crawl';
+      const errorMsg =
+        error instanceof Error ? error.message : 'Unknown error during crawl';
 
       if (this.debugMode) {
-        console.error('[MediaCrawler] Job execution failed:', { jobId, error: errorMsg });
+        console.error('[MediaCrawler] Job execution failed:', {
+          jobId,
+          error: errorMsg,
+        });
       }
 
       // Mark job as failed
@@ -1302,15 +1393,24 @@ export class MediaCrawlerService {
    * Process pending crawl jobs (batch)
    * This is called by the worker to process multiple jobs
    */
-  async processPendingJobs(orgId: string, batchSize: number = 10): Promise<CrawlJobResult[]> {
+  async processPendingJobs(
+    orgId: string,
+    batchSize: number = 10
+  ): Promise<CrawlJobResult[]> {
     if (this.debugMode) {
-      console.log('[MediaCrawler] Processing pending jobs:', { orgId, batchSize });
+      console.log('[MediaCrawler] Processing pending jobs:', {
+        orgId,
+        batchSize,
+      });
     }
 
     // Get pending jobs
-    const { data: pendingJobs } = await this.supabase.rpc('get_pending_crawl_jobs', {
-      p_limit: batchSize,
-    });
+    const { data: pendingJobs } = await this.supabase.rpc(
+      'get_pending_crawl_jobs',
+      {
+        p_limit: batchSize,
+      }
+    );
 
     if (!pendingJobs || pendingJobs.length === 0) {
       if (this.debugMode) {
@@ -1395,8 +1495,14 @@ export class MediaCrawlerService {
    */
   private async getStatsFallback(orgId: string): Promise<RSSFeedStats> {
     const [feedsData, jobsData] = await Promise.all([
-      this.supabase.from('media_rss_feeds').select('active', { count: 'exact' }).eq('org_id', orgId),
-      this.supabase.from('media_crawl_jobs').select('status', { count: 'exact' }).eq('org_id', orgId),
+      this.supabase
+        .from('media_rss_feeds')
+        .select('active', { count: 'exact' })
+        .eq('org_id', orgId),
+      this.supabase
+        .from('media_crawl_jobs')
+        .select('status', { count: 'exact' })
+        .eq('org_id', orgId),
     ]);
 
     const feeds = feedsData.data || [];
@@ -1446,6 +1552,8 @@ export class MediaCrawlerService {
 /**
  * Create a media crawler service instance
  */
-export function createMediaCrawlerService(config: MediaCrawlerConfig): MediaCrawlerService {
+export function createMediaCrawlerService(
+  config: MediaCrawlerConfig
+): MediaCrawlerService {
   return new MediaCrawlerService(config);
 }

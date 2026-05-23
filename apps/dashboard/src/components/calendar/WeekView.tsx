@@ -11,9 +11,10 @@
  */
 
 import { useMemo } from 'react';
-import type { CalendarItem } from '../command-center/types';
+
 import { CalendarItemCard } from './CalendarItemCard';
 import { PILLAR_CONFIG } from './types';
+import type { CalendarItem } from '../command-center/types';
 
 // ============================================
 // PROPS
@@ -123,7 +124,7 @@ export function WeekView({
 
   const selectedItems = useMemo(
     () => getItemsForDate(items, selectedDate),
-    [items, selectedDate],
+    [items, selectedDate]
   );
 
   return (
@@ -174,7 +175,7 @@ export function WeekView({
                       key={pillar}
                       className={`w-1.5 h-1.5 rounded-full ${PILLAR_CONFIG[pillar]?.dotClass ?? ''}`}
                     />
-                  ) : null,
+                  ) : null
                 )}
               </div>
             </button>
@@ -229,10 +230,19 @@ export function WeekView({
 
       {/* Scrollbar styling */}
       <style jsx global>{`
-        .prave-scroll::-webkit-scrollbar { width: 4px; }
-        .prave-scroll::-webkit-scrollbar-track { background: transparent; }
-        .prave-scroll::-webkit-scrollbar-thumb { background: #1F1F28; border-radius: 2px; }
-        .prave-scroll::-webkit-scrollbar-thumb:hover { background: #2A2A35; }
+        .prave-scroll::-webkit-scrollbar {
+          width: 4px;
+        }
+        .prave-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .prave-scroll::-webkit-scrollbar-thumb {
+          background: #1f1f28;
+          border-radius: 2px;
+        }
+        .prave-scroll::-webkit-scrollbar-thumb:hover {
+          background: #2a2a35;
+        }
       `}</style>
     </div>
   );

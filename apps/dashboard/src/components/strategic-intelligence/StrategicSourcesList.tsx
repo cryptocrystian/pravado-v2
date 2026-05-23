@@ -5,16 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import {
-  type StrategicSource,
-  getSourceLabel,
-  getSourceIcon,
-  formatRelativeTime,
-} from '@/lib/strategicIntelligenceApi';
 import {
   ExternalLink,
   Star,
@@ -36,6 +26,17 @@ import {
   Send,
   Box,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import {
+  type StrategicSource,
+  getSourceLabel,
+  getSourceIcon,
+  formatRelativeTime,
+} from '@/lib/strategicIntelligenceApi';
 
 interface StrategicSourcesListProps {
   sources: StrategicSource[];
@@ -71,25 +72,32 @@ export function StrategicSourcesList({
       <Card>
         <CardContent className="py-8 text-center text-white/50">
           <p>No data sources linked yet.</p>
-          <p className="text-sm">Generate the report to automatically aggregate data sources.</p>
+          <p className="text-sm">
+            Generate the report to automatically aggregate data sources.
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   // Group sources by system
-  const groupedSources = sources.reduce((acc, source) => {
-    if (!acc[source.sourceSystem]) {
-      acc[source.sourceSystem] = [];
-    }
-    acc[source.sourceSystem].push(source);
-    return acc;
-  }, {} as Record<string, StrategicSource[]>);
+  const groupedSources = sources.reduce(
+    (acc, source) => {
+      if (!acc[source.sourceSystem]) {
+        acc[source.sourceSystem] = [];
+      }
+      acc[source.sourceSystem].push(source);
+      return acc;
+    },
+    {} as Record<string, StrategicSource[]>
+  );
 
   return (
     <div className="space-y-4">
       {Object.entries(groupedSources).map(([system, systemSources]) => {
-        const iconName = getSourceIcon(system as StrategicSource['sourceSystem']);
+        const iconName = getSourceIcon(
+          system as StrategicSource['sourceSystem']
+        );
         const IconComponent = SOURCE_ICONS[iconName] || Box;
 
         return (
@@ -170,7 +178,10 @@ function SourceItem({ source, onClick }: SourceItemProps) {
           <div>
             <p className="text-xs text-white/50 mb-1">Data Quality</p>
             <div className="flex items-center gap-2">
-              <Progress value={source.dataQualityScore} className="flex-1 h-2" />
+              <Progress
+                value={source.dataQualityScore}
+                className="flex-1 h-2"
+              />
               <span className="text-xs text-white/50 w-8">
                 {Math.round(source.dataQualityScore)}%
               </span>
@@ -198,10 +209,13 @@ export function StrategicSourcesCompact({
   sources: StrategicSource[];
 }) {
   // Count sources by system
-  const sourceCounts = sources.reduce((acc, source) => {
-    acc[source.sourceSystem] = (acc[source.sourceSystem] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const sourceCounts = sources.reduce(
+    (acc, source) => {
+      acc[source.sourceSystem] = (acc[source.sourceSystem] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   const primaryCount = sources.filter((s) => s.isPrimarySource).length;
 
@@ -214,11 +228,17 @@ export function StrategicSourcesCompact({
 
       <div className="flex flex-wrap gap-2">
         {Object.entries(sourceCounts).map(([system, count]) => {
-          const iconName = getSourceIcon(system as StrategicSource['sourceSystem']);
+          const iconName = getSourceIcon(
+            system as StrategicSource['sourceSystem']
+          );
           const IconComponent = SOURCE_ICONS[iconName] || Box;
 
           return (
-            <Badge key={system} variant="outline" className="flex items-center gap-1">
+            <Badge
+              key={system}
+              variant="outline"
+              className="flex items-center gap-1"
+            >
               <IconComponent className="h-3 w-3" />
               {count}
             </Badge>

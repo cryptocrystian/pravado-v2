@@ -60,14 +60,17 @@ export async function updateSchedulerTask(
   taskId: string,
   input: UpdateSchedulerTaskInput
 ): Promise<SchedulerTask> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/scheduler/tasks/${taskId}/toggle`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/scheduler/tasks/${taskId}/toggle`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();
@@ -81,14 +84,19 @@ export async function updateSchedulerTask(
 /**
  * Run a task immediately
  */
-export async function runTaskNow(taskName: string): Promise<TaskExecutionResult> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/scheduler/tasks/${taskName}/run`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
+export async function runTaskNow(
+  taskName: string
+): Promise<TaskExecutionResult> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/scheduler/tasks/${taskName}/run`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();

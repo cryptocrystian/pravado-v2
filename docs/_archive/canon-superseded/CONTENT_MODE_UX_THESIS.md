@@ -10,11 +10,11 @@
 
 ## 1. Purpose
 
-This canon defines the **user mental model** for each automation mode within the Content pillar. It establishes what the user *believes* they are doing, what activity dominates their attention, and what constitutes a coherent versus incoherent experience.
+This canon defines the **user mental model** for each automation mode within the Content pillar. It establishes what the user _believes_ they are doing, what activity dominates their attention, and what constitutes a coherent versus incoherent experience.
 
 This canon governs **user intent and perception**, not layouts or components.
 
-It exists to prevent "mode ambiguity" — interfaces where the user cannot immediately answer: *"What am I doing here?"*
+It exists to prevent "mode ambiguity" — interfaces where the user cannot immediately answer: _"What am I doing here?"_
 
 ---
 
@@ -51,14 +51,14 @@ If the answer is unclear, the surface is in violation.
 
 **User Belief:** "This is my workspace. I am the author, editor, and decision-maker."
 
-| Dimension | User Expectation |
-|-----------|------------------|
-| **Primary Activity** | Creating, editing, organizing content |
-| **AI Presence** | Available when summoned; not directing |
-| **Queue/List Behavior** | Shows everything; I control order |
+| Dimension               | User Expectation                       |
+| ----------------------- | -------------------------------------- |
+| **Primary Activity**    | Creating, editing, organizing content  |
+| **AI Presence**         | Available when summoned; not directing |
+| **Queue/List Behavior** | Shows everything; I control order      |
 | **Dominant Affordance** | Editor, rich text, direct manipulation |
-| **Decision Authority** | I decide what to work on and when |
-| **Success Feeling** | "I built this" |
+| **Decision Authority**  | I decide what to work on and when      |
+| **Success Feeling**     | "I built this"                         |
 
 **Characteristic Verbs:** Write, edit, organize, publish, prioritize, tag
 
@@ -70,14 +70,14 @@ If the answer is unclear, the surface is in violation.
 
 **User Belief:** "AI has prepared something for me. My job is to review, approve, or refine."
 
-| Dimension | User Expectation |
-|-----------|------------------|
-| **Primary Activity** | Reviewing plans, approving drafts, validating AI decisions |
-| **AI Presence** | Prominent; AI has done work that awaits judgment |
-| **Queue/List Behavior** | AI-prioritized; shows reasoning for order |
-| **Dominant Affordance** | Approve/Reject, Compare, Preview |
-| **Decision Authority** | AI proposes; I approve or modify |
-| **Success Feeling** | "AI saved me time; I kept quality high" |
+| Dimension               | User Expectation                                           |
+| ----------------------- | ---------------------------------------------------------- |
+| **Primary Activity**    | Reviewing plans, approving drafts, validating AI decisions |
+| **AI Presence**         | Prominent; AI has done work that awaits judgment           |
+| **Queue/List Behavior** | AI-prioritized; shows reasoning for order                  |
+| **Dominant Affordance** | Approve/Reject, Compare, Preview                           |
+| **Decision Authority**  | AI proposes; I approve or modify                           |
+| **Success Feeling**     | "AI saved me time; I kept quality high"                    |
 
 **Characteristic Verbs:** Review, approve, reject, modify, compare, verify
 
@@ -89,14 +89,14 @@ If the answer is unclear, the surface is in violation.
 
 **User Belief:** "AI is handling routine work. I only need to act on exceptions."
 
-| Dimension | User Expectation |
-|-----------|------------------|
-| **Primary Activity** | Exception handling, guardrail review, audit |
-| **AI Presence** | Invisible for successes; visible only for exceptions |
-| **Queue/List Behavior** | Filtered to exceptions and violations |
-| **Dominant Affordance** | Acknowledge, Escalate, Configure guardrails |
-| **Decision Authority** | AI acts autonomously; I handle edge cases |
-| **Success Feeling** | "Everything is running; nothing needs me" |
+| Dimension               | User Expectation                                     |
+| ----------------------- | ---------------------------------------------------- |
+| **Primary Activity**    | Exception handling, guardrail review, audit          |
+| **AI Presence**         | Invisible for successes; visible only for exceptions |
+| **Queue/List Behavior** | Filtered to exceptions and violations                |
+| **Dominant Affordance** | Acknowledge, Escalate, Configure guardrails          |
+| **Decision Authority**  | AI acts autonomously; I handle edge cases            |
+| **Success Feeling**     | "Everything is running; nothing needs me"            |
 
 **Characteristic Verbs:** Monitor, acknowledge, escalate, configure, audit
 
@@ -128,10 +128,10 @@ A single view MUST NOT simultaneously present:
 
 The visually dominant element of any Content surface MUST support the mode's primary activity:
 
-| Mode | What MUST Dominate |
-|------|-------------------|
-| Manual | Editor, creation tools, or content list |
-| Copilot | AI plan, approval controls, or comparison view |
+| Mode      | What MUST Dominate                                     |
+| --------- | ------------------------------------------------------ |
+| Manual    | Editor, creation tools, or content list                |
+| Copilot   | AI plan, approval controls, or comparison view         |
 | Autopilot | Exception list, status dashboard, or "all clear" state |
 
 ### Invariant 4: Affordances Match Expectations
@@ -236,6 +236,6 @@ For any Content surface, verify:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-02-02 | Initial canonical version |
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-02-02 | Initial canonical version |

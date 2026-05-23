@@ -15,7 +15,14 @@ export async function GET() {
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/evi/current] GET Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    console.error('[API /api/evi/current] GET Error:', {
+      status,
+      message,
+      code,
+    });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

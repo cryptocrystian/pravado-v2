@@ -15,7 +15,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, citeMindStatus as citeMindTokens, modeTokens } from '../tokens';
+
+import {
+  motion,
+  citeMindStatus as citeMindTokens,
+  modeTokens,
+} from '../tokens';
 import type { AutomationMode } from '../types';
 import type { TriggerAction } from './OrchestrationEditorShell';
 
@@ -93,7 +98,8 @@ function getMockCausalChain(action: TriggerAction): CausalChainNode[] {
     id: 'action-current',
     type: 'action',
     label: action.title,
-    description: 'You are here. Completing this action will advance the authority pipeline.',
+    description:
+      'You are here. Completing this action will advance the authority pipeline.',
     pillar: 'content',
   });
 
@@ -102,7 +108,8 @@ function getMockCausalChain(action: TriggerAction): CausalChainNode[] {
     id: 'effect-1',
     type: 'effect',
     label: 'EVI Score Update',
-    description: 'Earned Visibility Index will recalculate based on new content signals.',
+    description:
+      'Earned Visibility Index will recalculate based on new content signals.',
     pillar: 'content',
   });
   chain.push({
@@ -116,7 +123,8 @@ function getMockCausalChain(action: TriggerAction): CausalChainNode[] {
     id: 'effect-3',
     type: 'effect',
     label: 'SEO Authority Signal',
-    description: 'Search authority metrics will update with new content entity coverage.',
+    description:
+      'Search authority metrics will update with new content entity coverage.',
     pillar: 'seo',
   });
 
@@ -129,7 +137,10 @@ function getMockCausalChain(action: TriggerAction): CausalChainNode[] {
 
 type ExplainLevel = 'summary' | 'technical' | 'causal';
 
-const LEVEL_CONFIG: Record<ExplainLevel, { label: string; description: string }> = {
+const LEVEL_CONFIG: Record<
+  ExplainLevel,
+  { label: string; description: string }
+> = {
   summary: {
     label: 'Summary',
     description: 'Why this action matters',
@@ -195,23 +206,29 @@ function getModeCeilingRationale(action: TriggerAction): string {
 // RISK ASSESSMENT
 // ============================================
 
-function getRiskAssessment(action: TriggerAction): { level: string; rationale: string } {
+function getRiskAssessment(action: TriggerAction): {
+  level: string;
+  rationale: string;
+} {
   if (action.citeMindStatus === 'blocked') {
     return {
       level: 'High',
-      rationale: 'CiteMind has identified critical issues that must be resolved before proceeding.',
+      rationale:
+        'CiteMind has identified critical issues that must be resolved before proceeding.',
     };
   }
   if (action.citeMindStatus === 'warning') {
     return {
       level: 'Medium',
-      rationale: 'CiteMind has flagged potential issues. Review recommended before publishing.',
+      rationale:
+        'CiteMind has flagged potential issues. Review recommended before publishing.',
     };
   }
   if (action.priority === 'urgent') {
     return {
       level: 'Medium',
-      rationale: 'Time-sensitive action with downstream dependencies. Prompt completion recommended.',
+      rationale:
+        'Time-sensitive action with downstream dependencies. Prompt completion recommended.',
     };
   }
   return {
@@ -279,12 +296,25 @@ export function ExplainabilityDrawer({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-brand-iris/10">
-                <svg className="w-5 h-5 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5 text-brand-iris"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div>
-                <h2 id="explain-drawer-title" className="text-sm font-semibold text-white/95">
+                <h2
+                  id="explain-drawer-title"
+                  className="text-sm font-semibold text-white/95"
+                >
                   Explain This Action
                 </h2>
                 <p className="text-xs text-white/50">3-level explainability</p>
@@ -296,8 +326,18 @@ export function ExplainabilityDrawer({
               className={`p-2 text-white/40 hover:text-white hover:bg-slate-4 rounded-lg ${motion.transition.fast}`}
               aria-label="Close"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -311,9 +351,11 @@ export function ExplainabilityDrawer({
                 onClick={() => setActiveLevel(level)}
                 className={`
                   flex-1 px-3 py-1.5 text-xs font-medium rounded-md
-                  ${activeLevel === level
-                    ? 'bg-slate-0 text-white shadow-sm'
-                    : 'text-white/50 hover:text-white/80'}
+                  ${
+                    activeLevel === level
+                      ? 'bg-slate-0 text-white shadow-sm'
+                      : 'text-white/50 hover:text-white/80'
+                  }
                   ${motion.transition.fast}
                 `}
               >
@@ -333,9 +375,10 @@ export function ExplainabilityDrawer({
                   Why This Action?
                 </h3>
                 <p className="text-sm text-white/80 leading-relaxed">
-                  This action was recommended because it directly contributes to your authority-building strategy.
-                  Completing it will strengthen your content&apos;s visibility in AI answer engines and improve your
-                  Earned Visibility Index (EVI).
+                  This action was recommended because it directly contributes to
+                  your authority-building strategy. Completing it will
+                  strengthen your content&apos;s visibility in AI answer engines
+                  and improve your Earned Visibility Index (EVI).
                 </p>
               </div>
 
@@ -353,7 +396,9 @@ export function ExplainabilityDrawer({
                     <p className="text-xs text-white/50">Entities Covered</p>
                   </div>
                   <div className="p-3 bg-slate-2 border border-slate-4 rounded-lg text-center">
-                    <p className="text-lg font-semibold text-brand-magenta">2</p>
+                    <p className="text-lg font-semibold text-brand-magenta">
+                      2
+                    </p>
                     <p className="text-xs text-white/50">PR Opportunities</p>
                   </div>
                 </div>
@@ -389,14 +434,20 @@ export function ExplainabilityDrawer({
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
                   Mode Ceiling
                 </h3>
-                <div className={`p-3 rounded-lg border ${ceilingConfig.bg} ${ceilingConfig.border} mb-2`}>
+                <div
+                  className={`p-3 rounded-lg border ${ceilingConfig.bg} ${ceilingConfig.border} mb-2`}
+                >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-sm font-medium ${ceilingConfig.text}`}>
+                    <span
+                      className={`text-sm font-medium ${ceilingConfig.text}`}
+                    >
                       {ceilingConfig.label} Mode
                     </span>
                     <span className="text-xs text-white/40">(Maximum)</span>
                   </div>
-                  <p className="text-xs text-white/60">{ceilingConfig.description}</p>
+                  <p className="text-xs text-white/60">
+                    {ceilingConfig.description}
+                  </p>
                 </div>
                 <p className="text-xs text-white/50 leading-relaxed">
                   {getModeCeilingRationale(action)}
@@ -408,11 +459,15 @@ export function ExplainabilityDrawer({
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
                   Current Mode
                 </h3>
-                <div className={`p-3 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}>
+                <div
+                  className={`p-3 rounded-lg border ${modeConfig.bg} ${modeConfig.border}`}
+                >
                   <span className={`text-sm font-medium ${modeConfig.text}`}>
                     {modeConfig.label} Mode
                   </span>
-                  <p className="text-xs text-white/50 mt-0.5">{modeConfig.description}</p>
+                  <p className="text-xs text-white/50 mt-0.5">
+                    {modeConfig.description}
+                  </p>
                 </div>
               </div>
 
@@ -421,19 +476,30 @@ export function ExplainabilityDrawer({
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
                   CiteMind Validation
                 </h3>
-                <div className={`p-3 rounded-lg border ${citeMindConfig.bg} ${citeMindConfig.border}`}>
+                <div
+                  className={`p-3 rounded-lg border ${citeMindConfig.bg} ${citeMindConfig.border}`}
+                >
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${citeMindConfig.dot}`} />
-                    <span className={`text-sm font-medium ${citeMindConfig.text} capitalize`}>
+                    <span
+                      className={`w-2 h-2 rounded-full ${citeMindConfig.dot}`}
+                    />
+                    <span
+                      className={`text-sm font-medium ${citeMindConfig.text} capitalize`}
+                    >
                       {action.citeMindStatus}
                     </span>
                   </div>
                   <p className="text-xs text-white/50 mt-1">
-                    {action.citeMindStatus === 'passed' && 'Content meets citation eligibility and factual accuracy standards.'}
-                    {action.citeMindStatus === 'analyzing' && 'CiteMind is currently validating content quality and accuracy.'}
-                    {action.citeMindStatus === 'warning' && 'Some issues detected. Review recommendations before proceeding.'}
-                    {action.citeMindStatus === 'blocked' && 'Critical issues must be resolved before content can be published.'}
-                    {action.citeMindStatus === 'pending' && 'Awaiting CiteMind analysis.'}
+                    {action.citeMindStatus === 'passed' &&
+                      'Content meets citation eligibility and factual accuracy standards.'}
+                    {action.citeMindStatus === 'analyzing' &&
+                      'CiteMind is currently validating content quality and accuracy.'}
+                    {action.citeMindStatus === 'warning' &&
+                      'Some issues detected. Review recommendations before proceeding.'}
+                    {action.citeMindStatus === 'blocked' &&
+                      'Critical issues must be resolved before content can be published.'}
+                    {action.citeMindStatus === 'pending' &&
+                      'Awaiting CiteMind analysis.'}
                   </p>
                 </div>
               </div>
@@ -443,18 +509,22 @@ export function ExplainabilityDrawer({
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">
                   Risk Assessment
                 </h3>
-                <div className={`
+                <div
+                  className={`
                   p-3 rounded-lg border
                   ${risk.level === 'High' ? 'bg-semantic-danger/10 border-semantic-danger/20' : ''}
                   ${risk.level === 'Medium' ? 'bg-semantic-warning/10 border-semantic-warning/20' : ''}
                   ${risk.level === 'Low' ? 'bg-semantic-success/10 border-semantic-success/20' : ''}
-                `}>
-                  <span className={`
+                `}
+                >
+                  <span
+                    className={`
                     text-sm font-medium
                     ${risk.level === 'High' ? 'text-semantic-danger' : ''}
                     ${risk.level === 'Medium' ? 'text-semantic-warning' : ''}
                     ${risk.level === 'Low' ? 'text-semantic-success' : ''}
-                  `}>
+                  `}
+                  >
                     {risk.level} Risk
                   </span>
                   <p className="text-xs text-white/50 mt-1">{risk.rationale}</p>
@@ -471,7 +541,8 @@ export function ExplainabilityDrawer({
                   Action Lineage
                 </h3>
                 <p className="text-xs text-white/50 mb-4">
-                  This shows what triggered this action and what it will affect downstream.
+                  This shows what triggered this action and what it will affect
+                  downstream.
                 </p>
 
                 {/* Causal Chain Visualization */}
@@ -483,43 +554,81 @@ export function ExplainabilityDrawer({
                     {causalChain.map((node) => (
                       <div key={node.id} className="relative flex gap-4">
                         {/* Node marker */}
-                        <div className={`
+                        <div
+                          className={`
                           relative z-10 w-8 h-8 rounded-full flex items-center justify-center shrink-0
                           ${node.type === 'trigger' ? 'bg-slate-2 border-2 border-slate-4' : ''}
                           ${node.type === 'action' ? 'bg-brand-iris border-2 border-brand-iris/40 shadow-[0_0_12px_rgba(168,85,247,0.3)]' : ''}
                           ${node.type === 'effect' ? 'bg-slate-2 border-2 border-dashed border-slate-5' : ''}
-                        `}>
+                        `}
+                        >
                           {node.type === 'trigger' && (
-                            <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            <svg
+                              className="w-4 h-4 text-white/50"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 10l7-7m0 0l7 7m-7-7v18"
+                              />
                             </svg>
                           )}
                           {node.type === 'action' && (
-                            <svg className="w-4 h-4 text-white/95" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            <svg
+                              className="w-4 h-4 text-white/95"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                              />
                             </svg>
                           )}
                           {node.type === 'effect' && (
-                            <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            <svg
+                              className="w-4 h-4 text-white/50"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                              />
                             </svg>
                           )}
                         </div>
 
                         {/* Node content */}
-                        <div className={`
+                        <div
+                          className={`
                           flex-1 p-3 rounded-lg border
                           ${node.type === 'action' ? 'bg-brand-iris/5 border-brand-iris/20' : 'bg-slate-2 border-slate-4'}
-                        `}>
+                        `}
+                        >
                           <div className="flex items-start justify-between gap-2 mb-1">
-                            <span className={`
+                            <span
+                              className={`
                               text-xs font-medium
                               ${node.type === 'action' ? 'text-brand-iris' : 'text-white/80'}
-                            `}>
+                            `}
+                            >
                               {node.label}
                             </span>
                             {node.pillar && (
-                              <span className={`text-xs ${getPillarColor(node.pillar)}`}>
+                              <span
+                                className={`text-xs ${getPillarColor(node.pillar)}`}
+                              >
                                 {node.pillar.toUpperCase()}
                               </span>
                             )}
@@ -545,16 +654,34 @@ export function ExplainabilityDrawer({
                   Cross-Pillar Impact
                 </h3>
                 <div className="flex gap-2">
-                  <div className={`flex-1 p-2 rounded-lg border ${getPillarBg('content')}`}>
-                    <p className={`text-xs font-medium ${getPillarColor('content')}`}>Content</p>
+                  <div
+                    className={`flex-1 p-2 rounded-lg border ${getPillarBg('content')}`}
+                  >
+                    <p
+                      className={`text-xs font-medium ${getPillarColor('content')}`}
+                    >
+                      Content
+                    </p>
                     <p className="text-xs text-white/40">Primary</p>
                   </div>
-                  <div className={`flex-1 p-2 rounded-lg border ${getPillarBg('pr')}`}>
-                    <p className={`text-xs font-medium ${getPillarColor('pr')}`}>PR</p>
+                  <div
+                    className={`flex-1 p-2 rounded-lg border ${getPillarBg('pr')}`}
+                  >
+                    <p
+                      className={`text-xs font-medium ${getPillarColor('pr')}`}
+                    >
+                      PR
+                    </p>
                     <p className="text-xs text-white/40">Downstream</p>
                   </div>
-                  <div className={`flex-1 p-2 rounded-lg border ${getPillarBg('seo')}`}>
-                    <p className={`text-xs font-medium ${getPillarColor('seo')}`}>SEO</p>
+                  <div
+                    className={`flex-1 p-2 rounded-lg border ${getPillarBg('seo')}`}
+                  >
+                    <p
+                      className={`text-xs font-medium ${getPillarColor('seo')}`}
+                    >
+                      SEO
+                    </p>
                     <p className="text-xs text-white/40">Downstream</p>
                   </div>
                 </div>

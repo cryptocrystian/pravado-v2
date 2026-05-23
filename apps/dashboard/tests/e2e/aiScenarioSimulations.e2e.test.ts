@@ -46,7 +46,9 @@ describe('AI Scenario Simulations E2E Tests (S71)', () => {
 
   describe('Feature Flag Check', () => {
     it('should have ENABLE_AI_SCENARIO_SIMULATIONS feature flag enabled', async () => {
-      const { response } = await apiRequest('/api/v1/ai-scenario-simulations/stats');
+      const { response } = await apiRequest(
+        '/api/v1/ai-scenario-simulations/stats'
+      );
 
       // If feature is disabled, we'd get a 403
       expect(response.status).not.toBe(404);
@@ -70,10 +72,13 @@ describe('AI Scenario Simulations E2E Tests (S71)', () => {
         },
       };
 
-      const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-        method: 'POST',
-        body: simulationData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/ai-scenario-simulations',
+        {
+          method: 'POST',
+          body: simulationData,
+        }
+      );
 
       // Either success or feature disabled (403)
       if (response.status === 403) {
@@ -445,13 +450,16 @@ describe('AI Scenario Simulations E2E Tests (S71)', () => {
 
 describe('Input Validation Tests', () => {
   it('should reject invalid simulation name', async () => {
-    const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-      method: 'POST',
-      body: {
-        name: '', // Too short
-        objectiveType: 'crisis_comms',
-      },
-    });
+    const { response, data } = await apiRequest(
+      '/api/v1/ai-scenario-simulations',
+      {
+        method: 'POST',
+        body: {
+          name: '', // Too short
+          objectiveType: 'crisis_comms',
+        },
+      }
+    );
 
     if (response.status === 403) return; // Feature disabled
 
@@ -460,13 +468,16 @@ describe('Input Validation Tests', () => {
   });
 
   it('should reject invalid objective type', async () => {
-    const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-      method: 'POST',
-      body: {
-        name: 'Valid Name',
-        objectiveType: 'invalid_type',
-      },
-    });
+    const { response, data } = await apiRequest(
+      '/api/v1/ai-scenario-simulations',
+      {
+        method: 'POST',
+        body: {
+          name: 'Valid Name',
+          objectiveType: 'invalid_type',
+        },
+      }
+    );
 
     if (response.status === 403) return; // Feature disabled
 
@@ -475,14 +486,17 @@ describe('Input Validation Tests', () => {
   });
 
   it('should reject invalid simulation mode', async () => {
-    const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-      method: 'POST',
-      body: {
-        name: 'Valid Name',
-        objectiveType: 'crisis_comms',
-        simulationMode: 'invalid_mode',
-      },
-    });
+    const { response, data } = await apiRequest(
+      '/api/v1/ai-scenario-simulations',
+      {
+        method: 'POST',
+        body: {
+          name: 'Valid Name',
+          objectiveType: 'crisis_comms',
+          simulationMode: 'invalid_mode',
+        },
+      }
+    );
 
     if (response.status === 403) return; // Feature disabled
 
@@ -491,16 +505,19 @@ describe('Input Validation Tests', () => {
   });
 
   it('should reject maxSteps exceeding limit', async () => {
-    const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-      method: 'POST',
-      body: {
-        name: 'Valid Name',
-        objectiveType: 'crisis_comms',
-        config: {
-          maxStepsPerRun: 1000, // Exceeds max of 100
+    const { response, data } = await apiRequest(
+      '/api/v1/ai-scenario-simulations',
+      {
+        method: 'POST',
+        body: {
+          name: 'Valid Name',
+          objectiveType: 'crisis_comms',
+          config: {
+            maxStepsPerRun: 1000, // Exceeds max of 100
+          },
         },
-      },
-    });
+      }
+    );
 
     if (response.status === 403) return; // Feature disabled
 
@@ -515,18 +532,21 @@ describe('Input Validation Tests', () => {
 
 describe('Simulation Mode Tests', () => {
   it('should create multi-run simulation', async () => {
-    const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-      method: 'POST',
-      body: {
-        name: 'E2E Multi-Run Simulation',
-        objectiveType: 'investor_relations',
-        simulationMode: 'multi_run',
-        config: {
-          maxRuns: 5,
-          variationSeed: 'earnings_call',
+    const { response, data } = await apiRequest(
+      '/api/v1/ai-scenario-simulations',
+      {
+        method: 'POST',
+        body: {
+          name: 'E2E Multi-Run Simulation',
+          objectiveType: 'investor_relations',
+          simulationMode: 'multi_run',
+          config: {
+            maxRuns: 5,
+            variationSeed: 'earnings_call',
+          },
         },
-      },
-    });
+      }
+    );
 
     if (response.status === 403) return; // Feature disabled
 
@@ -536,26 +556,32 @@ describe('Simulation Mode Tests', () => {
 
     // Cleanup
     if (data.simulation?.id) {
-      await apiRequest(`/api/v1/ai-scenario-simulations/${data.simulation.id}/archive`, {
-        method: 'POST',
-        body: { reason: 'E2E test cleanup' },
-      });
+      await apiRequest(
+        `/api/v1/ai-scenario-simulations/${data.simulation.id}/archive`,
+        {
+          method: 'POST',
+          body: { reason: 'E2E test cleanup' },
+        }
+      );
     }
   });
 
   it('should create what-if simulation', async () => {
-    const { response, data } = await apiRequest('/api/v1/ai-scenario-simulations', {
-      method: 'POST',
-      body: {
-        name: 'E2E What-If Simulation',
-        objectiveType: 'go_to_market',
-        simulationMode: 'what_if',
-        config: {
-          branchingEnabled: true,
-          alternativeScenarios: ['optimistic', 'pessimistic'],
+    const { response, data } = await apiRequest(
+      '/api/v1/ai-scenario-simulations',
+      {
+        method: 'POST',
+        body: {
+          name: 'E2E What-If Simulation',
+          objectiveType: 'go_to_market',
+          simulationMode: 'what_if',
+          config: {
+            branchingEnabled: true,
+            alternativeScenarios: ['optimistic', 'pessimistic'],
+          },
         },
-      },
-    });
+      }
+    );
 
     if (response.status === 403) return; // Feature disabled
 
@@ -565,10 +591,13 @@ describe('Simulation Mode Tests', () => {
 
     // Cleanup
     if (data.simulation?.id) {
-      await apiRequest(`/api/v1/ai-scenario-simulations/${data.simulation.id}/archive`, {
-        method: 'POST',
-        body: { reason: 'E2E test cleanup' },
-      });
+      await apiRequest(
+        `/api/v1/ai-scenario-simulations/${data.simulation.id}/archive`,
+        {
+          method: 'POST',
+          body: { reason: 'E2E test cleanup' },
+        }
+      );
     }
   });
 });

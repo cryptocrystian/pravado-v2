@@ -4,7 +4,7 @@
  * API endpoints for multi-scenario orchestration suites.
  */
 
-import { FastifyPluginAsync } from 'fastify';
+import { isEnabled } from '@pravado/feature-flags';
 import {
   createScenarioSuiteSchema,
   updateScenarioSuiteSchema,
@@ -23,12 +23,18 @@ import {
   generateSuiteNarrativeSchema,
   generateSuiteRiskMapSchema,
 } from '@pravado/validators';
-import { isEnabled } from '@pravado/feature-flags';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as service from '../../services/scenarioOrchestrationService';
 
 // Helper to get service context from request
-const getContext = (request: { supabase: unknown; orgId: string; userId: string }) => ({
-  supabase: request.supabase as service.ScenarioOrchestrationContext['supabase'],
+const getContext = (request: {
+  supabase: unknown;
+  orgId: string;
+  userId: string;
+}) => ({
+  supabase:
+    request.supabase as service.ScenarioOrchestrationContext['supabase'],
   orgId: request.orgId,
   userId: request.userId,
 });
@@ -43,7 +49,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
     if (!isEnabled('ENABLE_SCENARIO_ORCHESTRATION')) {
       return reply.status(403).send({
         success: false,
-        error: 'Scenario Orchestration feature is not enabled for this organization',
+        error:
+          'Scenario Orchestration feature is not enabled for this organization',
       });
     }
   });
@@ -60,7 +67,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listSuites(ctx, query);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list suites';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list suites';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -73,7 +81,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.createSuite(ctx, input);
       return reply.status(201).send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create suite';
+      const message =
+        error instanceof Error ? error.message : 'Failed to create suite';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -86,7 +95,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.getSuite(ctx, id);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get suite';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get suite';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -100,7 +110,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.updateSuite(ctx, id, input);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update suite';
+      const message =
+        error instanceof Error ? error.message : 'Failed to update suite';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -114,7 +125,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.archiveSuite(ctx, id, body?.reason);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to archive suite';
+      const message =
+        error instanceof Error ? error.message : 'Failed to archive suite';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -132,7 +144,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const item = await service.addSuiteItem(ctx, id, input);
       return reply.status(201).send({ success: true, item });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to add suite item';
+      const message =
+        error instanceof Error ? error.message : 'Failed to add suite item';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -146,7 +159,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const item = await service.updateSuiteItem(ctx, itemId, input);
       return reply.send({ success: true, item });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update suite item';
+      const message =
+        error instanceof Error ? error.message : 'Failed to update suite item';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -159,7 +173,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.removeSuiteItem(ctx, itemId);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to remove suite item';
+      const message =
+        error instanceof Error ? error.message : 'Failed to remove suite item';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -177,7 +192,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.startSuiteRun(ctx, id, input);
       return reply.status(201).send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to start suite run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to start suite run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -191,7 +207,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listSuiteRuns(ctx, id, query);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list suite runs';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list suite runs';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -204,7 +221,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.getSuiteRun(ctx, runId);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get suite run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get suite run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -219,7 +237,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listSuiteRunItems(ctx, runId);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list run items';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list run items';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -233,7 +252,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.advanceSuiteRun(ctx, runId, input);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to advance suite run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to advance suite run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -247,7 +267,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.abortSuiteRun(ctx, runId, input);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to abort suite run';
+      const message =
+        error instanceof Error ? error.message : 'Failed to abort suite run';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -264,7 +285,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.getSuiteRunMetrics(ctx, runId);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get run metrics';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get run metrics';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -276,7 +298,8 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.getSuiteStats(ctx);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to get statistics';
+      const message =
+        error instanceof Error ? error.message : 'Failed to get statistics';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -290,12 +313,15 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const ctx = getContext(request as never);
       const { runId } = suiteRunIdParamSchema.parse(request.params);
-      const body = request.body as { format?: string; includeRecommendations?: boolean } | undefined;
+      const body = request.body as
+        | { format?: string; includeRecommendations?: boolean }
+        | undefined;
       const input = generateSuiteNarrativeSchema.parse({ runId, ...body });
       const result = await service.generateSuiteNarrative(ctx, input);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate narrative';
+      const message =
+        error instanceof Error ? error.message : 'Failed to generate narrative';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -305,12 +331,15 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const ctx = getContext(request as never);
       const { runId } = suiteRunIdParamSchema.parse(request.params);
-      const body = request.body as { includeOpportunities?: boolean; includeMitigations?: boolean } | undefined;
+      const body = request.body as
+        | { includeOpportunities?: boolean; includeMitigations?: boolean }
+        | undefined;
       const input = generateSuiteRiskMapSchema.parse({ runId, ...body });
       const result = await service.generateSuiteRiskMap(ctx, input);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate risk map';
+      const message =
+        error instanceof Error ? error.message : 'Failed to generate risk map';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -324,11 +353,15 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const ctx = getContext(request as never);
       const { id } = suiteIdParamSchema.parse(request.params);
-      const query = listSuiteAuditEventsSchema.parse({ ...(request.query as Record<string, unknown>), suiteId: id });
+      const query = listSuiteAuditEventsSchema.parse({
+        ...(request.query as Record<string, unknown>),
+        suiteId: id,
+      });
       const result = await service.listAuditEvents(ctx, query);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list audit events';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list audit events';
       return reply.status(400).send({ success: false, error: message });
     }
   });
@@ -338,11 +371,15 @@ const scenarioOrchestrationRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const ctx = getContext(request as never);
       const { runId } = suiteRunIdParamSchema.parse(request.params);
-      const query = listSuiteAuditEventsSchema.parse({ ...(request.query as Record<string, unknown>), suiteRunId: runId });
+      const query = listSuiteAuditEventsSchema.parse({
+        ...(request.query as Record<string, unknown>),
+        suiteRunId: runId,
+      });
       const result = await service.listAuditEvents(ctx, query);
       return reply.send(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to list audit events';
+      const message =
+        error instanceof Error ? error.message : 'Failed to list audit events';
       return reply.status(400).send({ success: false, error: message });
     }
   });

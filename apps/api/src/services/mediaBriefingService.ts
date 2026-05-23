@@ -11,7 +11,6 @@
  * - Audit logging for all generation events
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import {
   MediaBriefing,
   BriefingSection,
@@ -45,6 +44,7 @@ import {
   SECTION_TYPE_CONFIGS,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('media-briefing-service');
 
@@ -215,7 +215,8 @@ export class MediaBriefingService {
 
     const mapped = this.mapBriefingFromDb(briefing);
     mapped.sections = sections?.map((s) => this.mapSectionFromDb(s)) || [];
-    mapped.talkingPoints = talkingPoints?.map((t) => this.mapTalkingPointFromDb(t)) || [];
+    mapped.talkingPoints =
+      talkingPoints?.map((t) => this.mapTalkingPointFromDb(t)) || [];
     mapped.sources = sources?.map((s) => this.mapSourceFromDb(s)) || [];
 
     return mapped;
@@ -240,17 +241,26 @@ export class MediaBriefingService {
     if (filters.status) query = query.eq('status', filters.status);
     if (filters.storyId) query = query.eq('story_id', filters.storyId);
     if (filters.createdBy) query = query.eq('created_by', filters.createdBy);
-    if (filters.createdStart) query = query.gte('created_at', filters.createdStart.toISOString());
-    if (filters.createdEnd) query = query.lte('created_at', filters.createdEnd.toISOString());
+    if (filters.createdStart)
+      query = query.gte('created_at', filters.createdStart.toISOString());
+    if (filters.createdEnd)
+      query = query.lte('created_at', filters.createdEnd.toISOString());
     if (filters.searchQuery) {
-      query = query.or(`title.ilike.%${filters.searchQuery}%,subtitle.ilike.%${filters.searchQuery}%`);
+      query = query.or(
+        `title.ilike.%${filters.searchQuery}%,subtitle.ilike.%${filters.searchQuery}%`
+      );
     }
-    if (filters.journalistId) query = query.contains('journalist_ids', [filters.journalistId]);
-    if (filters.personaId) query = query.contains('persona_ids', [filters.personaId]);
-    if (filters.competitorId) query = query.contains('competitor_ids', [filters.competitorId]);
+    if (filters.journalistId)
+      query = query.contains('journalist_ids', [filters.journalistId]);
+    if (filters.personaId)
+      query = query.contains('persona_ids', [filters.personaId]);
+    if (filters.competitorId)
+      query = query.contains('competitor_ids', [filters.competitorId]);
 
     // Pagination
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: briefings, count, error } = await query;
 
@@ -279,15 +289,20 @@ export class MediaBriefingService {
     if (data.format !== undefined) updates.format = data.format;
     if (data.status !== undefined) updates.status = data.status;
     if (data.storyId !== undefined) updates.story_id = data.storyId;
-    if (data.journalistIds !== undefined) updates.journalist_ids = data.journalistIds;
+    if (data.journalistIds !== undefined)
+      updates.journalist_ids = data.journalistIds;
     if (data.outletIds !== undefined) updates.outlet_ids = data.outletIds;
     if (data.personaIds !== undefined) updates.persona_ids = data.personaIds;
-    if (data.competitorIds !== undefined) updates.competitor_ids = data.competitorIds;
+    if (data.competitorIds !== undefined)
+      updates.competitor_ids = data.competitorIds;
     if (data.tone !== undefined) updates.tone = data.tone;
     if (data.focusAreas !== undefined) updates.focus_areas = data.focusAreas;
-    if (data.excludedTopics !== undefined) updates.excluded_topics = data.excludedTopics;
-    if (data.customInstructions !== undefined) updates.custom_instructions = data.customInstructions;
-    if (data.executiveSummary !== undefined) updates.executive_summary = data.executiveSummary;
+    if (data.excludedTopics !== undefined)
+      updates.excluded_topics = data.excludedTopics;
+    if (data.customInstructions !== undefined)
+      updates.custom_instructions = data.customInstructions;
+    if (data.executiveSummary !== undefined)
+      updates.executive_summary = data.executiveSummary;
 
     const { data: briefing, error } = await this.supabase
       .from('media_briefings')
@@ -299,7 +314,9 @@ export class MediaBriefingService {
 
     if (error) throw new Error(`Failed to update briefing: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, briefingId, null, null, 'update', { updates: Object.keys(updates) });
+    await this.logAuditEvent(orgId, userId, briefingId, null, null, 'update', {
+      updates: Object.keys(updates),
+    });
 
     return this.mapBriefingFromDb(briefing);
   }
@@ -307,8 +324,20 @@ export class MediaBriefingService {
   /**
    * Delete briefing
    */
-  async deleteBriefing(orgId: string, userId: string, briefingId: string): Promise<void> {
-    await this.logAuditEvent(orgId, userId, briefingId, null, null, 'delete', {});
+  async deleteBriefing(
+    orgId: string,
+    userId: string,
+    briefingId: string
+  ): Promise<void> {
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      briefingId,
+      null,
+      null,
+      'delete',
+      {}
+    );
 
     const { error } = await this.supabase
       .from('media_briefings')
@@ -341,7 +370,15 @@ export class MediaBriefingService {
 
     if (error) throw new Error(`Failed to review briefing: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, briefingId, null, null, 'review', {});
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      briefingId,
+      null,
+      null,
+      'review',
+      {}
+    );
 
     return this.mapBriefingFromDb(briefing);
   }
@@ -368,7 +405,15 @@ export class MediaBriefingService {
 
     if (error) throw new Error(`Failed to approve briefing: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, briefingId, null, null, 'approve', {});
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      briefingId,
+      null,
+      null,
+      'approve',
+      {}
+    );
 
     return this.mapBriefingFromDb(briefing);
   }
@@ -391,7 +436,15 @@ export class MediaBriefingService {
 
     if (error) throw new Error(`Failed to archive briefing: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, briefingId, null, null, 'archive', {});
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      briefingId,
+      null,
+      null,
+      'archive',
+      {}
+    );
 
     return this.mapBriefingFromDb(briefing);
   }
@@ -403,7 +456,11 @@ export class MediaBriefingService {
   /**
    * Get section by ID
    */
-  async getSection(orgId: string, briefingId: string, sectionId: string): Promise<BriefingSection> {
+  async getSection(
+    orgId: string,
+    briefingId: string,
+    sectionId: string
+  ): Promise<BriefingSection> {
     const { data: section, error } = await this.supabase
       .from('media_briefing_sections')
       .select('*')
@@ -444,8 +501,10 @@ export class MediaBriefingService {
 
     if (data.title !== undefined) updates.title = data.title;
     if (data.content !== undefined) updates.content = data.content;
-    if (data.bulletPoints !== undefined) updates.bullet_points = data.bulletPoints;
-    if (data.supportingData !== undefined) updates.supporting_data = data.supportingData;
+    if (data.bulletPoints !== undefined)
+      updates.bullet_points = data.bulletPoints;
+    if (data.supportingData !== undefined)
+      updates.supporting_data = data.supportingData;
 
     const { data: section, error } = await this.supabase
       .from('media_briefing_sections')
@@ -458,9 +517,17 @@ export class MediaBriefingService {
 
     if (error) throw new Error(`Failed to update section: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, briefingId, sectionId, null, 'edit_section', {
-      sectionType: original.sectionType,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      briefingId,
+      sectionId,
+      null,
+      'edit_section',
+      {
+        sectionType: original.sectionType,
+      }
+    );
 
     return this.mapSectionFromDb(section);
   }
@@ -534,12 +601,21 @@ export class MediaBriefingService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to create talking point: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to create talking point: ${error.message}`);
 
     if (data.briefingId) {
-      await this.logAuditEvent(orgId, userId, data.briefingId, null, talkingPoint.id, 'create_talking_point', {
-        category: data.category,
-      });
+      await this.logAuditEvent(
+        orgId,
+        userId,
+        data.briefingId,
+        null,
+        talkingPoint.id,
+        'create_talking_point',
+        {
+          category: data.category,
+        }
+      );
     }
 
     return this.mapTalkingPointFromDb(talkingPoint);
@@ -548,7 +624,10 @@ export class MediaBriefingService {
   /**
    * Get talking point by ID
    */
-  async getTalkingPoint(orgId: string, talkingPointId: string): Promise<TalkingPoint> {
+  async getTalkingPoint(
+    orgId: string,
+    talkingPointId: string
+  ): Promise<TalkingPoint> {
     const { data: talkingPoint, error } = await this.supabase
       .from('media_talking_points')
       .select('*')
@@ -580,25 +659,37 @@ export class MediaBriefingService {
     // Apply filters
     if (filters.briefingId) query = query.eq('briefing_id', filters.briefingId);
     if (filters.category) query = query.eq('category', filters.category);
-    if (filters.isApproved !== undefined) query = query.eq('is_approved', filters.isApproved);
-    if (filters.isArchived !== undefined) query = query.eq('is_archived', filters.isArchived);
-    if (filters.minPriority !== undefined) query = query.gte('priority_score', filters.minPriority);
-    if (filters.journalistId) query = query.contains('journalist_ids', [filters.journalistId]);
-    if (filters.personaId) query = query.contains('persona_ids', [filters.personaId]);
-    if (filters.competitorId) query = query.contains('competitor_ids', [filters.competitorId]);
+    if (filters.isApproved !== undefined)
+      query = query.eq('is_approved', filters.isApproved);
+    if (filters.isArchived !== undefined)
+      query = query.eq('is_archived', filters.isArchived);
+    if (filters.minPriority !== undefined)
+      query = query.gte('priority_score', filters.minPriority);
+    if (filters.journalistId)
+      query = query.contains('journalist_ids', [filters.journalistId]);
+    if (filters.personaId)
+      query = query.contains('persona_ids', [filters.personaId]);
+    if (filters.competitorId)
+      query = query.contains('competitor_ids', [filters.competitorId]);
     if (filters.searchQuery) {
-      query = query.or(`headline.ilike.%${filters.searchQuery}%,content.ilike.%${filters.searchQuery}%`);
+      query = query.or(
+        `headline.ilike.%${filters.searchQuery}%,content.ilike.%${filters.searchQuery}%`
+      );
     }
 
     // Pagination
-    query = query.order('priority_score', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('priority_score', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: talkingPoints, count, error } = await query;
 
-    if (error) throw new Error(`Failed to fetch talking points: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to fetch talking points: ${error.message}`);
 
     return {
-      talkingPoints: talkingPoints?.map((t) => this.mapTalkingPointFromDb(t)) || [],
+      talkingPoints:
+        talkingPoints?.map((t) => this.mapTalkingPointFromDb(t)) || [],
       total: count || 0,
       limit,
       offset,
@@ -618,14 +709,20 @@ export class MediaBriefingService {
     if (data.category !== undefined) updates.category = data.category;
     if (data.headline !== undefined) updates.headline = data.headline;
     if (data.content !== undefined) updates.content = data.content;
-    if (data.supportingFacts !== undefined) updates.supporting_facts = data.supportingFacts;
-    if (data.targetAudience !== undefined) updates.target_audience = data.targetAudience;
+    if (data.supportingFacts !== undefined)
+      updates.supporting_facts = data.supportingFacts;
+    if (data.targetAudience !== undefined)
+      updates.target_audience = data.targetAudience;
     if (data.useCase !== undefined) updates.use_case = data.useCase;
-    if (data.contextNotes !== undefined) updates.context_notes = data.contextNotes;
-    if (data.journalistIds !== undefined) updates.journalist_ids = data.journalistIds;
+    if (data.contextNotes !== undefined)
+      updates.context_notes = data.contextNotes;
+    if (data.journalistIds !== undefined)
+      updates.journalist_ids = data.journalistIds;
     if (data.personaIds !== undefined) updates.persona_ids = data.personaIds;
-    if (data.competitorIds !== undefined) updates.competitor_ids = data.competitorIds;
-    if (data.priorityScore !== undefined) updates.priority_score = data.priorityScore;
+    if (data.competitorIds !== undefined)
+      updates.competitor_ids = data.competitorIds;
+    if (data.priorityScore !== undefined)
+      updates.priority_score = data.priorityScore;
     if (data.isArchived !== undefined) updates.is_archived = data.isArchived;
 
     if (data.isApproved !== undefined) {
@@ -644,12 +741,21 @@ export class MediaBriefingService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to update talking point: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to update talking point: ${error.message}`);
 
     if (talkingPoint.briefing_id) {
-      await this.logAuditEvent(orgId, userId, talkingPoint.briefing_id, null, talkingPointId, 'update_talking_point', {
-        updates: Object.keys(updates),
-      });
+      await this.logAuditEvent(
+        orgId,
+        userId,
+        talkingPoint.briefing_id,
+        null,
+        talkingPointId,
+        'update_talking_point',
+        {
+          updates: Object.keys(updates),
+        }
+      );
     }
 
     return this.mapTalkingPointFromDb(talkingPoint);
@@ -658,14 +764,18 @@ export class MediaBriefingService {
   /**
    * Delete talking point
    */
-  async deleteTalkingPoint(orgId: string, talkingPointId: string): Promise<void> {
+  async deleteTalkingPoint(
+    orgId: string,
+    talkingPointId: string
+  ): Promise<void> {
     const { error } = await this.supabase
       .from('media_talking_points')
       .delete()
       .eq('id', talkingPointId)
       .eq('org_id', orgId);
 
-    if (error) throw new Error(`Failed to delete talking point: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to delete talking point: ${error.message}`);
   }
 
   // =========================================================================
@@ -695,10 +805,14 @@ export class MediaBriefingService {
       const briefing = await this.getBriefing(orgId, data.briefingId);
 
       // Assemble intelligence context from S38-S53
-      const intelligence = await this.assembleIntelligenceContext(orgId, briefing);
+      const intelligence = await this.assembleIntelligenceContext(
+        orgId,
+        briefing
+      );
 
       // Determine which sections to generate
-      const sectionsToGenerate = data.sectionsToGenerate ||
+      const sectionsToGenerate =
+        data.sectionsToGenerate ||
         this.getDefaultSectionsForFormat(briefing.format);
 
       // Delete existing sections if regenerating
@@ -717,7 +831,9 @@ export class MediaBriefingService {
 
         // Skip if section exists and not regenerating
         if (!data.regenerateExisting) {
-          const existingSection = briefing.sections?.find((s) => s.sectionType === sectionType);
+          const existingSection = briefing.sections?.find(
+            (s) => s.sectionType === sectionType
+          );
           if (existingSection) continue;
         }
 
@@ -765,7 +881,10 @@ export class MediaBriefingService {
           key_takeaways: takeawaysResult.takeaways,
           confidence_score: this.calculateConfidenceScore(intelligence),
           relevance_score: this.calculateRelevanceScore(intelligence, briefing),
-          completeness_score: this.calculateCompletenessScore(sectionsGenerated, sectionsToGenerate.length),
+          completeness_score: this.calculateCompletenessScore(
+            sectionsGenerated,
+            sectionsToGenerate.length
+          ),
           generation_tokens_used: totalTokens,
           generation_duration_ms: durationMs,
           last_generated_at: new Date(),
@@ -775,13 +894,26 @@ export class MediaBriefingService {
         .select()
         .single();
 
-      if (error) throw new Error(`Failed to update briefing after generation: ${error.message}`);
+      if (error)
+        throw new Error(
+          `Failed to update briefing after generation: ${error.message}`
+        );
 
-      await this.logAuditEvent(orgId, userId, data.briefingId, null, null, 'generate', {
-        sectionsGenerated,
+      await this.logAuditEvent(
+        orgId,
+        userId,
+        data.briefingId,
+        null,
+        null,
+        'generate',
+        {
+          sectionsGenerated,
+          totalTokens,
+          durationMs,
+        },
         totalTokens,
-        durationMs,
-      }, totalTokens, durationMs);
+        durationMs
+      );
 
       return {
         briefing: await this.getBriefing(orgId, data.briefingId),
@@ -797,10 +929,23 @@ export class MediaBriefingService {
         .eq('id', data.briefingId)
         .eq('org_id', orgId);
 
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      await this.logAuditEvent(orgId, userId, data.briefingId, null, null, 'generate_failed', {
-        error: errorMessage,
-      }, totalTokens, Date.now() - startTime, false, errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      await this.logAuditEvent(
+        orgId,
+        userId,
+        data.briefingId,
+        null,
+        null,
+        'generate_failed',
+        {
+          error: errorMessage,
+        },
+        totalTokens,
+        Date.now() - startTime,
+        false,
+        errorMessage
+      );
 
       throw error;
     }
@@ -817,7 +962,9 @@ export class MediaBriefingService {
     const startTime = Date.now();
 
     const briefing = await this.getBriefing(orgId, data.briefingId);
-    const existingSection = briefing.sections?.find((s) => s.id === data.sectionId);
+    const existingSection = briefing.sections?.find(
+      (s) => s.id === data.sectionId
+    );
 
     if (!existingSection) {
       throw new Error(`Section not found: ${data.sectionId}`);
@@ -827,10 +974,15 @@ export class MediaBriefingService {
 
     // Preserve manual edits if requested
     if (data.preserveManualEdits && existingSection.isManuallyEdited) {
-      throw new Error('Section has manual edits. Set preserveManualEdits=false to overwrite.');
+      throw new Error(
+        'Section has manual edits. Set preserveManualEdits=false to overwrite.'
+      );
     }
 
-    const intelligence = await this.assembleIntelligenceContext(orgId, briefing);
+    const intelligence = await this.assembleIntelligenceContext(
+      orgId,
+      briefing
+    );
 
     const result = await this.generateSection(
       orgId,
@@ -845,12 +997,26 @@ export class MediaBriefingService {
       data.sectionId
     );
 
-    const section = await this.getSection(orgId, data.briefingId, data.sectionId);
+    const section = await this.getSection(
+      orgId,
+      data.briefingId,
+      data.sectionId
+    );
 
-    await this.logAuditEvent(orgId, userId, data.briefingId, data.sectionId, null, 'regenerate_section', {
-      sectionType: existingSection.sectionType,
-      customInstructions: !!data.customInstructions,
-    }, result.tokensUsed, Date.now() - startTime);
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      data.briefingId,
+      data.sectionId,
+      null,
+      'regenerate_section',
+      {
+        sectionType: existingSection.sectionType,
+        customInstructions: !!data.customInstructions,
+      },
+      result.tokensUsed,
+      Date.now() - startTime
+    );
 
     return {
       section,
@@ -872,7 +1038,10 @@ export class MediaBriefingService {
     let totalTokens = 0;
 
     const briefing = await this.getBriefing(orgId, data.briefingId);
-    const intelligence = await this.assembleIntelligenceContext(orgId, briefing);
+    const intelligence = await this.assembleIntelligenceContext(
+      orgId,
+      briefing
+    );
 
     const categories = data.categories || [
       TalkingPointCategory.PRIMARY_MESSAGE,
@@ -887,7 +1056,13 @@ export class MediaBriefingService {
       throw new Error('LLM router not configured for talking point generation');
     }
 
-    const prompt = this.buildTalkingPointsPrompt(briefing, intelligence, categories, count, data.customInstructions);
+    const prompt = this.buildTalkingPointsPrompt(
+      briefing,
+      intelligence,
+      categories,
+      count,
+      data.customInstructions
+    );
 
     const llmResponse = await this.llmRouter.generate({
       userPrompt: prompt,
@@ -896,10 +1071,15 @@ export class MediaBriefingService {
       systemPrompt: BRIEFING_SYSTEM_PROMPT,
     });
 
-    totalTokens = (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0);
+    totalTokens =
+      (llmResponse.usage?.promptTokens || 0) +
+      (llmResponse.usage?.completionTokens || 0);
 
     // Parse LLM response into talking points
-    const parsedPoints = this.parseTalkingPointsResponse(llmResponse.completion, categories);
+    const parsedPoints = this.parseTalkingPointsResponse(
+      llmResponse.completion,
+      categories
+    );
 
     // Store each talking point
     for (const point of parsedPoints) {
@@ -924,10 +1104,20 @@ export class MediaBriefingService {
         .eq('id', talkingPoint.id);
     }
 
-    await this.logAuditEvent(orgId, userId, data.briefingId, null, null, 'generate_talking_points', {
-      count: generatedPoints.length,
-      categories,
-    }, totalTokens, Date.now() - startTime);
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      data.briefingId,
+      null,
+      null,
+      'generate_talking_points',
+      {
+        count: generatedPoints.length,
+        categories,
+      },
+      totalTokens,
+      Date.now() - startTime
+    );
 
     return {
       talkingPoints: generatedPoints,
@@ -982,7 +1172,8 @@ export class MediaBriefingService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to add source reference: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to add source reference: ${error.message}`);
     return this.mapSourceFromDb(source);
   }
 
@@ -1004,7 +1195,9 @@ export class MediaBriefingService {
       query = query.eq('source_type', sourceType);
     }
 
-    const { data: sources, error } = await query.order('relevance_score', { ascending: false });
+    const { data: sources, error } = await query.order('relevance_score', {
+      ascending: false,
+    });
 
     if (error) throw new Error(`Failed to fetch sources: ${error.message}`);
     return sources?.map((s) => this.mapSourceFromDb(s)) || [];
@@ -1245,7 +1438,12 @@ export class MediaBriefingService {
     customInstructions?: string,
     existingSectionId?: string
   ): Promise<{ tokensUsed: number }> {
-    const prompt = this.buildSectionPrompt(sectionType, intelligence, briefing, customInstructions);
+    const prompt = this.buildSectionPrompt(
+      sectionType,
+      intelligence,
+      briefing,
+      customInstructions
+    );
 
     if (!this.llmRouter) {
       // Create placeholder section if LLM not available
@@ -1253,7 +1451,9 @@ export class MediaBriefingService {
         org_id: orgId,
         briefing_id: briefingId,
         section_type: sectionType,
-        title: SECTION_TYPE_CONFIGS.find((c) => c.type === sectionType)?.label || sectionType,
+        title:
+          SECTION_TYPE_CONFIGS.find((c) => c.type === sectionType)?.label ||
+          sectionType,
         order_index: orderIndex,
         content: `[Placeholder: ${sectionType} content would be generated here]`,
         bullet_points: [],
@@ -1281,16 +1481,22 @@ export class MediaBriefingService {
       systemPrompt: BRIEFING_SYSTEM_PROMPT,
     });
 
-    const tokensUsed = (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0);
+    const tokensUsed =
+      (llmResponse.usage?.promptTokens || 0) +
+      (llmResponse.usage?.completionTokens || 0);
 
     // Parse response
-    const { content, bulletPoints } = this.parseSectionResponse(llmResponse.completion);
+    const { content, bulletPoints } = this.parseSectionResponse(
+      llmResponse.completion
+    );
 
     const sectionRow = {
       org_id: orgId,
       briefing_id: briefingId,
       section_type: sectionType,
-      title: SECTION_TYPE_CONFIGS.find((c) => c.type === sectionType)?.label || sectionType,
+      title:
+        SECTION_TYPE_CONFIGS.find((c) => c.type === sectionType)?.label ||
+        sectionType,
       order_index: orderIndex,
       content,
       bullet_points: bulletPoints,
@@ -1353,7 +1559,9 @@ Provide a high-level overview that an executive can scan in 30 seconds.`;
 
     return {
       content: llmResponse.completion,
-      tokensUsed: (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0),
+      tokensUsed:
+        (llmResponse.usage?.promptTokens || 0) +
+        (llmResponse.usage?.completionTokens || 0),
     };
   }
 
@@ -1402,7 +1610,9 @@ Return JSON array with objects having: title, description, importance (high/medi
         takeaways = parsed.map((t: any) => ({
           title: t.title || 'Key Point',
           description: t.description || '',
-          importance: (['high', 'medium', 'low'].includes(t.importance) ? t.importance : 'medium') as 'high' | 'medium' | 'low',
+          importance: (['high', 'medium', 'low'].includes(t.importance)
+            ? t.importance
+            : 'medium') as 'high' | 'medium' | 'low',
         }));
       }
     } catch {
@@ -1418,7 +1628,9 @@ Return JSON array with objects having: title, description, importance (high/medi
 
     return {
       takeaways,
-      tokensUsed: (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0),
+      tokensUsed:
+        (llmResponse.usage?.promptTokens || 0) +
+        (llmResponse.usage?.completionTokens || 0),
     };
   }
 
@@ -1431,7 +1643,9 @@ Return JSON array with objects having: title, description, importance (high/medi
     briefing: MediaBriefing,
     customInstructions?: string
   ): string {
-    const basePrompt = SECTION_PROMPTS[sectionType] || `Generate content for section: ${sectionType}`;
+    const basePrompt =
+      SECTION_PROMPTS[sectionType] ||
+      `Generate content for section: ${sectionType}`;
 
     return `${basePrompt}
 
@@ -1483,30 +1697,44 @@ Format as JSON array.`;
   /**
    * Format intelligence context for LLM prompt
    */
-  private formatIntelligenceForPrompt(intelligence: BriefingIntelligenceContext): string {
+  private formatIntelligenceForPrompt(
+    intelligence: BriefingIntelligenceContext
+  ): string {
     const parts: string[] = [];
 
     if (intelligence.pressReleases?.length) {
-      parts.push(`Recent Press Releases:\n${intelligence.pressReleases.map((pr) => `- ${pr.title}`).join('\n')}`);
+      parts.push(
+        `Recent Press Releases:\n${intelligence.pressReleases.map((pr) => `- ${pr.title}`).join('\n')}`
+      );
     }
 
     if (intelligence.journalistProfiles?.length) {
-      parts.push(`Target Journalists:\n${intelligence.journalistProfiles.map((j) => `- ${j.name} (${j.outlet}): ${j.beats.join(', ')}`).join('\n')}`);
+      parts.push(
+        `Target Journalists:\n${intelligence.journalistProfiles.map((j) => `- ${j.name} (${j.outlet}): ${j.beats.join(', ')}`).join('\n')}`
+      );
     }
 
     if (intelligence.personas?.length) {
-      parts.push(`Target Audiences:\n${intelligence.personas.map((p) => `- ${p.name} (${p.role}): Interests: ${p.interests.slice(0, 3).join(', ')}`).join('\n')}`);
+      parts.push(
+        `Target Audiences:\n${intelligence.personas.map((p) => `- ${p.name} (${p.role}): Interests: ${p.interests.slice(0, 3).join(', ')}`).join('\n')}`
+      );
     }
 
     if (intelligence.competitorIntel?.length) {
-      parts.push(`Competitors:\n${intelligence.competitorIntel.map((c) => `- ${c.name} (${c.tier})`).join('\n')}`);
+      parts.push(
+        `Competitors:\n${intelligence.competitorIntel.map((c) => `- ${c.name} (${c.tier})`).join('\n')}`
+      );
     }
 
     if (intelligence.performanceMetrics) {
-      parts.push(`Performance Metrics:\n- EVI Score: ${intelligence.performanceMetrics.eviScore}\n- Mention Volume: ${intelligence.performanceMetrics.mentionVolume}\n- Avg Sentiment: ${intelligence.performanceMetrics.avgSentiment.toFixed(2)}`);
+      parts.push(
+        `Performance Metrics:\n- EVI Score: ${intelligence.performanceMetrics.eviScore}\n- Mention Volume: ${intelligence.performanceMetrics.mentionVolume}\n- Avg Sentiment: ${intelligence.performanceMetrics.avgSentiment.toFixed(2)}`
+      );
     }
 
-    return parts.length > 0 ? `Intelligence Context:\n${parts.join('\n\n')}` : 'No specific intelligence context available.';
+    return parts.length > 0
+      ? `Intelligence Context:\n${parts.join('\n\n')}`
+      : 'No specific intelligence context available.';
   }
 
   /**
@@ -1522,7 +1750,11 @@ Format as JSON array.`;
 
     for (const line of lines) {
       const trimmed = line.trim();
-      if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.match(/^\d+\./)) {
+      if (
+        trimmed.startsWith('- ') ||
+        trimmed.startsWith('* ') ||
+        trimmed.match(/^\d+\./)
+      ) {
         bulletPoints.push({
           text: trimmed.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, ''),
         });
@@ -1554,7 +1786,9 @@ Format as JSON array.`;
       const parsed = JSON.parse(response);
       if (Array.isArray(parsed)) {
         return parsed.map((tp: any) => ({
-          category: categories.includes(tp.category) ? tp.category : categories[0],
+          category: categories.includes(tp.category)
+            ? tp.category
+            : categories[0],
           headline: tp.headline || 'Talking Point',
           content: tp.content || '',
           supportingFacts: (tp.supportingFacts || []).map((f: any) => ({
@@ -1583,7 +1817,9 @@ Format as JSON array.`;
   /**
    * Get default sections for briefing format
    */
-  private getDefaultSectionsForFormat(format: BriefFormatType): BriefingSectionType[] {
+  private getDefaultSectionsForFormat(
+    format: BriefFormatType
+  ): BriefingSectionType[] {
     switch (format) {
       case BriefFormatType.FULL_BRIEF:
         return [
@@ -1636,7 +1872,9 @@ Format as JSON array.`;
   /**
    * Calculate confidence score based on intelligence quality
    */
-  private calculateConfidenceScore(intelligence: BriefingIntelligenceContext): number {
+  private calculateConfidenceScore(
+    intelligence: BriefingIntelligenceContext
+  ): number {
     let score = 50; // Base score
 
     if (intelligence.pressReleases?.length) score += 10;
@@ -1659,13 +1897,19 @@ Format as JSON array.`;
     let score = 60; // Base score
 
     // Higher relevance if targeted entities have data
-    if (briefing.journalistIds.length > 0 && intelligence.journalistProfiles?.length) {
+    if (
+      briefing.journalistIds.length > 0 &&
+      intelligence.journalistProfiles?.length
+    ) {
       score += 15;
     }
     if (briefing.personaIds.length > 0 && intelligence.personas?.length) {
       score += 15;
     }
-    if (briefing.competitorIds.length > 0 && intelligence.competitorIntel?.length) {
+    if (
+      briefing.competitorIds.length > 0 &&
+      intelligence.competitorIntel?.length
+    ) {
       score += 10;
     }
 
@@ -1750,7 +1994,9 @@ Format as JSON array.`;
       llmModel: row.llm_model,
       generationTokensUsed: row.generation_tokens_used,
       generationDurationMs: row.generation_duration_ms,
-      lastGeneratedAt: row.last_generated_at ? new Date(row.last_generated_at) : null,
+      lastGeneratedAt: row.last_generated_at
+        ? new Date(row.last_generated_at)
+        : null,
       createdBy: row.created_by,
       reviewedBy: row.reviewed_by,
       approvedBy: row.approved_by,

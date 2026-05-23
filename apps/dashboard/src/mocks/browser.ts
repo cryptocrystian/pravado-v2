@@ -28,7 +28,9 @@ export async function initMocks(): Promise<void> {
   const isMswEnabled = process.env.NEXT_PUBLIC_MSW_ENABLED === 'true';
 
   if (!isMswEnabled) {
-    console.log('[MSW] Mocking disabled (set NEXT_PUBLIC_MSW_ENABLED=true to enable)');
+    console.log(
+      '[MSW] Mocking disabled (set NEXT_PUBLIC_MSW_ENABLED=true to enable)'
+    );
     return;
   }
 

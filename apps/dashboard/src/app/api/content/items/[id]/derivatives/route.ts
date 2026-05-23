@@ -16,7 +16,8 @@ const MOCK_DERIVATIVES = [
     id: 'deriv-1',
     parentAssetId: '1',
     surfaceType: 'pr_pitch_excerpt',
-    content: 'New research shows marketing automation delivers 3x ROI improvement. Our comprehensive guide reveals the key strategies behind successful implementations.',
+    content:
+      'New research shows marketing automation delivers 3x ROI improvement. Our comprehensive guide reveals the key strategies behind successful implementations.',
     valid: true,
     generatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
@@ -24,7 +25,8 @@ const MOCK_DERIVATIVES = [
     id: 'deriv-2',
     parentAssetId: '1',
     surfaceType: 'aeo_snippet',
-    content: 'Marketing automation is software that automates repetitive marketing tasks like email campaigns, social media posting, and lead nurturing to improve efficiency and personalization.',
+    content:
+      'Marketing automation is software that automates repetitive marketing tasks like email campaigns, social media posting, and lead nurturing to improve efficiency and personalization.',
     valid: true,
     generatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
@@ -39,7 +41,9 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: {
-        derivatives: MOCK_DERIVATIVES.filter((d) => d.parentAssetId === params.id || params.id === '1'),
+        derivatives: MOCK_DERIVATIVES.filter(
+          (d) => d.parentAssetId === params.id || params.id === '1'
+        ),
       },
     });
   } catch (error) {
@@ -60,7 +64,12 @@ export async function POST(
     const { type } = body;
 
     // Validate derivative type
-    const validTypes = ['pr_pitch_excerpt', 'aeo_snippet', 'ai_summary', 'social_fragment'];
+    const validTypes = [
+      'pr_pitch_excerpt',
+      'aeo_snippet',
+      'ai_summary',
+      'social_fragment',
+    ];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { success: false, error: { message: 'Invalid derivative type' } },

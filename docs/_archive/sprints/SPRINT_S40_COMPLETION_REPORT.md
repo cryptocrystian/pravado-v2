@@ -12,44 +12,44 @@ Sprint S40 delivers a complete Media Monitoring & Earned Coverage Engine that en
 
 ### Backend (apps/api)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
+| Deliverable                           | Status   | File                                                        |
+| ------------------------------------- | -------- | ----------------------------------------------------------- |
 | Migration 45: Media monitoring schema | Complete | `supabase/migrations/45_create_media_monitoring_schema.sql` |
-| MediaMonitoringService (~900 lines) | Complete | `src/services/mediaMonitoringService.ts` |
-| Media Monitoring Routes | Complete | `src/routes/mediaMonitoring/index.ts` |
-| Backend Tests | Complete | `tests/mediaMonitoringService.test.ts` |
+| MediaMonitoringService (~900 lines)   | Complete | `src/services/mediaMonitoringService.ts`                    |
+| Media Monitoring Routes               | Complete | `src/routes/mediaMonitoring/index.ts`                       |
+| Backend Tests                         | Complete | `tests/mediaMonitoringService.test.ts`                      |
 
 ### Dashboard (apps/dashboard)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| SourceList | Complete | `src/components/media-monitoring/SourceList.tsx` |
-| ArticleTable | Complete | `src/components/media-monitoring/ArticleTable.tsx` |
-| MentionList | Complete | `src/components/media-monitoring/MentionList.tsx` |
-| ArticleDrawer | Complete | `src/components/media-monitoring/ArticleDrawer.tsx` |
-| RelevanceBadge | Complete | `src/components/media-monitoring/RelevanceBadge.tsx` |
-| SentimentBadge | Complete | `src/components/media-monitoring/SentimentBadge.tsx` |
-| Component Index | Complete | `src/components/media-monitoring/index.ts` |
-| Media Monitoring API Helper | Complete | `src/lib/mediaMonitoringApi.ts` |
-| Media Monitoring Page | Complete | `src/app/app/media-monitoring/page.tsx` |
-| E2E Tests | Complete | `tests/media-monitoring/media-monitoring.spec.ts` |
+| Deliverable                 | Status   | File                                                 |
+| --------------------------- | -------- | ---------------------------------------------------- |
+| SourceList                  | Complete | `src/components/media-monitoring/SourceList.tsx`     |
+| ArticleTable                | Complete | `src/components/media-monitoring/ArticleTable.tsx`   |
+| MentionList                 | Complete | `src/components/media-monitoring/MentionList.tsx`    |
+| ArticleDrawer               | Complete | `src/components/media-monitoring/ArticleDrawer.tsx`  |
+| RelevanceBadge              | Complete | `src/components/media-monitoring/RelevanceBadge.tsx` |
+| SentimentBadge              | Complete | `src/components/media-monitoring/SentimentBadge.tsx` |
+| Component Index             | Complete | `src/components/media-monitoring/index.ts`           |
+| Media Monitoring API Helper | Complete | `src/lib/mediaMonitoringApi.ts`                      |
+| Media Monitoring Page       | Complete | `src/app/app/media-monitoring/page.tsx`              |
+| E2E Tests                   | Complete | `tests/media-monitoring/media-monitoring.spec.ts`    |
 
 ### Packages
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| Media Monitoring Types | Complete | `packages/types/src/mediaMonitoring.ts` |
-| Types Index Export | Complete | `packages/types/src/index.ts` |
+| Deliverable                 | Status   | File                                         |
+| --------------------------- | -------- | -------------------------------------------- |
+| Media Monitoring Types      | Complete | `packages/types/src/mediaMonitoring.ts`      |
+| Types Index Export          | Complete | `packages/types/src/index.ts`                |
 | Media Monitoring Validators | Complete | `packages/validators/src/mediaMonitoring.ts` |
-| Validators Index Export | Complete | `packages/validators/src/index.ts` |
-| Feature Flag | Complete | `packages/feature-flags/src/flags.ts` |
+| Validators Index Export     | Complete | `packages/validators/src/index.ts`           |
+| Feature Flag                | Complete | `packages/feature-flags/src/flags.ts`        |
 
 ### Documentation
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| Product Specification | Complete | `docs/product/media_monitoring_v1.md` |
-| Sprint Report | Complete | `docs/SPRINT_S40_COMPLETION_REPORT.md` |
+| Deliverable           | Status   | File                                   |
+| --------------------- | -------- | -------------------------------------- |
+| Product Specification | Complete | `docs/product/media_monitoring_v1.md`  |
+| Sprint Report         | Complete | `docs/SPRINT_S40_COMPLETION_REPORT.md` |
 
 ## Technical Implementation
 
@@ -104,19 +104,19 @@ CREATE TABLE earned_mentions (
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/media-monitoring/sources` | Create source |
-| GET | `/api/v1/media-monitoring/sources` | List sources |
-| GET | `/api/v1/media-monitoring/sources/:id` | Get source |
-| PUT | `/api/v1/media-monitoring/sources/:id` | Update source |
-| DELETE | `/api/v1/media-monitoring/sources/:id` | Deactivate source |
-| POST | `/api/v1/media-monitoring/ingest` | Ingest article |
-| GET | `/api/v1/media-monitoring/articles` | List articles |
-| GET | `/api/v1/media-monitoring/articles/:id` | Get article with mentions |
-| POST | `/api/v1/media-monitoring/detect-mentions` | Detect mentions |
-| GET | `/api/v1/media-monitoring/mentions` | List mentions |
-| GET | `/api/v1/media-monitoring/stats` | Get statistics |
+| Method | Endpoint                                   | Description               |
+| ------ | ------------------------------------------ | ------------------------- |
+| POST   | `/api/v1/media-monitoring/sources`         | Create source             |
+| GET    | `/api/v1/media-monitoring/sources`         | List sources              |
+| GET    | `/api/v1/media-monitoring/sources/:id`     | Get source                |
+| PUT    | `/api/v1/media-monitoring/sources/:id`     | Update source             |
+| DELETE | `/api/v1/media-monitoring/sources/:id`     | Deactivate source         |
+| POST   | `/api/v1/media-monitoring/ingest`          | Ingest article            |
+| GET    | `/api/v1/media-monitoring/articles`        | List articles             |
+| GET    | `/api/v1/media-monitoring/articles/:id`    | Get article with mentions |
+| POST   | `/api/v1/media-monitoring/detect-mentions` | Detect mentions           |
+| GET    | `/api/v1/media-monitoring/mentions`        | List mentions             |
+| GET    | `/api/v1/media-monitoring/stats`           | Get statistics            |
 
 ### Service Architecture
 
@@ -217,24 +217,26 @@ Media Monitoring Page
 
 ## Code Metrics
 
-| Metric | Value |
-|--------|-------|
-| New TypeScript lines | ~3,500 |
-| New SQL lines | ~320 |
-| Backend service lines | ~900 |
-| Frontend component lines | ~900 |
-| Test lines | ~700 |
-| Documentation lines | ~500 |
+| Metric                   | Value  |
+| ------------------------ | ------ |
+| New TypeScript lines     | ~3,500 |
+| New SQL lines            | ~320   |
+| Backend service lines    | ~900   |
+| Frontend component lines | ~900   |
+| Test lines               | ~700   |
+| Documentation lines      | ~500   |
 
 ## Files Created
 
 ### Backend
+
 - `apps/api/supabase/migrations/45_create_media_monitoring_schema.sql`
 - `apps/api/src/services/mediaMonitoringService.ts`
 - `apps/api/src/routes/mediaMonitoring/index.ts`
 - `apps/api/tests/mediaMonitoringService.test.ts`
 
 ### Dashboard
+
 - `apps/dashboard/src/lib/mediaMonitoringApi.ts`
 - `apps/dashboard/src/components/media-monitoring/SourceList.tsx`
 - `apps/dashboard/src/components/media-monitoring/ArticleTable.tsx`
@@ -247,10 +249,12 @@ Media Monitoring Page
 - `apps/dashboard/tests/media-monitoring/media-monitoring.spec.ts`
 
 ### Packages
+
 - `packages/types/src/mediaMonitoring.ts`
 - `packages/validators/src/mediaMonitoring.ts`
 
 ### Documentation
+
 - `docs/product/media_monitoring_v1.md`
 - `docs/SPRINT_S40_COMPLETION_REPORT.md`
 
@@ -264,11 +268,13 @@ Media Monitoring Page
 ## Configuration
 
 ### Feature Flag
+
 ```typescript
-ENABLE_MEDIA_MONITORING: true
+ENABLE_MEDIA_MONITORING: true;
 ```
 
 ### Environment Variables
+
 ```
 OPENAI_API_KEY=<required for embeddings and LLM features>
 ```
@@ -320,6 +326,7 @@ OPENAI_API_KEY=<required for embeddings and LLM features>
 **Sprint S41 - RSS Integration & Automated Monitoring**
 
 Suggested features:
+
 1. RSS feed discovery and parsing
 2. Scheduled article crawling
 3. New article alerts and notifications

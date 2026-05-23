@@ -1,6 +1,7 @@
 'use client';
 
 import { FileText, Plus, MagnifyingGlass } from '@phosphor-icons/react';
+
 import type { EditorDocument } from './editor-mock-data';
 
 function scoreColor(score: number): string {
@@ -23,7 +24,11 @@ interface DocumentRailProps {
   onSelect: (id: string) => void;
 }
 
-export function DocumentRail({ documents, currentId, onSelect }: DocumentRailProps) {
+export function DocumentRail({
+  documents,
+  currentId,
+  onSelect,
+}: DocumentRailProps) {
   return (
     <div className="w-[220px] flex-shrink-0 bg-cc-surface border-r border-white/8 flex flex-col h-full">
       {/* Header */}
@@ -67,7 +72,10 @@ export function DocumentRail({ documents, currentId, onSelect }: DocumentRailPro
                   : 'border-l-2 border-transparent hover:bg-white/[0.02]'
               }`}
             >
-              <FileText size={16} className="text-white/30 flex-shrink-0 mt-0.5" />
+              <FileText
+                size={16}
+                className="text-white/30 flex-shrink-0 mt-0.5"
+              />
               <div className="flex-1 min-w-0">
                 <span
                   className={`text-xs block truncate ${

@@ -6,6 +6,7 @@
 'use client';
 
 import type { MediaListSummary } from '@pravado/types';
+
 import { KeywordChips } from './KeywordChips';
 
 interface MediaListCardProps {
@@ -23,9 +24,7 @@ export function MediaListCard({ list, onView, onDelete }: MediaListCardProps) {
             {list.name}
           </h3>
           {list.description && (
-            <p className="text-sm text-gray-600 mb-2">
-              {list.description}
-            </p>
+            <p className="text-sm text-gray-600 mb-2">{list.description}</p>
           )}
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <span>Topic: {list.inputTopic}</span>
@@ -47,36 +46,53 @@ export function MediaListCard({ list, onView, onDelete }: MediaListCardProps) {
 
       {list.inputKeywords && list.inputKeywords.length > 0 && (
         <div className="mb-4">
-          <KeywordChips keywords={list.inputKeywords} maxDisplay={3} size="sm" />
+          <KeywordChips
+            keywords={list.inputKeywords}
+            maxDisplay={3}
+            size="sm"
+          />
         </div>
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
         <div className="text-center">
-          <div className="text-2xl font-bold text-gray-900">{list.totalEntries}</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {list.totalEntries}
+          </div>
           <div className="text-xs text-gray-500">Total</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-green-600">{list.tierACount}</div>
+          <div className="text-2xl font-bold text-green-600">
+            {list.tierACount}
+          </div>
           <div className="text-xs text-gray-500">A-Tier</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-600">{list.tierBCount}</div>
+          <div className="text-2xl font-bold text-blue-600">
+            {list.tierBCount}
+          </div>
           <div className="text-xs text-gray-500">B-Tier</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-600">{list.tierCCount}</div>
+          <div className="text-2xl font-bold text-yellow-600">
+            {list.tierCCount}
+          </div>
           <div className="text-xs text-gray-500">C-Tier</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-gray-600">{list.tierDCount}</div>
+          <div className="text-2xl font-bold text-gray-600">
+            {list.tierDCount}
+          </div>
           <div className="text-xs text-gray-500">D-Tier</div>
         </div>
       </div>
 
       <div className="flex items-center justify-between pt-4 border-t border-gray-200">
         <div className="text-sm text-gray-500">
-          Avg Fit: <span className="font-semibold text-gray-900">{Math.round(list.avgFitScore * 100)}%</span>
+          Avg Fit:{' '}
+          <span className="font-semibold text-gray-900">
+            {Math.round(list.avgFitScore * 100)}%
+          </span>
         </div>
         <div className="flex gap-2">
           {onView && (
@@ -91,7 +107,9 @@ export function MediaListCard({ list, onView, onDelete }: MediaListCardProps) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (confirm('Are you sure you want to delete this media list?')) {
+                if (
+                  confirm('Are you sure you want to delete this media list?')
+                ) {
                   onDelete(list.id);
                 }
               }}

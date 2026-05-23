@@ -15,8 +15,8 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { CommandCenterTopbar } from '@/components/command-center';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 // Force dynamic rendering to avoid SSG errors
@@ -42,9 +42,7 @@ export default async function CommandCenterLayout({
 
       {/* Main Content - Full width beneath topbar */}
       <main className="flex-1 overflow-hidden">
-        <MSWProvider>
-          {children}
-        </MSWProvider>
+        <MSWProvider>{children}</MSWProvider>
       </main>
     </div>
   );

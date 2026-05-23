@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -5,11 +6,20 @@
  * Displays a list of scenarios with filtering and pagination
  */
 
-import { useState, useEffect } from 'react';
 import type { Scenario, ListScenariosQuery } from '@pravado/types';
-import { SCENARIO_TYPE_LABELS, SCENARIO_RUN_STATUS_LABELS } from '@pravado/types';
+import {
+  SCENARIO_TYPE_LABELS,
+  SCENARIO_RUN_STATUS_LABELS,
+} from '@pravado/types';
+import { useState, useEffect } from 'react';
+
 import { ScenarioCard } from './ScenarioCard';
-import { listScenarios, deleteScenario, simulateScenario, startScenarioRun } from '../../lib/scenarioPlaybookApi';
+import {
+  listScenarios,
+  deleteScenario,
+  simulateScenario,
+  startScenarioRun,
+} from '../../lib/scenarioPlaybookApi';
 
 interface ScenarioListProps {
   onView?: (scenario: Scenario) => void;
@@ -46,8 +56,12 @@ export function ScenarioList({
       const query: ListScenariosQuery = {
         limit,
         offset: page * limit,
-        ...(typeFilter && { scenarioType: typeFilter as ListScenariosQuery['scenarioType'] }),
-        ...(statusFilter && { status: statusFilter as ListScenariosQuery['status'] }),
+        ...(typeFilter && {
+          scenarioType: typeFilter as ListScenariosQuery['scenarioType'],
+        }),
+        ...(statusFilter && {
+          status: statusFilter as ListScenariosQuery['status'],
+        }),
         ...(searchQuery && { search: searchQuery }),
         sortBy: 'updated_at',
         sortOrder: 'desc',
@@ -88,7 +102,9 @@ export function ScenarioList({
       await deleteScenario(scenario.id);
       fetchScenarios();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete scenario');
+      setError(
+        err instanceof Error ? err.message : 'Failed to delete scenario'
+      );
     }
   };
 
@@ -139,7 +155,9 @@ export function ScenarioList({
         >
           <option value="">All Types</option>
           {Object.entries(SCENARIO_TYPE_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
+            <option key={value} value={value}>
+              {label}
+            </option>
           ))}
         </select>
 
@@ -150,7 +168,9 @@ export function ScenarioList({
         >
           <option value="">All Statuses</option>
           {Object.entries(SCENARIO_RUN_STATUS_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
+            <option key={value} value={value}>
+              {label}
+            </option>
           ))}
         </select>
 
@@ -175,7 +195,10 @@ export function ScenarioList({
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+            <div
+              key={i}
+              className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
+            >
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
               <div className="h-4 bg-gray-100 rounded w-full mb-2" />
               <div className="h-4 bg-gray-100 rounded w-2/3" />
@@ -197,7 +220,9 @@ export function ScenarioList({
               d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No scenarios found</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            No scenarios found
+          </h3>
           <p className="mt-1 text-sm text-gray-500">
             {searchQuery || typeFilter || statusFilter
               ? 'Try adjusting your filters'
@@ -232,7 +257,8 @@ export function ScenarioList({
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
               <p className="text-sm text-gray-600">
-                Showing {page * limit + 1} - {Math.min((page + 1) * limit, total)} of {total}
+                Showing {page * limit + 1} -{' '}
+                {Math.min((page + 1) * limit, total)} of {total}
               </p>
               <div className="flex items-center gap-2">
                 <button

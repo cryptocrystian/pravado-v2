@@ -5,14 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
-import type { RiskRadarNote, RiskRadarNoteType } from '@/lib/riskRadarApi';
-import { getNoteTypeLabel, formatRelativeTime } from '@/lib/riskRadarApi';
 import {
   Loader2,
   MessageSquare,
@@ -25,6 +17,15 @@ import {
   BookOpen,
   Briefcase,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import type { RiskRadarNote, RiskRadarNoteType } from '@/lib/riskRadarApi';
+import { getNoteTypeLabel, formatRelativeTime } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
 
 interface RiskNotesPanelProps {
   notes: RiskRadarNote[];
@@ -100,7 +101,14 @@ export function RiskNotesPanel({
             />
             <div className="flex items-center justify-between">
               <div className="flex gap-1">
-                {(['observation', 'action_taken', 'escalation', 'context'] as RiskRadarNoteType[]).map((type) => (
+                {(
+                  [
+                    'observation',
+                    'action_taken',
+                    'escalation',
+                    'context',
+                  ] as RiskRadarNoteType[]
+                ).map((type) => (
                   <Button
                     key={type}
                     variant={noteType === type ? 'default' : 'outline'}
@@ -109,7 +117,9 @@ export function RiskNotesPanel({
                     className="text-xs"
                   >
                     {noteTypeIcons[type]}
-                    <span className="ml-1 hidden sm:inline">{getNoteTypeLabel(type)}</span>
+                    <span className="ml-1 hidden sm:inline">
+                      {getNoteTypeLabel(type)}
+                    </span>
                   </Button>
                 ))}
               </div>
@@ -165,7 +175,9 @@ export function RiskNotesPanel({
         {otherNotes.length > 0 && (
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
             {pinnedNotes.length > 0 && (
-              <div className="text-xs font-medium text-gray-500 uppercase">Recent</div>
+              <div className="text-xs font-medium text-gray-500 uppercase">
+                Recent
+              </div>
             )}
             <div className="space-y-2">
               {otherNotes.map((note) => (
@@ -184,7 +196,9 @@ function NoteCard({ note }: { note: RiskRadarNote }) {
     <div
       className={cn(
         'p-3 rounded-lg border',
-        note.isPinned ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-200'
+        note.isPinned
+          ? 'bg-amber-50 border-amber-200'
+          : 'bg-white border-gray-200'
       )}
     >
       <div className="flex items-start justify-between mb-2">
@@ -197,14 +211,15 @@ function NoteCard({ note }: { note: RiskRadarNote }) {
             <span className="ml-1">{getNoteTypeLabel(note.noteType)}</span>
           </Badge>
           {note.isExecutiveVisible && (
-            <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+            <Badge
+              variant="outline"
+              className="text-xs bg-purple-50 text-purple-700 border-purple-200"
+            >
               <Briefcase className="h-3 w-3 mr-1" />
               Executive
             </Badge>
           )}
-          {note.isPinned && (
-            <Pin className="h-3 w-3 text-amber-500" />
-          )}
+          {note.isPinned && <Pin className="h-3 w-3 text-amber-500" />}
         </div>
       </div>
 
@@ -212,7 +227,9 @@ function NoteCard({ note }: { note: RiskRadarNote }) {
         <div className="font-medium text-gray-900 mb-1">{note.title}</div>
       )}
 
-      <div className="text-sm text-gray-700 whitespace-pre-wrap">{note.content}</div>
+      <div className="text-sm text-gray-700 whitespace-pre-wrap">
+        {note.content}
+      </div>
 
       <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100 text-xs text-gray-500">
         <User className="h-3 w-3" />

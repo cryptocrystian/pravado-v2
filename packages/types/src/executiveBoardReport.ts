@@ -52,10 +52,16 @@ export type ExecBoardReportAccessLevel = 'view' | 'comment' | 'approve';
 
 export type ExecBoardReportTone = 'professional' | 'formal' | 'executive';
 
-export type ExecBoardReportTargetLength = 'brief' | 'standard' | 'comprehensive';
+export type ExecBoardReportTargetLength =
+  | 'brief'
+  | 'standard'
+  | 'comprehensive';
 
 // Label constants
-export const EXEC_BOARD_REPORT_FORMAT_LABELS: Record<ExecBoardReportFormat, string> = {
+export const EXEC_BOARD_REPORT_FORMAT_LABELS: Record<
+  ExecBoardReportFormat,
+  string
+> = {
   quarterly: 'Quarterly Report',
   annual: 'Annual Report',
   monthly: 'Monthly Summary',
@@ -64,7 +70,10 @@ export const EXEC_BOARD_REPORT_FORMAT_LABELS: Record<ExecBoardReportFormat, stri
   custom: 'Custom Report',
 };
 
-export const EXEC_BOARD_REPORT_STATUS_LABELS: Record<ExecBoardReportStatus, string> = {
+export const EXEC_BOARD_REPORT_STATUS_LABELS: Record<
+  ExecBoardReportStatus,
+  string
+> = {
   draft: 'Draft',
   generating: 'Generating',
   review: 'In Review',
@@ -73,7 +82,10 @@ export const EXEC_BOARD_REPORT_STATUS_LABELS: Record<ExecBoardReportStatus, stri
   archived: 'Archived',
 };
 
-export const EXEC_BOARD_REPORT_SECTION_TYPE_LABELS: Record<ExecBoardReportSectionType, string> = {
+export const EXEC_BOARD_REPORT_SECTION_TYPE_LABELS: Record<
+  ExecBoardReportSectionType,
+  string
+> = {
   executive_summary: 'Executive Summary',
   strategic_highlights: 'Strategic Highlights',
   kpi_dashboard: 'KPI Dashboard',
@@ -91,7 +103,10 @@ export const EXEC_BOARD_REPORT_SECTION_TYPE_LABELS: Record<ExecBoardReportSectio
   appendix: 'Appendix',
 };
 
-export const EXEC_BOARD_REPORT_SECTION_STATUS_LABELS: Record<ExecBoardReportSectionStatus, string> = {
+export const EXEC_BOARD_REPORT_SECTION_STATUS_LABELS: Record<
+  ExecBoardReportSectionStatus,
+  string
+> = {
   pending: 'Pending',
   generating: 'Generating',
   generated: 'Generated',
@@ -100,24 +115,28 @@ export const EXEC_BOARD_REPORT_SECTION_STATUS_LABELS: Record<ExecBoardReportSect
   error: 'Error',
 };
 
-export const EXEC_BOARD_REPORT_ACCESS_LEVEL_LABELS: Record<ExecBoardReportAccessLevel, string> = {
+export const EXEC_BOARD_REPORT_ACCESS_LEVEL_LABELS: Record<
+  ExecBoardReportAccessLevel,
+  string
+> = {
   view: 'View Only',
   comment: 'Can Comment',
   approve: 'Can Approve',
 };
 
 // Default section order for new reports
-export const EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER: ExecBoardReportSectionType[] = [
-  'executive_summary',
-  'strategic_highlights',
-  'kpi_dashboard',
-  'financial_overview',
-  'market_analysis',
-  'risk_assessment',
-  'brand_health',
-  'forward_outlook',
-  'action_items',
-];
+export const EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER: ExecBoardReportSectionType[] =
+  [
+    'executive_summary',
+    'strategic_highlights',
+    'kpi_dashboard',
+    'financial_overview',
+    'market_analysis',
+    'risk_assessment',
+    'brand_health',
+    'forward_outlook',
+    'action_items',
+  ];
 
 // ============================================================================
 // CORE ENTITIES

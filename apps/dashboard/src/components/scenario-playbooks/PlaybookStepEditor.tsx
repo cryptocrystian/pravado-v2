@@ -5,9 +5,12 @@
  * Editor for creating and modifying playbook steps with drag-and-drop reordering
  */
 
-import { useState } from 'react';
 import type { ScenarioPlaybookStep } from '@pravado/types';
-import { ScenarioStepActionType, SCENARIO_STEP_ACTION_TYPE_LABELS } from '@pravado/types';
+import {
+  ScenarioStepActionType,
+  SCENARIO_STEP_ACTION_TYPE_LABELS,
+} from '@pravado/types';
+import { useState } from 'react';
 
 /**
  * Editable step type for the UI editor - contains only UI-relevant fields
@@ -72,7 +75,11 @@ const ACTION_TYPES: ScenarioStepActionType[] = [
   ScenarioStepActionType.CUSTOM,
 ];
 
-export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEditorProps) {
+export function PlaybookStepEditor({
+  steps,
+  onChange,
+  disabled,
+}: PlaybookStepEditorProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState<StepFormData>(DEFAULT_STEP);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -104,7 +111,8 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
     const newStep: EditablePlaybookStep = {
       id: editingIndex === -1 ? `temp-${Date.now()}` : steps[editingIndex!].id,
       playbookId: editingIndex === -1 ? '' : steps[editingIndex!].playbookId,
-      stepIndex: editingIndex === -1 ? steps.length : steps[editingIndex!].stepIndex,
+      stepIndex:
+        editingIndex === -1 ? steps.length : steps[editingIndex!].stepIndex,
       name: formData.name.trim(),
       description: formData.description.trim() || null,
       actionType: formData.actionType,
@@ -112,7 +120,10 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
       requiresApproval: formData.requiresApproval,
       approvalRoles: formData.approvalRoles,
       waitDurationMinutes: formData.waitDurationMinutes,
-      createdAt: editingIndex === -1 ? new Date().toISOString() : steps[editingIndex!].createdAt,
+      createdAt:
+        editingIndex === -1
+          ? new Date().toISOString()
+          : steps[editingIndex!].createdAt,
       updatedAt: new Date().toISOString(),
     };
 
@@ -253,9 +264,12 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                 {/* Step Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-900 truncate">{step.name}</h4>
+                    <h4 className="font-medium text-gray-900 truncate">
+                      {step.name}
+                    </h4>
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">
-                      {SCENARIO_STEP_ACTION_TYPE_LABELS[step.actionType] || step.actionType}
+                      {SCENARIO_STEP_ACTION_TYPE_LABELS[step.actionType] ||
+                        step.actionType}
                     </span>
                     {step.requiresApproval && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700">
@@ -264,7 +278,9 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                     )}
                   </div>
                   {step.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2">{step.description}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2">
+                      {step.description}
+                    </p>
                   )}
                   <div className="mt-1 text-xs text-gray-400">
                     Est. {step.waitDurationMinutes || 30} minutes
@@ -284,8 +300,18 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                       className="p-1.5 text-gray-400 hover:text-blue-600 rounded"
                       title="Edit step"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
                     <button
@@ -293,8 +319,18 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                       className="p-1.5 text-gray-400 hover:text-red-600 rounded"
                       title="Delete step"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -321,7 +357,9 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="e.g., Generate Press Release"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
               />
@@ -334,7 +372,12 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
               </label>
               <select
                 value={formData.actionType}
-                onChange={(e) => setFormData({ ...formData, actionType: e.target.value as ScenarioStepActionType })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    actionType: e.target.value as ScenarioStepActionType,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
               >
                 {ACTION_TYPES.map((type) => (
@@ -353,7 +396,9 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Describe what this step does..."
               rows={2}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
@@ -370,7 +415,12 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                 type="number"
                 min={1}
                 value={formData.waitDurationMinutes}
-                onChange={(e) => setFormData({ ...formData, waitDurationMinutes: parseInt(e.target.value) || 30 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    waitDurationMinutes: parseInt(e.target.value) || 30,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -384,10 +434,17 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                 <input
                   type="checkbox"
                   checked={formData.requiresApproval}
-                  onChange={(e) => setFormData({ ...formData, requiresApproval: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      requiresApproval: e.target.checked,
+                    })
+                  }
                   className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                 />
-                <span className="text-sm text-gray-600">Require approval before execution</span>
+                <span className="text-sm text-gray-600">
+                  Require approval before execution
+                </span>
               </label>
             </div>
           </div>
@@ -404,7 +461,9 @@ export function PlaybookStepEditor({ steps, onChange, disabled }: PlaybookStepEd
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
                   placeholder="e.g., PR Manager"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addApprovalRole())}
+                  onKeyPress={(e) =>
+                    e.key === 'Enter' && (e.preventDefault(), addApprovalRole())
+                  }
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
                 />
                 <button

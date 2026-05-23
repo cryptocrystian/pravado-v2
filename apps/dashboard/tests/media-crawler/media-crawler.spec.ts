@@ -13,7 +13,9 @@ test.describe('RSS & Media Crawler Page', () => {
   test.describe('Page Layout', () => {
     test('should display RSS feeds section', async ({ page }) => {
       await expect(page.getByText('RSS Feeds')).toBeVisible();
-      await expect(page.getByRole('button', { name: /Add Feed/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Add Feed/i })
+      ).toBeVisible();
     });
 
     test('should display crawl jobs section', async ({ page }) => {
@@ -26,8 +28,12 @@ test.describe('RSS & Media Crawler Page', () => {
     });
 
     test('should display action buttons', async ({ page }) => {
-      await expect(page.getByRole('button', { name: /Fetch All Feeds/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Run Jobs/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Fetch All Feeds/i })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Run Jobs/i })
+      ).toBeVisible();
     });
   });
 
@@ -98,7 +104,9 @@ test.describe('RSS & Media Crawler Page', () => {
 
   test.describe('Actions', () => {
     test('should trigger RSS fetch', async ({ page }) => {
-      const fetchButton = page.getByRole('button', { name: /Fetch All Feeds/i });
+      const fetchButton = page.getByRole('button', {
+        name: /Fetch All Feeds/i,
+      });
       await fetchButton.click();
 
       // Button should show loading state

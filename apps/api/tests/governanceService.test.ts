@@ -12,27 +12,12 @@ const mockSupabase = {
 };
 
 // Create mock query builder
-function createMockQueryBuilder(data: any, error: any = null, count: number | null = null) {
-  const builder = {
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    neq: vi.fn().mockReturnThis(),
-    in: vi.fn().mockReturnThis(),
-    gte: vi.fn().mockReturnThis(),
-    lte: vi.fn().mockReturnThis(),
-    lt: vi.fn().mockReturnThis(),
-    or: vi.fn().mockReturnThis(),
-    ilike: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    range: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data, error }),
-    maybeSingle: vi.fn().mockResolvedValue({ data, error }),
-    then: (resolve: any) => Promise.resolve({ data, error, count }).then(resolve),
-  };
+function createMockQueryBuilder(
+  data: any,
+  error: any = null,
+  count: number | null = null
+) {
+  const builder = createMockQuery({ data, error });
   return builder;
 }
 
@@ -47,7 +32,11 @@ vi.mock('@pravado/utils', () => ({
 }));
 
 // Import after mocking
-import { createGovernanceService, GovernanceService } from '../src/services/governanceService';
+import {
+  createGovernanceService,
+  GovernanceService,
+} from '../src/services/governanceService';
+import { createMockQuery } from './_helpers/supabase-mock';
 
 describe('Governance Service (S59)', () => {
   let governanceService: ReturnType<typeof createGovernanceService>;
@@ -91,14 +80,18 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder(mockPolicy);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.createPolicy(testOrgId, {
-          key: 'crisis-escalation',
-          name: 'Crisis Escalation Policy',
-          description: 'Rules for escalating crisis situations',
-          category: 'crisis',
-          scope: 'global',
-          severity: 'high',
-        }, testUserId);
+        const result = await governanceService.createPolicy(
+          testOrgId,
+          {
+            key: 'crisis-escalation',
+            name: 'Crisis Escalation Policy',
+            description: 'Rules for escalating crisis situations',
+            category: 'crisis',
+            scope: 'global',
+            severity: 'high',
+          },
+          testUserId
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('governance_policies');
         expect(mockBuilder.insert).toHaveBeenCalled();
@@ -109,11 +102,15 @@ describe('Governance Service (S59)', () => {
 
       it('should throw error if key is not provided', async () => {
         await expect(
-          governanceService.createPolicy(testOrgId, {
-            key: '',
-            name: 'Test Policy',
-            category: 'content',
-          }, testUserId)
+          governanceService.createPolicy(
+            testOrgId,
+            {
+              key: '',
+              name: 'Test Policy',
+              category: 'content',
+            },
+            testUserId
+          )
         ).rejects.toThrow();
       });
     });
@@ -143,7 +140,9 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([mockPolicy], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await governanceService.listPolicies(testOrgId, { category: ['crisis', 'reputation'] });
+        await governanceService.listPolicies(testOrgId, {
+          category: ['crisis', 'reputation'],
+        });
 
         expect(mockBuilder.in).toHaveBeenCalled();
       });
@@ -163,7 +162,10 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder(mockPolicy);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.getPolicy(testOrgId, mockPolicy.id);
+        const result = await governanceService.getPolicy(
+          testOrgId,
+          mockPolicy.id
+        );
 
         expect(result).not.toBeNull();
         expect(result?.id).toBe(mockPolicy.id);
@@ -173,7 +175,10 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder(null);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.getPolicy(testOrgId, 'non-existent-id');
+        const result = await governanceService.getPolicy(
+          testOrgId,
+          'non-existent-id'
+        );
 
         expect(result).toBeNull();
       });
@@ -250,14 +255,22 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder(mockRule);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.createRule(testOrgId, {
-          policyId: 'policy-uuid-1',
-          name: 'Negative Sentiment Alert',
-          ruleType: 'threshold',
-          targetSystem: 'media_monitoring',
-          condition: { field: 'sentiment_score', operator: 'lt', value: -0.5 },
-          action: { createFinding: true },
-        }, testUserId);
+        const result = await governanceService.createRule(
+          testOrgId,
+          {
+            policyId: 'policy-uuid-1',
+            name: 'Negative Sentiment Alert',
+            ruleType: 'threshold',
+            targetSystem: 'media_monitoring',
+            condition: {
+              field: 'sentiment_score',
+              operator: 'lt',
+              value: -0.5,
+            },
+            action: { createFinding: true },
+          },
+          testUserId
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('governance_rules');
         expect(mockBuilder.insert).toHaveBeenCalled();
@@ -281,16 +294,23 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([mockRule], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await governanceService.listRules(testOrgId, { policyId: 'policy-uuid-1' });
+        await governanceService.listRules(testOrgId, {
+          policyId: 'policy-uuid-1',
+        });
 
-        expect(mockBuilder.eq).toHaveBeenCalledWith('policy_id', 'policy-uuid-1');
+        expect(mockBuilder.eq).toHaveBeenCalledWith(
+          'policy_id',
+          'policy-uuid-1'
+        );
       });
 
       it('should filter by targetSystem', async () => {
         const mockBuilder = createMockQueryBuilder([mockRule], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await governanceService.listRules(testOrgId, { targetSystem: 'media_monitoring' });
+        await governanceService.listRules(testOrgId, {
+          targetSystem: 'media_monitoring',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -311,7 +331,9 @@ describe('Governance Service (S59)', () => {
       summary: 'Negative sentiment detected in coverage',
       details: 'Sentiment score of -0.8 detected',
       impact_score: 75,
-      affected_entities: [{ entityType: 'brand', entityId: 'brand-1', entityName: 'Test Brand' }],
+      affected_entities: [
+        { entityType: 'brand', entityId: 'brand-1', entityName: 'Test Brand' },
+      ],
       recommended_actions: [{ action: 'Review coverage', priority: 'high' }],
       mitigation_notes: null,
       assigned_to: null,
@@ -372,7 +394,9 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([mockFinding], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await governanceService.listFindings(testOrgId, { severity: ['high', 'critical'] });
+        await governanceService.listFindings(testOrgId, {
+          severity: ['high', 'critical'],
+        });
 
         expect(mockBuilder.in).toHaveBeenCalled();
       });
@@ -380,11 +404,19 @@ describe('Governance Service (S59)', () => {
 
     describe('acknowledgeFinding()', () => {
       it('should update finding status to acknowledged', async () => {
-        const acknowledgedFinding = { ...mockFinding, status: 'acknowledged', acknowledged_at: '2024-01-15T11:00:00Z' };
+        const acknowledgedFinding = {
+          ...mockFinding,
+          status: 'acknowledged',
+          acknowledged_at: '2024-01-15T11:00:00Z',
+        };
         const mockBuilder = createMockQueryBuilder(acknowledgedFinding);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.acknowledgeFinding(testOrgId, mockFinding.id, testUserId);
+        const result = await governanceService.acknowledgeFinding(
+          testOrgId,
+          mockFinding.id,
+          testUserId
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('governance_findings');
         expect(mockBuilder.update).toHaveBeenCalled();
@@ -394,11 +426,20 @@ describe('Governance Service (S59)', () => {
 
     describe('resolveFinding()', () => {
       it('should update finding status to resolved', async () => {
-        const resolvedFinding = { ...mockFinding, status: 'resolved', resolved_at: '2024-01-15T12:00:00Z' };
+        const resolvedFinding = {
+          ...mockFinding,
+          status: 'resolved',
+          resolved_at: '2024-01-15T12:00:00Z',
+        };
         const mockBuilder = createMockQueryBuilder(resolvedFinding);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.resolveFinding(testOrgId, mockFinding.id, testUserId, 'Issue resolved');
+        const result = await governanceService.resolveFinding(
+          testOrgId,
+          mockFinding.id,
+          testUserId,
+          'Issue resolved'
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('governance_findings');
         expect(result?.status).toBe('resolved');
@@ -407,11 +448,20 @@ describe('Governance Service (S59)', () => {
 
     describe('dismissFinding()', () => {
       it('should update finding status to dismissed', async () => {
-        const dismissedFinding = { ...mockFinding, status: 'dismissed', dismissed_at: '2024-01-15T12:00:00Z' };
+        const dismissedFinding = {
+          ...mockFinding,
+          status: 'dismissed',
+          dismissed_at: '2024-01-15T12:00:00Z',
+        };
         const mockBuilder = createMockQueryBuilder(dismissedFinding);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.dismissFinding(testOrgId, mockFinding.id, testUserId, 'False positive');
+        const result = await governanceService.dismissFinding(
+          testOrgId,
+          mockFinding.id,
+          testUserId,
+          'False positive'
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('governance_findings');
         expect(result?.status).toBe('dismissed');
@@ -420,11 +470,20 @@ describe('Governance Service (S59)', () => {
 
     describe('escalateFinding()', () => {
       it('should update finding status to escalated', async () => {
-        const escalatedFinding = { ...mockFinding, status: 'escalated', assigned_to: 'manager-uuid' };
+        const escalatedFinding = {
+          ...mockFinding,
+          status: 'escalated',
+          assigned_to: 'manager-uuid',
+        };
         const mockBuilder = createMockQueryBuilder(escalatedFinding);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.escalateFinding(testOrgId, mockFinding.id, 'manager-uuid', testUserId);
+        const result = await governanceService.escalateFinding(
+          testOrgId,
+          mockFinding.id,
+          'manager-uuid',
+          testUserId
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('governance_findings');
         expect(result?.status).toBe('escalated');
@@ -451,7 +510,9 @@ describe('Governance Service (S59)', () => {
       score_trend: 'worsening',
       trend_period_days: 30,
       breakdown: {},
-      contributing_factors: [{ source: 'media', factor: 'negative coverage', contribution: 15 }],
+      contributing_factors: [
+        { source: 'media', factor: 'negative coverage', contribution: 15 },
+      ],
       active_findings_count: 3,
       linked_finding_ids: ['finding-1', 'finding-2', 'finding-3'],
       computed_at: '2024-01-15T10:00:00Z',
@@ -476,7 +537,9 @@ describe('Governance Service (S59)', () => {
           riskLevel: 'high',
         });
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('governance_risk_scores');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'governance_risk_scores'
+        );
         expect(result).not.toBeNull();
         expect(result?.overallScore).toBe(65);
       });
@@ -489,7 +552,9 @@ describe('Governance Service (S59)', () => {
 
         const result = await governanceService.listRiskScores(testOrgId, {});
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('governance_risk_scores');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'governance_risk_scores'
+        );
         expect(result.riskScores).toHaveLength(1);
       });
 
@@ -497,7 +562,9 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([mockRiskScore], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await governanceService.listRiskScores(testOrgId, { entityType: 'brand' });
+        await governanceService.listRiskScores(testOrgId, {
+          entityType: 'brand',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -506,7 +573,9 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([mockRiskScore], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await governanceService.listRiskScores(testOrgId, { riskLevel: ['high', 'critical'] });
+        await governanceService.listRiskScores(testOrgId, {
+          riskLevel: ['high', 'critical'],
+        });
 
         expect(mockBuilder.in).toHaveBeenCalled();
       });
@@ -524,13 +593,25 @@ describe('Governance Service (S59)', () => {
         );
         // Mock rule counts
         const ruleBuilder = createMockQueryBuilder(
-          [{ rule_type: 'threshold', target_system: 'media_monitoring', is_active: true }],
+          [
+            {
+              rule_type: 'threshold',
+              target_system: 'media_monitoring',
+              is_active: true,
+            },
+          ],
           null,
           10
         );
         // Mock finding counts
         const findingBuilder = createMockQueryBuilder(
-          [{ status: 'open', severity: 'high', detected_at: '2024-01-15T10:00:00Z' }],
+          [
+            {
+              status: 'open',
+              severity: 'high',
+              detected_at: '2024-01-15T10:00:00Z',
+            },
+          ],
           null,
           3
         );
@@ -561,7 +642,10 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([]);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.getComplianceMetrics(testOrgId, 30);
+        const result = await governanceService.getComplianceMetrics(
+          testOrgId,
+          30
+        );
 
         expect(result).not.toBeNull();
         expect(result).toHaveProperty('complianceScore');
@@ -630,7 +714,10 @@ describe('Governance Service (S59)', () => {
           .mockReturnValueOnce(ruleBuilder)
           .mockReturnValueOnce(findingBuilder);
 
-        const result = await governanceService.evaluateRules(testOrgId, mockContext);
+        const result = await governanceService.evaluateRules(
+          testOrgId,
+          mockContext
+        );
 
         expect(result).not.toBeNull();
         expect(result).toHaveProperty('results');
@@ -657,7 +744,10 @@ describe('Governance Service (S59)', () => {
 
         await governanceService.evaluateRules(testOrgId, mockContext);
 
-        expect(mockBuilder.eq).toHaveBeenCalledWith('target_system', 'media_monitoring');
+        expect(mockBuilder.eq).toHaveBeenCalledWith(
+          'target_system',
+          'media_monitoring'
+        );
       });
     });
   });
@@ -691,10 +781,14 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder(mockInsight);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.generateInsight(testOrgId, {
-          timeWindowStart: '2024-01-01T00:00:00Z',
-          timeWindowEnd: '2024-01-15T23:59:59Z',
-        }, testUserId);
+        const result = await governanceService.generateInsight(
+          testOrgId,
+          {
+            timeWindowStart: '2024-01-01T00:00:00Z',
+            timeWindowEnd: '2024-01-15T23:59:59Z',
+          },
+          testUserId
+        );
 
         expect(result).not.toBeNull();
         expect(result).toHaveProperty('title');
@@ -716,7 +810,9 @@ describe('Governance Service (S59)', () => {
 
         const result = await governanceService.listInsights(testOrgId, {});
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('governance_audit_insights');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'governance_audit_insights'
+        );
         expect(result.insights).toHaveLength(1);
       });
     });
@@ -740,9 +836,14 @@ describe('Governance Service (S59)', () => {
         const mockBuilder = createMockQueryBuilder([mockVersion], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await governanceService.getPolicyVersions(testOrgId, 'policy-uuid-1');
+        const result = await governanceService.getPolicyVersions(
+          testOrgId,
+          'policy-uuid-1'
+        );
 
-        expect(mockSupabase.from).toHaveBeenCalledWith('governance_policy_versions');
+        expect(mockSupabase.from).toHaveBeenCalledWith(
+          'governance_policy_versions'
+        );
         expect(result.versions).toHaveLength(1);
         expect(result.versions[0].versionNumber).toBe(1);
       });

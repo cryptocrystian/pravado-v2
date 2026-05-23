@@ -12,7 +12,11 @@
  * @see /docs/canon/DS_v3_1_EXPRESSION.md
  */
 
-import type { AutomationMode, CreationContentType, OutlineSection } from '../types';
+import type {
+  AutomationMode,
+  CreationContentType,
+  OutlineSection,
+} from '../types';
 import { CreationStage1Entry } from './CreationStage1Entry';
 import { CreationStage2Brief } from './CreationStage2Brief';
 import { CreationStage3Scaffold } from './CreationStage3Scaffold';
@@ -30,7 +34,10 @@ export interface ContentCreationOverlayProps {
   onBriefFormChange: (data: Record<string, string>) => void;
   onOutlineReady: (outline: OutlineSection[] | null) => void;
   onClose: () => void;
-  onLaunchEditor: (briefData: Record<string, string>, outline: OutlineSection[] | null) => void;
+  onLaunchEditor: (
+    briefData: Record<string, string>,
+    outline: OutlineSection[] | null
+  ) => void;
 }
 
 export function ContentCreationOverlay({

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -19,12 +20,10 @@
  */
 
 import { useState, useMemo } from 'react';
+
 import { DistributionDecisionMatrix } from '../components/DistributionDecisionMatrix';
+import { buttonStyles, prAccent } from '../prWorkSurfaceStyles';
 import type { PressRelease, Distribution, DistributionTrack } from '../types';
-import {
-  buttonStyles,
-  prAccent,
-} from '../prWorkSurfaceStyles';
 
 // ============================================
 // TYPES - Scheduled Sends
@@ -51,7 +50,8 @@ const MOCK_RELEASES: PressRelease[] = [
   {
     id: 'rel-1',
     headline: 'Pravado Launches AI-Powered PR Intelligence Platform',
-    subheadline: 'New platform combines CiteMind technology with traditional PR workflows',
+    subheadline:
+      'New platform combines CiteMind technology with traditional PR workflows',
     body: 'Today, Pravado announced the launch of its revolutionary AI-powered PR intelligence platform...',
     boilerplate: 'Pravado is a leading marketing operations platform...',
     mediaContactInfo: 'press@pravado.com',
@@ -101,7 +101,9 @@ const MOCK_SCHEDULED_SENDS: ScheduledSend[] = [
     targetName: 'Michael Torres',
     targetEmail: 'mtorres@wired.com',
     subject: 'Thought Leadership: Future of Marketing AI',
-    scheduledFor: new Date(Date.now() + 1 * 86400000 + 10 * 3600000).toISOString(), // Tomorrow 10am
+    scheduledFor: new Date(
+      Date.now() + 1 * 86400000 + 10 * 3600000
+    ).toISOString(), // Tomorrow 10am
     status: 'scheduled',
     relationshipStage: 'cold',
     lastInteraction: '45 days ago',
@@ -112,7 +114,9 @@ const MOCK_SCHEDULED_SENDS: ScheduledSend[] = [
     targetName: 'Jennifer Wong',
     targetEmail: 'jwong@forbes.com',
     subject: 'Executive Interview Opportunity',
-    scheduledFor: new Date(Date.now() + 2 * 86400000 + 14 * 3600000).toISOString(), // Day after tomorrow 2pm
+    scheduledFor: new Date(
+      Date.now() + 2 * 86400000 + 14 * 3600000
+    ).toISOString(), // Day after tomorrow 2pm
     status: 'scheduled',
     relationshipStage: 'engaged',
     lastInteraction: '1 day ago',
@@ -126,14 +130,19 @@ const MOCK_SCHEDULED_SENDS: ScheduledSend[] = [
 function StatusBadge({ status }: { status: string }) {
   const colors = {
     draft: 'bg-white/10 text-white/60 border-white/20',
-    ready: 'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
+    ready:
+      'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
     distributed: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
-    pending_approval: 'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
-    failed: 'bg-semantic-danger/15 text-semantic-danger border-semantic-danger/30',
+    pending_approval:
+      'bg-semantic-warning/15 text-semantic-warning border-semantic-warning/30',
+    failed:
+      'bg-semantic-danger/15 text-semantic-danger border-semantic-danger/30',
   };
 
   return (
-    <span className={`px-2 py-0.5 text-[13px] font-semibold rounded border ${colors[status as keyof typeof colors] || colors.draft}`}>
+    <span
+      className={`px-2 py-0.5 text-[13px] font-semibold rounded border ${colors[status as keyof typeof colors] || colors.draft}`}
+    >
       {status.replace('_', ' ')}
     </span>
   );
@@ -161,7 +170,9 @@ function TrackBadge({ track }: { track: DistributionTrack }) {
 
   const style = config[track];
   return (
-    <span className={`px-2 py-0.5 text-[13px] font-semibold rounded border ${style.bg} ${style.text} ${style.border}`}>
+    <span
+      className={`px-2 py-0.5 text-[13px] font-semibold rounded border ${style.bg} ${style.text} ${style.border}`}
+    >
       {style.label}
     </span>
   );
@@ -171,14 +182,23 @@ function TrackBadge({ track }: { track: DistributionTrack }) {
 // FEATURE BADGE
 // ============================================
 
-function FeatureBadge({ label, variant }: { label: string; variant: 'success' | 'info' }) {
+function FeatureBadge({
+  label,
+  variant,
+}: {
+  label: string;
+  variant: 'success' | 'info';
+}) {
   const styles = {
-    success: 'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
+    success:
+      'bg-semantic-success/15 text-semantic-success border-semantic-success/30',
     info: 'bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30',
   };
 
   return (
-    <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded border ${styles[variant]}`}>
+    <span
+      className={`px-1.5 py-0.5 text-[13px] font-semibold rounded border ${styles[variant]}`}
+    >
       {label}
     </span>
   );
@@ -188,7 +208,13 @@ function FeatureBadge({ label, variant }: { label: string; variant: 'success' | 
 // MINI CALENDAR (Week View)
 // ============================================
 
-function MiniCalendar({ scheduledSends, onDayClick }: { scheduledSends: ScheduledSend[]; onDayClick?: (date: Date) => void }) {
+function MiniCalendar({
+  scheduledSends,
+  onDayClick,
+}: {
+  scheduledSends: ScheduledSend[];
+  onDayClick?: (date: Date) => void;
+}) {
   const today = new Date();
   const days = useMemo(() => {
     const result = [];
@@ -213,7 +239,8 @@ function MiniCalendar({ scheduledSends, onDayClick }: { scheduledSends: Schedule
           Next 7 Days
         </span>
         <span className="text-[13px] text-white/40">
-          {scheduledSends.filter((s) => s.status === 'scheduled').length} scheduled
+          {scheduledSends.filter((s) => s.status === 'scheduled').length}{' '}
+          scheduled
         </span>
       </div>
 
@@ -227,20 +254,24 @@ function MiniCalendar({ scheduledSends, onDayClick }: { scheduledSends: Schedule
               isToday
                 ? 'bg-brand-magenta/15 border border-brand-magenta/30'
                 : sends.length > 0
-                ? 'bg-brand-cyan/10 border border-brand-cyan/20 hover:border-brand-cyan/40'
-                : 'bg-slate-1 border border-transparent hover:border-border-subtle'
+                  ? 'bg-brand-cyan/10 border border-brand-cyan/20 hover:border-brand-cyan/40'
+                  : 'bg-slate-1 border border-transparent hover:border-border-subtle'
             }`}
           >
             <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">
               {dayNames[date.getDay()]}
             </span>
-            <span className={`text-sm font-semibold ${isToday ? 'text-brand-magenta' : 'text-white/85'}`}>
+            <span
+              className={`text-sm font-semibold ${isToday ? 'text-brand-magenta' : 'text-white/85'}`}
+            >
               {date.getDate()}
             </span>
             {sends.length > 0 && (
-              <span className={`mt-1 w-1.5 h-1.5 rounded-full ${
-                isToday ? 'bg-brand-magenta' : 'bg-brand-cyan'
-              }`} />
+              <span
+                className={`mt-1 w-1.5 h-1.5 rounded-full ${
+                  isToday ? 'bg-brand-magenta' : 'bg-brand-cyan'
+                }`}
+              />
             )}
           </button>
         ))}
@@ -263,7 +294,12 @@ function ScheduledSendsList({
   onReschedule?: (id: string) => void;
 }) {
   const sortedSends = useMemo(
-    () => [...sends].sort((a, b) => new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime()),
+    () =>
+      [...sends].sort(
+        (a, b) =>
+          new Date(a.scheduledFor).getTime() -
+          new Date(b.scheduledFor).getTime()
+      ),
     [sends]
   );
 
@@ -283,8 +319,15 @@ function ScheduledSendsList({
     } else if (diffDays === 1) {
       return `Tomorrow ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     } else {
-      return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) +
-        ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return (
+        date.toLocaleDateString([], {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        }) +
+        ' ' +
+        date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      );
     }
   };
 
@@ -292,7 +335,9 @@ function ScheduledSendsList({
     return (
       <div className="p-6 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
         <p className="text-sm text-white/55">No scheduled sends</p>
-        <p className="text-[13px] text-white/40 mt-1">Use "Send Later" to schedule outreach</p>
+        <p className="text-[13px] text-white/40 mt-1">
+          Use "Send Later" to schedule outreach
+        </p>
       </div>
     );
   }
@@ -317,11 +362,13 @@ function ScheduledSendsList({
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${
-                  send.type === 'pitch'
-                    ? 'bg-brand-magenta/15 text-brand-magenta'
-                    : 'bg-brand-iris/15 text-brand-iris'
-                }`}>
+                <span
+                  className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded ${
+                    send.type === 'pitch'
+                      ? 'bg-brand-magenta/15 text-brand-magenta'
+                      : 'bg-brand-iris/15 text-brand-iris'
+                  }`}
+                >
                   {send.type}
                 </span>
                 <span className="text-[13px] text-brand-cyan font-medium">
@@ -329,11 +376,15 @@ function ScheduledSendsList({
                 </span>
               </div>
               <p className="text-sm text-white/85 truncate">{send.subject}</p>
-              <p className="text-[13px] text-white/50 truncate">To: {send.targetName}</p>
+              <p className="text-[13px] text-white/50 truncate">
+                To: {send.targetName}
+              </p>
               {/* Relationship context */}
               {send.relationshipStage && (
                 <div className="flex items-center gap-1.5 mt-1 text-[13px] text-white/30">
-                  <span className={stageStyle(send.relationshipStage)}>{send.relationshipStage}</span>
+                  <span className={stageStyle(send.relationshipStage)}>
+                    {send.relationshipStage}
+                  </span>
                   {send.lastInteraction && (
                     <>
                       <span>·</span>
@@ -350,8 +401,18 @@ function ScheduledSendsList({
                 className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
                 title="Reschedule"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </button>
               <button
@@ -360,8 +421,18 @@ function ScheduledSendsList({
                 className="p-1.5 text-white/40 hover:text-semantic-danger hover:bg-semantic-danger/10 rounded transition-colors"
                 title="Cancel"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -414,7 +485,10 @@ function SendLaterPicker({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div className="relative w-full max-w-sm p-6 bg-panel border border-border-subtle rounded-2xl shadow-elev-3">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-semibold text-white/95">Schedule Send</h3>
@@ -423,8 +497,18 @@ function SendLaterPicker({
             onClick={onClose}
             className="p-2 text-white/55 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -456,14 +540,18 @@ function SendLaterPicker({
             >
               {timeOptions.map((time) => (
                 <option key={time} value={time}>
-                  {new Date(`2000-01-01T${time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(`2000-01-01T${time}`).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
                 </option>
               ))}
             </select>
           </div>
 
           <p className="text-[13px] text-white/40">
-            Note: Send will be added to queue. Manual confirmation required before actual delivery.
+            Note: Send will be added to queue. Manual confirmation required
+            before actual delivery.
           </p>
         </div>
 
@@ -495,9 +583,12 @@ function SendLaterPicker({
 
 export function PRDistribution() {
   const [releases] = useState<PressRelease[]>(MOCK_RELEASES);
-  const [selectedRelease, setSelectedRelease] = useState<PressRelease | null>(null);
+  const [selectedRelease, setSelectedRelease] = useState<PressRelease | null>(
+    null
+  );
   const [, setShowComposer] = useState(false);
-  const [scheduledSends, setScheduledSends] = useState<ScheduledSend[]>(MOCK_SCHEDULED_SENDS);
+  const [scheduledSends, setScheduledSends] =
+    useState<ScheduledSend[]>(MOCK_SCHEDULED_SENDS);
   const [showSendLaterPicker, setShowSendLaterPicker] = useState(false);
 
   const handleDistribute = (tracks: DistributionTrack[]) => {
@@ -525,16 +616,30 @@ export function PRDistribution() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white/95">Distribution</h2>
-          <p className="text-[13px] text-white/40 mt-0.5">Amplify your message with precision timing</p>
+          <h2 className="text-base font-semibold text-white/95">
+            Distribution
+          </h2>
+          <p className="text-[13px] text-white/40 mt-0.5">
+            Amplify your message with precision timing
+          </p>
         </div>
         <button
           type="button"
           onClick={() => setShowComposer(true)}
           className={buttonStyles.primary}
         >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           New Release
         </button>
@@ -604,23 +709,35 @@ export function PRDistribution() {
                       {selectedRelease.headline}
                     </h3>
                     {selectedRelease.subheadline && (
-                      <p className="text-sm text-white/55 mt-1">{selectedRelease.subheadline}</p>
+                      <p className="text-sm text-white/55 mt-1">
+                        {selectedRelease.subheadline}
+                      </p>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    className={buttonStyles.tertiary}
-                  >
+                  <button type="button" className={buttonStyles.tertiary}>
                     Edit Release
                   </button>
                 </div>
 
                 <div className="flex items-center gap-4 text-[13px] text-white/50">
-                  <span>Created {new Date(selectedRelease.createdAt).toLocaleDateString()}</span>
+                  <span>
+                    Created{' '}
+                    {new Date(selectedRelease.createdAt).toLocaleDateString()}
+                  </span>
                   {selectedRelease.schema?.generated && (
                     <span className="flex items-center gap-1 text-brand-cyan">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       NewsArticle schema ready
                     </span>
@@ -637,12 +754,26 @@ export function PRDistribution() {
               ) : (
                 <div className="p-8 text-center rounded-xl border border-dashed border-slate-5 bg-panel/50">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-2 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                      className="w-6 h-6 text-white/40"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                   </div>
                   <p className="text-sm text-white/55 mb-2">
-                    This release is in <strong className="text-white/90">{selectedRelease.status}</strong> status
+                    This release is in{' '}
+                    <strong className="text-white/90">
+                      {selectedRelease.status}
+                    </strong>{' '}
+                    status
                   </p>
                   <p className="text-[13px] text-white/40">
                     Mark it as "ready" to enable distribution options
@@ -654,11 +785,23 @@ export function PRDistribution() {
             <div className="h-full min-h-[400px] flex items-center justify-center p-12 rounded-xl border border-dashed border-slate-5 bg-panel/50">
               <div className="text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-2 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  <svg
+                    className="w-8 h-8 text-white/40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                    />
                   </svg>
                 </div>
-                <p className="text-sm text-white/55 mb-2">Select a press release to distribute</p>
+                <p className="text-sm text-white/55 mb-2">
+                  Select a press release to distribute
+                </p>
                 <p className="text-[13px] text-white/40">
                   Choose from existing releases or create a new one
                 </p>
@@ -678,8 +821,18 @@ export function PRDistribution() {
               onClick={() => setShowSendLaterPicker(true)}
               className={`flex items-center gap-1 px-2.5 py-1.5 text-[13px] font-medium rounded-lg transition-colors ${prAccent.bg} ${prAccent.text} hover:bg-brand-magenta/20`}
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
               Send Later
             </button>
@@ -704,7 +857,8 @@ export function PRDistribution() {
               Manual Confirmation Required
             </p>
             <p className="text-[13px] text-white/50 mt-0.5">
-              Scheduled sends require manual approval before delivery. No bulk send.
+              Scheduled sends require manual approval before delivery. No bulk
+              send.
             </p>
           </div>
         </div>
@@ -747,7 +901,10 @@ export function PRDistribution() {
             <tbody className="divide-y divide-border-subtle">
               {MOCK_DISTRIBUTIONS.length > 0 ? (
                 MOCK_DISTRIBUTIONS.map((dist) => (
-                  <tr key={dist.id} className="hover:bg-slate-2 transition-colors">
+                  <tr
+                    key={dist.id}
+                    className="hover:bg-slate-2 transition-colors"
+                  >
                     <td className="px-4 py-3 text-sm text-white/85">
                       Release #{dist.releaseId}
                     </td>
@@ -776,7 +933,10 @@ export function PRDistribution() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-white/55">
+                  <td
+                    colSpan={5}
+                    className="px-4 py-8 text-center text-sm text-white/55"
+                  >
                     No distributions yet
                   </td>
                 </tr>

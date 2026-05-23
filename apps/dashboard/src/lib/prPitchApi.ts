@@ -103,7 +103,8 @@ export async function listPitchSequences(
       searchParams.append('status', params.status);
     }
   }
-  if (params?.pressReleaseId) searchParams.append('pressReleaseId', params.pressReleaseId);
+  if (params?.pressReleaseId)
+    searchParams.append('pressReleaseId', params.pressReleaseId);
   if (params?.search) searchParams.append('search', params.search);
   if (params?.limit) searchParams.append('limit', params.limit.toString());
   if (params?.offset) searchParams.append('offset', params.offset.toString());
@@ -119,7 +120,9 @@ export async function listPitchSequences(
 /**
  * Get a pitch sequence with steps and stats
  */
-export async function getPitchSequence(id: string): Promise<PRPitchSequenceWithSteps> {
+export async function getPitchSequence(
+  id: string
+): Promise<PRPitchSequenceWithSteps> {
   const data = await fetchApi<{ sequence: PRPitchSequenceWithSteps }>(
     `/api/pr/pitches/sequences/${id}`
   );
@@ -203,7 +206,9 @@ export async function listSequenceContacts(
 /**
  * Get a contact with events
  */
-export async function getContact(contactId: string): Promise<PRPitchContactWithJournalist> {
+export async function getContact(
+  contactId: string
+): Promise<PRPitchContactWithJournalist> {
   const data = await fetchApi<{ contact: PRPitchContactWithJournalist }>(
     `/api/pr/pitches/contacts/${contactId}`
   );
@@ -233,7 +238,9 @@ export async function generatePitchPreview(
 /**
  * Queue a pitch for a contact
  */
-export async function queuePitchForContact(contactId: string): Promise<PRPitchContact> {
+export async function queuePitchForContact(
+  contactId: string
+): Promise<PRPitchContact> {
   const data = await fetchApi<{ contact: PRPitchContact }>(
     `/api/pr/pitches/contacts/${contactId}/queue`,
     {
@@ -304,7 +311,8 @@ export function getStatusColor(status: string): string {
  * Format date for display
  */
 export function formatDate(dateString: string | Date): string {
-  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+  const date =
+    typeof dateString === 'string' ? new Date(dateString) : dateString;
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -316,7 +324,8 @@ export function formatDate(dateString: string | Date): string {
  * Format relative time
  */
 export function formatRelativeTime(dateString: string | Date): string {
-  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+  const date =
+    typeof dateString === 'string' ? new Date(dateString) : dateString;
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);

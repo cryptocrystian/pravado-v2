@@ -5,18 +5,27 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { MediaPerformanceInsight, InsightCategory } from '@pravado/types';
+import {
+  X,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+  Lightbulb,
+  Target,
+  Sparkles,
+} from 'lucide-react';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getInsightCategoryColor,
   markInsightAsRead,
   dismissInsight,
 } from '@/lib/mediaPerformanceApi';
-import type { MediaPerformanceInsight, InsightCategory } from '@pravado/types';
-import { X, CheckCircle, AlertCircle, TrendingUp, Lightbulb, Target, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface InsightNarrativePanelProps {
   insights: MediaPerformanceInsight[];
@@ -45,9 +54,14 @@ export function InsightNarrativePanel({
     .filter((i) => showDismissed || !i.isDismissed)
     .slice(0, maxInsights);
 
-  const unreadCount = insights.filter((i) => !i.isRead && !i.isDismissed).length;
+  const unreadCount = insights.filter(
+    (i) => !i.isRead && !i.isDismissed
+  ).length;
 
-  const handleDismiss = async (insight: MediaPerformanceInsight, e: React.MouseEvent) => {
+  const handleDismiss = async (
+    insight: MediaPerformanceInsight,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation();
     setDismissingIds((prev) => new Set(prev).add(insight.id));
 
@@ -96,7 +110,10 @@ export function InsightNarrativePanel({
           <CardTitle className="text-base font-medium">{title}</CardTitle>
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
-              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
+              <Badge
+                variant="outline"
+                className="bg-blue-100 text-blue-800 border-blue-200"
+              >
                 {unreadCount} new
               </Badge>
             )}
@@ -124,7 +141,8 @@ export function InsightNarrativePanel({
                 className={cn(
                   'p-4 rounded-lg border transition-all',
                   !insight.isRead && 'bg-blue-50 border-blue-200',
-                  insight.isRead && 'bg-white border-gray-200 hover:border-gray-300',
+                  insight.isRead &&
+                    'bg-white border-gray-200 hover:border-gray-300',
                   onInsightClick && 'cursor-pointer',
                   isDismissing && 'opacity-50'
                 )}
@@ -136,10 +154,13 @@ export function InsightNarrativePanel({
                     <div
                       className={cn(
                         'p-1.5 rounded',
-                        categoryColor === 'green' && 'bg-green-100 text-green-700',
+                        categoryColor === 'green' &&
+                          'bg-green-100 text-green-700',
                         categoryColor === 'blue' && 'bg-blue-100 text-blue-700',
-                        categoryColor === 'purple' && 'bg-purple-100 text-purple-700',
-                        categoryColor === 'yellow' && 'bg-yellow-100 text-yellow-700',
+                        categoryColor === 'purple' &&
+                          'bg-purple-100 text-purple-700',
+                        categoryColor === 'yellow' &&
+                          'bg-yellow-100 text-yellow-700',
                         categoryColor === 'red' && 'bg-red-100 text-red-700',
                         categoryColor === 'teal' && 'bg-teal-100 text-teal-700'
                       )}
@@ -152,7 +173,10 @@ export function InsightNarrativePanel({
                           {insight.title}
                         </h4>
                         {insight.generatedByLlm && (
-                          <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-purple-50 text-purple-700 border-purple-200"
+                          >
                             AI
                           </Badge>
                         )}
@@ -177,7 +201,9 @@ export function InsightNarrativePanel({
                 {/* Recommendation */}
                 {insight.recommendation && (
                   <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200 mt-2">
-                    <span className="font-medium text-gray-700">Recommendation:</span>{' '}
+                    <span className="font-medium text-gray-700">
+                      Recommendation:
+                    </span>{' '}
                     {insight.recommendation}
                   </div>
                 )}
@@ -188,12 +214,19 @@ export function InsightNarrativePanel({
                     <Badge variant="secondary" className="text-xs capitalize">
                       {insight.category.replace('_', ' ')}
                     </Badge>
-                    {insight.impactScore !== null && insight.impactScore !== undefined && (
-                      <span>Impact: {insight.impactScore.toFixed(0)}/100</span>
-                    )}
-                    {insight.confidenceScore !== null && insight.confidenceScore !== undefined && (
-                      <span>Confidence: {(insight.confidenceScore * 100).toFixed(0)}%</span>
-                    )}
+                    {insight.impactScore !== null &&
+                      insight.impactScore !== undefined && (
+                        <span>
+                          Impact: {insight.impactScore.toFixed(0)}/100
+                        </span>
+                      )}
+                    {insight.confidenceScore !== null &&
+                      insight.confidenceScore !== undefined && (
+                        <span>
+                          Confidence:{' '}
+                          {(insight.confidenceScore * 100).toFixed(0)}%
+                        </span>
+                      )}
                   </div>
                   <div>
                     {new Date(insight.createdAt).toLocaleDateString('en-US', {

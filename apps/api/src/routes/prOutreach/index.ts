@@ -4,11 +4,7 @@
  */
 
 import { FLAGS } from '@pravado/feature-flags';
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
-import type { OutreachEventType } from '@pravado/types';
-
-import type { ProviderConfig } from '@pravado/types';
+import type { OutreachEventType, ProviderConfig } from '@pravado/types';
 import {
   advanceRunInputSchema,
   apiEnvSchema,
@@ -26,10 +22,13 @@ import {
   updateOutreachStepInputSchema,
   validateEnv,
 } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+
 import { requireUser } from '../../middleware/requireUser';
-import { createOutreachService } from '../../services/outreachService';
-import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
 import { createAIDraftService } from '../../services/aiDraftService';
+import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
+import { createOutreachService } from '../../services/outreachService';
 
 /**
  * Get provider configuration from environment (S98)
@@ -70,7 +69,10 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
 
   // Create Supabase client
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   /**
    * Helper to get user's org ID
@@ -658,7 +660,11 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       }
 
       const service = createOutreachService({ supabase });
-      await service.trackEmailEvent(eventId, eventType as OutreachEventType, metadata);
+      await service.trackEmailEvent(
+        eventId,
+        eventType as OutreachEventType,
+        metadata
+      );
 
       return reply.send({
         success: true,
@@ -771,14 +777,20 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       if (journalistError || !journalist) {
         return reply.status(404).send({
           success: false,
-          error: { code: 'JOURNALIST_NOT_FOUND', message: 'Journalist not found' },
+          error: {
+            code: 'JOURNALIST_NOT_FOUND',
+            message: 'Journalist not found',
+          },
         });
       }
 
       if (!journalist.email) {
         return reply.status(400).send({
           success: false,
-          error: { code: 'NO_EMAIL', message: 'Journalist has no email address' },
+          error: {
+            code: 'NO_EMAIL',
+            message: 'Journalist has no email address',
+          },
         });
       }
 
@@ -786,7 +798,7 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       const providerConfig = getProviderConfig();
       const deliverabilityService = createOutreachDeliverabilityService({
         supabase,
-        providerConfig
+        providerConfig,
       });
 
       // Send the email
@@ -872,7 +884,7 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       const providerConfig = getProviderConfig();
       const deliverabilityService = createOutreachDeliverabilityService({
         supabase,
-        providerConfig
+        providerConfig,
       });
 
       // Get email messages for this journalist
@@ -882,7 +894,10 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       });
 
       // Get engagement metrics
-      const engagement = await deliverabilityService.getJournalistEngagement(journalistId, orgId);
+      const engagement = await deliverabilityService.getJournalistEngagement(
+        journalistId,
+        orgId
+      );
 
       return reply.send({
         success: true,
@@ -928,12 +943,22 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
         });
       }
 
-      const { journalistId, action, topic, angle, coverageTitle, coverageSummary } = request.body;
+      const {
+        journalistId,
+        action,
+        topic,
+        angle,
+        coverageTitle,
+        coverageSummary,
+      } = request.body;
 
       if (!journalistId || !action) {
         return reply.status(400).send({
           success: false,
-          error: { code: 'INVALID_INPUT', message: 'journalistId and action are required' },
+          error: {
+            code: 'INVALID_INPUT',
+            message: 'journalistId and action are required',
+          },
         });
       }
 
@@ -947,7 +972,10 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       if (journalistError || !journalist) {
         return reply.status(404).send({
           success: false,
-          error: { code: 'JOURNALIST_NOT_FOUND', message: 'Journalist not found' },
+          error: {
+            code: 'JOURNALIST_NOT_FOUND',
+            message: 'Journalist not found',
+          },
         });
       }
 
@@ -965,33 +993,34 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       const aiDraftService = createAIDraftService();
 
       try {
-        const draft = action === 'respond' || action === 'follow-up'
-          ? await aiDraftService.generateResponseDraft({
-              journalistName: journalist.name,
-              journalistEmail: journalist.email,
-              journalistOutlet: journalist.outlet,
-              journalistBeat: journalist.beat,
-              journalistTopics: journalist.topics || [],
-              brandName,
-              brandDescription,
-              coverageTitle,
-              coverageSummary,
-              action,
-              topic,
-              angle,
-            })
-          : await aiDraftService.generatePitchDraft({
-              journalistName: journalist.name,
-              journalistEmail: journalist.email,
-              journalistOutlet: journalist.outlet,
-              journalistBeat: journalist.beat,
-              journalistTopics: journalist.topics || [],
-              brandName,
-              brandDescription,
-              action,
-              topic,
-              angle,
-            });
+        const draft =
+          action === 'respond' || action === 'follow-up'
+            ? await aiDraftService.generateResponseDraft({
+                journalistName: journalist.name,
+                journalistEmail: journalist.email,
+                journalistOutlet: journalist.outlet,
+                journalistBeat: journalist.beat,
+                journalistTopics: journalist.topics || [],
+                brandName,
+                brandDescription,
+                coverageTitle,
+                coverageSummary,
+                action,
+                topic,
+                angle,
+              })
+            : await aiDraftService.generatePitchDraft({
+                journalistName: journalist.name,
+                journalistEmail: journalist.email,
+                journalistOutlet: journalist.outlet,
+                journalistBeat: journalist.beat,
+                journalistTopics: journalist.topics || [],
+                brandName,
+                brandDescription,
+                action,
+                topic,
+                angle,
+              });
 
         return reply.send({
           success: true,
@@ -1013,7 +1042,10 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
         fastify.log.error({ error }, 'Failed to generate AI draft');
         return reply.status(500).send({
           success: false,
-          error: { code: 'GENERATION_FAILED', message: 'Failed to generate draft' },
+          error: {
+            code: 'GENERATION_FAILED',
+            message: 'Failed to generate draft',
+          },
         });
       }
     }

@@ -1,10 +1,25 @@
 'use client';
 
+import type {
+  Competitor,
+  CreateCompetitorRequest,
+  UpdateCompetitorRequest,
+  CompetitorTier,
+} from '@pravado/types';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -13,16 +28,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type {
-  Competitor,
-  CreateCompetitorRequest,
-  UpdateCompetitorRequest,
-  CompetitorTier,
-} from '@pravado/types';
-import { createCompetitor, updateCompetitor } from '@/lib/competitorIntelligenceApi';
-import { Plus, X, Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  createCompetitor,
+  updateCompetitor,
+} from '@/lib/competitorIntelligenceApi';
 
 interface CompetitorFormProps {
   competitor?: Competitor | null;
@@ -41,10 +51,14 @@ export function CompetitorForm({
 
   const [name, setName] = useState(competitor?.name || '');
   const [domain, setDomain] = useState(competitor?.domain || '');
-  const [tier, setTier] = useState<CompetitorTier>(competitor?.tier || ('tier_2' as CompetitorTier));
+  const [tier, setTier] = useState<CompetitorTier>(
+    competitor?.tier || ('tier_2' as CompetitorTier)
+  );
   const [industry, setIndustry] = useState(competitor?.industry || '');
   const [description, setDescription] = useState(competitor?.description || '');
-  const [keywords, setKeywords] = useState<string[]>(competitor?.keywords || []);
+  const [keywords, setKeywords] = useState<string[]>(
+    competitor?.keywords || []
+  );
   const [domains, setDomains] = useState<string[]>(competitor?.domains || []);
   const [isActive, setIsActive] = useState(competitor?.isActive ?? true);
 
@@ -141,17 +155,39 @@ export function CompetitorForm({
     }
   };
 
-  const tierOptions: { value: CompetitorTier; label: string; description: string }[] = [
-    { value: 'tier_1' as CompetitorTier, label: 'Tier 1 - Direct', description: 'Same market, similar scale' },
-    { value: 'tier_2' as CompetitorTier, label: 'Tier 2 - Secondary', description: 'Adjacent market' },
-    { value: 'tier_3' as CompetitorTier, label: 'Tier 3 - Emerging', description: 'Smaller but growing' },
-    { value: 'tier_4' as CompetitorTier, label: 'Tier 4 - Distant', description: 'Different market' },
+  const tierOptions: {
+    value: CompetitorTier;
+    label: string;
+    description: string;
+  }[] = [
+    {
+      value: 'tier_1' as CompetitorTier,
+      label: 'Tier 1 - Direct',
+      description: 'Same market, similar scale',
+    },
+    {
+      value: 'tier_2' as CompetitorTier,
+      label: 'Tier 2 - Secondary',
+      description: 'Adjacent market',
+    },
+    {
+      value: 'tier_3' as CompetitorTier,
+      label: 'Tier 3 - Emerging',
+      description: 'Smaller but growing',
+    },
+    {
+      value: 'tier_4' as CompetitorTier,
+      label: 'Tier 4 - Distant',
+      description: 'Different market',
+    },
   ];
 
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>{isEditing ? 'Edit Competitor' : 'Add New Competitor'}</CardTitle>
+        <CardTitle>
+          {isEditing ? 'Edit Competitor' : 'Add New Competitor'}
+        </CardTitle>
         <CardDescription>
           {isEditing
             ? 'Update competitor details and tracking configuration'
@@ -161,7 +197,9 @@ export function CompetitorForm({
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
           )}
 
           {/* Basic Info */}
@@ -192,7 +230,10 @@ export function CompetitorForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="tier">Competitor Tier *</Label>
-              <Select value={tier} onValueChange={(value) => setTier(value as CompetitorTier)}>
+              <Select
+                value={tier}
+                onValueChange={(value) => setTier(value as CompetitorTier)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select tier" />
                 </SelectTrigger>
@@ -201,7 +242,9 @@ export function CompetitorForm({
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex flex-col">
                         <span>{option.label}</span>
-                        <span className="text-xs text-white/50">{option.description}</span>
+                        <span className="text-xs text-white/50">
+                          {option.description}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}
@@ -249,7 +292,11 @@ export function CompetitorForm({
                   }
                 }}
               />
-              <Button type="button" variant="outline" onClick={handleAddKeyword}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAddKeyword}
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -316,7 +363,11 @@ export function CompetitorForm({
                   Enable or disable competitor tracking
                 </p>
               </div>
-              <Switch id="isActive" checked={isActive} onCheckedChange={setIsActive} />
+              <Switch
+                id="isActive"
+                checked={isActive}
+                onCheckedChange={setIsActive}
+              />
             </div>
           )}
 

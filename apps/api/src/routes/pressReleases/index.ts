@@ -4,19 +4,28 @@
  */
 
 import { FLAGS } from '@pravado/feature-flags';
-import type { PRGenerationInput, PRListFilters, PRReleaseStatus } from '@pravado/types';
+import type {
+  PRGenerationInput,
+  PRListFilters,
+  PRReleaseStatus,
+} from '@pravado/types';
 import { LlmRouter } from '@pravado/utils';
 import { apiEnvSchema, validateEnv } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
-import { PressReleaseService, prGenerationEmitter } from '../../services/pressReleaseService';
+import {
+  PressReleaseService,
+  prGenerationEmitter,
+} from '../../services/pressReleaseService';
 
 /**
  * Register press release routes
  */
-export async function pressReleaseRoutes(server: FastifyInstance): Promise<void> {
+export async function pressReleaseRoutes(
+  server: FastifyInstance
+): Promise<void> {
   // Check feature flag
   if (!FLAGS.ENABLE_PR_GENERATOR) {
     server.log.info('Press release routes disabled by feature flag');
@@ -25,10 +34,21 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
 
   // Create Supabase client + LLM router
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   // Read API keys with process.env fallback — Zod optional() can strip them to undefined
-  const anthropicApiKey = env.LLM_ANTHROPIC_API_KEY || process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY || '';
-  const openaiApiKey = env.LLM_OPENAI_API_KEY || process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY || '';
+  const anthropicApiKey =
+    env.LLM_ANTHROPIC_API_KEY ||
+    process.env.LLM_ANTHROPIC_API_KEY ||
+    process.env.ANTHROPIC_API_KEY ||
+    '';
+  const openaiApiKey =
+    env.LLM_OPENAI_API_KEY ||
+    process.env.LLM_OPENAI_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    '';
   const llmProvider = env.LLM_PROVIDER || process.env.LLM_PROVIDER || 'stub';
 
   const llmRouter = new LlmRouter({
@@ -40,7 +60,9 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
     timeoutMs: env.LLM_TIMEOUT_MS,
     maxTokens: env.LLM_MAX_TOKENS,
   });
-  console.log(`[PressRelease] LLM provider: ${llmProvider}, anthropicKey: ${anthropicApiKey ? anthropicApiKey.slice(0, 7) + '...' : 'MISSING'}, openaiKey: ${openaiApiKey ? openaiApiKey.slice(0, 7) + '...' : 'MISSING'}`);
+  console.log(
+    `[PressRelease] LLM provider: ${llmProvider}, anthropicKey: ${anthropicApiKey ? anthropicApiKey.slice(0, 7) + '...' : 'MISSING'}, openaiKey: ${openaiApiKey ? openaiApiKey.slice(0, 7) + '...' : 'MISSING'}`
+  );
   const prService = new PressReleaseService(supabase, llmRouter);
 
   /**
@@ -61,56 +83,64 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
   // ============================================================================
   server.post<{
     Body: PRGenerationInput;
-  }>('/api/v1/pr/releases/generate', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/pr/releases/generate',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const input = request.body;
+
+        // Validate required fields
+        if (!input.newsType || !input.announcement || !input.companyName) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message:
+                'Missing required fields: newsType, announcement, companyName',
+            },
+          });
+        }
+
+        // Generate the press release
+        const release = await prService.generateRelease(orgId, userId, input);
+
+        return reply.status(201).send({
+          success: true,
+          data: {
+            id: release.id,
+            status: release.status,
+            generationRunId: release.generationRunId,
+          },
+        });
+      } catch (error) {
+        console.error('Failed to generate press release:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to generate press release',
           },
         });
       }
-
-      const input = request.body;
-
-      // Validate required fields
-      if (!input.newsType || !input.announcement || !input.companyName) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Missing required fields: newsType, announcement, companyName',
-          },
-        });
-      }
-
-      // Generate the press release
-      const release = await prService.generateRelease(orgId, userId, input);
-
-      return reply.status(201).send({
-        success: true,
-        data: {
-          id: release.id,
-          status: release.status,
-          generationRunId: release.generationRunId,
-        },
-      });
-    } catch (error) {
-      console.error('Failed to generate press release:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to generate press release',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // GET /api/v1/pr/releases - List press releases
@@ -123,55 +153,223 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
       limit?: string;
       offset?: string;
     };
-  }>('/api/v1/pr/releases', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/pr/releases',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
+          });
+        }
+
+        const filters: PRListFilters = {
+          status: request.query.status,
+          startDate: request.query.startDate,
+          endDate: request.query.endDate,
+          limit: request.query.limit ? parseInt(request.query.limit, 10) : 20,
+          offset: request.query.offset ? parseInt(request.query.offset, 10) : 0,
+        };
+
+        const { releases, total } = await prService.listReleases(
+          orgId,
+          filters
+        );
+
+        return reply.send({
+          success: true,
+          data: {
+            releases,
+            total,
+            hasMore: (filters.offset || 0) + releases.length < total,
+          },
+        });
+      } catch (error) {
+        console.error('Failed to list press releases:', error);
+        return reply.status(500).send({
           success: false,
-          error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
+          error: {
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list press releases',
+          },
         });
       }
-
-      const filters: PRListFilters = {
-        status: request.query.status,
-        startDate: request.query.startDate,
-        endDate: request.query.endDate,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : 20,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : 0,
-      };
-
-      const { releases, total } = await prService.listReleases(orgId, filters);
-
-      return reply.send({
-        success: true,
-        data: {
-          releases,
-          total,
-          hasMore: (filters.offset || 0) + releases.length < total,
-        },
-      });
-    } catch (error) {
-      console.error('Failed to list press releases:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to list press releases',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // GET /api/v1/pr/releases/:id - Get a press release by ID
   // ============================================================================
   server.get<{
     Params: { id: string };
-  }>('/api/v1/pr/releases/:id', { preHandler: requireUser }, async (request, reply) => {
-    try {
+  }>(
+    '/api/v1/pr/releases/:id',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
+
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
+          });
+        }
+
+        const release = await prService.getRelease(id, orgId);
+
+        if (!release) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Press release not found',
+            },
+          });
+        }
+
+        // Fetch related data
+        const [headlineVariants, angleOptions] = await Promise.all([
+          prService.getHeadlineVariants(id),
+          prService.getAngleOptions(id),
+        ]);
+
+        return reply.send({
+          success: true,
+          data: {
+            release,
+            headlineVariants,
+            angleOptions,
+          },
+        });
+      } catch (error) {
+        console.error('Failed to get press release:', error);
+        return reply.status(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to get press release',
+          },
+        });
+      }
+    }
+  );
+
+  // ============================================================================
+  // POST /api/v1/pr/releases/:id/optimize - Re-run optimization layer
+  // ============================================================================
+  server.post<{
+    Params: { id: string };
+  }>(
+    '/api/v1/pr/releases/:id/optimize',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
+
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
+          });
+        }
+
+        const result = await prService.optimizeRelease(id, orgId);
+
+        return reply.send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to optimize press release:', error);
+        return reply.status(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to optimize press release',
+          },
+        });
+      }
+    }
+  );
+
+  // ============================================================================
+  // GET /api/v1/pr/releases/:id/embeddings/similar - Find similar press releases
+  // ============================================================================
+  server.get<{
+    Params: { id: string };
+    Querystring: { limit?: string };
+  }>(
+    '/api/v1/pr/releases/:id/embeddings/similar',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
+
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
+          });
+        }
+
+        const limit = request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : 5;
+        const similar = await prService.findSimilarReleases(id, orgId, limit);
+
+        return reply.send({
+          success: true,
+          data: {
+            similar,
+            total: similar.length,
+          },
+        });
+      } catch (error) {
+        console.error('Failed to find similar press releases:', error);
+        return reply.status(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to find similar releases',
+          },
+        });
+      }
+    }
+  );
+
+  // ============================================================================
+  // GET /api/v1/pr/releases/:id/stream - SSE stream for generation progress
+  // ============================================================================
+  server.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/pr/releases/:id/stream',
+    { preHandler: requireUser },
+    async (request, reply) => {
       const { id } = request.params;
       const userId = request.user!.id;
       const orgId = await getUserOrgId(userId);
@@ -183,8 +381,8 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
         });
       }
 
+      // Verify release exists and belongs to org
       const release = await prService.getRelease(id, orgId);
-
       if (!release) {
         return reply.status(404).send({
           success: false,
@@ -195,191 +393,62 @@ export async function pressReleaseRoutes(server: FastifyInstance): Promise<void>
         });
       }
 
-      // Fetch related data
-      const [headlineVariants, angleOptions] = await Promise.all([
-        prService.getHeadlineVariants(id),
-        prService.getAngleOptions(id),
-      ]);
-
-      return reply.send({
-        success: true,
-        data: {
-          release,
-          headlineVariants,
-          angleOptions,
-        },
+      // Set up SSE headers
+      reply.raw.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
       });
-    } catch (error) {
-      console.error('Failed to get press release:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to get press release',
-        },
-      });
-    }
-  });
 
-  // ============================================================================
-  // POST /api/v1/pr/releases/:id/optimize - Re-run optimization layer
-  // ============================================================================
-  server.post<{
-    Params: { id: string };
-  }>('/api/v1/pr/releases/:id/optimize', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const { id } = request.params;
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
-
-      if (!orgId) {
-        return reply.status(404).send({
-          success: false,
-          error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
-        });
-      }
-
-      const result = await prService.optimizeRelease(id, orgId);
-
-      return reply.send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to optimize press release:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to optimize press release',
-        },
-      });
-    }
-  });
-
-  // ============================================================================
-  // GET /api/v1/pr/releases/:id/embeddings/similar - Find similar press releases
-  // ============================================================================
-  server.get<{
-    Params: { id: string };
-    Querystring: { limit?: string };
-  }>('/api/v1/pr/releases/:id/embeddings/similar', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const { id } = request.params;
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
-
-      if (!orgId) {
-        return reply.status(404).send({
-          success: false,
-          error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
-        });
-      }
-
-      const limit = request.query.limit ? parseInt(request.query.limit, 10) : 5;
-      const similar = await prService.findSimilarReleases(id, orgId, limit);
-
-      return reply.send({
-        success: true,
-        data: {
-          similar,
-          total: similar.length,
-        },
-      });
-    } catch (error) {
-      console.error('Failed to find similar press releases:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to find similar releases',
-        },
-      });
-    }
-  });
-
-  // ============================================================================
-  // GET /api/v1/pr/releases/:id/stream - SSE stream for generation progress
-  // ============================================================================
-  server.get<{
-    Params: { id: string };
-  }>('/api/v1/pr/releases/:id/stream', { preHandler: requireUser }, async (request, reply) => {
-    const { id } = request.params;
-    const userId = request.user!.id;
-    const orgId = await getUserOrgId(userId);
-
-    if (!orgId) {
-      return reply.status(404).send({
-        success: false,
-        error: { code: 'ORG_NOT_FOUND', message: 'Organization not found' },
-      });
-    }
-
-    // Verify release exists and belongs to org
-    const release = await prService.getRelease(id, orgId);
-    if (!release) {
-      return reply.status(404).send({
-        success: false,
-        error: {
-          code: 'NOT_FOUND',
-          message: 'Press release not found',
-        },
-      });
-    }
-
-    // Set up SSE headers
-    reply.raw.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-    });
-
-    // Send initial connection event
-    reply.raw.write(`data: ${JSON.stringify({ type: 'connected', releaseId: id })}\n\n`);
-
-    // Listen for generation events
-    const eventHandler = (event: unknown) => {
-      try {
-        reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
-      } catch (err) {
-        console.error('Failed to send SSE event:', err);
-      }
-    };
-
-    const eventKey = `pr:${id}`;
-    prGenerationEmitter.on(eventKey, eventHandler);
-
-    // Clean up on disconnect
-    request.raw.on('close', () => {
-      prGenerationEmitter.off(eventKey, eventHandler);
-    });
-
-    // Keep connection alive with heartbeat
-    const heartbeat = setInterval(() => {
-      try {
-        reply.raw.write(': heartbeat\n\n');
-      } catch {
-        clearInterval(heartbeat);
-      }
-    }, 30000);
-
-    request.raw.on('close', () => {
-      clearInterval(heartbeat);
-    });
-
-    // If release is already complete, send result and close
-    if (release.status === 'complete' || release.status === 'failed') {
+      // Send initial connection event
       reply.raw.write(
-        `data: ${JSON.stringify({
-          type: release.status === 'complete' ? 'completed' : 'failed',
-          releaseId: id,
-          status: release.status,
-          error: release.errorMessage,
-        })}\n\n`
+        `data: ${JSON.stringify({ type: 'connected', releaseId: id })}\n\n`
       );
+
+      // Listen for generation events
+      const eventHandler = (event: unknown) => {
+        try {
+          reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
+        } catch (err) {
+          console.error('Failed to send SSE event:', err);
+        }
+      };
+
+      const eventKey = `pr:${id}`;
+      prGenerationEmitter.on(eventKey, eventHandler);
+
+      // Clean up on disconnect
+      request.raw.on('close', () => {
+        prGenerationEmitter.off(eventKey, eventHandler);
+      });
+
+      // Keep connection alive with heartbeat
+      const heartbeat = setInterval(() => {
+        try {
+          reply.raw.write(': heartbeat\n\n');
+        } catch {
+          clearInterval(heartbeat);
+        }
+      }, 30000);
+
+      request.raw.on('close', () => {
+        clearInterval(heartbeat);
+      });
+
+      // If release is already complete, send result and close
+      if (release.status === 'complete' || release.status === 'failed') {
+        reply.raw.write(
+          `data: ${JSON.stringify({
+            type: release.status === 'complete' ? 'completed' : 'failed',
+            releaseId: id,
+            status: release.status,
+            error: release.errorMessage,
+          })}\n\n`
+        );
+      }
     }
-  });
+  );
 
   server.log.info('Press release routes registered');
 }

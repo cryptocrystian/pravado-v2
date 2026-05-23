@@ -9,7 +9,6 @@
  * @see /docs/skills/PRAVADO_DESIGN_SKILL.md
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Lightning,
   CheckCircle,
@@ -18,7 +17,13 @@ import {
   Trash,
   Plus,
 } from '@phosphor-icons/react';
-import type { AutomationMode, CreationContentType, OutlineSection } from '../types';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+import type {
+  AutomationMode,
+  CreationContentType,
+  OutlineSection,
+} from '../types';
 
 // ============================================
 // MOCK OUTLINE BUILDER
@@ -29,9 +34,21 @@ function buildMockSections(title: string, topic: string): OutlineSection[] {
   const topicCtx = topic || 'the subject';
   return [
     { id: 'sec-1', title: `Introduction — ${titleCtx}`, status: 'pending' },
-    { id: 'sec-2', title: `Section 1 — Why ${topicCtx} matters now`, status: 'pending' },
-    { id: 'sec-3', title: `Section 2 — Current landscape and competitive gaps`, status: 'pending' },
-    { id: 'sec-4', title: `Section 3 — Implementation framework`, status: 'pending' },
+    {
+      id: 'sec-2',
+      title: `Section 1 — Why ${topicCtx} matters now`,
+      status: 'pending',
+    },
+    {
+      id: 'sec-3',
+      title: `Section 2 — Current landscape and competitive gaps`,
+      status: 'pending',
+    },
+    {
+      id: 'sec-4',
+      title: `Section 3 — Implementation framework`,
+      status: 'pending',
+    },
     { id: 'sec-5', title: 'Conclusion & Key Takeaways', status: 'pending' },
   ];
 }
@@ -44,9 +61,11 @@ function computeFinalScore(formData: Record<string, string>): number {
   let score = 55;
   if ((formData.topic?.length || 0) > 20) score += 10;
   if (formData.targetKeyword?.length) score += 8;
-  const filledPoints = [formData.keyPoint1, formData.keyPoint2, formData.keyPoint3].filter(
-    (p) => p && p.length > 0
-  ).length;
+  const filledPoints = [
+    formData.keyPoint1,
+    formData.keyPoint2,
+    formData.keyPoint3,
+  ].filter((p) => p && p.length > 0).length;
   if (filledPoints >= 2) score += 5;
   if (formData.audience && formData.audience !== '') score += 6;
   // Outline bonus: +3 to +8
@@ -71,7 +90,10 @@ interface CreationStage3ScaffoldProps {
   generatedOutline: OutlineSection[] | null;
   onOutlineReady: (outline: OutlineSection[] | null) => void;
   onEditBrief: () => void;
-  onLaunchEditor: (briefData: Record<string, string>, outline: OutlineSection[] | null) => void;
+  onLaunchEditor: (
+    briefData: Record<string, string>,
+    outline: OutlineSection[] | null
+  ) => void;
 }
 
 // ============================================
@@ -104,7 +126,9 @@ export function CreationStage3Scaffold({
     if (generatedOutline && generatedOutline.length > 0) {
       setSections(generatedOutline);
       setIsGenerating(false);
-      return () => { cancelled = true; };
+      return () => {
+        cancelled = true;
+      };
     }
 
     const mockSections = buildMockSections(
@@ -120,9 +144,10 @@ export function CreationStage3Scaffold({
       const i = streamIndexRef.current;
 
       if (i >= mockSections.length) {
-        const completed = mockSections.map(
-          (s) => ({ ...s, status: 'complete' as const })
-        );
+        const completed = mockSections.map((s) => ({
+          ...s,
+          status: 'complete' as const,
+        }));
         setSections(completed);
         onOutlineReady(completed);
         setIsGenerating(false);
@@ -130,10 +155,14 @@ export function CreationStage3Scaffold({
       }
 
       setSections(
-        mockSections.map((s, idx) => ({
-          ...s,
-          status: idx < i ? 'complete' : idx === i ? 'generating' : 'pending',
-        } as OutlineSection))
+        mockSections.map(
+          (s, idx) =>
+            ({
+              ...s,
+              status:
+                idx < i ? 'complete' : idx === i ? 'generating' : 'pending',
+            }) as OutlineSection
+        )
       );
 
       timerRef.current = setTimeout(() => {
@@ -149,15 +178,18 @@ export function CreationStage3Scaffold({
       cancelled = true;
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Editable outline handlers
-  const handleSectionTitleChange = useCallback((id: string, newTitle: string) => {
-    setSections((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, title: newTitle } : s))
-    );
-  }, []);
+  const handleSectionTitleChange = useCallback(
+    (id: string, newTitle: string) => {
+      setSections((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, title: newTitle } : s))
+      );
+    },
+    []
+  );
 
   const handleDeleteSection = useCallback((id: string) => {
     setSections((prev) => prev.filter((s) => s.id !== id));
@@ -180,7 +212,10 @@ export function CreationStage3Scaffold({
       <div className="text-center mb-8">
         {isGenerating ? (
           <>
-            <Lightning className="w-8 h-8 text-brand-iris animate-pulse mx-auto mb-4" weight="fill" />
+            <Lightning
+              className="w-8 h-8 text-brand-iris animate-pulse mx-auto mb-4"
+              weight="fill"
+            />
             <h2 className="text-lg font-semibold text-white/90 mb-1">
               SAGE is building your outline...
             </h2>
@@ -203,11 +238,17 @@ export function CreationStage3Scaffold({
       {/* Sections list */}
       <div className="space-y-1 mb-6">
         {sections.map((section) => (
-          <div key={section.id} className="flex items-center gap-3 py-2.5 group">
+          <div
+            key={section.id}
+            className="flex items-center gap-3 py-2.5 group"
+          >
             {/* Status icon */}
             <div className="w-4 h-4 shrink-0 flex items-center justify-center">
               {section.status === 'complete' ? (
-                <CheckCircle className="w-4 h-4 text-semantic-success" weight="fill" />
+                <CheckCircle
+                  className="w-4 h-4 text-semantic-success"
+                  weight="fill"
+                />
               ) : section.status === 'generating' ? (
                 <div className="w-3 h-3 rounded-full bg-brand-iris animate-pulse" />
               ) : (
@@ -218,11 +259,16 @@ export function CreationStage3Scaffold({
             {/* Section content */}
             {isReview ? (
               <>
-                <DotsSixVertical className="w-4 h-4 text-white/25 cursor-grab shrink-0" weight="regular" />
+                <DotsSixVertical
+                  className="w-4 h-4 text-white/25 cursor-grab shrink-0"
+                  weight="regular"
+                />
                 <input
                   type="text"
                   value={section.title}
-                  onChange={(e) => handleSectionTitleChange(section.id, e.target.value)}
+                  onChange={(e) =>
+                    handleSectionTitleChange(section.id, e.target.value)
+                  }
                   className="flex-1 text-sm text-white/85 bg-transparent border-b border-transparent focus:border-border-subtle outline-none transition-colors"
                 />
                 <button
@@ -236,7 +282,9 @@ export function CreationStage3Scaffold({
             ) : (
               <span
                 className={`text-sm ${
-                  section.status === 'complete' ? 'text-white/85' : 'text-white/70'
+                  section.status === 'complete'
+                    ? 'text-white/85'
+                    : 'text-white/70'
                 }`}
               >
                 {section.title}
@@ -264,7 +312,9 @@ export function CreationStage3Scaffold({
           CiteMind forecast
         </span>
         <div className="flex items-baseline gap-1 mb-2">
-          <span className={`text-2xl font-bold tabular-nums ${getCiteColor(citeMindScore)}`}>
+          <span
+            className={`text-2xl font-bold tabular-nums ${getCiteColor(citeMindScore)}`}
+          >
             {citeMindScore}
           </span>
           <span className="text-sm text-white/30">/100</span>

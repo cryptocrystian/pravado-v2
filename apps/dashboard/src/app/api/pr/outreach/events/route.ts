@@ -39,7 +39,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/events] GET Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/events] GET Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -54,7 +58,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/events] POST Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/events] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

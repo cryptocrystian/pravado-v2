@@ -13,8 +13,8 @@
  * Results saved to citation_monitor_results, summaries to citation_summaries.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger, LlmRouter } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { generateQueriesForOrg } from './citationQueryGenerator';
 
@@ -50,8 +50,12 @@ interface EnvConfig {
 
 function getEnvConfig(): EnvConfig {
   return {
-    openaiApiKey: process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY || undefined,
-    anthropicApiKey: process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY || undefined,
+    openaiApiKey:
+      process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY || undefined,
+    anthropicApiKey:
+      process.env.LLM_ANTHROPIC_API_KEY ||
+      process.env.ANTHROPIC_API_KEY ||
+      undefined,
     perplexityApiKey: process.env.PERPLEXITY_API_KEY || undefined,
   };
 }
@@ -72,13 +76,17 @@ async function callPerplexity(prompt: string, apiKey: string): Promise<string> {
   const response = await fetch('https://api.perplexity.ai/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: 'llama-3.1-sonar-small-128k-online',
       messages: [
-        { role: 'system', content: 'You are a helpful research assistant. Provide comprehensive, factual answers with specific sources and citations when available.' },
+        {
+          role: 'system',
+          content:
+            'You are a helpful research assistant. Provide comprehensive, factual answers with specific sources and citations when available.',
+        },
         { role: 'user', content: prompt },
       ],
       max_tokens: 512,
@@ -88,10 +96,12 @@ async function callPerplexity(prompt: string, apiKey: string): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`Perplexity API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Perplexity API error: ${response.status} ${response.statusText}`
+    );
   }
 
-  const data = await response.json() as {
+  const data = (await response.json()) as {
     choices?: Array<{ message?: { content?: string } }>;
   };
   return data.choices?.[0]?.message?.content || '';
@@ -120,7 +130,8 @@ async function callViaRouter(
   });
 
   const response = await router.generate({
-    systemPrompt: 'You are a helpful research assistant. Provide comprehensive, factual answers. Mention specific companies, tools, and resources by name when relevant.',
+    systemPrompt:
+      'You are a helpful research assistant. Provide comprehensive, factual answers. Mention specific companies, tools, and resources by name when relevant.',
     userPrompt: prompt,
     temperature: 0.3,
     maxTokens: 512,
@@ -177,16 +188,31 @@ function analyzeMentions(
     // Check for URL citation
     let citationUrl: string | null = null;
     if (orgDomain) {
-      const urlMatch = responseText.match(new RegExp(`https?://[^\\s]*${orgDomain.replace('.', '\\.')}[^\\s]*`, 'i'));
+      const urlMatch = responseText.match(
+        new RegExp(
+          `https?://[^\\s]*${orgDomain.replace('.', '\\.')}[^\\s]*`,
+          'i'
+        )
+      );
       citationUrl = urlMatch?.[0] || null;
     }
-    return { brand_mentioned: true, mention_type: 'direct', citation_url: citationUrl };
+    return {
+      brand_mentioned: true,
+      mention_type: 'direct',
+      citation_url: citationUrl,
+    };
   }
 
   // URL citation: org domain appears
   if (orgDomain && lower.includes(orgDomain.toLowerCase())) {
-    const urlMatch = responseText.match(new RegExp(`https?://[^\\s]*${orgDomain.replace('.', '\\.')}[^\\s]*`, 'i'));
-    return { brand_mentioned: true, mention_type: 'direct', citation_url: urlMatch?.[0] || null };
+    const urlMatch = responseText.match(
+      new RegExp(`https?://[^\\s]*${orgDomain.replace('.', '\\.')}[^\\s]*`, 'i')
+    );
+    return {
+      brand_mentioned: true,
+      mention_type: 'direct',
+      citation_url: urlMatch?.[0] || null,
+    };
   }
 
   // Indirect: check if the response vaguely references the brand's concepts
@@ -205,7 +231,9 @@ async function wasRecentlyPolled(
   engine: Engine,
   hoursThreshold: number = 6
 ): Promise<boolean> {
-  const cutoff = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000).toISOString();
+  const cutoff = new Date(
+    Date.now() - hoursThreshold * 60 * 60 * 1000
+  ).toISOString();
 
   const { data } = await supabase
     .from('citation_monitor_results')
@@ -228,7 +256,9 @@ async function updateCitationSummary(
   orgId: string,
   periodDays: number = 30
 ): Promise<void> {
-  const cutoff = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000).toISOString();
+  const cutoff = new Date(
+    Date.now() - periodDays * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   // Get all results in period
   const { data: results } = await supabase
@@ -240,28 +270,48 @@ async function updateCitationSummary(
   if (!results || results.length === 0) return;
 
   const totalQueries = results.length;
-  const totalMentions = results.filter((r: { brand_mentioned: boolean }) => r.brand_mentioned).length;
+  const totalMentions = results.filter(
+    (r: { brand_mentioned: boolean }) => r.brand_mentioned
+  ).length;
   const mentionRate = totalQueries > 0 ? totalMentions / totalQueries : 0;
 
   // By engine breakdown
-  const byEngine: Record<string, { queries: number; mentions: number; rate: number }> = {};
+  const byEngine: Record<
+    string,
+    { queries: number; mentions: number; rate: number }
+  > = {};
   for (const r of results) {
     const eng = (r as { engine: string }).engine;
     if (!byEngine[eng]) byEngine[eng] = { queries: 0, mentions: 0, rate: 0 };
     byEngine[eng].queries++;
-    if ((r as { brand_mentioned: boolean }).brand_mentioned) byEngine[eng].mentions++;
+    if ((r as { brand_mentioned: boolean }).brand_mentioned)
+      byEngine[eng].mentions++;
   }
   for (const eng of Object.keys(byEngine)) {
-    byEngine[eng].rate = byEngine[eng].queries > 0 ? byEngine[eng].mentions / byEngine[eng].queries : 0;
+    byEngine[eng].rate =
+      byEngine[eng].queries > 0
+        ? byEngine[eng].mentions / byEngine[eng].queries
+        : 0;
   }
 
   // Top cited topics
-  const topicMentions: Record<string, { topic: string; mentions: number; engines: Set<string> }> = {};
+  const topicMentions: Record<
+    string,
+    { topic: string; mentions: number; engines: Set<string> }
+  > = {};
   for (const r of results) {
-    const { query_topic, brand_mentioned, engine } = r as { query_topic: string; brand_mentioned: boolean; engine: string };
+    const { query_topic, brand_mentioned, engine } = r as {
+      query_topic: string;
+      brand_mentioned: boolean;
+      engine: string;
+    };
     if (!brand_mentioned) continue;
     if (!topicMentions[query_topic]) {
-      topicMentions[query_topic] = { topic: query_topic, mentions: 0, engines: new Set() };
+      topicMentions[query_topic] = {
+        topic: query_topic,
+        mentions: 0,
+        engines: new Set(),
+      };
     }
     topicMentions[query_topic].mentions++;
     topicMentions[query_topic].engines.add(engine);
@@ -269,36 +319,46 @@ async function updateCitationSummary(
   const topCitedTopics = Object.values(topicMentions)
     .sort((a, b) => b.mentions - a.mentions)
     .slice(0, 10)
-    .map((t) => ({ topic: t.topic, mentions: t.mentions, engines: [...t.engines] }));
+    .map((t) => ({
+      topic: t.topic,
+      mentions: t.mentions,
+      engines: [...t.engines],
+    }));
 
   // Competitor mentions (where brand was NOT mentioned)
   const competitorResults = results.filter(
     (r: { brand_mentioned: boolean; mention_type: string | null }) =>
       !r.brand_mentioned && r.mention_type === 'competitor'
   );
-  const competitorMentions = competitorResults.length > 0
-    ? [{ count: competitorResults.length, note: 'Competitors cited where brand was absent' }]
-    : [];
+  const competitorMentions =
+    competitorResults.length > 0
+      ? [
+          {
+            count: competitorResults.length,
+            note: 'Competitors cited where brand was absent',
+          },
+        ]
+      : [];
 
   // Upsert summary
-  await supabase
-    .from('citation_summaries')
-    .upsert(
-      {
-        org_id: orgId,
-        period_days: periodDays,
-        total_queries: totalQueries,
-        total_mentions: totalMentions,
-        mention_rate: Math.round(mentionRate * 10000) / 10000,
-        by_engine: byEngine,
-        top_cited_topics: topCitedTopics,
-        competitor_mentions: competitorMentions,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'org_id,period_days' }
-    );
+  await supabase.from('citation_summaries').upsert(
+    {
+      org_id: orgId,
+      period_days: periodDays,
+      total_queries: totalQueries,
+      total_mentions: totalMentions,
+      mention_rate: Math.round(mentionRate * 10000) / 10000,
+      by_engine: byEngine,
+      top_cited_topics: topCitedTopics,
+      competitor_mentions: competitorMentions,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'org_id,period_days' }
+  );
 
-  logger.info(`Updated citation summary for org ${orgId}: ${totalMentions}/${totalQueries} mentions (${(mentionRate * 100).toFixed(1)}%)`);
+  logger.info(
+    `Updated citation summary for org ${orgId}: ${totalMentions}/${totalQueries} mentions (${(mentionRate * 100).toFixed(1)}%)`
+  );
 }
 
 // ============================================================================
@@ -310,9 +370,10 @@ async function emitCitationSignals(
   orgId: string,
   monitorResult: MonitorResult
 ): Promise<void> {
-  const mentionRate = monitorResult.total_queries > 0
-    ? monitorResult.total_mentions / monitorResult.total_queries
-    : 0;
+  const mentionRate =
+    monitorResult.total_queries > 0
+      ? monitorResult.total_mentions / monitorResult.total_queries
+      : 0;
 
   // Signal: low citation rate (<5%)
   if (monitorResult.total_queries >= 5 && mentionRate < 0.05) {
@@ -329,10 +390,15 @@ async function emitCitationSignals(
           total_mentions: monitorResult.total_mentions,
           by_engine: monitorResult.by_engine,
         },
-        evi_impact_estimate: Math.max(1, Math.round((0.05 - mentionRate) * 100)),
+        evi_impact_estimate: Math.max(
+          1,
+          Math.round((0.05 - mentionRate) * 100)
+        ),
         confidence: Math.min(0.95, monitorResult.total_queries / 20),
         priority: mentionRate < 0.01 ? 'high' : 'medium',
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(
+          Date.now() + 7 * 24 * 60 * 60 * 1000
+        ).toISOString(),
       });
       logger.info(`Emitted content_low_citation_rate signal for org ${orgId}`);
     } catch {
@@ -360,9 +426,13 @@ async function emitCitationSignals(
           evi_impact_estimate: 2,
           confidence: 0.7,
           priority: 'medium',
-          expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          expires_at: new Date(
+            Date.now() + 14 * 24 * 60 * 60 * 1000
+          ).toISOString(),
         });
-        logger.info(`Emitted competitor_citation_gap signal for org ${orgId} engine=${engine}`);
+        logger.info(
+          `Emitted competitor_citation_gap signal for org ${orgId} engine=${engine}`
+        );
       } catch {
         // Non-critical
       }
@@ -386,7 +456,9 @@ export async function monitorCitations(
   const engines = getAvailableEngines(config);
 
   if (engines.length === 0) {
-    logger.warn(`No LLM API keys configured — skipping citation monitor for org ${orgId}`);
+    logger.warn(
+      `No LLM API keys configured — skipping citation monitor for org ${orgId}`
+    );
     return {
       total_queries: 0,
       total_mentions: 0,
@@ -402,7 +474,8 @@ export async function monitorCitations(
     .eq('id', orgId)
     .single();
 
-  const orgName = (org as { name: string; domain?: string } | null)?.name || 'Brand';
+  const orgName =
+    (org as { name: string; domain?: string } | null)?.name || 'Brand';
   const orgDomain = (org as { name: string; domain?: string } | null)?.domain;
 
   // Generate queries
@@ -436,14 +509,27 @@ export async function monitorCitations(
   for (const query of queries) {
     for (const engine of engines) {
       // Dedup check
-      const alreadyPolled = await wasRecentlyPolled(supabase, orgId, query.prompt, engine);
+      const alreadyPolled = await wasRecentlyPolled(
+        supabase,
+        orgId,
+        query.prompt,
+        engine
+      );
       if (alreadyPolled) {
-        logger.debug(`Skipping dedup: ${engine} already polled for "${query.topic}" recently`);
+        logger.debug(
+          `Skipping dedup: ${engine} already polled for "${query.topic}" recently`
+        );
         continue;
       }
 
       try {
-        const response = await callEngine(engine, query.prompt, config, supabase, orgId);
+        const response = await callEngine(
+          engine,
+          query.prompt,
+          config,
+          supabase,
+          orgId
+        );
         const excerpt = response.text.substring(0, 500);
         const mention = analyzeMentions(response.text, orgName, orgDomain);
 
@@ -483,8 +569,8 @@ export async function monitorCitations(
 
   logger.info(
     `Citation monitor complete for org ${orgId}: ` +
-    `queries=${result.total_queries}, mentions=${result.total_mentions}, ` +
-    `engines=${engines.join(',')}, errors=${result.errors.length}`
+      `queries=${result.total_queries}, mentions=${result.total_mentions}, ` +
+      `engines=${engines.join(',')}, errors=${result.errors.length}`
   );
 
   return result;

@@ -11,7 +11,10 @@
 import { test as setup, expect } from '@playwright/test';
 import path from 'path';
 
-export const AUTH_FILE = path.join(__dirname, '../../playwright/.auth/user.json');
+export const AUTH_FILE = path.join(
+  __dirname,
+  '../../playwright/.auth/user.json'
+);
 
 setup('authenticate', async ({ page }) => {
   const email = process.env.TEST_EMAIL;
@@ -20,12 +23,14 @@ setup('authenticate', async ({ page }) => {
   if (!email || !password) {
     throw new Error(
       'TEST_EMAIL and TEST_PASSWORD must be set in .env.test to run authenticated E2E tests.\n' +
-      'Copy .env.test.example → .env.test and fill in your dev credentials.'
+        'Copy .env.test.example → .env.test and fill in your dev credentials.'
     );
   }
 
   await page.goto('/login');
-  await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator('input[type="email"]')).toBeVisible({
+    timeout: 10_000,
+  });
 
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);

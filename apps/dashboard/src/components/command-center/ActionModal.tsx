@@ -37,9 +37,10 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
+
+import type { ExecutionState } from './ActionCard';
 import { pillarAccents, priorityStyles, modeStyles } from './pillar-accents';
 import type { ActionItem, ActionSignal, ActionEvidence } from './types';
-import type { ExecutionState } from './ActionCard';
 
 // Signal tone colors - DS v3 semantic colors
 const signalToneColors: Record<ActionSignal['tone'], string> = {
@@ -52,23 +53,63 @@ const signalToneColors: Record<ActionSignal['tone'], string> = {
 // Evidence type icons
 const evidenceIcons: Record<ActionEvidence['type'], JSX.Element> = {
   citation: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+      />
     </svg>
   ),
   url: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+      />
     </svg>
   ),
   diff: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+      />
     </svg>
   ),
   metric: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
     </svg>
   ),
 };
@@ -143,7 +184,8 @@ function GateWarning({ gate }: { gate: ActionItem['gate'] }) {
           </p>
           {gate.min_plan && (
             <p className="text-[13px] text-semantic-warning/80 mt-1">
-              Available on <span className="font-semibold">{gate.min_plan}</span> plan
+              Available on{' '}
+              <span className="font-semibold">{gate.min_plan}</span> plan
             </p>
           )}
         </div>
@@ -217,7 +259,14 @@ export function ActionModal({
 
         // Only trigger primary CTA if not focused on another button/link
         // DO NOT trigger execute for locked actions
-        if (!isButton && !isLink && action && !isExecuting && !isCompleted && !isLocked) {
+        if (
+          !isButton &&
+          !isLink &&
+          action &&
+          !isExecuting &&
+          !isCompleted &&
+          !isLocked
+        ) {
           if (onPrimaryAction && !action.gate.required) {
             e.preventDefault();
             onPrimaryAction(action);
@@ -231,7 +280,9 @@ export function ActionModal({
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
         const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
 
         if (e.shiftKey && document.activeElement === firstElement) {
           e.preventDefault();
@@ -253,7 +304,15 @@ export function ActionModal({
       // Restore focus
       (previousActiveElement.current as HTMLElement)?.focus?.();
     };
-  }, [isOpen, onClose, isExecuting, action, onPrimaryAction, isCompleted, isLocked]);
+  }, [
+    isOpen,
+    onClose,
+    isExecuting,
+    action,
+    onPrimaryAction,
+    isCompleted,
+    isLocked,
+  ]);
 
   // Handle backdrop click - use onMouseDown to avoid drag-select-release-outside issues
   const handleBackdropMouseDown = useCallback(
@@ -316,7 +375,9 @@ export function ActionModal({
         className="action-modal-v3 relative z-10 w-full max-w-lg bg-panel rounded-xl border border-border-subtle shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
       >
         {/* Header with pillar gradient */}
-        <div className={`px-5 pt-5 pb-4 bg-gradient-to-b ${pillarStyle.gradient} relative flex-shrink-0`}>
+        <div
+          className={`px-5 pt-5 pb-4 bg-gradient-to-b ${pillarStyle.gradient} relative flex-shrink-0`}
+        >
           {/* Close X button */}
           <button
             onClick={onClose}
@@ -324,8 +385,18 @@ export function ActionModal({
             className={`absolute top-4 right-4 p-1.5 text-white/40 hover:text-white/90 hover:bg-white/10 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
             aria-label="Close modal"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
 
@@ -341,7 +412,9 @@ export function ActionModal({
             {/* Priority badge */}
             <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-4 rounded">
               <span className={`w-2 h-2 rounded-full ${priorityStyle.dot}`} />
-              <span className="text-xs text-white/70">{priorityStyle.label}</span>
+              <span className="text-xs text-white/70">
+                {priorityStyle.label}
+              </span>
             </div>
 
             {/* Ready state badge (only when not completed/error/locked) */}
@@ -354,8 +427,18 @@ export function ActionModal({
             {/* Locked badge */}
             {isLocked && (
               <span className="px-2 py-1 text-[11px] font-bold uppercase rounded bg-white/10 text-white/60 border border-white/20 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
                 </svg>
                 Locked
               </span>
@@ -364,8 +447,16 @@ export function ActionModal({
             {/* v3: Completed state badge */}
             {isCompleted && (
               <span className="px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="w-3 h-3"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Completed
               </span>
@@ -388,11 +479,16 @@ export function ActionModal({
             <span className="flex-1" />
 
             {/* Timestamp */}
-            <span className="text-xs text-white/50">{formatTimestamp(action.updated_at)}</span>
+            <span className="text-xs text-white/50">
+              {formatTimestamp(action.updated_at)}
+            </span>
           </div>
 
           {/* Title */}
-          <h2 id="action-modal-title" className="text-lg font-semibold text-white leading-tight pr-8">
+          <h2
+            id="action-modal-title"
+            className="text-lg font-semibold text-white leading-tight pr-8"
+          >
             {action.title}
           </h2>
         </div>
@@ -404,12 +500,22 @@ export function ActionModal({
             <div className="p-4 bg-semantic-success/10 border border-semantic-success/30 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-semantic-success/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-semantic-success" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-6 h-6 text-semantic-success"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-semantic-success">Action Completed</h4>
+                  <h4 className="text-sm font-semibold text-semantic-success">
+                    Action Completed
+                  </h4>
                   <p className="text-xs text-white/60 mt-0.5">
                     &quot;{action.cta.primary}&quot; was executed successfully.
                   </p>
@@ -420,8 +526,18 @@ export function ActionModal({
                   href={action.deep_link.href}
                   className="mt-3 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-semantic-success bg-semantic-success/10 hover:bg-semantic-success/20 border border-semantic-success/30 rounded-lg transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
                   </svg>
                   {action.deep_link.label}
                 </a>
@@ -434,14 +550,25 @@ export function ActionModal({
             <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/30 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-semantic-danger/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-semantic-danger" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <svg
+                    className="w-6 h-6 text-semantic-danger"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-semantic-danger">Action Failed</h4>
+                  <h4 className="text-sm font-semibold text-semantic-danger">
+                    Action Failed
+                  </h4>
                   <p className="text-xs text-white/60 mt-0.5">
-                    Failed to execute &quot;{action.cta.primary}&quot;. Please try again.
+                    Failed to execute &quot;{action.cta.primary}&quot;. Please
+                    try again.
                   </p>
                 </div>
               </div>
@@ -453,14 +580,27 @@ export function ActionModal({
             <div className="p-4 bg-brand-iris/10 border border-brand-iris/30 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-brand-iris/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <svg
+                    className="w-6 h-6 text-brand-iris"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-brand-iris">Pro Feature</h4>
+                  <h4 className="text-sm font-semibold text-brand-iris">
+                    Pro Feature
+                  </h4>
                   <p className="text-xs text-white/60 mt-0.5">
-                    This action requires the {action.gate.min_plan || 'Pro'} plan. Upgrade to unlock this and other premium features.
+                    This action requires the {action.gate.min_plan || 'Pro'}{' '}
+                    plan. Upgrade to unlock this and other premium features.
                   </p>
                 </div>
               </div>
@@ -472,20 +612,34 @@ export function ActionModal({
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
               Why This Matters
             </h3>
-            <p className="text-sm text-white/80 leading-relaxed">{action.why}</p>
+            <p className="text-sm text-white/80 leading-relaxed">
+              {action.why}
+            </p>
           </div>
 
           {/* Recommended Next Step */}
           <div className="p-3 bg-semantic-success/5 border border-semantic-success/20 rounded-lg">
             <div className="flex items-start gap-2">
-              <svg className="w-4 h-4 text-semantic-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg
+                className="w-4 h-4 text-semantic-success flex-shrink-0 mt-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
               <div>
                 <h4 className="text-xs font-semibold text-semantic-success uppercase tracking-wide mb-1">
                   Recommended Next Step
                 </h4>
-                <p className="text-sm text-white/70">{action.recommended_next_step}</p>
+                <p className="text-sm text-white/70">
+                  {action.recommended_next_step}
+                </p>
               </div>
             </div>
           </div>
@@ -498,9 +652,16 @@ export function ActionModal({
               </h3>
               <div className="flex flex-wrap gap-3">
                 {action.signals.map((signal, idx) => (
-                  <div key={idx} className="px-3 py-2 bg-page border border-border-subtle rounded-lg">
-                    <span className="text-xs text-white/50 block mb-0.5">{signal.label}</span>
-                    <span className={`text-sm font-bold ${signalToneColors[signal.tone]}`}>
+                  <div
+                    key={idx}
+                    className="px-3 py-2 bg-page border border-border-subtle rounded-lg"
+                  >
+                    <span className="text-xs text-white/50 block mb-0.5">
+                      {signal.label}
+                    </span>
+                    <span
+                      className={`text-sm font-bold ${signalToneColors[signal.tone]}`}
+                    >
                       {signal.value}
                     </span>
                   </div>
@@ -515,8 +676,16 @@ export function ActionModal({
               AI Analysis
             </h3>
             <div className="flex gap-4">
-              <ConfidenceImpactMeter label="Confidence" value={action.confidence} color="bg-brand-cyan" />
-              <ConfidenceImpactMeter label="Impact" value={action.impact} color="bg-brand-iris" />
+              <ConfidenceImpactMeter
+                label="Confidence"
+                value={action.confidence}
+                color="bg-brand-cyan"
+              />
+              <ConfidenceImpactMeter
+                label="Impact"
+                value={action.impact}
+                color="bg-brand-iris"
+              />
             </div>
           </div>
 
@@ -527,8 +696,18 @@ export function ActionModal({
           {action.guardrails && action.guardrails.length > 0 && (
             <div className="p-3 bg-semantic-warning/5 border border-semantic-warning/20 rounded-lg">
               <div className="flex items-start gap-2">
-                <svg className="w-4 h-4 text-semantic-warning flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-4 h-4 text-semantic-warning flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
                 <div>
                   <h4 className="text-xs font-semibold text-semantic-warning uppercase tracking-wide mb-1">
@@ -536,7 +715,9 @@ export function ActionModal({
                   </h4>
                   <ul className="space-y-1">
                     {action.guardrails.map((guardrail, idx) => (
-                      <li key={idx} className="text-sm text-white/60">{guardrail}</li>
+                      <li key={idx} className="text-sm text-white/60">
+                        {guardrail}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -552,13 +733,18 @@ export function ActionModal({
               </h3>
               <div className="space-y-2">
                 {action.evidence.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-page border border-border-subtle rounded-lg">
+                  <div
+                    key={idx}
+                    className="p-3 bg-page border border-border-subtle rounded-lg"
+                  >
                     <div className="flex items-start gap-2">
                       <span className="text-white/40 flex-shrink-0">
                         {evidenceIcons[item.type]}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs text-white/50 block">{item.label}</span>
+                        <span className="text-xs text-white/50 block">
+                          {item.label}
+                        </span>
                         {item.url ? (
                           <a
                             href={item.url}
@@ -569,7 +755,9 @@ export function ActionModal({
                             {item.value}
                           </a>
                         ) : (
-                          <span className="text-sm text-white/80">{item.value}</span>
+                          <span className="text-sm text-white/80">
+                            {item.value}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -586,8 +774,18 @@ export function ActionModal({
                 href={action.deep_link.href}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-brand-cyan bg-brand-cyan/10 hover:bg-brand-cyan/15 border border-brand-cyan/25 rounded-lg transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
                 </svg>
                 {action.deep_link.label}
               </a>
@@ -602,12 +800,24 @@ export function ActionModal({
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border-subtle">
               {action.controls.includes('schedule') && (
                 <button
-                  onClick={() => {/* TODO: Open schedule picker */}}
+                  onClick={() => {
+                    /* TODO: Open schedule picker */
+                  }}
                   disabled={isExecuting}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                   Schedule
                 </button>
@@ -617,20 +827,42 @@ export function ActionModal({
                   href={action.deep_link.href}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'pointer-events-none opacity-50' : ''}`}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
                   </svg>
                   Edit
                 </a>
               )}
               {action.controls.includes('assign') && (
                 <button
-                  onClick={() => {/* TODO: Open assignee picker */}}
+                  onClick={() => {
+                    /* TODO: Open assignee picker */
+                  }}
                   disabled={isExecuting}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                   Assign
                 </button>
@@ -649,8 +881,18 @@ export function ActionModal({
                   transition-all duration-200 flex items-center justify-center gap-2
                   bg-brand-iris text-white hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.3)]"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
                 </svg>
                 Unlock Pro
               </button>
@@ -666,17 +908,22 @@ export function ActionModal({
                   transition-all duration-200 flex items-center justify-center gap-2
                   ${isExecuting ? 'opacity-70 cursor-wait' : ''}
                   ${action.gate.required ? 'opacity-50 cursor-not-allowed' : ''}
-                  ${hasError
-                    ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90'
-                    : ready && !action.gate.required
-                    ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.3)]'
-                    : `${pillarStyle.solidBg} text-white hover:opacity-90`
+                  ${
+                    hasError
+                      ? 'bg-semantic-danger text-white hover:bg-semantic-danger/90'
+                      : ready && !action.gate.required
+                        ? 'bg-semantic-success text-white hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.3)]'
+                        : `${pillarStyle.solidBg} text-white hover:opacity-90`
                   }
                 `}
               >
                 {isExecuting ? (
                   <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <svg
+                      className="w-4 h-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -695,8 +942,18 @@ export function ActionModal({
                   </>
                 ) : hasError ? (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                     Retry
                   </>
@@ -711,8 +968,16 @@ export function ActionModal({
                 onClick={onClose}
                 className="flex-1 px-4 py-2.5 text-sm font-bold rounded-lg bg-semantic-success/20 text-semantic-success flex items-center justify-center gap-2"
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Done
               </button>

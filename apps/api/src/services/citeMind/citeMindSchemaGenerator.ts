@@ -7,8 +7,8 @@
  * Saves to citemind_schemas table.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('citemind:schema');
 
@@ -63,7 +63,7 @@ function detectSchemaType(title: string, body: string): SchemaType {
   if (hasHowTo) return 'HowTo';
 
   // BlogPosting: shorter content, blog-style
-  if (titleLower.includes('blog') || (body.split(/\s+/).length < 1500)) {
+  if (titleLower.includes('blog') || body.split(/\s+/).length < 1500) {
     return 'BlogPosting';
   }
 
@@ -130,10 +130,13 @@ function generateHowToSchema(
 
   // Extract steps from numbered lists or "Step N" patterns
   const steps: Array<{ '@type': string; text: string; position: number }> = [];
-  const stepMatches = body.match(/(?:^|\n)\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)(.+)/gim) || [];
+  const stepMatches =
+    body.match(/(?:^|\n)\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)(.+)/gim) || [];
 
   stepMatches.forEach((match, idx) => {
-    const text = match.replace(/^\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)/i, '').trim();
+    const text = match
+      .replace(/^\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)/i, '')
+      .trim();
     if (text.length > 5) {
       steps.push({
         '@type': 'HowToStep',
@@ -165,7 +168,11 @@ function generateFAQSchema(
   const body = item.body || '';
 
   // Extract Q&A pairs: lines ending with ? followed by answer text
-  const faqEntries: Array<{ '@type': string; name: string; acceptedAnswer: { '@type': string; text: string } }> = [];
+  const faqEntries: Array<{
+    '@type': string;
+    name: string;
+    acceptedAnswer: { '@type': string; text: string };
+  }> = [];
 
   const lines = body.split('\n');
   for (let i = 0; i < lines.length; i++) {
@@ -217,13 +224,17 @@ export async function generateSchema(
   // Get content item
   const { data: item, error: itemError } = await supabase
     .from('content_items')
-    .select('id, org_id, title, body, content_type, url, published_at, word_count')
+    .select(
+      'id, org_id, title, body, content_type, url, published_at, word_count'
+    )
     .eq('id', contentItemId)
     .eq('org_id', orgId)
     .single();
 
   if (itemError || !item) {
-    throw new Error(`Content item ${contentItemId} not found: ${itemError?.message}`);
+    throw new Error(
+      `Content item ${contentItemId} not found: ${itemError?.message}`
+    );
   }
 
   // Get org name
@@ -233,7 +244,8 @@ export async function generateSchema(
     .eq('id', orgId)
     .single();
 
-  const orgName = (org as { name: string } | null)?.name || 'Unknown Organization';
+  const orgName =
+    (org as { name: string } | null)?.name || 'Unknown Organization';
   const content = item as ContentItemForSchema;
 
   // Detect type and generate schema
@@ -261,12 +273,14 @@ export async function generateSchema(
     .eq('content_item_id', contentItemId)
     .eq('org_id', orgId);
 
-  const { error: insertError } = await supabase.from('citemind_schemas').insert({
-    org_id: orgId,
-    content_item_id: contentItemId,
-    schema_type: schemaType,
-    schema_json: schemaJson,
-  });
+  const { error: insertError } = await supabase
+    .from('citemind_schemas')
+    .insert({
+      org_id: orgId,
+      content_item_id: contentItemId,
+      schema_type: schemaType,
+      schema_json: schemaJson,
+    });
 
   if (insertError) {
     logger.error(`Failed to save schema: ${insertError.message}`);

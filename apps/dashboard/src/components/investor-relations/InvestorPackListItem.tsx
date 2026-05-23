@@ -5,9 +5,12 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { FileText, ChevronRight, Calendar, Users, Layers } from 'lucide-react';
+import Link from 'next/link';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   type InvestorPack,
   getFormatLabel,
@@ -19,21 +22,16 @@ import {
   formatRelativeTime,
 } from '@/lib/investorRelationsApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  ChevronRight,
-  Calendar,
-  Users,
-  Layers,
-} from 'lucide-react';
-import Link from 'next/link';
 
 interface InvestorPackListItemProps {
   pack: InvestorPack;
   className?: string;
 }
 
-export function InvestorPackListItem({ pack, className }: InvestorPackListItemProps) {
+export function InvestorPackListItem({
+  pack,
+  className,
+}: InvestorPackListItemProps) {
   const statusColor = getStatusColor(pack.status);
 
   return (
@@ -48,7 +46,9 @@ export function InvestorPackListItem({ pack, className }: InvestorPackListItemPr
           {/* Main content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-medium text-gray-900 truncate">{pack.title}</h3>
+              <h3 className="font-medium text-gray-900 truncate">
+                {pack.title}
+              </h3>
               <Badge
                 variant="secondary"
                 className={cn(
@@ -70,7 +70,9 @@ export function InvestorPackListItem({ pack, className }: InvestorPackListItemPr
                 {formatPeriodRange(pack.periodStart, pack.periodEnd)}
               </span>
               {pack.fiscalQuarter && (
-                <span>{formatFiscalQuarter(pack.fiscalQuarter, pack.fiscalYear)}</span>
+                <span>
+                  {formatFiscalQuarter(pack.fiscalQuarter, pack.fiscalYear)}
+                </span>
               )}
               <span className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
@@ -83,7 +85,9 @@ export function InvestorPackListItem({ pack, className }: InvestorPackListItemPr
             </div>
 
             {pack.description && (
-              <p className="mt-1 text-sm text-gray-600 truncate">{pack.description}</p>
+              <p className="mt-1 text-sm text-gray-600 truncate">
+                {pack.description}
+              </p>
             )}
           </div>
 

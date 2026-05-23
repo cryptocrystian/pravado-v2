@@ -12,27 +12,31 @@ Successfully stabilized the Next.js build pipeline by fixing React version misma
 
 ## Results Summary
 
-| Metric | Before S25 | After S25 | Status |
-|--------|-----------|-----------|---------|
-| `pnpm lint` | ⚠️ 228 warnings | ⚠️ 228 warnings | ✅ Maintained |
-| `pnpm typecheck` | ✅ 0 errors | ✅ 0 errors | ✅ Maintained |
-| `pnpm test` | ✅ Infrastructure working | ✅ Infrastructure working | ✅ Maintained |
-| `pnpm build` | ❌ 14 routes failing | ✅ All routes passing | ✅ FIXED |
+| Metric           | Before S25                | After S25                 | Status        |
+| ---------------- | ------------------------- | ------------------------- | ------------- |
+| `pnpm lint`      | ⚠️ 228 warnings           | ⚠️ 228 warnings           | ✅ Maintained |
+| `pnpm typecheck` | ✅ 0 errors               | ✅ 0 errors               | ✅ Maintained |
+| `pnpm test`      | ✅ Infrastructure working | ✅ Infrastructure working | ✅ Maintained |
+| `pnpm build`     | ❌ 14 routes failing      | ✅ All routes passing     | ✅ FIXED      |
 
 ## Problems Identified and Fixed
 
 ### 1. React Version Mismatch ✅
+
 **Problem**: `react@18.2.0` vs `react-dom@18.3.1` version mismatch
 **Fix**: Aligned both packages to `18.3.1` with exact version pinning
 **Files Modified**:
+
 - `apps/dashboard/package.json`
 
 ### 2. useContext Null Reference Errors ✅
+
 **Problem**: 14 routes failing with "Cannot read properties of null (reading 'useContext')" during static generation
 **Root Cause**: Next.js attempting to statically generate pages that use React context or browser-only features
 **Fix**: Added `export const dynamic = 'force-dynamic'` to force server-side rendering
 
 **Files Modified**:
+
 - `apps/dashboard/src/app/layout.tsx` (root layout)
 - `apps/dashboard/src/app/app/layout.tsx` (app layout)
 - `apps/dashboard/src/app/page.tsx`
@@ -49,20 +53,24 @@ Successfully stabilized the Next.js build pipeline by fixing React version misma
 - `apps/dashboard/src/app/app/team/page.tsx`
 
 ### 3. `<Html>` Usage Violations ✅
+
 **Problem**: Default Next.js error pages (404, 500) using `<Html>` component outside of `pages/_document`
 **Fix**: Created custom error pages using App Router conventions
 
 **Files Created**:
+
 - `apps/dashboard/src/app/not-found.tsx` (404 errors)
 - `apps/dashboard/src/app/error.tsx` (runtime errors)
 - `apps/dashboard/src/app/global-error.tsx` (root-level errors)
 - `apps/dashboard/src/pages/_error.tsx` (Pages Router fallback)
 
 ### 4. TypeScript Null Safety Issues ✅
+
 **Problem**: `useParams()` and `useSearchParams()` can return null, causing TypeScript errors
 **Fix**: Added optional chaining operator (`?.`) for null-safe property access
 
 **Files Modified**:
+
 - `apps/dashboard/src/app/app/playbooks/[id]/page.tsx`
 - `apps/dashboard/src/app/app/playbooks/editor/[id]/page.tsx`
 - `apps/dashboard/src/app/app/playbooks/editor/page.tsx`
@@ -104,6 +112,7 @@ Time:    29.59s
 ```
 
 All packages in the monorepo build successfully:
+
 - ✅ @pravado/types
 - ✅ @pravado/validators
 - ✅ @pravado/utils
@@ -124,6 +133,7 @@ All packages in the monorepo build successfully:
 ## Lint & TypeScript Status
 
 **Lint Warnings (Acceptable)**: 228 warnings (unchanged from S24)
+
 - React Hook exhaustive-deps warnings
 - @typescript-eslint/no-explicit-any warnings
 - next/no-img-element warnings
@@ -138,22 +148,26 @@ All packages in the monorepo build successfully:
 **Lines Changed**: ~50 lines total (minimal, targeted fixes)
 
 **Package Dependencies Updated**: 1
+
 - React and React-DOM aligned to 18.3.1
 
 ## Recommendations
 
 ### Short-term
+
 1. ✅ Build pipeline is now stable for production deployments
 2. ✅ All routes using dynamic rendering - no static generation issues
 3. ✅ Custom error pages provide better UX than defaults
 
 ### Long-term
+
 1. Consider addressing ESLint warnings in a dedicated refactoring sprint
 2. Review useEffect dependencies and add exhaustive-deps compliance
 3. Migrate from `<img>` to Next.js `<Image>` components for optimization
 4. Replace `any` types with proper TypeScript types
 
 ### Build Performance
+
 - Current build time: 29.59s for full monorepo
 - Dashboard build: ~25s with caching
 - Consider code-splitting for larger routes (playbooks editor at 143KB First Load JS)

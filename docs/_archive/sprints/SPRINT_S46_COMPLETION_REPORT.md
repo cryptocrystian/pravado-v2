@@ -1,4 +1,5 @@
 # Sprint S46 Completion Report
+
 ## Journalist Identity Graph & Contact Intelligence V1
 
 **Sprint**: S46
@@ -12,6 +13,7 @@
 Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**, a unified intelligence layer that consolidates journalist data from all PR systems (S38-S45) into a single, deduplicated identity database with sophisticated scoring models, identity resolution, and relationship mapping.
 
 ### Key Achievements
+
 - ✅ Unified journalist profile database with identity resolution
 - ✅ Fuzzy matching and automated deduplication using Levenshtein distance
 - ✅ Cross-system activity tracking across S38-S45
@@ -36,6 +38,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 #### Tables Created
 
 **`journalist_profiles`**
+
 - Core identity table with RLS policies
 - Fields: id, org_id, full_name, primary_email, secondary_emails
 - Affiliation: primary_outlet, secondary_outlets, beat
@@ -45,11 +48,13 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 - Indexes on: org_id+email, engagement, outlet, beat
 
 **`journalist_merge_map`**
+
 - Tracks merged journalist identities
 - Fields: merged_id, canonical_id, merged_at, merged_by, merge_reason
 - Enables identity resolution audit trail
 
 **`journalist_activity_log`**
+
 - Unified activity tracking across all PR systems
 - Activity types: press_release_sent, pitch_sent, mention_detected, coverage_published, outreach_email, email_opened, email_clicked, email_replied, manual_log
 - Source systems: s38_pr_generator, s39_pitch_engine, s40_media_monitoring, s44_outreach, s45_deliverability, manual
@@ -79,6 +84,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 **Size**: 380 lines
 
 #### Core Types
+
 - `JournalistProfile` - Complete journalist identity
 - `EnrichedJournalistProfile` - Profile with all related data
 - `JournalistTier` - A/B/C/D classification
@@ -88,6 +94,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 - `JournalistActivitySummary` - Aggregated metrics
 
 #### Identity Resolution Types
+
 - `IdentityResolutionInput` - Fuzzy matching input
 - `IdentityMatch` - Match result with score and reasons
 - `FuzzyMatchResult` - Similarity-based match
@@ -95,18 +102,21 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 - `MergeProfilesInput` - Profile merge specification
 
 #### Scoring Model Types
+
 - `JournalistEngagementModel` - Engagement score breakdown
 - `JournalistResponsivenessModel` - Response time analysis
 - `JournalistRelevanceModel` - Beat alignment scoring
 - `JournalistTierClassification` - A/B/C/D tier details
 
 #### Graph Types
+
 - `JournalistGraphNode` - Graph node (journalist, outlet, topic, coverage, outreach)
 - `JournalistGraphEdge` - Graph edge (works_for, covers, wrote_about, etc.)
 - `JournalistGraph` - Complete graph structure
 - `GraphQuery` - Graph generation parameters
 
 #### Input/Query Types
+
 - `CreateJournalistProfileInput`
 - `UpdateJournalistProfileInput`
 - `CreateActivityInput`
@@ -122,6 +132,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 **Size**: 510 lines
 
 #### Zod Schemas
+
 - All enum validators (tier, activity type, source system, sentiment)
 - Profile input validators (create, update)
 - Activity input validators (single, batch)
@@ -131,6 +142,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 - Query validators (profiles, activities, graph)
 
 #### Validation Features
+
 - Email validation
 - URL validation (LinkedIn, personal websites)
 - String length constraints
@@ -148,6 +160,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 #### Core Methods
 
 **Profile Management**
+
 - `createProfile()` - Create journalist profile
 - `getProfile()` - Get single profile
 - `getEnrichedProfile()` - Get profile with all related data
@@ -156,6 +169,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 - `deleteProfile()` - Soft delete profile
 
 **Identity Resolution**
+
 - `findMatches()` - Fuzzy matching with Levenshtein distance
   - Email exact match: 50% weight
   - Secondary email match: 40% weight
@@ -166,12 +180,14 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 - `mergeProfiles()` - Merge two profiles with conflict resolution
 
 **Activity Tracking**
+
 - `createActivity()` - Log single activity
 - `batchCreateActivities()` - Bulk activity logging
 - `listActivities()` - Query activities with filters
 - `getActivitySummary()` - Get aggregated metrics
 
 **Scoring & Classification**
+
 - `calculateEngagementScore()` - Weighted engagement formula
 - `calculateResponsivenessScore()` - Reply rate calculation
 - `calculateRelevanceScore()` - Beat alignment (stub in V1)
@@ -184,6 +200,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
   - Responsiveness level (10%): high/medium/low
 
 **Graph Builder**
+
 - `buildGraph()` - Generate journalist graph
   - Journalist nodes with engagement data
   - Outlet nodes with affiliation edges
@@ -194,6 +211,7 @@ Sprint S46 delivers the **Journalist Identity Graph & Contact Intelligence V1**,
 #### Key Algorithms
 
 **Levenshtein Distance** (String Similarity)
+
 ```typescript
 function levenshteinDistance(s1: string, s2: string): number {
   // Dynamic programming implementation
@@ -202,6 +220,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ```
 
 **String Similarity**
+
 ```typescript
 function stringSimilarity(s1: string, s2: string): number {
   const distance = levenshteinDistance(s1, s2);
@@ -211,15 +230,17 @@ function stringSimilarity(s1: string, s2: string): number {
 ```
 
 **Engagement Score Formula**
+
 ```
-engagement_score = 
+engagement_score =
   (response_rate × 0.4) +    // 40% weight
-  (coverage_rate × 0.3) +     // 30% weight  
+  (coverage_rate × 0.3) +     // 30% weight
   (open_rate × 0.2) +         // 20% weight
   (activity_volume × 0.1)     // 10% weight
 ```
 
 **Tier Classification**
+
 ```
 A-Tier: 80-100 points (high-value, highly engaged)
 B-Tier: 60-79 points (strong potential, active)
@@ -234,6 +255,7 @@ D-Tier: 0-39 points (low engagement, cold contacts)
 **Endpoints**: 18
 
 #### Profile Management Routes
+
 1. `GET /api/v1/journalist-graph/profiles` - List profiles with filters
 2. `GET /api/v1/journalist-graph/profiles/:id` - Get single profile
 3. `GET /api/v1/journalist-graph/profiles/:id/enriched` - Get enriched profile
@@ -242,24 +264,29 @@ D-Tier: 0-39 points (low engagement, cold contacts)
 6. `DELETE /api/v1/journalist-graph/profiles/:id` - Delete profile
 
 #### Identity Resolution Routes
+
 7. `POST /api/v1/journalist-graph/resolve-identity` - Find matches
 8. `POST /api/v1/journalist-graph/find-duplicates` - Find duplicate sets
 9. `POST /api/v1/journalist-graph/merge-profiles` - Merge two profiles
 
 #### Activity Routes
+
 10. `GET /api/v1/journalist-graph/activities` - List activities
 11. `POST /api/v1/journalist-graph/activities` - Create activity
 12. `POST /api/v1/journalist-graph/activities/batch` - Batch create
 
 #### Scoring Routes
+
 13. `POST /api/v1/journalist-graph/profiles/:id/update-scores` - Recalculate scores
 14. `POST /api/v1/journalist-graph/update-scores/batch` - Batch update scores
 15. `GET /api/v1/journalist-graph/profiles/:id/tier` - Get tier classification
 
 #### Graph Routes
+
 16. `POST /api/v1/journalist-graph/graph` - Build journalist graph
 
 #### Route Registration
+
 - Registered in `apps/api/src/server.ts`
 - Prefix: `/api/v1/journalist-graph`
 - Feature flag: `ENABLE_JOURNALIST_GRAPH`
@@ -279,6 +306,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 **Size**: 180 lines
 
 #### Functions
+
 - `listProfiles()` - List with query parameters
 - `getProfile()` - Get single profile
 - `getEnrichedProfile()` - Get enriched profile
@@ -295,6 +323,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 - `buildGraph()` - Build graph
 
 #### Helper Features
+
 - Automatic query parameter serialization
 - Credential inclusion
 - JSON content type handling
@@ -307,6 +336,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 **Route**: `/app/pr/journalists`
 
 #### Features
+
 - Journalist list table with columns:
   - Name (full name + email)
   - Outlet
@@ -322,6 +352,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 - Click-through to detailed profiles (future)
 
 #### State Management
+
 - React hooks (useState, useEffect)
 - Journalist data array
 - Loading/error states
@@ -333,6 +364,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 **Size**: 180 lines
 
 #### Test Coverage
+
 - **Profile Management**
   - Create journalist profile
   - List profiles with filters
@@ -346,6 +378,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
   - Build journalist graph with nodes and edges
 
 #### Test Framework
+
 - Vitest for unit testing
 - Mocked Supabase client
 - Spy functions for database operations
@@ -357,6 +390,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 **Size**: 70 lines
 
 #### Test Scenarios
+
 1. Display page title and description
 2. Display search input
 3. Display journalist table with columns
@@ -366,6 +400,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 7. Handle empty state with message
 
 #### Test Framework
+
 - Playwright for E2E testing
 - Page navigation and element selection
 - API route mocking for error/empty states
@@ -377,6 +412,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 **Size**: ~800 lines
 
 #### Documentation Sections
+
 1. Overview and key features
 2. Architecture (schema, service layer, scoring models)
 3. API endpoints with request/response examples
@@ -402,6 +438,7 @@ ENABLE_JOURNALIST_GRAPH: true, // S46: Journalist identity graph & contact intel
 ### Identity Resolution Algorithm
 
 **Levenshtein Distance Implementation**
+
 ```typescript
 // Dynamic programming algorithm for string similarity
 function levenshteinDistance(s1: string, s2: string): number {
@@ -420,8 +457,8 @@ function levenshteinDistance(s1: string, s2: string): number {
     for (let j = 1; j <= len2; j++) {
       const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
       matrix[i][j] = Math.min(
-        matrix[i - 1][j] + 1,      // deletion
-        matrix[i][j - 1] + 1,      // insertion
+        matrix[i - 1][j] + 1, // deletion
+        matrix[i][j - 1] + 1, // insertion
         matrix[i - 1][j - 1] + cost // substitution
       );
     }
@@ -432,6 +469,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ```
 
 **Weighted Matching System**
+
 - Email exact match: 50% weight (high confidence)
 - Secondary email match: 40% weight (moderate confidence)
 - Name similarity (>70%): 30% weight (fuzzy match)
@@ -441,12 +479,14 @@ function levenshteinDistance(s1: string, s2: string): number {
 ### Multi-Dimensional Scoring
 
 **Engagement Score Components**
+
 1. Response Rate (40%): `replies / emails_sent`
 2. Coverage Rate (30%): `coverage_events / total_outreach`
 3. Open Rate (20%): `opens / emails_sent`
 4. Activity Volume (10%): `min(1.0, total_activities / 100)`
 
 **Tier Classification Point System**
+
 - Outlet Tier (40 points max):
   - tier1 (major): 40 points
   - tier2 (mid-market): 25 points
@@ -468,6 +508,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ### Cross-System Integration
 
 **Activity Source Mapping**
+
 - S38 (PR Generator): `press_release_sent`
 - S39 (Pitch Engine): `pitch_sent`
 - S40 (Media Monitoring): `mention_detected`, `coverage_published`
@@ -480,33 +521,39 @@ function levenshteinDistance(s1: string, s2: string): number {
 ## Integration Points
 
 ### S38: PR Generator
+
 - Log `press_release_sent` activities when releases are distributed
 - Extract journalist emails from distribution lists
 - Create/update profiles for new journalists
 
 ### S39: PR Pitch Engine
+
 - Log `pitch_sent` activities for each pitch
 - Track engagement through pitch responses
 - Update journalist profiles with beat information
 
 ### S40: Media Monitoring
+
 - Log `mention_detected` when journalists mention clients
 - Log `coverage_published` for earned coverage
 - Attribute articles to journalists (byline extraction)
 - Update outlet affiliations
 
 ### S41: Media Crawling
+
 - Automatic journalist discovery from bylines
 - Outlet affiliation updates
 - Beat inference from article topics
 - Coverage tracking
 
 ### S44: PR Outreach
+
 - Log `outreach_email` activities for each sent email
 - Preserve email metadata (subject, campaign)
 - Track outreach sequences
 
 ### S45: Deliverability & Engagement
+
 - Log `email_opened`, `email_clicked`, `email_replied` activities
 - Engagement metrics feed scoring models
 - Response tracking for responsiveness scores
@@ -580,6 +627,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ## Future Enhancements
 
 ### V2 Planned Features
+
 1. **Advanced Relevance Scoring** - Topic modeling, beat alignment, historical coverage analysis
 2. **Time-to-Response Analysis** - Response time patterns, optimal outreach timing
 3. **Relationship Strength Scoring** - Multi-touch attribution, relationship velocity
@@ -592,6 +640,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 10. **Relationship Health Monitoring** - Engagement decline alerts, re-engagement suggestions
 
 ### V3+ Aspirations
+
 - Real-time journalist activity feeds
 - Journalist preference learning (topics, angles, timing)
 - A/B testing for outreach strategies
@@ -605,6 +654,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ## Metrics & Success Criteria
 
 ### Operational Metrics
+
 - ✅ Total journalist profiles: Unlimited
 - ✅ Active journalists tracking: Last 90 days
 - ✅ Average engagement score: Calculated across database
@@ -613,6 +663,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 - ✅ Merge operations: Tracked with attribution
 
 ### Quality Metrics
+
 - ✅ Identity match accuracy: Levenshtein-based
 - ✅ Score prediction accuracy: Component-based
 - ✅ Data completeness: Field population tracking
@@ -620,6 +671,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 - ✅ Activities per journalist: Average calculated
 
 ### Business Impact
+
 - 🎯 Coverage rate by tier: Measurable
 - 🎯 Response rate by engagement score: Trackable
 - 🎯 ROI by tier: Coverage value / outreach effort
@@ -630,6 +682,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ## Files Created/Modified
 
 ### New Files (11)
+
 1. `apps/api/supabase/migrations/51_create_journalist_identity_graph.sql` (420 lines)
 2. `packages/types/src/journalistGraph.ts` (380 lines)
 3. `packages/validators/src/journalistGraph.ts` (510 lines)
@@ -643,12 +696,14 @@ function levenshteinDistance(s1: string, s2: string): number {
 11. `docs/SPRINT_S46_COMPLETION_REPORT.md` (this file)
 
 ### Modified Files (4)
+
 1. `packages/types/src/index.ts` - Added journalistGraph export
 2. `packages/validators/src/index.ts` - Added journalistGraph export
 3. `packages/feature-flags/src/flags.ts` - Added ENABLE_JOURNALIST_GRAPH flag
 4. `apps/api/src/server.ts` - Registered journalist graph routes
 
 ### Total Lines of Code
+
 - Production Code: ~3,650 lines
 - Test Code: ~250 lines
 - Documentation: ~800 lines
@@ -659,6 +714,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 ## Dependencies
 
 ### Existing Dependencies
+
 - Supabase (database and RLS)
 - Fastify (API routes)
 - React (frontend)
@@ -668,6 +724,7 @@ function levenshteinDistance(s1: string, s2: string): number {
 - Playwright (E2E tests)
 
 ### No New Dependencies Added
+
 Sprint S46 leverages existing infrastructure and dependencies from previous sprints.
 
 ---
@@ -675,6 +732,7 @@ Sprint S46 leverages existing infrastructure and dependencies from previous spri
 ## Known Issues & Limitations
 
 ### V1 Limitations
+
 1. **Relevance Score**: Stub implementation (default 0.5)
    - Full topic modeling deferred to V2
    - Beat alignment analysis not yet implemented
@@ -696,6 +754,7 @@ Sprint S46 leverages existing infrastructure and dependencies from previous spri
    - Does not block core functionality
 
 ### Technical Debt
+
 - Type property mismatches between service and type definitions
 - Pre-existing prOutreach route errors (S44)
 - Lint warnings for existing code (not S46-specific)
@@ -705,6 +764,7 @@ Sprint S46 leverages existing infrastructure and dependencies from previous spri
 ## Testing Status
 
 ### Backend Tests
+
 - ✅ Profile CRUD operations
 - ✅ Identity resolution with fuzzy matching
 - ✅ Activity logging
@@ -712,6 +772,7 @@ Sprint S46 leverages existing infrastructure and dependencies from previous spri
 - ✅ Graph building
 
 ### E2E Tests
+
 - ✅ Dashboard page rendering
 - ✅ Journalist list display
 - ✅ Search functionality
@@ -719,6 +780,7 @@ Sprint S46 leverages existing infrastructure and dependencies from previous spri
 - ✅ Error and empty states
 
 ### Manual Testing Required
+
 - API endpoint integration
 - Cross-system activity logging
 - Score calculation accuracy
@@ -730,12 +792,14 @@ Sprint S46 leverages existing infrastructure and dependencies from previous spri
 ## Deployment Notes
 
 ### Database Migration
+
 ```bash
 cd apps/api
 supabase db push  # Runs migration 51
 ```
 
 ### Package Builds
+
 ```bash
 pnpm --filter @pravado/types build
 pnpm --filter @pravado/validators build
@@ -743,11 +807,13 @@ pnpm --filter @pravado/feature-flags build
 ```
 
 ### Feature Flag
+
 ```typescript
-ENABLE_JOURNALIST_GRAPH: true
+ENABLE_JOURNALIST_GRAPH: true;
 ```
 
 ### Environment Variables
+
 No additional environment variables required. Uses existing Supabase connection.
 
 ---
@@ -765,6 +831,7 @@ Sprint S46 successfully delivers the Journalist Identity Graph & Contact Intelli
 - **Dashboard Interface**: User-friendly journalist management
 
 This foundation enables PR teams to:
+
 - Eliminate duplicate journalist records
 - Track engagement across all touchpoints
 - Prioritize high-value contacts

@@ -15,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+
 import { mockEVITrend, mockPlacements } from './analytics-mock-data';
 
 // Merge EVI trend with placement events
@@ -30,7 +31,13 @@ const timelineData = mockEVITrend.map((point) => {
   };
 });
 
-function TimelineTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: typeof timelineData[0] }> }) {
+function TimelineTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload: (typeof timelineData)[0] }>;
+}) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
@@ -41,7 +48,9 @@ function TimelineTooltip({ active, payload }: { active?: boolean; payload?: Arra
         <div className="mt-1.5 pt-1.5 border-t border-white/10">
           <p className="text-white/90 font-semibold">{d.publication}</p>
           <p className="text-white/60 mt-0.5">{d.headline}</p>
-          <p className="text-semantic-success mt-0.5">{d.eviLift} &middot; {d.reach} reach</p>
+          <p className="text-semantic-success mt-0.5">
+            {d.eviLift} &middot; {d.reach} reach
+          </p>
         </div>
       )}
     </div>
@@ -57,18 +66,45 @@ export function CoverageTimeline() {
 
       <ResponsiveContainer width="100%" height={200}>
         <ComposedChart data={timelineData}>
-          <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }} axisLine={false} tickLine={false} />
-          <YAxis domain={['dataMin - 2', 'dataMax + 2']} tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }} axisLine={false} tickLine={false} width={30} />
+          <CartesianGrid
+            horizontal
+            vertical={false}
+            stroke="rgba(255,255,255,0.05)"
+          />
+          <XAxis
+            dataKey="date"
+            tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            domain={['dataMin - 2', 'dataMax + 2']}
+            tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }}
+            axisLine={false}
+            tickLine={false}
+            width={30}
+          />
           <Tooltip content={<TimelineTooltip />} />
-          <Line type="monotone" dataKey="evi" stroke="#00D9FF" strokeWidth={2} dot={false} />
+          <Line
+            type="monotone"
+            dataKey="evi"
+            stroke="#00D9FF"
+            strokeWidth={2}
+            dot={false}
+          />
           <Scatter dataKey="eventEvi" fill="#E879F9" shape="circle" />
         </ComposedChart>
       </ResponsiveContainer>
 
       <div className="flex items-center gap-4 mt-3 text-[11px] text-white/40">
-        <span className="flex items-center gap-1.5"><span className="w-2 h-0.5 bg-brand-cyan inline-block rounded" /> EVI trend</span>
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-brand-magenta inline-block" /> Media placement</span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-0.5 bg-brand-cyan inline-block rounded" /> EVI
+          trend
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-brand-magenta inline-block" />{' '}
+          Media placement
+        </span>
       </div>
     </div>
   );

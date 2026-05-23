@@ -16,7 +16,14 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/command-center/strategy-panel] Proxy error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    console.error('[API /api/command-center/strategy-panel] Proxy error:', {
+      status,
+      message,
+      code,
+    });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

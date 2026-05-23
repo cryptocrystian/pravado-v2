@@ -3,6 +3,7 @@
 **Status:** CANONICAL · IMPLEMENTATION-BINDING
 
 **Precedence:**
+
 - **Above:** Sprint docs, feature PRDs, UI tickets
 - **Below:** CONTENT_PILLAR_CANON.md, PR_PILLAR_CANON.md
 
@@ -34,6 +35,7 @@ The Content pillar is not a feature set.
 **It is a governed authority production system.**
 
 Content exists to:
+
 - Reinforce entities
 - Enable citations
 - Increase AI-readable authority
@@ -55,6 +57,7 @@ These are the only first-class objects in the Content pillar.
 Represents a canonical authority artifact.
 
 **Required properties:**
+
 - Primary format (article, guide, landing page, etc.)
 - Entity associations (brand, product, person, concept)
 - Authority intent (what authority it reinforces)
@@ -63,6 +66,7 @@ Represents a canonical authority artifact.
 - Cross-pillar linkages (PR, AEO)
 
 **Rules:**
+
 - No Content Asset exists without an authority intent
 - Publishing is blocked unless CiteMind passes
 - Assets are evaluated as authority infrastructure, not traffic units
@@ -72,6 +76,7 @@ Represents a canonical authority artifact.
 Represents strategic intent translated into constraints.
 
 **Required properties:**
+
 - Strategic objective (SAGE-derived)
 - Target entities + claims
 - Allowed assertions
@@ -80,6 +85,7 @@ Represents strategic intent translated into constraints.
 - Downstream derivative map
 
 **Rules:**
+
 - All drafts must originate from a Brief
 - AI may not draft outside Brief constraints
 - Briefs are versioned and auditable
@@ -89,12 +95,14 @@ Represents strategic intent translated into constraints.
 Represents structural reuse, not duplication.
 
 **Examples:**
+
 - PR pitch excerpts
 - AEO snippets
 - AI-ready summaries
 - Social fragments
 
 **Rules:**
+
 - Derivatives are linked to the parent Content Asset
 - Editing a parent invalidates dependent derivatives
 - No free-form derivative creation
@@ -104,6 +112,7 @@ Represents structural reuse, not duplication.
 Represents timing + authority sequencing, not just scheduling.
 
 **Required properties:**
+
 - Campaign / theme
 - Primary asset reference
 - Cross-pillar dependencies
@@ -115,6 +124,7 @@ Represents timing + authority sequencing, not just scheduling.
 Represents measured impact, not vanity metrics.
 
 **Tracked signals:**
+
 - Authority Contribution Score
 - Citation Eligibility
 - AI Ingestion Likelihood
@@ -163,6 +173,7 @@ Only the following views are permitted.
 - Repurposing efficiency
 
 **Explicitly excluded:**
+
 - Social scheduler clones
 - Keyword stuffing views
 - AI chat-style writing canvases
@@ -205,6 +216,7 @@ Only agents that map directly to system objects.
 - Feeds PR + AEO amplification signals
 
 **Rules:**
+
 - No agent publishes autonomously
 - No agent overrides governance
 - All agent output is explainable

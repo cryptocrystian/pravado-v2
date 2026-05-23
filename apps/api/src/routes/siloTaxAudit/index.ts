@@ -29,9 +29,9 @@
  * Separate from /api/v1/audit (internal audit logging, S35).
  */
 
-import type { FastifyInstance } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
 
 const logger = createLogger('audit-scorecard');
 
@@ -47,7 +47,13 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // The LLM simulates citation behavior across these surfaces. Stored
 // in scan_metadata so the results page can show "scanned across"
 // transparency.
-const ENGINES_CONSULTED = ['ChatGPT', 'Perplexity', 'Gemini', 'Claude', 'Bing Copilot'] as const;
+const ENGINES_CONSULTED = [
+  'ChatGPT',
+  'Perplexity',
+  'Gemini',
+  'Claude',
+  'Bing Copilot',
+] as const;
 
 // ── EVI canonical bands ───────────────────────────────
 // Source of truth: docs/canon/EARNED_VISIBILITY_INDEX.md §4.
@@ -98,14 +104,14 @@ interface PillarGap {
 }
 
 interface PillarScore {
-  score: number;          // 0–100
+  score: number; // 0–100
   band: EVIBand;
   signals: Record<string, string>;
   gaps: PillarGap[];
 }
 
 interface Variance {
-  spread: number;         // max pillar score minus min pillar score
+  spread: number; // max pillar score minus min pillar score
   leading_pillar: PillarKey;
   lagging_pillar: PillarKey;
   orchestration_opportunity: string;
@@ -119,7 +125,7 @@ interface Benchmark {
 interface ScanMetadata {
   brand_url: string;
   competitor_urls: string[];
-  scanned_at: string;     // ISO 8601
+  scanned_at: string; // ISO 8601
   engines_consulted: string[];
 }
 
@@ -156,9 +162,16 @@ interface LlmPillarOutput {
 }
 
 interface LlmAuditOutput {
-  pillars: { pr: LlmPillarOutput; content: LlmPillarOutput; ai: LlmPillarOutput };
+  pillars: {
+    pr: LlmPillarOutput;
+    content: LlmPillarOutput;
+    ai: LlmPillarOutput;
+  };
   orchestration_opportunity: string;
-  benchmark: { category_quartile: number | null; category_label: string | null };
+  benchmark: {
+    category_quartile: number | null;
+    category_label: string | null;
+  };
 }
 
 // Dev / no-key fallback. Mid-band scores with generic gaps so the
@@ -170,61 +183,76 @@ const FALLBACK_LLM_OUTPUT: LlmAuditOutput = {
     pr: {
       score: 50,
       signals: {
-        earned_media_frequency: 'Insufficient signal — homepage shows no named-journalist quotes or press archive.',
-        domain_authority_estimate: 'Mixed — likely citing sites are mid-tier industry blogs.',
+        earned_media_frequency:
+          'Insufficient signal — homepage shows no named-journalist quotes or press archive.',
+        domain_authority_estimate:
+          'Mixed — likely citing sites are mid-tier industry blogs.',
       },
       gaps: [
         {
           title: 'No earned media archive surfaced',
-          description: 'No press page, no journalist-attributed quotes, no awards section detected. Without surfaced earned coverage, AI engines cannot infer authority transfer from media to brand.',
+          description:
+            'No press page, no journalist-attributed quotes, no awards section detected. Without surfaced earned coverage, AI engines cannot infer authority transfer from media to brand.',
           severity: 'high',
-          remediation: 'CRAFT routes a weekly press release through Pravado\'s 283K-profile media database with named-journalist matching and pitches the resulting coverage as schema-marked authority signals.',
+          remediation:
+            "CRAFT routes a weekly press release through Pravado's 283K-profile media database with named-journalist matching and pitches the resulting coverage as schema-marked authority signals.",
         },
         {
           title: 'No named-spokesperson coverage',
-          description: 'Brand mentions in inferred coverage are brand-name only, not attributed to a person. Named-quote coverage is heavier-weighted in citation graphs.',
+          description:
+            'Brand mentions in inferred coverage are brand-name only, not attributed to a person. Named-quote coverage is heavier-weighted in citation graphs.',
           severity: 'medium',
-          remediation: 'CRAFT operationalizes named-spokesperson positioning across the pitch pipeline, prioritizing journalists who quote founders and executives.',
+          remediation:
+            'CRAFT operationalizes named-spokesperson positioning across the pitch pipeline, prioritizing journalists who quote founders and executives.',
         },
       ],
     },
     content: {
       score: 55,
       signals: {
-        topical_coverage: 'Narrow — surface content covers product features, not category authority.',
-        schema_completeness: 'Partial — basic Organization schema present, no Article/HowTo coverage.',
+        topical_coverage:
+          'Narrow — surface content covers product features, not category authority.',
+        schema_completeness:
+          'Partial — basic Organization schema present, no Article/HowTo coverage.',
       },
       gaps: [
         {
           title: 'Topic cluster gaps in primary category',
-          description: 'No deep-coverage hubs detected for the brand\'s strategic topics. Authority infrastructure requires hub-and-spoke topic ownership.',
+          description:
+            "No deep-coverage hubs detected for the brand's strategic topics. Authority infrastructure requires hub-and-spoke topic ownership.",
           severity: 'high',
-          remediation: 'CRAFT generates topic-pillar content with structured FAQ and HowTo schema, governed by CiteMind for AEO citation worthiness before publish.',
+          remediation:
+            'CRAFT generates topic-pillar content with structured FAQ and HowTo schema, governed by CiteMind for AEO citation worthiness before publish.',
         },
       ],
     },
     ai: {
       score: 45,
       signals: {
-        citation_rate_estimate: 'Low — buyer-intent queries surface category leaders, not this brand.',
-        entity_disambiguation: 'Some risk — brand name overlaps with other entities in adjacent categories.',
+        citation_rate_estimate:
+          'Low — buyer-intent queries surface category leaders, not this brand.',
+        entity_disambiguation:
+          'Some risk — brand name overlaps with other entities in adjacent categories.',
       },
       gaps: [
         {
           title: 'Buyer-intent queries surface competitors',
-          description: 'Representative buyer questions in this category cite competitors, not this brand. AI engines learn category leadership from training data and crawl signals.',
+          description:
+            'Representative buyer questions in this category cite competitors, not this brand. AI engines learn category leadership from training data and crawl signals.',
           severity: 'high',
-          remediation: 'CRAFT runs CiteMind\'s share-of-model program: weekly query monitoring, entity disambiguation pages, and orchestrated content + PR pushes targeting the gaps.',
+          remediation:
+            "CRAFT runs CiteMind's share-of-model program: weekly query monitoring, entity disambiguation pages, and orchestrated content + PR pushes targeting the gaps.",
         },
       ],
     },
   },
-  orchestration_opportunity: 'Pillar scores are close enough that no single discipline is the obvious culprit. The compounding loop is broken in both directions: PR mentions are not echoing into AI answers, and content pieces are not being cited as supporting evidence in either earned media or AI responses. Closing the loop requires shared schema across all three pillars.',
+  orchestration_opportunity:
+    'Pillar scores are close enough that no single discipline is the obvious culprit. The compounding loop is broken in both directions: PR mentions are not echoing into AI answers, and content pieces are not being cited as supporting evidence in either earned media or AI responses. Closing the loop requires shared schema across all three pillars.',
   benchmark: { category_quartile: null, category_label: null },
 };
 
 // ── Pillar weights (canonical, mirror EVI_MATHEMATICS V/A/M) ──
-const PILLAR_WEIGHTS = { pr: 0.40, content: 0.35, ai: 0.25 } as const;
+const PILLAR_WEIGHTS = { pr: 0.4, content: 0.35, ai: 0.25 } as const;
 
 // ── Email rendering ───────────────────────────────────
 // Phase 1E renders the three-pillar EVI scorecard. Layout mirrors the
@@ -253,30 +281,46 @@ function escapeHtml(input: string): string {
     .replace(/'/g, '&#39;');
 }
 
-const PILLAR_EMAIL_META: Record<PillarKey, { label: string; accent: string; bgAccent: string }> = {
-  pr:      { label: 'PR Authority',          accent: '#E879F9', bgAccent: '#fdf4ff' },
-  content: { label: 'Content Authority',     accent: '#A855F7', bgAccent: '#faf5ff' },
-  ai:      { label: 'AI Citation Authority', accent: '#00D9FF', bgAccent: '#ecfeff' },
+const PILLAR_EMAIL_META: Record<
+  PillarKey,
+  { label: string; accent: string; bgAccent: string }
+> = {
+  pr: { label: 'PR Authority', accent: '#E879F9', bgAccent: '#fdf4ff' },
+  content: {
+    label: 'Content Authority',
+    accent: '#A855F7',
+    bgAccent: '#faf5ff',
+  },
+  ai: {
+    label: 'AI Citation Authority',
+    accent: '#00D9FF',
+    bgAccent: '#ecfeff',
+  },
 };
 
-function buildAuditClaimEmailHtml(name: string, scanResult: ScanResult, magicLinkUrl: string): string {
+function buildAuditClaimEmailHtml(
+  name: string,
+  scanResult: ScanResult,
+  magicLinkUrl: string
+): string {
   const eviLabel = scanResult.evi_band;
   const eviColor = eviBandHex(scanResult.evi_score);
   const safeName = escapeHtml(name);
 
   const pillarOrder: PillarKey[] = ['pr', 'content', 'ai'];
-  const pillarBlocks = pillarOrder.map((key) => {
-    const pillar = scanResult.pillars[key];
-    const meta = PILLAR_EMAIL_META[key];
-    const bandColor = eviBandHex(pillar.score);
-    const topGap = pillar.gaps[0];
-    const gapMarkup = topGap
-      ? `<tr><td colspan="2" style="padding-top:12px;font-size:13px;font-weight:600;color:#13131A;line-height:1.4;">${escapeHtml(topGap.title)}</td></tr>
+  const pillarBlocks = pillarOrder
+    .map((key) => {
+      const pillar = scanResult.pillars[key];
+      const meta = PILLAR_EMAIL_META[key];
+      const bandColor = eviBandHex(pillar.score);
+      const topGap = pillar.gaps[0];
+      const gapMarkup = topGap
+        ? `<tr><td colspan="2" style="padding-top:12px;font-size:13px;font-weight:600;color:#13131A;line-height:1.4;">${escapeHtml(topGap.title)}</td></tr>
               <tr><td colspan="2" style="padding-top:6px;font-size:12px;color:#666;line-height:1.55;">
                 <span style="color:${meta.accent};font-weight:600;">Pravado would:</span> ${escapeHtml(topGap.remediation)}
               </td></tr>`
-      : '';
-    return `
+        : '';
+      return `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 10px;background:${meta.bgAccent};border-radius:8px;border:1px solid #eee;border-left:3px solid ${meta.accent};">
           <tr><td style="padding:14px 16px;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -291,7 +335,8 @@ function buildAuditClaimEmailHtml(name: string, scanResult: ScanResult, magicLin
             </table>
           </td></tr>
         </table>`;
-  }).join('');
+    })
+    .join('');
 
   const variance = scanResult.variance;
   const leadingMeta = PILLAR_EMAIL_META[variance.leading_pillar];
@@ -389,9 +434,10 @@ Output rules — these are absolute:
   • Be specific — name actual AI engines, query types, competitor names where reasonable. Generic statements fail the bar.`;
 
 function buildUserPrompt(brandUrl: string, competitorUrls: string[]): string {
-  const competitorBlock = competitorUrls.length > 0
-    ? `Competitor URLs: ${competitorUrls.join(', ')}`
-    : 'No competitor URLs provided — analyze this brand against likely category leaders inferred from the brand URL.';
+  const competitorBlock =
+    competitorUrls.length > 0
+      ? `Competitor URLs: ${competitorUrls.join(', ')}`
+      : 'No competitor URLs provided — analyze this brand against likely category leaders inferred from the brand URL.';
 
   return `Brand URL: ${brandUrl}
 ${competitorBlock}
@@ -445,18 +491,23 @@ function isValidLlmOutput(value: unknown): value is LlmAuditOutput {
     if (!isValidPillar(pillars[key])) return false;
   }
 
-  if (typeof v.orchestration_opportunity !== 'string' || v.orchestration_opportunity.trim().length === 0) {
+  if (
+    typeof v.orchestration_opportunity !== 'string' ||
+    v.orchestration_opportunity.trim().length === 0
+  ) {
     return false;
   }
 
   if (!v.benchmark || typeof v.benchmark !== 'object') return false;
   const b = v.benchmark as Record<string, unknown>;
-  const quartileOk = b.category_quartile === null
-    || (typeof b.category_quartile === 'number'
-        && Number.isInteger(b.category_quartile)
-        && b.category_quartile >= 1
-        && b.category_quartile <= 4);
-  const labelOk = b.category_label === null || typeof b.category_label === 'string';
+  const quartileOk =
+    b.category_quartile === null ||
+    (typeof b.category_quartile === 'number' &&
+      Number.isInteger(b.category_quartile) &&
+      b.category_quartile >= 1 &&
+      b.category_quartile <= 4);
+  const labelOk =
+    b.category_label === null || typeof b.category_label === 'string';
   if (!quartileOk || !labelOk) return false;
 
   return true;
@@ -466,20 +517,33 @@ function isValidPillar(value: unknown): value is LlmPillarOutput {
   if (!value || typeof value !== 'object') return false;
   const p = value as Record<string, unknown>;
   if (typeof p.score !== 'number' || p.score < 0 || p.score > 100) return false;
-  if (!p.signals || typeof p.signals !== 'object' || Array.isArray(p.signals)) return false;
+  if (!p.signals || typeof p.signals !== 'object' || Array.isArray(p.signals))
+    return false;
   if (!Array.isArray(p.gaps) || p.gaps.length < 1) return false;
   for (const gap of p.gaps) {
     if (!gap || typeof gap !== 'object') return false;
     const g = gap as Record<string, unknown>;
-    if (typeof g.title !== 'string' || g.title.trim().length === 0) return false;
-    if (typeof g.description !== 'string' || g.description.trim().length === 0) return false;
-    if (g.severity !== 'high' && g.severity !== 'medium' && g.severity !== 'low') return false;
-    if (typeof g.remediation !== 'string' || g.remediation.trim().length === 0) return false;
+    if (typeof g.title !== 'string' || g.title.trim().length === 0)
+      return false;
+    if (typeof g.description !== 'string' || g.description.trim().length === 0)
+      return false;
+    if (
+      g.severity !== 'high' &&
+      g.severity !== 'medium' &&
+      g.severity !== 'low'
+    )
+      return false;
+    if (typeof g.remediation !== 'string' || g.remediation.trim().length === 0)
+      return false;
   }
   return true;
 }
 
-async function callAnthropic(apiKey: string, brandUrl: string, competitorUrls: string[]): Promise<string> {
+async function callAnthropic(
+  apiKey: string,
+  brandUrl: string,
+  competitorUrls: string[]
+): Promise<string> {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -491,7 +555,9 @@ async function callAnthropic(apiKey: string, brandUrl: string, competitorUrls: s
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 4096,
       system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildUserPrompt(brandUrl, competitorUrls) }],
+      messages: [
+        { role: 'user', content: buildUserPrompt(brandUrl, competitorUrls) },
+      ],
     }),
   });
 
@@ -499,14 +565,17 @@ async function callAnthropic(apiKey: string, brandUrl: string, competitorUrls: s
     throw new Error(`Anthropic API returned ${res.status}`);
   }
 
-  const data = await res.json() as { content?: Array<{ text?: string }> };
+  const data = (await res.json()) as { content?: Array<{ text?: string }> };
   return data.content?.[0]?.text ?? '';
 }
 
 function tryParseJson(raw: string): unknown {
   // Tolerate accidental code-fence wrapping. Reject anything that
   // can't parse outright — we will retry once.
-  const stripped = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  const stripped = raw
+    .replace(/```json\n?/g, '')
+    .replace(/```\n?/g, '')
+    .trim();
   try {
     return JSON.parse(stripped);
   } catch {
@@ -514,7 +583,11 @@ function tryParseJson(raw: string): unknown {
   }
 }
 
-async function runLlmScan(apiKey: string, brandUrl: string, competitorUrls: string[]): Promise<LlmAuditOutput> {
+async function runLlmScan(
+  apiKey: string,
+  brandUrl: string,
+  competitorUrls: string[]
+): Promise<LlmAuditOutput> {
   let lastFailure: string | null = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -523,8 +596,12 @@ async function runLlmScan(apiKey: string, brandUrl: string, competitorUrls: stri
       if (isValidLlmOutput(parsed)) {
         return parsed;
       }
-      lastFailure = parsed === null ? 'JSON parse failed' : 'schema validation failed';
-      logger.warn('LLM produced invalid output', { attempt, reason: lastFailure });
+      lastFailure =
+        parsed === null ? 'JSON parse failed' : 'schema validation failed';
+      logger.warn('LLM produced invalid output', {
+        attempt,
+        reason: lastFailure,
+      });
     } catch (err) {
       lastFailure = (err as Error).message;
       logger.error('LLM call failed', { attempt, error: lastFailure });
@@ -546,7 +623,7 @@ function assemblePillar(p: LlmPillarOutput): PillarScore {
 
 function computeVariance(
   pillars: { pr: PillarScore; content: PillarScore; ai: PillarScore },
-  orchestrationOpportunity: string,
+  orchestrationOpportunity: string
 ): Variance {
   const entries: Array<[PillarKey, number]> = [
     ['pr', pillars.pr.score],
@@ -557,10 +634,20 @@ function computeVariance(
   const leading_pillar = sorted[0][0];
   const lagging_pillar = sorted[sorted.length - 1][0];
   const spread = sorted[0][1] - sorted[sorted.length - 1][1];
-  return { spread, leading_pillar, lagging_pillar, orchestration_opportunity: orchestrationOpportunity };
+  return {
+    spread,
+    leading_pillar,
+    lagging_pillar,
+    orchestration_opportunity: orchestrationOpportunity,
+  };
 }
 
-function buildScanResult(llm: LlmAuditOutput, brandUrl: string, competitorUrls: string[], magicLinkSent: boolean): ScanResult {
+function buildScanResult(
+  llm: LlmAuditOutput,
+  brandUrl: string,
+  competitorUrls: string[],
+  magicLinkSent: boolean
+): ScanResult {
   const pillars = {
     pr: assemblePillar(llm.pillars.pr),
     content: assemblePillar(llm.pillars.content),
@@ -570,20 +657,21 @@ function buildScanResult(llm: LlmAuditOutput, brandUrl: string, competitorUrls: 
   // Composite EVI matches docs/canon/EVI_MATHEMATICS.md weighting.
   // PR : Visibility :: Content : Authority :: AI : Momentum.
   const evi_score = Math.round(
-    pillars.pr.score * PILLAR_WEIGHTS.pr
-    + pillars.content.score * PILLAR_WEIGHTS.content
-    + pillars.ai.score * PILLAR_WEIGHTS.ai,
+    pillars.pr.score * PILLAR_WEIGHTS.pr +
+      pillars.content.score * PILLAR_WEIGHTS.content +
+      pillars.ai.score * PILLAR_WEIGHTS.ai
   );
 
   const variance = computeVariance(pillars, llm.orchestration_opportunity);
 
   const benchmark: Benchmark = {
-    category_quartile: (llm.benchmark.category_quartile === 1
-      || llm.benchmark.category_quartile === 2
-      || llm.benchmark.category_quartile === 3
-      || llm.benchmark.category_quartile === 4)
-      ? llm.benchmark.category_quartile
-      : null,
+    category_quartile:
+      llm.benchmark.category_quartile === 1 ||
+      llm.benchmark.category_quartile === 2 ||
+      llm.benchmark.category_quartile === 3 ||
+      llm.benchmark.category_quartile === 4
+        ? llm.benchmark.category_quartile
+        : null,
     category_label: llm.benchmark.category_label,
   };
 
@@ -616,16 +704,24 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
     try {
       const body = request.body ?? ({} as ScanBody);
       const { brandUrl, email, name, company, competitorUrls = [] } = body;
-      const entry_path: EntryPath = (body.entry_path === 'pr' || body.entry_path === 'content' || body.entry_path === 'ai' || body.entry_path === 'generic')
-        ? body.entry_path
-        : 'generic';
+      const entry_path: EntryPath =
+        body.entry_path === 'pr' ||
+        body.entry_path === 'content' ||
+        body.entry_path === 'ai' ||
+        body.entry_path === 'generic'
+          ? body.entry_path
+          : 'generic';
 
       // ── Input validation ──────────────────────
       if (!brandUrl || !email || !name || !company) {
-        return reply.code(400).send({ error: 'brandUrl, email, name, and company are required' });
+        return reply
+          .code(400)
+          .send({ error: 'brandUrl, email, name, and company are required' });
       }
 
-      try { new URL(brandUrl); } catch {
+      try {
+        new URL(brandUrl);
+      } catch {
         return reply.code(400).send({ error: 'Invalid brandUrl format' });
       }
 
@@ -637,7 +733,9 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       const trimmedName = name.trim();
       const trimmedCompany = company.trim();
       if (!trimmedName || !trimmedCompany) {
-        return reply.code(400).send({ error: 'name and company cannot be empty' });
+        return reply
+          .code(400)
+          .send({ error: 'name and company cannot be empty' });
       }
 
       // ── Rate limit: 1 scan per email per 24h ───
@@ -645,7 +743,9 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       // TOCTOU: two truly-concurrent submissions for the same email can both
       // pass this check. Acceptable for pre-beta; tighten with a pg advisory
       // lock if abuse is observed.
-      const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_SECONDS * 1000).toISOString();
+      const windowStart = new Date(
+        Date.now() - RATE_LIMIT_WINDOW_SECONDS * 1000
+      ).toISOString();
       const { data: recent, error: recentErr } = await supabase
         .from('audit_sessions')
         .select('id, created_at')
@@ -669,9 +769,13 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         const last = recent[0];
         const lastTs = new Date(last.created_at).getTime();
         const elapsedSeconds = Math.floor((Date.now() - lastTs) / 1000);
-        const retryAfterSeconds = Math.max(RATE_LIMIT_WINDOW_SECONDS - elapsedSeconds, 60);
+        const retryAfterSeconds = Math.max(
+          RATE_LIMIT_WINDOW_SECONDS - elapsedSeconds,
+          60
+        );
         const retryAfterHours = Math.ceil(retryAfterSeconds / 3600);
-        return reply.code(429)
+        return reply
+          .code(429)
           .header('Retry-After', String(retryAfterSeconds))
           .send({
             error: 'rate_limited',
@@ -686,20 +790,26 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         try {
           llm = await runLlmScan(anthropicApiKey, brandUrl, competitorUrls);
         } catch (err) {
-          logger.error('Three-pillar scan failed after retry', { error: (err as Error).message });
+          logger.error('Three-pillar scan failed after retry', {
+            error: (err as Error).message,
+          });
           return reply.code(502).send({
             error: 'scan_unavailable',
-            message: 'We couldn\'t generate your scorecard right now. Please try again in a few minutes.',
+            message:
+              "We couldn't generate your scorecard right now. Please try again in a few minutes.",
           });
         }
       } else {
-        logger.warn('No ANTHROPIC_API_KEY — using fallback scan output (dev mode)');
+        logger.warn(
+          'No ANTHROPIC_API_KEY — using fallback scan output (dev mode)'
+        );
         llm = FALLBACK_LLM_OUTPUT;
       }
 
       // ── Find or create auth user ──────────────
       let userId: string;
-      const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+      const { data: listData, error: listErr } =
+        await supabase.auth.admin.listUsers({ perPage: 1000 });
       if (listErr) {
         logger.error('auth.admin.listUsers failed', {
           name: listErr.name ?? 'AuthError',
@@ -707,16 +817,19 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
           message: listErr.message,
         });
       }
-      const existingUser = listData?.users?.find((u: { email?: string }) => u.email === normalizedEmail);
+      const existingUser = listData?.users?.find(
+        (u: { email?: string }) => u.email === normalizedEmail
+      );
 
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        const { data: newUser, error: createErr } = await supabase.auth.admin.createUser({
-          email: normalizedEmail,
-          email_confirm: true,
-          user_metadata: { full_name: trimmedName, company: trimmedCompany },
-        });
+        const { data: newUser, error: createErr } =
+          await supabase.auth.admin.createUser({
+            email: normalizedEmail,
+            email_confirm: true,
+            user_metadata: { full_name: trimmedName, company: trimmedCompany },
+          });
         if (createErr || !newUser.user) {
           logger.error('auth.admin.createUser failed', {
             name: createErr?.name ?? 'AuthError',
@@ -729,7 +842,11 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       }
 
       // ── Find or create org ────────────────────
-      const slug = trimmedCompany.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50);
+      const slug = trimmedCompany
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 50);
       let orgId: string;
 
       const { data: existingOrg, error: existingOrgErr } = await supabase
@@ -765,7 +882,9 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
             details: orgErr?.details ?? null,
             hint: orgErr?.hint ?? null,
           });
-          return reply.code(500).send({ error: 'Failed to create organization' });
+          return reply
+            .code(500)
+            .send({ error: 'Failed to create organization' });
         }
         orgId = newOrg.id;
 
@@ -790,7 +909,9 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       // null with no production-log signal of what went wrong (this
       // exact pattern is what hid the audit_sessions persistence regression
       // surfaced in Phase 1E live testing).
-      const trialExpiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
+      const trialExpiresAt = new Date(
+        Date.now() + 72 * 60 * 60 * 1000
+      ).toISOString();
       let auditId: string | null = null;
       try {
         const { data: session, error: insertError } = await supabase
@@ -802,24 +923,25 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
             competitor_urls: competitorUrls,
             evi_score: scanResult.evi_score,
             // Three-pillar scorecard columns (migration 94)
-            pr_score:      scanResult.pillars.pr.score,
-            pr_band:       scanResult.pillars.pr.band,
-            pr_signals:    scanResult.pillars.pr.signals,
-            pr_gaps:       scanResult.pillars.pr.gaps,
+            pr_score: scanResult.pillars.pr.score,
+            pr_band: scanResult.pillars.pr.band,
+            pr_signals: scanResult.pillars.pr.signals,
+            pr_gaps: scanResult.pillars.pr.gaps,
             content_score: scanResult.pillars.content.score,
-            content_band:  scanResult.pillars.content.band,
+            content_band: scanResult.pillars.content.band,
             content_signals: scanResult.pillars.content.signals,
-            content_gaps:  scanResult.pillars.content.gaps,
-            ai_score:      scanResult.pillars.ai.score,
-            ai_band:       scanResult.pillars.ai.band,
-            ai_signals:    scanResult.pillars.ai.signals,
-            ai_gaps:       scanResult.pillars.ai.gaps,
-            variance_spread:           scanResult.variance.spread,
-            leading_pillar:            scanResult.variance.leading_pillar,
-            lagging_pillar:            scanResult.variance.lagging_pillar,
-            orchestration_opportunity: scanResult.variance.orchestration_opportunity,
+            content_gaps: scanResult.pillars.content.gaps,
+            ai_score: scanResult.pillars.ai.score,
+            ai_band: scanResult.pillars.ai.band,
+            ai_signals: scanResult.pillars.ai.signals,
+            ai_gaps: scanResult.pillars.ai.gaps,
+            variance_spread: scanResult.variance.spread,
+            leading_pillar: scanResult.variance.leading_pillar,
+            lagging_pillar: scanResult.variance.lagging_pillar,
+            orchestration_opportunity:
+              scanResult.variance.orchestration_opportunity,
             category_quartile: scanResult.benchmark.category_quartile,
-            category_label:    scanResult.benchmark.category_label,
+            category_label: scanResult.benchmark.category_label,
             entry_path,
             stage: 'account_created',
             trial_expires_at: trialExpiresAt,
@@ -842,7 +964,9 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         }
       } catch (dbErr) {
         // Network-level throw, not a Postgres error. Kept for completeness.
-        logger.error('Failed to store audit session (network)', { error: (dbErr as Error).message });
+        logger.error('Failed to store audit session (network)', {
+          error: (dbErr as Error).message,
+        });
       }
 
       // ── Generate magic link ───────────────────
@@ -859,7 +983,9 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
           magicLinkUrl = linkData.properties.action_link;
         }
       } catch (linkErr) {
-        logger.error('Failed to generate magic link', { error: (linkErr as Error).message });
+        logger.error('Failed to generate magic link', {
+          error: (linkErr as Error).message,
+        });
       }
 
       // ── Send welcome email with three-pillar EVI scorecard + magic link
@@ -877,10 +1003,17 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
         magicLinkSent = true;
         logger.info('Audit email sent', { email: normalizedEmail });
       } catch (emailErr) {
-        logger.error('Failed to send audit email', { error: (emailErr as Error).message });
+        logger.error('Failed to send audit email', {
+          error: (emailErr as Error).message,
+        });
       }
 
-      logger.info('Audit scan completed', { email: normalizedEmail, audit_id: auditId, org_id: orgId, entry_path });
+      logger.info('Audit scan completed', {
+        email: normalizedEmail,
+        audit_id: auditId,
+        org_id: orgId,
+        entry_path,
+      });
 
       const response: ScanResponse = {
         ...scanResult,
@@ -904,12 +1037,16 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
   // mid-flow. Safe to remove once browser caches age out.
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   server.post<{ Body: ClaimBody }>('/claim', async (request, reply) => {
-    logger.warn('POST /claim hit — endpoint is deprecated; new clients use /scan exclusively');
+    logger.warn(
+      'POST /claim hit — endpoint is deprecated; new clients use /scan exclusively'
+    );
     try {
       const { email, audit_id } = request.body ?? ({} as ClaimBody);
 
       if (!email || !audit_id) {
-        return reply.code(400).send({ error: 'email and audit_id are required' });
+        return reply
+          .code(400)
+          .send({ error: 'email and audit_id are required' });
       }
 
       const { data: session, error: lookupErr } = await supabase

@@ -36,7 +36,7 @@ export interface SignalBreakdown {
   visibility: {
     raw: VisibilitySignals;
     normalized_score: number;
-    weight: 0.40;
+    weight: 0.4;
     components: {
       pitch_activity_score: number;
       engagement_rate_score: number;
@@ -93,28 +93,32 @@ function clamp(value: number): number {
  */
 function calculateVisibilityScore(signals: VisibilitySignals): {
   score: number;
-  components: { pitch_activity_score: number; engagement_rate_score: number; journalist_quality_score: number; citation_rate_score: number };
+  components: {
+    pitch_activity_score: number;
+    engagement_rate_score: number;
+    journalist_quality_score: number;
+    citation_rate_score: number;
+  };
 } {
   // Pitch activity: linear scale, 0–20 pitches maps to 0–100
   const pitchActivityScore = clamp((signals.pitchesSent / 20) * 100);
 
   // Engagement rate: reply rate, 30%+ = 100
-  const engagementRate = signals.pitchesSent > 0
-    ? signals.pitchesReplied / signals.pitchesSent
-    : 0;
-  const engagementRateScore = clamp((engagementRate / 0.30) * 100);
+  const engagementRate =
+    signals.pitchesSent > 0 ? signals.pitchesReplied / signals.pitchesSent : 0;
+  const engagementRateScore = clamp((engagementRate / 0.3) * 100);
 
   // Journalist quality: avg DA, 90+ = 100
   const journalistQualityScore = clamp((signals.avgJournalistDA / 90) * 100);
 
   // S-INT-05: Citation rate: mention_rate 20%+ = 100
-  const citationRateScore = clamp((signals.citationMentionRate / 0.20) * 100);
+  const citationRateScore = clamp((signals.citationMentionRate / 0.2) * 100);
 
   const score = clamp(
-    pitchActivityScore * 0.30 +
-    engagementRateScore * 0.25 +
-    journalistQualityScore * 0.20 +
-    citationRateScore * 0.25
+    pitchActivityScore * 0.3 +
+      engagementRateScore * 0.25 +
+      journalistQualityScore * 0.2 +
+      citationRateScore * 0.25
   );
 
   return {
@@ -137,7 +141,10 @@ function calculateVisibilityScore(signals: VisibilitySignals): {
  */
 function calculateAuthorityScore(signals: AuthoritySignals): {
   score: number;
-  components: { content_quality_score: number; backlink_authority_score: number };
+  components: {
+    content_quality_score: number;
+    backlink_authority_score: number;
+  };
 } {
   // Content quality: direct from content_quality_scores.overall_score (already 0–100)
   const contentQualityScore = clamp(signals.avgContentQuality);
@@ -145,16 +152,16 @@ function calculateAuthorityScore(signals: AuthoritySignals): {
   // Backlink authority: high-DA ratio * count factor
   // 10+ high-DA backlinks = 100; ratio also matters
   const backlinkCountFactor = clamp((signals.highDABacklinks / 10) * 100);
-  const backlinkRatio = signals.totalBacklinks > 0
-    ? signals.highDABacklinks / signals.totalBacklinks
-    : 0;
+  const backlinkRatio =
+    signals.totalBacklinks > 0
+      ? signals.highDABacklinks / signals.totalBacklinks
+      : 0;
   const backlinkRatioFactor = clamp(backlinkRatio * 100);
-  const backlinkAuthorityScore = clamp(backlinkCountFactor * 0.6 + backlinkRatioFactor * 0.4);
-
-  const score = clamp(
-    contentQualityScore * 0.60 +
-    backlinkAuthorityScore * 0.40
+  const backlinkAuthorityScore = clamp(
+    backlinkCountFactor * 0.6 + backlinkRatioFactor * 0.4
   );
+
+  const score = clamp(contentQualityScore * 0.6 + backlinkAuthorityScore * 0.4);
 
   return {
     score,
@@ -181,16 +188,22 @@ function calculateMomentumScore(
   score: number;
   components: { visibility_delta_pct: number; authority_delta_pct: number };
 } {
-  const visDelta = priorVisibility > 0
-    ? ((currentVisibility - priorVisibility) / priorVisibility) * 100
-    : (currentVisibility > 0 ? 100 : 0);
+  const visDelta =
+    priorVisibility > 0
+      ? ((currentVisibility - priorVisibility) / priorVisibility) * 100
+      : currentVisibility > 0
+        ? 100
+        : 0;
 
-  const authDelta = priorAuthority > 0
-    ? ((currentAuthority - priorAuthority) / priorAuthority) * 100
-    : (currentAuthority > 0 ? 100 : 0);
+  const authDelta =
+    priorAuthority > 0
+      ? ((currentAuthority - priorAuthority) / priorAuthority) * 100
+      : currentAuthority > 0
+        ? 100
+        : 0;
 
   // Weighted delta: visibility change weighted 60%, authority change 40%
-  const weightedDelta = visDelta * 0.60 + authDelta * 0.40;
+  const weightedDelta = visDelta * 0.6 + authDelta * 0.4;
 
   // Map delta to 0–100 score: -50% → 0, 0% → 50, +50% → 100
   const score = clamp(50 + weightedDelta);
@@ -223,19 +236,28 @@ export async function calculateEVI(
 
   // For the prior period, we need to shift the window back
   // Re-aggregate with shifted dates
-  const priorPeriodEnd = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000).toISOString();
-  const priorPeriodStart = new Date(Date.now() - 2 * periodDays * 24 * 60 * 60 * 1000).toISOString();
+  const priorPeriodEnd = new Date(
+    Date.now() - periodDays * 24 * 60 * 60 * 1000
+  ).toISOString();
+  const priorPeriodStart = new Date(
+    Date.now() - 2 * periodDays * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   // We already have currentSignals; now get actual prior period
   const priorSignalsActual = await aggregateSignalsForPeriod(
-    supabase, orgId, priorPeriodStart, priorPeriodEnd
+    supabase,
+    orgId,
+    priorPeriodStart,
+    priorPeriodEnd
   );
 
   // Calculate sub-scores
   const visResult = calculateVisibilityScore(currentSignals.visibility);
   const authResult = calculateAuthorityScore(currentSignals.authority);
 
-  const priorVisResult = calculateVisibilityScore(priorSignalsActual.visibility);
+  const priorVisResult = calculateVisibilityScore(
+    priorSignalsActual.visibility
+  );
   const priorAuthResult = calculateAuthorityScore(priorSignalsActual.authority);
 
   const momResult = calculateMomentumScore(
@@ -247,9 +269,7 @@ export async function calculateEVI(
 
   // Apply formula: EVI = (V × 0.40) + (A × 0.35) + (M × 0.25)
   const eviScore = clamp(
-    visResult.score * 0.40 +
-    authResult.score * 0.35 +
-    momResult.score * 0.25
+    visResult.score * 0.4 + authResult.score * 0.35 + momResult.score * 0.25
   );
 
   const calculatedAt = new Date().toISOString();
@@ -258,7 +278,7 @@ export async function calculateEVI(
     visibility: {
       raw: currentSignals.visibility,
       normalized_score: visResult.score,
-      weight: 0.40,
+      weight: 0.4,
       components: visResult.components,
     },
     authority: {
@@ -280,7 +300,8 @@ export async function calculateEVI(
       period_start: currentSignals.periodStart,
       period_end: currentSignals.periodEnd,
       period_days: periodDays,
-      formula: 'EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)',
+      formula:
+        'EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)',
     },
   };
 
@@ -338,7 +359,10 @@ async function aggregateSignalsForPeriod(
     authority,
     periodStart,
     periodEnd,
-    periodDays: Math.round((new Date(periodEnd).getTime() - new Date(periodStart).getTime()) / (24 * 60 * 60 * 1000)),
+    periodDays: Math.round(
+      (new Date(periodEnd).getTime() - new Date(periodStart).getTime()) /
+        (24 * 60 * 60 * 1000)
+    ),
   };
 }
 
@@ -356,12 +380,14 @@ async function aggregateVisibilityForPeriod(
     .lte('created_at', periodEnd);
 
   const pitchesSent = pitches?.length ?? 0;
-  const pitchesOpened = pitches?.filter((p: { status: string }) =>
-    ['opened', 'replied', 'interested'].includes(p.status)
-  ).length ?? 0;
-  const pitchesReplied = pitches?.filter((p: { status: string }) =>
-    ['replied', 'interested'].includes(p.status)
-  ).length ?? 0;
+  const pitchesOpened =
+    pitches?.filter((p: { status: string }) =>
+      ['opened', 'replied', 'interested'].includes(p.status)
+    ).length ?? 0;
+  const pitchesReplied =
+    pitches?.filter((p: { status: string }) =>
+      ['replied', 'interested'].includes(p.status)
+    ).length ?? 0;
 
   const { data: journalists } = await supabase
     .from('journalist_profiles')
@@ -369,12 +395,23 @@ async function aggregateVisibilityForPeriod(
     .eq('org_id', orgId);
 
   const journalistCount = journalists?.length ?? 0;
-  const avgJournalistDA = journalistCount > 0
-    ? journalists!.reduce((sum: number, j: { domain_authority: number | null }) =>
-        sum + (j.domain_authority ?? 0), 0) / journalistCount
-    : 0;
+  const avgJournalistDA =
+    journalistCount > 0
+      ? journalists!.reduce(
+          (sum: number, j: { domain_authority: number | null }) =>
+            sum + (j.domain_authority ?? 0),
+          0
+        ) / journalistCount
+      : 0;
 
-  return { pitchesSent, pitchesOpened, pitchesReplied, avgJournalistDA, journalistCount, citationMentionRate: 0 };
+  return {
+    pitchesSent,
+    pitchesOpened,
+    pitchesReplied,
+    avgJournalistDA,
+    journalistCount,
+    citationMentionRate: 0,
+  };
 }
 
 async function aggregateAuthorityForPeriod(
@@ -391,10 +428,14 @@ async function aggregateAuthorityForPeriod(
     .lte('scored_at', periodEnd);
 
   const publishedContentCount = qualityScores?.length ?? 0;
-  const avgContentQuality = publishedContentCount > 0
-    ? qualityScores!.reduce((sum: number, q: { overall_score: number | null }) =>
-        sum + (q.overall_score ?? 0), 0) / publishedContentCount
-    : 0;
+  const avgContentQuality =
+    publishedContentCount > 0
+      ? qualityScores!.reduce(
+          (sum: number, q: { overall_score: number | null }) =>
+            sum + (q.overall_score ?? 0),
+          0
+        ) / publishedContentCount
+      : 0;
 
   const { count: highDABacklinks } = await supabase
     .from('seo_backlinks')

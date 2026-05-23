@@ -12,13 +12,20 @@ export const revalidate = 0;
 
 export async function POST(_request: NextRequest) {
   try {
-    const data = await prBackendFetch('/api/v1/journalist-graph/find-duplicates', {
-      method: 'POST',
-    });
+    const data = await prBackendFetch(
+      '/api/v1/journalist-graph/find-duplicates',
+      {
+        method: 'POST',
+      }
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/journalists/find-duplicates] POST Error:', { status, message, code });
+    console.error('[API /api/pr/journalists/find-duplicates] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

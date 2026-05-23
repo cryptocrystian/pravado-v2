@@ -7,7 +7,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ContentService } from '../src/services/contentService';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess, createMockError } from './helpers/supabaseMock';
+import {
+  createMockSupabaseClient,
+  createMockQueryBuilder,
+  createMockSuccess,
+  createMockError,
+} from './helpers/supabaseMock';
 
 describe('ContentService', () => {
   let service: ContentService;
@@ -57,7 +62,10 @@ describe('ContentService', () => {
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
-      const result = await service.listContentItems(orgId, { page: 1, pageSize: 20 });
+      const result = await service.listContentItems(orgId, {
+        page: 1,
+        pageSize: 20,
+      });
 
       expect(result.items).toHaveLength(1);
       expect(result.items[0].title).toBe('Test Article');
@@ -103,7 +111,9 @@ describe('ContentService', () => {
 
       await service.listContentItems(orgId, { q: 'test' });
 
-      expect(mockQuery.or).toHaveBeenCalledWith('title.ilike.%test%,body.ilike.%test%');
+      expect(mockQuery.or).toHaveBeenCalledWith(
+        'title.ilike.%test%,body.ilike.%test%'
+      );
     });
   });
 
@@ -313,7 +323,9 @@ describe('ContentService', () => {
 
       await expect(
         service.updateContentItem(orgId, 'nonexistent', { title: 'New Title' })
-      ).rejects.toThrow('Failed to update content item: Content item not found');
+      ).rejects.toThrow(
+        'Failed to update content item: Content item not found'
+      );
     });
   });
 
@@ -521,9 +533,15 @@ describe('ContentService', () => {
         },
       ];
 
-      const mockClustersQuery = createMockQueryBuilder(createMockSuccess(mockClusters));
-      const mockTopicsQuery = createMockQueryBuilder(createMockSuccess(mockTopics));
-      const mockContentQuery = createMockQueryBuilder(createMockSuccess(mockContent));
+      const mockClustersQuery = createMockQueryBuilder(
+        createMockSuccess(mockClusters)
+      );
+      const mockTopicsQuery = createMockQueryBuilder(
+        createMockSuccess(mockTopics)
+      );
+      const mockContentQuery = createMockQueryBuilder(
+        createMockSuccess(mockContent)
+      );
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockClustersQuery)
@@ -574,8 +592,12 @@ describe('ContentService', () => {
         },
       ];
 
-      const mockKeywordsQuery = createMockQueryBuilder(createMockSuccess(mockKeywords));
-      const mockContentCountQuery = createMockQueryBuilder(createMockSuccess(null, 0));
+      const mockKeywordsQuery = createMockQueryBuilder(
+        createMockSuccess(mockKeywords)
+      );
+      const mockContentCountQuery = createMockQueryBuilder(
+        createMockSuccess(null, 0)
+      );
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockKeywordsQuery)
@@ -590,7 +612,9 @@ describe('ContentService', () => {
       expect(result[0]).toHaveProperty('seoOpportunityScore');
 
       // First result should have higher opportunity score
-      expect(result[0].seoOpportunityScore).toBeGreaterThan(result[1].seoOpportunityScore);
+      expect(result[0].seoOpportunityScore).toBeGreaterThan(
+        result[1].seoOpportunityScore
+      );
     });
 
     it('should filter gaps by minimum score', async () => {
@@ -612,8 +636,12 @@ describe('ContentService', () => {
         },
       ];
 
-      const mockKeywordsQuery = createMockQueryBuilder(createMockSuccess(mockKeywords));
-      const mockContentCountQuery = createMockQueryBuilder(createMockSuccess(null, 0));
+      const mockKeywordsQuery = createMockQueryBuilder(
+        createMockSuccess(mockKeywords)
+      );
+      const mockContentCountQuery = createMockQueryBuilder(
+        createMockSuccess(null, 0)
+      );
 
       (mockSupabase.from as any)
         .mockReturnValueOnce(mockKeywordsQuery)
@@ -715,7 +743,11 @@ describe('ContentService', () => {
 
       (mockSupabase.from as any).mockReturnValue(mockQuery);
 
-      const result = await service.updateContentBrief(orgId, 'brief-1', updates);
+      const result = await service.updateContentBrief(
+        orgId,
+        'brief-1',
+        updates
+      );
 
       expect(result).not.toBeNull();
       expect(result?.status).toBe('completed');

@@ -6,9 +6,10 @@
  */
 
 import type { DiscoveredJournalist } from '@pravado/types';
+
 import { ConfidenceBadge } from './ConfidenceBadge';
-import { SourceTypeBadge } from './SourceTypeBadge';
 import { SocialProfileChips } from './SocialProfileChips';
+import { SourceTypeBadge } from './SourceTypeBadge';
 
 interface DiscoveryListProps {
   discoveries: DiscoveredJournalist[];
@@ -113,28 +114,32 @@ export function DiscoveryList({
           </div>
 
           {/* Social Links */}
-          {discovery.socialLinks && Object.keys(discovery.socialLinks).length > 0 && (
-            <div className="mb-3">
-              <SocialProfileChips
-                socialLinks={discovery.socialLinks}
-                size="sm"
-                maxDisplay={3}
-                clickable={false}
-              />
-            </div>
-          )}
+          {discovery.socialLinks &&
+            Object.keys(discovery.socialLinks).length > 0 && (
+              <div className="mb-3">
+                <SocialProfileChips
+                  socialLinks={discovery.socialLinks}
+                  size="sm"
+                  maxDisplay={3}
+                  clickable={false}
+                />
+              </div>
+            )}
 
           {/* Suggested Matches Count */}
-          {discovery.suggestedMatches && discovery.suggestedMatches.length > 0 && (
-            <div className="text-xs text-gray-500">
-              {discovery.suggestedMatches.length} suggested match
-              {discovery.suggestedMatches.length !== 1 ? 'es' : ''} found
-            </div>
-          )}
+          {discovery.suggestedMatches &&
+            discovery.suggestedMatches.length > 0 && (
+              <div className="text-xs text-gray-500">
+                {discovery.suggestedMatches.length} suggested match
+                {discovery.suggestedMatches.length !== 1 ? 'es' : ''} found
+              </div>
+            )}
 
           {/* Bio Preview */}
           {discovery.bio && (
-            <div className="mt-2 text-sm text-gray-600 line-clamp-2">{discovery.bio}</div>
+            <div className="mt-2 text-sm text-gray-600 line-clamp-2">
+              {discovery.bio}
+            </div>
           )}
 
           {/* Discovery Date */}

@@ -40,7 +40,11 @@ function buildQueryString(params: object): string {
 async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
-): Promise<{ success: boolean; data?: T; error?: { code: string; message: string } }> {
+): Promise<{
+  success: boolean;
+  data?: T;
+  error?: { code: string; message: string };
+}> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -66,7 +70,9 @@ export async function listEmailMessages(
   query: ListEmailMessagesQuery = {}
 ): Promise<EmailMessageListResponse> {
   const queryString = buildQueryString(query);
-  const result = await fetchApi<EmailMessageListResponse>(`/api/pr/deliverability/messages${queryString}`);
+  const result = await fetchApi<EmailMessageListResponse>(
+    `/api/pr/deliverability/messages${queryString}`
+  );
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to list email messages');
@@ -78,8 +84,12 @@ export async function listEmailMessages(
 /**
  * Get a single email message
  */
-export async function getEmailMessage(messageId: string): Promise<EmailMessage> {
-  const result = await fetchApi<EmailMessage>(`/api/pr/deliverability/messages/${messageId}`);
+export async function getEmailMessage(
+  messageId: string
+): Promise<EmailMessage> {
+  const result = await fetchApi<EmailMessage>(
+    `/api/pr/deliverability/messages/${messageId}`
+  );
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get email message');
@@ -95,10 +105,13 @@ export async function updateEmailMessage(
   messageId: string,
   input: UpdateEmailMessageInput
 ): Promise<EmailMessage> {
-  const result = await fetchApi<EmailMessage>(`/api/pr/deliverability/messages/${messageId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(input),
-  });
+  const result = await fetchApi<EmailMessage>(
+    `/api/pr/deliverability/messages/${messageId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to update email message');
@@ -111,9 +124,12 @@ export async function updateEmailMessage(
  * Delete an email message
  */
 export async function deleteEmailMessage(messageId: string): Promise<void> {
-  const result = await fetchApi<null>(`/api/pr/deliverability/messages/${messageId}`, {
-    method: 'DELETE',
-  });
+  const result = await fetchApi<null>(
+    `/api/pr/deliverability/messages/${messageId}`,
+    {
+      method: 'DELETE',
+    }
+  );
 
   if (!result.success) {
     throw new Error(result.error?.message || 'Failed to delete email message');
@@ -131,10 +147,14 @@ export async function listEngagementMetrics(
   query: ListEngagementMetricsQuery = {}
 ): Promise<EngagementMetricsListResponse> {
   const queryString = buildQueryString(query);
-  const result = await fetchApi<EngagementMetricsListResponse>(`/api/pr/deliverability/engagement${queryString}`);
+  const result = await fetchApi<EngagementMetricsListResponse>(
+    `/api/pr/deliverability/engagement${queryString}`
+  );
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to list engagement metrics');
+    throw new Error(
+      result.error?.message || 'Failed to list engagement metrics'
+    );
   }
 
   return result.data;
@@ -146,10 +166,14 @@ export async function listEngagementMetrics(
 export async function getJournalistEngagement(
   journalistId: string
 ): Promise<JournalistEngagement> {
-  const result = await fetchApi<JournalistEngagement>(`/api/pr/deliverability/engagement/${journalistId}`);
+  const result = await fetchApi<JournalistEngagement>(
+    `/api/pr/deliverability/engagement/${journalistId}`
+  );
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to get journalist engagement');
+    throw new Error(
+      result.error?.message || 'Failed to get journalist engagement'
+    );
   }
 
   return result.data;
@@ -169,7 +193,9 @@ export async function recalculateEngagementMetrics(
   );
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to recalculate engagement metrics');
+    throw new Error(
+      result.error?.message || 'Failed to recalculate engagement metrics'
+    );
   }
 
   return result.data;
@@ -183,10 +209,14 @@ export async function recalculateEngagementMetrics(
  * Get deliverability summary statistics
  */
 export async function getDeliverabilitySummary(): Promise<DeliverabilitySummary> {
-  const result = await fetchApi<DeliverabilitySummary>('/api/pr/deliverability/summary');
+  const result = await fetchApi<DeliverabilitySummary>(
+    '/api/pr/deliverability/summary'
+  );
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to get deliverability summary');
+    throw new Error(
+      result.error?.message || 'Failed to get deliverability summary'
+    );
   }
 
   return result.data;
@@ -199,10 +229,14 @@ export async function getTopEngagedJournalists(
   limit: number = 10
 ): Promise<JournalistEngagement[]> {
   const queryString = buildQueryString({ limit });
-  const result = await fetchApi<JournalistEngagement[]>(`/api/pr/deliverability/top-engaged${queryString}`);
+  const result = await fetchApi<JournalistEngagement[]>(
+    `/api/pr/deliverability/top-engaged${queryString}`
+  );
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to get top engaged journalists');
+    throw new Error(
+      result.error?.message || 'Failed to get top engaged journalists'
+    );
   }
 
   return result.data;
@@ -215,11 +249,16 @@ export async function getTopEngagedJournalists(
 /**
  * Test email sending (development only)
  */
-export async function testSendEmail(request: SendEmailRequest): Promise<SendEmailResponse> {
-  const result = await fetchApi<SendEmailResponse>('/api/pr/deliverability/test-send', {
-    method: 'POST',
-    body: JSON.stringify(request),
-  });
+export async function testSendEmail(
+  request: SendEmailRequest
+): Promise<SendEmailResponse> {
+  const result = await fetchApi<SendEmailResponse>(
+    '/api/pr/deliverability/test-send',
+    {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }
+  );
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to send test email');

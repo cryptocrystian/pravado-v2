@@ -7,12 +7,14 @@ The Crisis Response & Escalation Engine provides AI-powered crisis detection, in
 ## Core Features
 
 ### 1. Crisis Detection Engine
+
 - **Automated Signal Detection**: Monitors media mentions, crawled articles, and alerts from S40/S41/S43 source systems
 - **Multi-Source Aggregation**: Combines signals from media monitoring, social listening, and competitive intelligence
 - **Threshold-Based Triggers**: Configurable severity thresholds for sentiment, velocity, and propagation metrics
 - **Real-Time Processing**: Processes events within configurable time windows (default: 60 minutes)
 
 ### 2. Incident Management
+
 - **Incident Lifecycle**: Active → Contained → Resolved → Closed status workflow
 - **Severity Classification**: Five levels (low, medium, high, critical, severe) with visual indicators
 - **Trajectory Tracking**: Monitors crisis direction (improving, stable, worsening, critical, resolved)
@@ -20,18 +22,21 @@ The Crisis Response & Escalation Engine provides AI-powered crisis detection, in
 - **Incident Codes**: Auto-generated unique identifiers (e.g., CRI-20240115-001)
 
 ### 3. Escalation Framework
+
 - **Multi-Level Escalation**: Configurable escalation levels (L1-L5) with progressive severity
 - **Rule-Based Automation**: Threshold, pattern, and time-based escalation rules
 - **Notification Channels**: Slack, email, webhook integrations for escalation alerts
 - **Cooldown Periods**: Prevents escalation spam with configurable cooldown windows
 
 ### 4. AI-Powered Action Recommendations
+
 - **Context-Aware Generation**: Analyzes incident context to suggest appropriate actions
 - **Action Types**: 15 action categories including statement release, media outreach, stakeholder briefing
 - **Priority Scoring**: Weighted priority based on urgency and impact
 - **Workflow Management**: Recommended → Approved → In Progress → Completed status flow
 
 ### 5. Crisis Briefing Generation
+
 - **Executive Summaries**: Concise overviews for leadership teams
 - **Full Briefs**: Comprehensive situation reports with all details
 - **Section Types**: 12 specialized sections (situation overview, timeline, media landscape, etc.)
@@ -39,6 +44,7 @@ The Crisis Response & Escalation Engine provides AI-powered crisis detection, in
 - **Risk Assessment**: Multi-dimensional risk scoring (reputation, financial, legal, operational)
 
 ### 6. Dashboard & Analytics
+
 - **Real-Time Stats**: Active incidents, signals, pending actions, escalation counts
 - **Severity Distribution**: Visual breakdown by severity level
 - **Trajectory Distribution**: Tracking of crisis direction trends
@@ -48,6 +54,7 @@ The Crisis Response & Escalation Engine provides AI-powered crisis detection, in
 ## Technical Architecture
 
 ### Database Schema (Migration 60)
+
 ```sql
 -- Core Tables
 crisis_events          -- Raw events from source systems
@@ -61,6 +68,7 @@ crisis_audit_log       -- Comprehensive activity tracking
 ```
 
 ### API Endpoints
+
 ```
 POST   /api/v1/crisis/incidents              -- Create incident
 GET    /api/v1/crisis/incidents              -- List incidents (with filters)
@@ -91,13 +99,15 @@ GET    /api/v1/crisis/dashboard              -- Get dashboard stats
 ```
 
 ### Feature Flag
+
 ```typescript
-ENABLE_CRISIS_ENGINE: true // S55: AI-powered crisis detection & escalation engine
+ENABLE_CRISIS_ENGINE: true; // S55: AI-powered crisis detection & escalation engine
 ```
 
 ## Integration Points
 
 ### Source System Integration (S40-S52)
+
 - **S40 Media Monitoring**: media_mentions table → crisis_events
 - **S41 Media Crawling**: crawled_articles table → crisis_events
 - **S43 Media Alerts**: media_alerts table → crisis_events
@@ -106,6 +116,7 @@ ENABLE_CRISIS_ENGINE: true // S55: AI-powered crisis detection & escalation engi
 - **S53 Competitive Intelligence**: Competitor crisis monitoring
 
 ### LLM Integration
+
 - **Recommendation Generation**: GPT-4 powered action suggestions
 - **Brief Content**: AI-generated section content with custom instructions
 - **Summary Generation**: Automated incident summaries and key takeaways
@@ -114,6 +125,7 @@ ENABLE_CRISIS_ENGINE: true // S55: AI-powered crisis detection & escalation engi
 ## UI Components
 
 ### Frontend Components (10)
+
 1. **CrisisIncidentCard**: Displays incident summary with severity, trajectory, stats
 2. **CrisisSignalList**: Filterable signal list with acknowledge actions
 3. **CrisisActionList**: Action workflow management with status updates
@@ -126,6 +138,7 @@ ENABLE_CRISIS_ENGINE: true // S55: AI-powered crisis detection & escalation engi
 10. **CrisisEscalationRuleEditor**: CRUD interface for managing escalation rules
 
 ### Dashboard Page
+
 - **Three-Panel Layout**:
   - Left Panel: Incidents list with filters and severity badges
   - Center Panel: Signals/Actions/Brief tabs for incident details
@@ -138,11 +151,13 @@ ENABLE_CRISIS_ENGINE: true // S55: AI-powered crisis detection & escalation engi
 ## Security & Compliance
 
 ### Row-Level Security (RLS)
+
 - Organization-scoped data access
 - User role-based permissions for escalation actions
 - Audit logging for all crisis-related operations
 
 ### Data Privacy
+
 - PII handling in incident descriptions
 - Journalist identity protection
 - Confidential stakeholder information management

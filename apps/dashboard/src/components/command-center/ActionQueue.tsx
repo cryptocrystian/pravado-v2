@@ -7,7 +7,12 @@ import {
   Warning,
 } from '@phosphor-icons/react';
 import type { IconProps } from '@phosphor-icons/react';
-import type { CCActionItem, ActionPriority, ActionSurface } from './cc-mock-data';
+
+import type {
+  CCActionItem,
+  ActionPriority,
+  ActionSurface,
+} from './cc-mock-data';
 import { actionQueueItems } from './cc-mock-data';
 
 // --- Priority badge styles ---
@@ -17,15 +22,18 @@ const priorityConfig: Record<
 > = {
   critical: {
     label: 'CRITICAL',
-    className: 'bg-red-500/10 text-red-500 text-xs font-medium px-2 py-0.5 rounded-full',
+    className:
+      'bg-red-500/10 text-red-500 text-xs font-medium px-2 py-0.5 rounded-full',
   },
   high: {
     label: 'HIGH',
-    className: 'bg-amber-500/10 text-amber-500 text-xs font-medium px-2 py-0.5 rounded-full',
+    className:
+      'bg-amber-500/10 text-amber-500 text-xs font-medium px-2 py-0.5 rounded-full',
   },
   medium: {
     label: 'MEDIUM',
-    className: 'bg-white/5 text-white/70 text-xs font-medium px-2 py-0.5 rounded-full',
+    className:
+      'bg-white/5 text-white/70 text-xs font-medium px-2 py-0.5 rounded-full',
   },
 };
 
@@ -49,10 +57,7 @@ const surfaceConfig: Record<
 };
 
 // --- Icon map ---
-const iconMap: Record<
-  CCActionItem['icon'],
-  React.ComponentType<IconProps>
-> = {
+const iconMap: Record<CCActionItem['icon'], React.ComponentType<IconProps>> = {
   newspaper: Newspaper,
   'envelope-open': EnvelopeOpen,
   'file-text': FileText,
@@ -72,11 +77,17 @@ function ActionQueueCard({ item }: { item: CCActionItem }) {
           {/* Priority badge + icon row */}
           <div className="flex items-center gap-2 mb-2">
             <span className={priority.className}>{priority.label}</span>
-            <Icon size={20} className="text-white/70 flex-shrink-0" weight="regular" />
+            <Icon
+              size={20}
+              className="text-white/70 flex-shrink-0"
+              weight="regular"
+            />
           </div>
 
           {/* Title */}
-          <h4 className="text-base font-semibold text-white mb-1">{item.title}</h4>
+          <h4 className="text-base font-semibold text-white mb-1">
+            {item.title}
+          </h4>
 
           {/* Description */}
           <p className="text-sm text-white/70">{item.description}</p>

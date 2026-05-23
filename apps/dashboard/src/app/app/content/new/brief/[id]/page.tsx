@@ -9,9 +9,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { use } from 'react';
-import Link from 'next/link';
 import { Lightning } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { use } from 'react';
+
 import { mockBriefs } from '@/components/content/content-mock-data';
 
 interface PageProps {
@@ -84,7 +85,11 @@ export default function BriefFlowPage({ params }: PageProps) {
                 Target keywords
               </span>
               <div className="flex flex-wrap gap-1.5">
-                {['enterprise AEO', 'AI content optimization', 'citation authority'].map((kw) => (
+                {[
+                  'enterprise AEO',
+                  'AI content optimization',
+                  'citation authority',
+                ].map((kw) => (
                   <span
                     key={kw}
                     className="bg-white/5 text-white/70 text-xs px-2 py-0.5 rounded-full"

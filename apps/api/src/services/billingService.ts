@@ -51,7 +51,10 @@ export class BillingService {
         .single();
 
       if (error) {
-        logger.warn('Failed to fetch default plan', { error, slug: this.defaultPlanSlug });
+        logger.warn('Failed to fetch default plan', {
+          error,
+          slug: this.defaultPlanSlug,
+        });
         return null;
       }
 
@@ -145,11 +148,15 @@ export class BillingService {
   /**
    * Seed org billing state with default plan
    */
-  private async seedOrgBillingState(orgId: string): Promise<OrgBillingState | null> {
+  private async seedOrgBillingState(
+    orgId: string
+  ): Promise<OrgBillingState | null> {
     try {
       const defaultPlan = await this.getDefaultPlan();
       if (!defaultPlan) {
-        logger.error('Cannot seed billing state: no default plan found', { orgId });
+        logger.error('Cannot seed billing state: no default plan found', {
+          orgId,
+        });
         return null;
       }
 
@@ -190,7 +197,9 @@ export class BillingService {
   /**
    * Get org usage for current billing period
    */
-  async getOrgUsageForCurrentPeriod(orgId: string): Promise<OrgBillingUsageMonthly | null> {
+  async getOrgUsageForCurrentPeriod(
+    orgId: string
+  ): Promise<OrgBillingUsageMonthly | null> {
     try {
       // Get billing state to determine current period
       const billingState = await this.getOrgBillingState(orgId);
@@ -260,13 +269,19 @@ export class BillingService {
         .single();
 
       if (insertError) {
-        logger.error('Failed to create org usage record', { error: insertError, orgId });
+        logger.error('Failed to create org usage record', {
+          error: insertError,
+          orgId,
+        });
         return null;
       }
 
       return this.mapUsageFromDb(newUsage);
     } catch (error) {
-      logger.error('Error getting org usage for current period', { error, orgId });
+      logger.error('Error getting org usage for current period', {
+        error,
+        orgId,
+      });
       return null;
     }
   }
@@ -296,7 +311,10 @@ export class BillingService {
   /**
    * Update usage counters (best-effort, non-blocking)
    */
-  async updateUsageCounters(orgId: string, opts: UpdateUsageOptions): Promise<void> {
+  async updateUsageCounters(
+    orgId: string,
+    opts: UpdateUsageOptions
+  ): Promise<void> {
     try {
       const usage = await this.getOrgUsageForCurrentPeriod(orgId);
       if (!usage) {
@@ -335,7 +353,9 @@ export class BillingService {
    * Build org billing summary (combines plan, state, usage)
    * S30: Enhanced to include Stripe subscription metadata
    */
-  async buildOrgBillingSummary(orgId: string): Promise<OrgBillingSummaryWithStripe | null> {
+  async buildOrgBillingSummary(
+    orgId: string
+  ): Promise<OrgBillingSummaryWithStripe | null> {
     try {
       const [billingState, usage] = await Promise.all([
         this.getOrgBillingState(orgId),
@@ -343,7 +363,9 @@ export class BillingService {
       ]);
 
       if (!billingState || !usage) {
-        logger.error('Cannot build billing summary: missing state or usage', { orgId });
+        logger.error('Cannot build billing summary: missing state or usage', {
+          orgId,
+        });
         return null;
       }
 
@@ -413,7 +435,9 @@ export class BillingService {
   /**
    * Build Stripe metadata from billing state (S30)
    */
-  private buildStripeMetadata(billingState: any): OrgBillingSummaryWithStripe['stripe'] {
+  private buildStripeMetadata(
+    billingState: any
+  ): OrgBillingSummaryWithStripe['stripe'] {
     // If no Stripe customer ID, return undefined
     if (!billingState.stripe_customer_id) {
       return undefined;
@@ -424,7 +448,9 @@ export class BillingService {
     if (billingState.trial_ends_at) {
       const trialEnd = new Date(billingState.trial_ends_at);
       const now = new Date();
-      const daysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const daysRemaining = Math.ceil(
+        (trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      );
       trialDaysRemaining = Math.max(0, daysRemaining);
     }
 
@@ -441,7 +467,10 @@ export class BillingService {
   /**
    * Check org quota (soft limits only, never hard-blocks)
    */
-  async checkOrgQuota(orgId: string, opts: CheckQuotaOptions): Promise<UsageCheckResult> {
+  async checkOrgQuota(
+    orgId: string,
+    opts: CheckQuotaOptions
+  ): Promise<UsageCheckResult> {
     try {
       const summary = await this.buildOrgBillingSummary(orgId);
       if (!summary) {
@@ -459,13 +488,17 @@ export class BillingService {
 
       // Calculate projected usage
       const projectedTokens = summary.tokensUsed + (opts.tokensToConsume || 0);
-      const projectedRuns = summary.playbookRuns + (opts.playbookRunsToConsume || 0);
+      const projectedRuns =
+        summary.playbookRuns + (opts.playbookRunsToConsume || 0);
 
       // Check soft limits
       let softLimitExceeded = false;
       const reasons: string[] = [];
 
-      if (summary.softLimits.tokens && projectedTokens > summary.softLimits.tokens) {
+      if (
+        summary.softLimits.tokens &&
+        projectedTokens > summary.softLimits.tokens
+      ) {
         softLimitExceeded = true;
         reasons.push(
           `Token usage (${projectedTokens}) would exceed soft limit (${summary.softLimits.tokens})`
@@ -482,7 +515,10 @@ export class BillingService {
         );
       }
 
-      if (summary.softLimits.seats && summary.seats > summary.softLimits.seats) {
+      if (
+        summary.softLimits.seats &&
+        summary.seats > summary.softLimits.seats
+      ) {
         softLimitExceeded = true;
         reasons.push(
           `Seat count (${summary.seats}) exceeds soft limit (${summary.softLimits.seats})`
@@ -522,10 +558,15 @@ export class BillingService {
    *
    * @throws {BillingQuotaError} When quota would be exceeded and ENABLE_BILLING_HARD_LIMITS is true
    */
-  async enforceOrgQuotaOrThrow(orgId: string, opts: CheckQuotaOptions): Promise<void> {
+  async enforceOrgQuotaOrThrow(
+    orgId: string,
+    opts: CheckQuotaOptions
+  ): Promise<void> {
     // Skip enforcement if feature flag is disabled
     if (!FLAGS.ENABLE_BILLING_HARD_LIMITS) {
-      logger.debug('Hard quota enforcement disabled by feature flag', { orgId });
+      logger.debug('Hard quota enforcement disabled by feature flag', {
+        orgId,
+      });
       return;
     }
 
@@ -544,7 +585,10 @@ export class BillingService {
       const projectedRuns = summary.playbookRuns + playbookRunsToConsume;
 
       // Check token limits
-      if (summary.softLimits.tokens && projectedTokens > summary.softLimits.tokens) {
+      if (
+        summary.softLimits.tokens &&
+        projectedTokens > summary.softLimits.tokens
+      ) {
         logger.warn('Token quota exceeded', {
           orgId,
           currentUsage: summary.tokensUsed,
@@ -601,7 +645,10 @@ export class BillingService {
       }
 
       // Check seat limits (current, not projected)
-      if (summary.softLimits.seats && summary.seats > summary.softLimits.seats) {
+      if (
+        summary.softLimits.seats &&
+        summary.seats > summary.softLimits.seats
+      ) {
         logger.warn('Seat quota exceeded', {
           orgId,
           currentSeats: summary.seats,
@@ -657,7 +704,10 @@ export class BillingService {
     try {
       const plan = await this.getPlanBySlug(planSlug);
       if (!plan) {
-        logger.error('Cannot set org plan: plan not found', { orgId, planSlug });
+        logger.error('Cannot set org plan: plan not found', {
+          orgId,
+          planSlug,
+        });
         return null;
       }
 
@@ -667,7 +717,10 @@ export class BillingService {
       // S30: If this is a paid plan and Stripe is enabled, create Stripe subscription
       const isPaidPlan = plan.monthlyPriceCents > 0;
       if (isPaidPlan && FLAGS.ENABLE_STRIPE_BILLING && this.stripeService) {
-        logger.info('Creating Stripe subscription for paid plan', { orgId, planSlug });
+        logger.info('Creating Stripe subscription for paid plan', {
+          orgId,
+          planSlug,
+        });
 
         try {
           // Ensure Stripe customer exists
@@ -682,7 +735,11 @@ export class BillingService {
               opts.trialPeriodDays
             );
 
-            logger.info('Created Stripe subscription', { orgId, planSlug, subscriptionId });
+            logger.info('Created Stripe subscription', {
+              orgId,
+              planSlug,
+              subscriptionId,
+            });
 
             // Update billing state with subscription info
             // (webhook will update status, but we set initial values here)
@@ -691,7 +748,9 @@ export class BillingService {
               .update({
                 plan_id: plan.id,
                 stripe_subscription_id: subscriptionId,
-                subscription_status: opts.trialPeriodDays ? 'trialing' : 'active',
+                subscription_status: opts.trialPeriodDays
+                  ? 'trialing'
+                  : 'active',
                 billing_status: opts.trialPeriodDays ? 'trial' : 'active',
               })
               .eq('org_id', orgId)
@@ -699,17 +758,23 @@ export class BillingService {
               .single();
 
             if (error) {
-              logger.error('Failed to update org plan with Stripe subscription', {
-                error,
-                orgId,
-                planSlug,
-              });
+              logger.error(
+                'Failed to update org plan with Stripe subscription',
+                {
+                  error,
+                  orgId,
+                  planSlug,
+                }
+              );
               return null;
             }
 
             return this.mapBillingStateFromDb(data);
           } else {
-            logger.warn('Paid plan upgrade requested but no priceId provided', { orgId, planSlug });
+            logger.warn('Paid plan upgrade requested but no priceId provided', {
+              orgId,
+              planSlug,
+            });
           }
         } catch (stripeError) {
           logger.error('Failed to create Stripe subscription', {
@@ -806,7 +871,9 @@ export class BillingService {
    * Formula: overage = max(0, usage - limit)
    * Cost = overage × unitPrice
    */
-  async calculateOveragesForOrg(orgId: string): Promise<OverageCalculationResult | null> {
+  async calculateOveragesForOrg(
+    orgId: string
+  ): Promise<OverageCalculationResult | null> {
     if (!FLAGS.ENABLE_OVERAGE_BILLING) {
       logger.debug('Overage billing disabled', { orgId });
       return null;
@@ -824,15 +891,26 @@ export class BillingService {
       }
 
       if (!summary.plan) {
-        logger.warn('No plan found for org, cannot calculate overages', { orgId });
+        logger.warn('No plan found for org, cannot calculate overages', {
+          orgId,
+        });
         return null;
       }
 
-      const { plan, tokensUsed, playbookRuns, seats, currentPeriodStart, currentPeriodEnd } = summary;
+      const {
+        plan,
+        tokensUsed,
+        playbookRuns,
+        seats,
+        currentPeriodStart,
+        currentPeriodEnd,
+      } = summary;
 
       // Calculate overage amounts
-      const tokenLimit = summary.softLimits.tokens ?? plan.includedTokensMonthly;
-      const runLimit = summary.softLimits.playbookRuns ?? plan.includedPlaybookRunsMonthly;
+      const tokenLimit =
+        summary.softLimits.tokens ?? plan.includedTokensMonthly;
+      const runLimit =
+        summary.softLimits.playbookRuns ?? plan.includedPlaybookRunsMonthly;
       const seatLimit = summary.softLimits.seats ?? plan.includedSeats;
 
       const tokenOverage = Math.max(0, tokensUsed - tokenLimit);
@@ -896,7 +974,10 @@ export class BillingService {
    * Record calculated overages to database (S31)
    * Inserts into org_billing_overages and updates org_billing_usage_monthly
    */
-  async recordOverages(orgId: string, calculation: OverageCalculationResult): Promise<void> {
+  async recordOverages(
+    orgId: string,
+    calculation: OverageCalculationResult
+  ): Promise<void> {
     if (!FLAGS.ENABLE_OVERAGE_BILLING) {
       logger.debug('Overage billing disabled, skipping record', { orgId });
       return;
@@ -965,11 +1046,17 @@ export class BillingService {
           .insert(records);
 
         if (insertError) {
-          logger.error('Failed to insert overage records', { error: insertError, orgId });
+          logger.error('Failed to insert overage records', {
+            error: insertError,
+            orgId,
+          });
           throw insertError;
         }
 
-        logger.info('Inserted overage records', { orgId, count: records.length });
+        logger.info('Inserted overage records', {
+          orgId,
+          count: records.length,
+        });
       }
 
       // Update org_billing_usage_monthly with overage totals
@@ -985,7 +1072,10 @@ export class BillingService {
         .eq('period_end', calculation.period.end);
 
       if (updateError) {
-        logger.error('Failed to update usage with overages', { error: updateError, orgId });
+        logger.error('Failed to update usage with overages', {
+          error: updateError,
+          orgId,
+        });
         throw updateError;
       }
 
@@ -1000,7 +1090,9 @@ export class BillingService {
    * Get overage summary for current billing period (S31)
    * Aggregates all overage records for the org's current period
    */
-  async getOverageSummaryForOrg(orgId: string): Promise<OverageCalculationResult | null> {
+  async getOverageSummaryForOrg(
+    orgId: string
+  ): Promise<OverageCalculationResult | null> {
     if (!FLAGS.ENABLE_OVERAGE_BILLING) {
       logger.debug('Overage billing disabled', { orgId });
       return null;
@@ -1016,7 +1108,10 @@ export class BillingService {
         .eq('org_id', orgId)
         .single();
 
-      if (!billingState?.current_period_start || !billingState?.current_period_end) {
+      if (
+        !billingState?.current_period_start ||
+        !billingState?.current_period_end
+      ) {
         logger.warn('No current billing period found for org', { orgId });
         return null;
       }
@@ -1038,21 +1133,42 @@ export class BillingService {
       }
 
       // Aggregate by metric type
-      const tokenRecords = overageRecords?.filter((r) => r.metric_type === 'tokens') || [];
-      const runRecords = overageRecords?.filter((r) => r.metric_type === 'playbook_runs') || [];
-      const seatRecords = overageRecords?.filter((r) => r.metric_type === 'seats') || [];
+      const tokenRecords =
+        overageRecords?.filter((r) => r.metric_type === 'tokens') || [];
+      const runRecords =
+        overageRecords?.filter((r) => r.metric_type === 'playbook_runs') || [];
+      const seatRecords =
+        overageRecords?.filter((r) => r.metric_type === 'seats') || [];
 
-      const tokenAmount = tokenRecords.reduce((sum, r) => sum + Number(r.amount), 0);
-      const tokenCost = tokenRecords.reduce((sum, r) => sum + Number(r.cost), 0);
-      const tokenUnitPrice = tokenRecords[0]?.unit_price ? Number(tokenRecords[0].unit_price) : 0;
+      const tokenAmount = tokenRecords.reduce(
+        (sum, r) => sum + Number(r.amount),
+        0
+      );
+      const tokenCost = tokenRecords.reduce(
+        (sum, r) => sum + Number(r.cost),
+        0
+      );
+      const tokenUnitPrice = tokenRecords[0]?.unit_price
+        ? Number(tokenRecords[0].unit_price)
+        : 0;
 
-      const runAmount = runRecords.reduce((sum, r) => sum + Number(r.amount), 0);
+      const runAmount = runRecords.reduce(
+        (sum, r) => sum + Number(r.amount),
+        0
+      );
       const runCost = runRecords.reduce((sum, r) => sum + Number(r.cost), 0);
-      const runUnitPrice = runRecords[0]?.unit_price ? Number(runRecords[0].unit_price) : 0;
+      const runUnitPrice = runRecords[0]?.unit_price
+        ? Number(runRecords[0].unit_price)
+        : 0;
 
-      const seatAmount = seatRecords.reduce((sum, r) => sum + Number(r.amount), 0);
+      const seatAmount = seatRecords.reduce(
+        (sum, r) => sum + Number(r.amount),
+        0
+      );
       const seatCost = seatRecords.reduce((sum, r) => sum + Number(r.cost), 0);
-      const seatUnitPrice = seatRecords[0]?.unit_price ? Number(seatRecords[0].unit_price) : 0;
+      const seatUnitPrice = seatRecords[0]?.unit_price
+        ? Number(seatRecords[0].unit_price)
+        : 0;
 
       const totalCost = tokenCost + runCost + seatCost;
 
@@ -1114,19 +1230,26 @@ export class BillingService {
       const summary = await this.buildOrgBillingSummary(orgId);
 
       if (!summary || !summary.plan) {
-        logger.warn('No billing summary or plan for org, skipping alerts', { orgId });
+        logger.warn('No billing summary or plan for org, skipping alerts', {
+          orgId,
+        });
         return [];
       }
 
-      const { plan, tokensUsed, playbookRuns, softLimits, billingStatus } = summary;
+      const { plan, tokensUsed, playbookRuns, softLimits, billingStatus } =
+        summary;
 
       // Token usage alerts
       const tokenLimit = softLimits.tokens ?? plan.includedTokensMonthly;
-      const tokenUsagePercent = tokenLimit > 0 ? (tokensUsed / tokenLimit) * 100 : 0;
+      const tokenUsagePercent =
+        tokenLimit > 0 ? (tokensUsed / tokenLimit) * 100 : 0;
 
       if (tokenUsagePercent >= 80 && tokenUsagePercent < 100) {
         // Check if alert already exists (idempotency)
-        const existingAlert = await this.checkExistingAlert(orgId, 'usage_soft_warning');
+        const existingAlert = await this.checkExistingAlert(
+          orgId,
+          'usage_soft_warning'
+        );
         if (!existingAlert) {
           alertsToCreate.push({
             orgId,
@@ -1144,7 +1267,10 @@ export class BillingService {
       }
 
       if (tokenUsagePercent >= 100) {
-        const existingAlert = await this.checkExistingAlert(orgId, 'usage_hard_warning');
+        const existingAlert = await this.checkExistingAlert(
+          orgId,
+          'usage_hard_warning'
+        );
         if (!existingAlert) {
           alertsToCreate.push({
             orgId,
@@ -1162,11 +1288,16 @@ export class BillingService {
       }
 
       // Playbook run usage alerts
-      const runLimit = softLimits.playbookRuns ?? plan.includedPlaybookRunsMonthly;
-      const runUsagePercent = runLimit > 0 ? (playbookRuns / runLimit) * 100 : 0;
+      const runLimit =
+        softLimits.playbookRuns ?? plan.includedPlaybookRunsMonthly;
+      const runUsagePercent =
+        runLimit > 0 ? (playbookRuns / runLimit) * 100 : 0;
 
       if (runUsagePercent >= 80 && runUsagePercent < 100) {
-        const existingAlert = await this.checkExistingAlert(orgId, 'usage_soft_warning');
+        const existingAlert = await this.checkExistingAlert(
+          orgId,
+          'usage_soft_warning'
+        );
         if (!existingAlert) {
           alertsToCreate.push({
             orgId,
@@ -1186,12 +1317,16 @@ export class BillingService {
       // Check for trial expiring (if trial status and within 5 days)
       if (billingStatus === 'trial' && summary.stripe?.trialDaysRemaining) {
         if (summary.stripe.trialDaysRemaining <= 5) {
-          const existingAlert = await this.checkExistingAlert(orgId, 'trial_expiring');
+          const existingAlert = await this.checkExistingAlert(
+            orgId,
+            'trial_expiring'
+          );
           if (!existingAlert) {
             alertsToCreate.push({
               orgId,
               alertType: 'trial_expiring',
-              severity: summary.stripe.trialDaysRemaining <= 2 ? 'critical' : 'warning',
+              severity:
+                summary.stripe.trialDaysRemaining <= 2 ? 'critical' : 'warning',
               message: `Trial expires in ${summary.stripe.trialDaysRemaining} day${summary.stripe.trialDaysRemaining === 1 ? '' : 's'}`,
               metadata: {
                 daysRemaining: summary.stripe.trialDaysRemaining,
@@ -1226,7 +1361,10 @@ export class BillingService {
         createdAlerts.push(this.mapAlertFromDb(data));
       }
 
-      logger.info('Generated usage alerts', { orgId, count: createdAlerts.length });
+      logger.info('Generated usage alerts', {
+        orgId,
+        count: createdAlerts.length,
+      });
 
       return createdAlerts;
     } catch (error) {
@@ -1339,14 +1477,25 @@ export class BillingService {
           critical: alerts.filter((a) => a.severity === 'critical').length,
         },
         byType: {
-          usage_soft_warning: alerts.filter((a) => a.alertType === 'usage_soft_warning').length,
-          usage_hard_warning: alerts.filter((a) => a.alertType === 'usage_hard_warning').length,
-          overage_incurred: alerts.filter((a) => a.alertType === 'overage_incurred').length,
-          trial_expiring: alerts.filter((a) => a.alertType === 'trial_expiring').length,
-          subscription_canceled: alerts.filter((a) => a.alertType === 'subscription_canceled')
+          usage_soft_warning: alerts.filter(
+            (a) => a.alertType === 'usage_soft_warning'
+          ).length,
+          usage_hard_warning: alerts.filter(
+            (a) => a.alertType === 'usage_hard_warning'
+          ).length,
+          overage_incurred: alerts.filter(
+            (a) => a.alertType === 'overage_incurred'
+          ).length,
+          trial_expiring: alerts.filter((a) => a.alertType === 'trial_expiring')
             .length,
-          plan_upgraded: alerts.filter((a) => a.alertType === 'plan_upgraded').length,
-          plan_downgraded: alerts.filter((a) => a.alertType === 'plan_downgraded').length,
+          subscription_canceled: alerts.filter(
+            (a) => a.alertType === 'subscription_canceled'
+          ).length,
+          plan_upgraded: alerts.filter((a) => a.alertType === 'plan_upgraded')
+            .length,
+          plan_downgraded: alerts.filter(
+            (a) => a.alertType === 'plan_downgraded'
+          ).length,
         },
       };
 
@@ -1458,15 +1607,18 @@ export class BillingService {
       const currentPlan = currentSummary.plan;
 
       // Determine if this is an upgrade or downgrade
-      const isUpgrade = targetPlan.monthlyPriceCents > (currentPlan?.monthlyPriceCents || 0);
+      const isUpgrade =
+        targetPlan.monthlyPriceCents > (currentPlan?.monthlyPriceCents || 0);
       const isDowngrade = !isUpgrade && targetPlan.slug !== currentPlan?.slug;
 
       // For downgrades, check if current usage would exceed new plan limits
       if (isDowngrade) {
-        const wouldExceedTokens = targetPlan.includedTokensMonthly < currentSummary.tokensUsed;
+        const wouldExceedTokens =
+          targetPlan.includedTokensMonthly < currentSummary.tokensUsed;
         const wouldExceedRuns =
           targetPlan.includedPlaybookRunsMonthly < currentSummary.playbookRuns;
-        const wouldExceedSeats = targetPlan.includedSeats < currentSummary.seats;
+        const wouldExceedSeats =
+          targetPlan.includedSeats < currentSummary.seats;
 
         if (wouldExceedTokens || wouldExceedRuns || wouldExceedSeats) {
           const reasons: string[] = [];
@@ -1513,7 +1665,10 @@ export class BillingService {
         logger.info('Switching Stripe subscription', { orgId, targetPlanSlug });
 
         try {
-          await this.stripeService.switchSubscriptionPlan(orgId, targetPlan.slug);
+          await this.stripeService.switchSubscriptionPlan(
+            orgId,
+            targetPlan.slug
+          );
 
           // Stripe webhook will update billing state
           // Return the updated state
@@ -1550,7 +1705,11 @@ export class BillingService {
         .single();
 
       if (error) {
-        logger.error('Failed to update org billing state', { error, orgId, targetPlanSlug });
+        logger.error('Failed to update org billing state', {
+          error,
+          orgId,
+          targetPlanSlug,
+        });
         return null;
       }
 
@@ -1571,7 +1730,11 @@ export class BillingService {
 
       return this.mapBillingStateFromDb(data);
     } catch (error) {
-      logger.error('Error switching org plan', { error, orgId, targetPlanSlug });
+      logger.error('Error switching org plan', {
+        error,
+        orgId,
+        targetPlanSlug,
+      });
       throw error;
     }
   }
@@ -1598,7 +1761,9 @@ export class BillingService {
 
       // Get all plans ordered by price
       const allPlans = await this.listPlans();
-      const currentPlanIndex = allPlans.findIndex((p) => p.slug === currentPlan.slug);
+      const currentPlanIndex = allPlans.findIndex(
+        (p) => p.slug === currentPlan.slug
+      );
       const nextPlan = allPlans[currentPlanIndex + 1];
 
       if (!nextPlan) {
@@ -1607,10 +1772,15 @@ export class BillingService {
 
       // Recommendation logic:
       // 1. Usage > 80% of current plan limit
-      const tokenLimit = summary.softLimits.tokens ?? currentPlan.includedTokensMonthly;
-      const runLimit = summary.softLimits.playbookRuns ?? currentPlan.includedPlaybookRunsMonthly;
-      const tokenUsagePercent = tokenLimit > 0 ? (summary.tokensUsed / tokenLimit) * 100 : 0;
-      const runUsagePercent = runLimit > 0 ? (summary.playbookRuns / runLimit) * 100 : 0;
+      const tokenLimit =
+        summary.softLimits.tokens ?? currentPlan.includedTokensMonthly;
+      const runLimit =
+        summary.softLimits.playbookRuns ??
+        currentPlan.includedPlaybookRunsMonthly;
+      const tokenUsagePercent =
+        tokenLimit > 0 ? (summary.tokensUsed / tokenLimit) * 100 : 0;
+      const runUsagePercent =
+        runLimit > 0 ? (summary.playbookRuns / runLimit) * 100 : 0;
 
       if (tokenUsagePercent > 80 || runUsagePercent > 80) {
         logger.info('Recommending upgrade due to high usage', {
@@ -1678,7 +1848,9 @@ export class BillingService {
       if (baseSummary.currentPeriodEnd) {
         const periodEnd = new Date(baseSummary.currentPeriodEnd);
         const now = new Date();
-        const daysRemaining = Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.ceil(
+          (periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        );
         daysUntilRenewal = Math.max(0, daysRemaining);
       }
 
@@ -1808,12 +1980,17 @@ export class BillingService {
       }));
 
       // Calculate aggregate metrics
-      const paidInvoices = invoices?.filter((inv) => inv.status === 'paid') || [];
-      const totalPaid12Mo = paidInvoices.reduce((sum, inv) => sum + inv.amount_paid, 0);
-      const highestInvoice = Math.max(...(invoices?.map((inv) => inv.amount_due) || [0]));
-      const averageMonthlyCost = paidInvoices.length > 0
-        ? totalPaid12Mo / paidInvoices.length
-        : 0;
+      const paidInvoices =
+        invoices?.filter((inv) => inv.status === 'paid') || [];
+      const totalPaid12Mo = paidInvoices.reduce(
+        (sum, inv) => sum + inv.amount_paid,
+        0
+      );
+      const highestInvoice = Math.max(
+        ...(invoices?.map((inv) => inv.amount_due) || [0])
+      );
+      const averageMonthlyCost =
+        paidInvoices.length > 0 ? totalPaid12Mo / paidInvoices.length : 0;
 
       // Calculate overage costs per invoice (from metadata)
       const overageCostsPerInvoice: Record<string, number> = {};
@@ -1825,10 +2002,12 @@ export class BillingService {
           // Sum up overage line items
           let overageCost = 0;
           for (const line of lines) {
-            if (line.description &&
-                (line.description.includes('overage') ||
-                 line.description.includes('Overage') ||
-                 line.description.includes('usage'))) {
+            if (
+              line.description &&
+              (line.description.includes('overage') ||
+                line.description.includes('Overage') ||
+                line.description.includes('usage'))
+            ) {
               overageCost += line.amount || 0;
             }
           }
@@ -1866,7 +2045,10 @@ export class BillingService {
    * @param invoiceId - Invoice ID (from org_invoice_cache, NOT Stripe ID)
    * @returns Detailed invoice breakdown
    */
-  async getInvoiceWithBreakdown(orgId: string, invoiceId: string): Promise<{
+  async getInvoiceWithBreakdown(
+    orgId: string,
+    invoiceId: string
+  ): Promise<{
     invoice: {
       id: string;
       stripeInvoiceId: string;
@@ -1918,7 +2100,11 @@ export class BillingService {
         .single();
 
       if (invError || !invoice) {
-        logger.error('Invoice not found in cache', { error: invError, orgId, invoiceId });
+        logger.error('Invoice not found in cache', {
+          error: invError,
+          orgId,
+          invoiceId,
+        });
         throw new Error('Invoice not found');
       }
 
@@ -1952,18 +2138,30 @@ export class BillingService {
         const quantity = line.quantity || null;
 
         // Categorize line item
-        let type: 'plan' | 'overage' | 'discount' | 'proration' | 'tax' | 'other' = 'other';
+        let type:
+          | 'plan'
+          | 'overage'
+          | 'discount'
+          | 'proration'
+          | 'tax'
+          | 'other' = 'other';
 
-        if (description.toLowerCase().includes('subscription') ||
-            description.toLowerCase().includes('plan')) {
+        if (
+          description.toLowerCase().includes('subscription') ||
+          description.toLowerCase().includes('plan')
+        ) {
           type = 'plan';
           breakdown.planCost += amount;
-        } else if (description.toLowerCase().includes('token') &&
-                   description.toLowerCase().includes('overage')) {
+        } else if (
+          description.toLowerCase().includes('token') &&
+          description.toLowerCase().includes('overage')
+        ) {
           type = 'overage';
           breakdown.tokenOverages += amount;
-        } else if (description.toLowerCase().includes('run') &&
-                   description.toLowerCase().includes('overage')) {
+        } else if (
+          description.toLowerCase().includes('run') &&
+          description.toLowerCase().includes('overage')
+        ) {
           type = 'overage';
           breakdown.runOverages += amount;
         } else if (description.toLowerCase().includes('proration')) {
@@ -2032,7 +2230,11 @@ export class BillingService {
         relatedAlerts,
       };
     } catch (error) {
-      logger.error('Error getting invoice breakdown', { error, orgId, invoiceId });
+      logger.error('Error getting invoice breakdown', {
+        error,
+        orgId,
+        invoiceId,
+      });
       throw error;
     }
   }

@@ -6,7 +6,10 @@
  * S10: Added memory debug tab for episodic traces and semantic memory
  */
 
-import type { PlaybookDefinitionDTO, PlaybookRunWithStepsDTO } from '@pravado/types';
+import type {
+  PlaybookDefinitionDTO,
+  PlaybookRunWithStepsDTO,
+} from '@pravado/types';
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -16,7 +19,9 @@ export default function PlaybookDetailPage() {
   const [playbook, setPlaybook] = useState<PlaybookDefinitionDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
-  const [activeTab, setActiveTab] = useState<'steps' | 'collaboration' | 'memory'>('steps');
+  const [activeTab, setActiveTab] = useState<
+    'steps' | 'collaboration' | 'memory'
+  >('steps');
   const [lastRun, setLastRun] = useState<PlaybookRunWithStepsDTO | null>(null);
   const [memoryData, setMemoryData] = useState<any>(null);
 
@@ -39,7 +44,11 @@ export default function PlaybookDetailPage() {
     }
   };
 
-  const execute = async (simulate: boolean, withCollaboration = false, withMemory = false) => {
+  const execute = async (
+    simulate: boolean,
+    withCollaboration = false,
+    withMemory = false
+  ) => {
     setExecuting(true);
     try {
       // Gate 1A: Use route handlers, not direct backend calls
@@ -186,7 +195,9 @@ export default function PlaybookDetailPage() {
       {/* Steps Tab */}
       {activeTab === 'steps' && (
         <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Steps ({playbook.steps.length})</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Steps ({playbook.steps.length})
+          </h2>
           <div className="space-y-4">
             {playbook.steps.map((step) => (
               <div key={step.id} className="border border-gray-200 rounded p-4">
@@ -199,7 +210,9 @@ export default function PlaybookDetailPage() {
                     {step.type}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500">Next: {step.nextStepKey || '(end)'}</p>
+                <p className="text-sm text-gray-500">
+                  Next: {step.nextStepKey || '(end)'}
+                </p>
               </div>
             ))}
           </div>
@@ -213,8 +226,8 @@ export default function PlaybookDetailPage() {
 
           {!lastRun && (
             <div className="text-center py-8 text-gray-500">
-              No collaboration data yet. Run &quot;Debug Collaboration&quot; to see inter-agent messages,
-              shared state, and escalations.
+              No collaboration data yet. Run &quot;Debug Collaboration&quot; to
+              see inter-agent messages, shared state, and escalations.
             </div>
           )}
 
@@ -225,10 +238,12 @@ export default function PlaybookDetailPage() {
                 <h3 className="font-semibold mb-2">Run Status</h3>
                 <div className="flex gap-4">
                   <span className="text-sm">
-                    Status: <span className="font-medium">{lastRun.run.status}</span>
+                    Status:{' '}
+                    <span className="font-medium">{lastRun.run.status}</span>
                   </span>
                   <span className="text-sm">
-                    Steps: <span className="font-medium">{lastRun.steps.length}</span>
+                    Steps:{' '}
+                    <span className="font-medium">{lastRun.steps.length}</span>
                   </span>
                 </div>
               </div>
@@ -238,52 +253,92 @@ export default function PlaybookDetailPage() {
                 <h3 className="font-semibold mb-3">Step Executions</h3>
                 <div className="space-y-4">
                   {lastRun.steps.map((stepRun: any) => (
-                    <div key={stepRun.id} className="border border-gray-200 rounded p-4">
+                    <div
+                      key={stepRun.id}
+                      className="border border-gray-200 rounded p-4"
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-semibold">{stepRun.stepKey}</h4>
                           <p className="text-xs text-gray-500">
-                            Status: {stepRun.status} | Escalation: {stepRun.escalationLevel || 'none'}
+                            Status: {stepRun.status} | Escalation:{' '}
+                            {stepRun.escalationLevel || 'none'}
                           </p>
                         </div>
                       </div>
 
                       {stepRun.collaborationContext && (
                         <div className="mt-3 bg-gray-50 p-3 rounded text-xs">
-                          <div className="font-medium mb-2">Collaboration Context:</div>
+                          <div className="font-medium mb-2">
+                            Collaboration Context:
+                          </div>
                           <div className="space-y-2">
-                            {stepRun.collaborationContext.messages && stepRun.collaborationContext.messages.length > 0 && (
-                              <div>
-                                <span className="font-medium">Messages ({stepRun.collaborationContext.messages.length}):</span>
-                                <div className="mt-1 space-y-1 max-h-40 overflow-y-auto">
-                                  {stepRun.collaborationContext.messages.map((msg: any, idx: number) => (
-                                    <div key={idx} className="bg-white p-2 rounded border">
-                                      <div className="flex justify-between">
-                                        <span className="font-medium text-blue-600">{msg.type}</span>
-                                        <span className="text-gray-500">{msg.fromStepKey} → {msg.toStepKey}</span>
-                                      </div>
-                                    </div>
-                                  ))}
+                            {stepRun.collaborationContext.messages &&
+                              stepRun.collaborationContext.messages.length >
+                                0 && (
+                                <div>
+                                  <span className="font-medium">
+                                    Messages (
+                                    {
+                                      stepRun.collaborationContext.messages
+                                        .length
+                                    }
+                                    ):
+                                  </span>
+                                  <div className="mt-1 space-y-1 max-h-40 overflow-y-auto">
+                                    {stepRun.collaborationContext.messages.map(
+                                      (msg: any, idx: number) => (
+                                        <div
+                                          key={idx}
+                                          className="bg-white p-2 rounded border"
+                                        >
+                                          <div className="flex justify-between">
+                                            <span className="font-medium text-blue-600">
+                                              {msg.type}
+                                            </span>
+                                            <span className="text-gray-500">
+                                              {msg.fromStepKey} →{' '}
+                                              {msg.toStepKey}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
 
-                            {stepRun.collaborationContext.sharedState && Object.keys(stepRun.collaborationContext.sharedState).length > 0 && (
-                              <div>
-                                <span className="font-medium">Shared State:</span>
-                                <pre className="mt-1 bg-white p-2 rounded overflow-x-auto">
-                                  {JSON.stringify(stepRun.collaborationContext.sharedState, null, 2)}
-                                </pre>
-                              </div>
-                            )}
+                            {stepRun.collaborationContext.sharedState &&
+                              Object.keys(
+                                stepRun.collaborationContext.sharedState
+                              ).length > 0 && (
+                                <div>
+                                  <span className="font-medium">
+                                    Shared State:
+                                  </span>
+                                  <pre className="mt-1 bg-white p-2 rounded overflow-x-auto">
+                                    {JSON.stringify(
+                                      stepRun.collaborationContext.sharedState,
+                                      null,
+                                      2
+                                    )}
+                                  </pre>
+                                </div>
+                              )}
 
-                            {stepRun.collaborationContext.escalationLevel && stepRun.collaborationContext.escalationLevel !== 'none' && (
-                              <div>
-                                <span className="font-medium text-red-600">
-                                  Escalated to: {stepRun.collaborationContext.escalationLevel}
-                                </span>
-                              </div>
-                            )}
+                            {stepRun.collaborationContext.escalationLevel &&
+                              stepRun.collaborationContext.escalationLevel !==
+                                'none' && (
+                                <div>
+                                  <span className="font-medium text-red-600">
+                                    Escalated to:{' '}
+                                    {
+                                      stepRun.collaborationContext
+                                        .escalationLevel
+                                    }
+                                  </span>
+                                </div>
+                              )}
                           </div>
                         </div>
                       )}
@@ -303,7 +358,8 @@ export default function PlaybookDetailPage() {
 
           {!memoryData && (
             <div className="text-center py-8 text-gray-500">
-              No memory data yet. Run &quot;Debug Memory&quot; to see episodic traces and semantic memory.
+              No memory data yet. Run &quot;Debug Memory&quot; to see episodic
+              traces and semantic memory.
             </div>
           )}
 
@@ -311,16 +367,23 @@ export default function PlaybookDetailPage() {
             <div className="space-y-6">
               {/* Episodic Traces */}
               <div>
-                <h3 className="font-semibold mb-3">Episodic Traces ({memoryData.episodicTraces?.length || 0})</h3>
-                {memoryData.episodicTraces && memoryData.episodicTraces.length > 0 ? (
+                <h3 className="font-semibold mb-3">
+                  Episodic Traces ({memoryData.episodicTraces?.length || 0})
+                </h3>
+                {memoryData.episodicTraces &&
+                memoryData.episodicTraces.length > 0 ? (
                   <div className="space-y-4">
                     {memoryData.episodicTraces.map((trace: any) => (
-                      <div key={trace.id} className="border border-gray-200 rounded p-4">
+                      <div
+                        key={trace.id}
+                        className="border border-gray-200 rounded p-4"
+                      >
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <h4 className="font-semibold">{trace.stepKey}</h4>
                             <p className="text-xs text-gray-500">
-                              Created: {new Date(trace.createdAt).toLocaleString()}
+                              Created:{' '}
+                              {new Date(trace.createdAt).toLocaleString()}
                             </p>
                           </div>
                         </div>
@@ -341,7 +404,9 @@ export default function PlaybookDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-sm text-gray-500">No episodic traces recorded.</div>
+                  <div className="text-sm text-gray-500">
+                    No episodic traces recorded.
+                  </div>
                 )}
               </div>
             </div>

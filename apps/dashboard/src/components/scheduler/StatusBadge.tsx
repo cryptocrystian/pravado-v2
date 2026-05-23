@@ -22,7 +22,9 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   const { bg, text } = styles[status];
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bg} ${text}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bg} ${text}`}
+    >
       {status}
     </span>
   );

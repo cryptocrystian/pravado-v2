@@ -39,6 +39,7 @@ This flow demonstrates how Pravado helps organizations prepare for and respond t
 3. You should land on the main dashboard.
 
 **What to verify:**
+
 - Dashboard loads without errors
 - Organization shows as "Pravado Demo Org"
 
@@ -51,10 +52,10 @@ This flow demonstrates how Pravado helps organizations prepare for and respond t
 1. Navigate to **Crisis** → **Dashboard** (or **Incidents**)
 2. You should see two crisis incidents:
 
-| Incident | Severity | Status | Type |
-|----------|----------|--------|------|
-| Data Breach Alert - Third Party Vendor | High | Active | Security |
-| Negative Social Media Campaign | Medium | Monitoring | Reputation |
+| Incident                               | Severity | Status     | Type       |
+| -------------------------------------- | -------- | ---------- | ---------- |
+| Data Breach Alert - Third Party Vendor | High     | Active     | Security   |
+| Negative Social Media Campaign         | Medium   | Monitoring | Reputation |
 
 ### 2.2 Explore the Active Incident
 
@@ -66,6 +67,7 @@ This flow demonstrates how Pravado helps organizations prepare for and respond t
    - **Detected At**: Recent timestamp
 
 **What to verify:**
+
 - Both incidents appear in the list
 - Severity badges display correctly (High = red, Medium = yellow)
 - Status indicators show Active/Monitoring states
@@ -82,11 +84,11 @@ Scenario simulations allow the platform to explore "what if" responses to variou
 1. Navigate to **Scenarios** → **Simulations** (or **AI Scenarios**)
 2. You should see three scenarios:
 
-| Scenario | Type | Status |
-|----------|------|--------|
-| Market Downturn Response | Crisis | Completed |
+| Scenario                  | Type        | Status    |
+| ------------------------- | ----------- | --------- |
+| Market Downturn Response  | Crisis      | Completed |
 | Competitor Product Launch | Competitive | Completed |
-| Regulatory Change Impact | Regulatory | Running |
+| Regulatory Change Impact  | Regulatory  | Running   |
 
 ### 3.2 Explore a Completed Scenario
 
@@ -105,6 +107,7 @@ Scenario simulations allow the platform to explore "what if" responses to variou
    - Description: "Assesses impact of new privacy regulations"
 
 **What to verify:**
+
 - All three scenarios are visible
 - Completed scenarios show completion timestamps
 - Running scenario shows active/in-progress indicator
@@ -121,10 +124,10 @@ Orchestration suites coordinate multiple scenarios to run together, providing co
 1. Navigate to **Scenarios** → **Orchestration** (or **Suites**)
 2. You should see two suites:
 
-| Suite | Status | Description |
-|-------|--------|-------------|
+| Suite                      | Status    | Description                                  |
+| -------------------------- | --------- | -------------------------------------------- |
 | Q4 Crisis Simulation Suite | Completed | Multi-scenario suite for crisis preparedness |
-| Product Launch Scenarios | Running | Suite exploring various launch outcomes |
+| Product Launch Scenarios   | Running   | Suite exploring various launch outcomes      |
 
 ### 4.2 Explore Completed Suite
 
@@ -142,6 +145,7 @@ Orchestration suites coordinate multiple scenarios to run together, providing co
    - Suite is actively executing its linked scenarios
 
 **What to verify:**
+
 - Both suites appear in the list
 - Status indicators show Completed vs Running
 - Clicking a suite shows its linked scenarios
@@ -158,9 +162,9 @@ Reality Maps visualize branching outcome possibilities with probabilities, helpi
 1. Navigate to **Reality Maps** (or **Scenarios** → **Reality Maps**)
 2. You should see two maps:
 
-| Map | Status | Stats |
-|-----|--------|-------|
-| Crisis Outcome Tree | Completed | 15 nodes, 14 edges, 8 paths |
+| Map                       | Status    | Stats                       |
+| ------------------------- | --------- | --------------------------- |
+| Crisis Outcome Tree       | Completed | 15 nodes, 14 edges, 8 paths |
 | Market Response Scenarios | Generated | 15 nodes, 14 edges, 8 paths |
 
 ### 5.2 Explore Crisis Outcome Tree
@@ -177,11 +181,13 @@ Reality Maps visualize branching outcome possibilities with probabilities, helpi
 ### 5.3 Map Parameters
 
 Each map was generated with:
+
 - **Max Depth**: 5 levels
 - **Branching Factor**: 3 branches per node
 - **Probability Threshold**: 0.1 (minimum probability to include)
 
 **What to verify:**
+
 - Both maps appear in the list
 - Node count and edge count are displayed
 - Clicking a map shows the tree/graph visualization
@@ -200,10 +206,10 @@ The Insight Conflict engine detects when different systems produce contradictory
 1. Navigate to **Conflicts** → **Insight Conflicts** (or **Intelligence** → **Conflicts**)
 2. You should see two conflicts:
 
-| Conflict | Type | Severity | Status |
-|----------|------|----------|--------|
-| Conflicting Crisis Severity Assessments | Contradiction | High | Detected |
-| Divergent Market Response Recommendations | Divergence | Medium | Analyzing |
+| Conflict                                  | Type          | Severity | Status    |
+| ----------------------------------------- | ------------- | -------- | --------- |
+| Conflicting Crisis Severity Assessments   | Contradiction | High     | Detected  |
+| Divergent Market Response Recommendations | Divergence    | Medium   | Analyzing |
 
 ### 6.2 Explore High-Severity Conflict
 
@@ -228,6 +234,7 @@ The Insight Conflict engine detects when different systems produce contradictory
    - **Summary**: "Strategic Intelligence recommends aggressive expansion while Scenario Simulations suggest cautious approach."
 
 **What to verify:**
+
 - Both conflicts appear in the list
 - Severity indicators show High (red) vs Medium (yellow)
 - Status badges show Detected vs Analyzing
@@ -241,17 +248,17 @@ The Insight Conflict engine detects when different systems produce contradictory
 
 The demo data tells a coherent crisis intelligence story:
 
-| System | Data Point | Story Element |
-|--------|-----------|---------------|
-| Crisis | Data Breach (Active) | Current incident requiring response |
-| Crisis | Social Media Campaign (Monitoring) | Secondary concern being tracked |
-| Scenarios | Market Downturn Response | Completed "what if" analysis |
-| Scenarios | Regulatory Change Impact | Active simulation running |
-| Suites | Q4 Crisis Simulation Suite | Comprehensive crisis preparedness completed |
-| Suites | Product Launch Scenarios | Ongoing suite execution |
-| Reality Maps | Crisis Outcome Tree | Visualized decision paths |
-| Conflicts | Severity Assessment Contradiction | System disagreement requiring resolution |
-| Conflicts | Market Response Divergence | Competing recommendations to reconcile |
+| System       | Data Point                         | Story Element                               |
+| ------------ | ---------------------------------- | ------------------------------------------- |
+| Crisis       | Data Breach (Active)               | Current incident requiring response         |
+| Crisis       | Social Media Campaign (Monitoring) | Secondary concern being tracked             |
+| Scenarios    | Market Downturn Response           | Completed "what if" analysis                |
+| Scenarios    | Regulatory Change Impact           | Active simulation running                   |
+| Suites       | Q4 Crisis Simulation Suite         | Comprehensive crisis preparedness completed |
+| Suites       | Product Launch Scenarios           | Ongoing suite execution                     |
+| Reality Maps | Crisis Outcome Tree                | Visualized decision paths                   |
+| Conflicts    | Severity Assessment Contradiction  | System disagreement requiring resolution    |
+| Conflicts    | Market Response Divergence         | Competing recommendations to reconcile      |
 
 ---
 
@@ -265,6 +272,7 @@ The crisis and scenario data connects to the executive intelligence flow:
 4. **Reality Map insights** shape **Strategic Intelligence** (GP#1 Step 7)
 
 Navigate back to the Exec Command Center and observe:
+
 - Crisis Status indicator shows the active incident
 - Recent Activity shows scenario completions
 - Health Score may be affected by conflicts
@@ -318,19 +326,23 @@ To verify AI generation works:
 ## Troubleshooting
 
 **No crisis data showing:**
+
 - Verify seed script ran successfully
 - Check API logs for database errors
 - Confirm org_id matches in the database
 
 **Scenarios not loading:**
+
 - Check `ai_scenario_simulations` table in Supabase
 - Verify `ai_scenario_runs` are linked correctly
 
 **Reality maps not rendering:**
+
 - Check `reality_map_nodes` and `reality_map_edges` tables
 - Verify parent-child relationships are correct
 
 **Conflicts missing:**
+
 - Check `insight_conflicts` table
 - Verify `source_entities` JSON is valid
 
@@ -339,6 +351,7 @@ To verify AI generation works:
 ## Next Steps
 
 After completing this flow:
+
 1. Review both Golden Paths for complete coverage
 2. Complete the **UAT Checklist** in `docs/UAT_CHECKLIST_V1.md`
 3. Run through both paths with a fresh seed to verify repeatability

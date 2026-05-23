@@ -5,10 +5,18 @@
 
 'use client';
 
+import type {
+  GenerationContext,
+  PersonaSourceType,
+  PersonaType,
+} from '@pravado/types';
+import { AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -17,11 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
-import type { GenerationContext, PersonaSourceType, PersonaType } from '@pravado/types';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { AlertCircle, Loader2, Sparkles } from 'lucide-react';
-import { useState } from 'react';
 
 interface PersonaGeneratorFormProps {
   onGenerate: (context: GenerationContext) => Promise<void>;
@@ -35,7 +40,8 @@ export function PersonaGeneratorForm({
   const [sourceType, setSourceType] = useState<PersonaSourceType>('manual');
   const [sourceText, setSourceText] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
-  const [personaType, setPersonaType] = useState<PersonaType>('primary_audience');
+  const [personaType, setPersonaType] =
+    useState<PersonaType>('primary_audience');
   const [suggestedName, setSuggestedName] = useState('');
   const [extractTraits, setExtractTraits] = useState(true);
   const [extractInsights, setExtractInsights] = useState(true);
@@ -125,7 +131,8 @@ export function PersonaGeneratorForm({
             <h3 className="font-semibold text-lg">Generate Persona with AI</h3>
           </div>
           <p className="text-sm text-gray-600">
-            Provide source text and let AI extract persona attributes, traits, and insights
+            Provide source text and let AI extract persona attributes, traits,
+            and insights
           </p>
         </CardHeader>
 
@@ -168,7 +175,11 @@ export function PersonaGeneratorForm({
               <span
                 className={cn(
                   'text-xs',
-                  charPercentage > 90 ? 'text-red-600' : charPercentage > 70 ? 'text-yellow-600' : 'text-gray-500'
+                  charPercentage > 90
+                    ? 'text-red-600'
+                    : charPercentage > 70
+                      ? 'text-yellow-600'
+                      : 'text-gray-500'
                 )}
               >
                 {charCount.toLocaleString()} / {charLimit.toLocaleString()}
@@ -188,7 +199,9 @@ export function PersonaGeneratorForm({
 
           {/* Suggested Name */}
           <div className="space-y-2">
-            <Label htmlFor="suggestedName">Suggested Persona Name (Optional)</Label>
+            <Label htmlFor="suggestedName">
+              Suggested Persona Name (Optional)
+            </Label>
             <Input
               id="suggestedName"
               value={suggestedName}
@@ -200,7 +213,9 @@ export function PersonaGeneratorForm({
 
           {/* Additional Context */}
           <div className="space-y-2">
-            <Label htmlFor="additionalContext">Additional Context (Optional)</Label>
+            <Label htmlFor="additionalContext">
+              Additional Context (Optional)
+            </Label>
             <Textarea
               id="additionalContext"
               value={additionalContext}

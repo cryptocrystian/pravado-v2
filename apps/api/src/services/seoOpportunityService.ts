@@ -14,7 +14,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 export interface ListOpportunitiesOptions {
   limit?: number;
   offset?: number;
-  opportunityType?: 'keyword_gap' | 'content_refresh' | 'broken_link' | 'missing_meta' | 'low_content';
+  opportunityType?:
+    | 'keyword_gap'
+    | 'content_refresh'
+    | 'broken_link'
+    | 'missing_meta'
+    | 'low_content';
   priority?: 'low' | 'medium' | 'high' | 'critical';
   status?: 'open' | 'in_progress' | 'completed' | 'dismissed';
   minPriorityScore?: number;
@@ -64,7 +69,8 @@ export class SEOOpportunityService {
         const existing = metricsMap.get(metric.keyword_id);
         if (
           !existing ||
-          new Date(metric.last_refreshed_at) > new Date(existing.last_refreshed_at)
+          new Date(metric.last_refreshed_at) >
+            new Date(existing.last_refreshed_at)
         ) {
           metricsMap.set(metric.keyword_id, metric);
         }
@@ -108,7 +114,9 @@ export class SEOOpportunityService {
     for (const keyword of keywords) {
       const metric = metricsMap.get(keyword.id);
       const serpList = serpMap.get(keyword.id) || [];
-      const targetPage = keyword.tracked_url ? pagesMap.get(keyword.tracked_url) : null;
+      const targetPage = keyword.tracked_url
+        ? pagesMap.get(keyword.tracked_url)
+        : null;
 
       // Detect opportunity types
       const opportunity = this.detectOpportunity(
@@ -121,7 +129,10 @@ export class SEOOpportunityService {
 
       if (opportunity) {
         // Filter by type if specified
-        if (opportunityType && opportunity.opportunityType !== opportunityType) {
+        if (
+          opportunityType &&
+          opportunity.opportunityType !== opportunityType
+        ) {
           continue;
         }
 
@@ -154,7 +165,9 @@ export class SEOOpportunityService {
     // Calculate priority score
     const searchVolume = metric?.search_volume || 0;
     const difficulty = metric?.difficulty || 50;
-    const priorityScore = metric?.priority_score || this.calculatePriorityScore(searchVolume, difficulty);
+    const priorityScore =
+      metric?.priority_score ||
+      this.calculatePriorityScore(searchVolume, difficulty);
 
     // Determine opportunity type
     let opportunityType: SEOOpportunityDTO['opportunityType'];
@@ -166,18 +179,28 @@ export class SEOOpportunityService {
 
     // Check our ranking in SERP results
     const ourResults = serpResults.filter((r) => !r.is_competitor);
-    const ourBestRank = ourResults.length > 0 ? Math.min(...ourResults.map((r) => r.rank)) : null;
+    const ourBestRank =
+      ourResults.length > 0 ? Math.min(...ourResults.map((r) => r.rank)) : null;
 
     // Check competitor rankings
     const competitorResults = serpResults.filter((r) => r.is_competitor);
-    const topCompetitorRank = competitorResults.length > 0 ? Math.min(...competitorResults.map((r) => r.rank)) : null;
+    const topCompetitorRank =
+      competitorResults.length > 0
+        ? Math.min(...competitorResults.map((r) => r.rank))
+        : null;
 
     if (!hasTargetPage && searchVolume > 1000) {
       // Keyword gap: High volume keyword with no target page
       opportunityType = 'keyword_gap';
       gapSummary = `High-value keyword "${keyword.keyword}" (${searchVolume.toLocaleString()} searches/mo) has no dedicated page.`;
       recommendedAction = `Create optimized content targeting "${keyword.keyword}" with focus on ${keyword.intent || 'user intent'}.`;
-    } else if (hasTargetPage && ourBestRank && ourBestRank > 10 && topCompetitorRank && topCompetitorRank < ourBestRank) {
+    } else if (
+      hasTargetPage &&
+      ourBestRank &&
+      ourBestRank > 10 &&
+      topCompetitorRank &&
+      topCompetitorRank < ourBestRank
+    ) {
       // Content refresh: We have a page but competitors outrank us
       const gap = ourBestRank - topCompetitorRank;
       opportunityType = 'content_refresh';
@@ -188,7 +211,11 @@ export class SEOOpportunityService {
       opportunityType = 'missing_meta';
       gapSummary = `Page targeting "${keyword.keyword}" is missing meta description.`;
       recommendedAction = `Add compelling meta description (150-160 chars) including target keyword.`;
-    } else if (hasTargetPage && targetPage.word_count && targetPage.word_count < 500) {
+    } else if (
+      hasTargetPage &&
+      targetPage.word_count &&
+      targetPage.word_count < 500
+    ) {
       // Low content: Page exists but has thin content
       opportunityType = 'low_content';
       gapSummary = `Page has only ${targetPage.word_count} words. Low content may impact rankings.`;
@@ -222,7 +249,10 @@ export class SEOOpportunityService {
   /**
    * Calculate priority score from search volume and difficulty
    */
-  private calculatePriorityScore(searchVolume: number, difficulty: number): number {
+  private calculatePriorityScore(
+    searchVolume: number,
+    difficulty: number
+  ): number {
     // Higher search volume + lower difficulty = higher priority
     const volumeScore = Math.min(100, (searchVolume / 100) * 0.4);
     const difficultyScore = (100 - difficulty) * 0.6;
@@ -260,7 +290,9 @@ export class SEOOpportunityService {
       searchVolume: row.search_volume,
       difficulty: row.difficulty,
       cpc: row.cpc ? parseFloat(row.cpc) : null,
-      clickThroughRate: row.click_through_rate ? parseFloat(row.click_through_rate) : null,
+      clickThroughRate: row.click_through_rate
+        ? parseFloat(row.click_through_rate)
+        : null,
       priorityScore: row.priority_score ? parseFloat(row.priority_score) : null,
       lastRefreshedAt: row.last_refreshed_at,
       createdAt: row.created_at,

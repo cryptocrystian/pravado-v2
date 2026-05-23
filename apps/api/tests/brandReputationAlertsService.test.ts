@@ -117,13 +117,19 @@ describe('BrandReputationAlertsService', () => {
         minOverallScore: 50,
       };
 
-      const result = await service.createAlertRule(mockOrgId, input, mockUserId);
+      const result = await service.createAlertRule(
+        mockOrgId,
+        input,
+        mockUserId
+      );
 
       expect(result).toBeDefined();
       expect(result.id).toBe(mockRuleId);
       expect(result.name).toBe('Low Score Alert');
       expect(result.minOverallScore).toBe(50);
-      expect(mockSupabase.from).toHaveBeenCalledWith('brand_reputation_alert_rules');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'brand_reputation_alert_rules'
+      );
     });
 
     it('should list alert rules with pagination', async () => {
@@ -136,7 +142,10 @@ describe('BrandReputationAlertsService', () => {
       vi.spyOn(mockSupabase, 'from').mockReturnValue(queryBuilder as any);
 
       const service = new BrandReputationAlertsService(mockSupabase);
-      const result = await service.listAlertRules(mockOrgId, { limit: 10, offset: 0 });
+      const result = await service.listAlertRules(mockOrgId, {
+        limit: 10,
+        offset: 0,
+      });
 
       expect(result).toBeDefined();
       expect(result.rules).toHaveLength(1);
@@ -159,7 +168,10 @@ describe('BrandReputationAlertsService', () => {
 
     it('should return null for non-existent rule', async () => {
       const mockSupabase = createMockSupabaseClient({
-        brand_reputation_alert_rules: { data: null, error: { code: 'PGRST116', message: 'Not found' } },
+        brand_reputation_alert_rules: {
+          data: null,
+          error: { code: 'PGRST116', message: 'Not found' },
+        },
       });
       const service = new BrandReputationAlertsService(mockSupabase);
 
@@ -175,7 +187,9 @@ describe('BrandReputationAlertsService', () => {
       });
       const service = new BrandReputationAlertsService(mockSupabase);
 
-      const result = await service.updateAlertRule(mockOrgId, mockRuleId, { name: 'Updated Alert' });
+      const result = await service.updateAlertRule(mockOrgId, mockRuleId, {
+        name: 'Updated Alert',
+      });
 
       expect(result.name).toBe('Updated Alert');
     });
@@ -243,7 +257,10 @@ describe('BrandReputationAlertsService', () => {
         evaluatedAt: '2024-01-01T12:00:00Z',
       };
 
-      const result = await service.evaluateAlertRulesForSnapshot(mockOrgId, context);
+      const result = await service.evaluateAlertRulesForSnapshot(
+        mockOrgId,
+        context
+      );
 
       expect(result).toBeDefined();
       expect(result.rulesEvaluated).toBe(1);
@@ -275,7 +292,10 @@ describe('BrandReputationAlertsService', () => {
         evaluatedAt: '2024-01-01T12:00:00Z',
       };
 
-      const result = await service.evaluateAlertRulesForSnapshot(mockOrgId, context);
+      const result = await service.evaluateAlertRulesForSnapshot(
+        mockOrgId,
+        context
+      );
 
       expect(result.rulesTriggered).toBe(0);
     });
@@ -284,9 +304,17 @@ describe('BrandReputationAlertsService', () => {
       const mockSupabase = createMockSupabaseClient();
 
       // Rule was triggered 30 minutes ago (within 60 min cooldown)
-      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      const thirtyMinutesAgo = new Date(
+        Date.now() - 30 * 60 * 1000
+      ).toISOString();
       const rulesQueryBuilder = createMockQueryBuilder({
-        data: [{ ...mockRuleRow, min_overall_score: 60, last_triggered_at: thirtyMinutesAgo }],
+        data: [
+          {
+            ...mockRuleRow,
+            min_overall_score: 60,
+            last_triggered_at: thirtyMinutesAgo,
+          },
+        ],
         error: null,
       });
 
@@ -307,7 +335,10 @@ describe('BrandReputationAlertsService', () => {
         evaluatedAt: new Date().toISOString(),
       };
 
-      const result = await service.evaluateAlertRulesForSnapshot(mockOrgId, context);
+      const result = await service.evaluateAlertRulesForSnapshot(
+        mockOrgId,
+        context
+      );
 
       expect(result.rulesCooledDown).toBe(1);
       expect(result.rulesTriggered).toBe(0);
@@ -336,7 +367,9 @@ describe('BrandReputationAlertsService', () => {
       vi.spyOn(mockSupabase, 'from').mockImplementation(fromMock as any);
 
       const service = new BrandReputationAlertsService(mockSupabase);
-      const result = await service.listAlertEvents(mockOrgId, { status: 'new' });
+      const result = await service.listAlertEvents(mockOrgId, {
+        status: 'new',
+      });
 
       expect(result.events).toHaveLength(1);
       expect(result.events[0].status).toBe('new');
@@ -354,7 +387,12 @@ describe('BrandReputationAlertsService', () => {
       });
       const service = new BrandReputationAlertsService(mockSupabase);
 
-      const result = await service.acknowledgeAlertEvent(mockOrgId, mockEventId, mockUserId, 'Acknowledged');
+      const result = await service.acknowledgeAlertEvent(
+        mockOrgId,
+        mockEventId,
+        mockUserId,
+        'Acknowledged'
+      );
 
       expect(result.status).toBe('acknowledged');
       expect(result.acknowledgedBy).toBe(mockUserId);
@@ -373,7 +411,12 @@ describe('BrandReputationAlertsService', () => {
       });
       const service = new BrandReputationAlertsService(mockSupabase);
 
-      const result = await service.resolveAlertEvent(mockOrgId, mockEventId, mockUserId, 'Issue fixed');
+      const result = await service.resolveAlertEvent(
+        mockOrgId,
+        mockEventId,
+        mockUserId,
+        'Issue fixed'
+      );
 
       expect(result.status).toBe('resolved');
       expect(result.resolutionNotes).toBe('Issue fixed');
@@ -386,7 +429,11 @@ describe('BrandReputationAlertsService', () => {
       });
       const service = new BrandReputationAlertsService(mockSupabase);
 
-      const result = await service.muteAlertEvent(mockOrgId, mockEventId, mockUserId);
+      const result = await service.muteAlertEvent(
+        mockOrgId,
+        mockEventId,
+        mockUserId
+      );
 
       expect(result.status).toBe('muted');
     });
@@ -399,13 +446,17 @@ describe('BrandReputationAlertsService', () => {
       });
       const service = new BrandReputationAlertsService(mockSupabase);
 
-      const result = await service.createReputationReport(mockOrgId, {
-        title: 'Weekly Reputation Report',
-        reportPeriodStart: '2024-01-01T00:00:00Z',
-        reportPeriodEnd: '2024-01-07T00:00:00Z',
-        frequency: 'weekly',
-        format: 'executive_summary',
-      }, mockUserId);
+      const result = await service.createReputationReport(
+        mockOrgId,
+        {
+          title: 'Weekly Reputation Report',
+          reportPeriodStart: '2024-01-01T00:00:00Z',
+          reportPeriodEnd: '2024-01-07T00:00:00Z',
+          frequency: 'weekly',
+          format: 'executive_summary',
+        },
+        mockUserId
+      );
 
       expect(result.report).toBeDefined();
       expect(result.report.title).toBe('Weekly Reputation Report');
@@ -421,7 +472,9 @@ describe('BrandReputationAlertsService', () => {
       vi.spyOn(mockSupabase, 'from').mockReturnValue(queryBuilder as any);
 
       const service = new BrandReputationAlertsService(mockSupabase);
-      const result = await service.listReputationReports(mockOrgId, { limit: 10 });
+      const result = await service.listReputationReports(mockOrgId, {
+        limit: 10,
+      });
 
       expect(result.reports).toHaveLength(1);
       expect(result.total).toBe(1);
@@ -527,7 +580,10 @@ describe('BrandReputationAlertsService', () => {
         return createMockQueryBuilder({ data: null, error: null });
       });
       vi.spyOn(mockSupabase, 'from').mockImplementation(fromMock as any);
-      vi.spyOn(mockSupabase, 'rpc').mockResolvedValue({ data: [{ new_count: 2, acknowledged_count: 1, total_unresolved: 3 }], error: null });
+      vi.spyOn(mockSupabase, 'rpc').mockResolvedValue({
+        data: [{ new_count: 2, acknowledged_count: 1, total_unresolved: 3 }],
+        error: null,
+      });
 
       const service = new BrandReputationAlertsService(mockSupabase);
       const result = await service.getReputationInsights(mockOrgId, {});

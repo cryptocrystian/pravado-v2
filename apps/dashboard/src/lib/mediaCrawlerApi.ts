@@ -42,7 +42,9 @@ async function apiRequest<T>(
 // RSS FEED API
 // ========================================
 
-export async function createRSSFeed(input: CreateRSSFeedInput): Promise<MediaRSSFeed> {
+export async function createRSSFeed(
+  input: CreateRSSFeedInput
+): Promise<MediaRSSFeed> {
   const result = await apiRequest<{ feed: MediaRSSFeed }>(
     '/api/v1/media-monitoring/rss-feeds',
     {
@@ -58,10 +60,13 @@ export async function createRSSFeed(input: CreateRSSFeedInput): Promise<MediaRSS
   return result.data.feed;
 }
 
-export async function listRSSFeeds(query?: ListRSSFeedsQuery): Promise<RSSFeedListResponse> {
+export async function listRSSFeeds(
+  query?: ListRSSFeedsQuery
+): Promise<RSSFeedListResponse> {
   const params = new URLSearchParams();
   if (query?.sourceId) params.append('sourceId', query.sourceId);
-  if (query?.active !== undefined) params.append('active', String(query.active));
+  if (query?.active !== undefined)
+    params.append('active', String(query.active));
   if (query?.limit) params.append('limit', String(query.limit));
   if (query?.offset) params.append('offset', String(query.offset));
 
@@ -109,9 +114,12 @@ export async function updateRSSFeed(
 }
 
 export async function deactivateRSSFeed(feedId: string): Promise<void> {
-  const result = await apiRequest(`/api/v1/media-monitoring/rss-feeds/${feedId}`, {
-    method: 'DELETE',
-  });
+  const result = await apiRequest(
+    `/api/v1/media-monitoring/rss-feeds/${feedId}`,
+    {
+      method: 'DELETE',
+    }
+  );
 
   if (!result.success) {
     throw new Error(result.error?.message || 'Failed to deactivate RSS feed');
@@ -143,7 +151,9 @@ export async function triggerRSSFetch(feedIds?: string[]): Promise<{
 // CRAWL JOB API
 // ========================================
 
-export async function createCrawlJob(input: CreateCrawlJobInput): Promise<MediaCrawlJob> {
+export async function createCrawlJob(
+  input: CreateCrawlJobInput
+): Promise<MediaCrawlJob> {
   const result = await apiRequest<{ job: MediaCrawlJob }>(
     '/api/v1/media-monitoring/crawl-jobs',
     {
@@ -159,7 +169,9 @@ export async function createCrawlJob(input: CreateCrawlJobInput): Promise<MediaC
   return result.data.job;
 }
 
-export async function listCrawlJobs(query?: ListCrawlJobsQuery): Promise<CrawlJobListResponse> {
+export async function listCrawlJobs(
+  query?: ListCrawlJobsQuery
+): Promise<CrawlJobListResponse> {
   const params = new URLSearchParams();
   if (query?.feedId) params.append('feedId', query.feedId);
   if (query?.sourceId) params.append('sourceId', query.sourceId);
@@ -208,7 +220,9 @@ export async function runCrawlJobs(): Promise<{
 // ========================================
 
 export async function getRSSStats(): Promise<RSSFeedStats> {
-  const result = await apiRequest<{ stats: RSSFeedStats }>('/api/v1/media-monitoring/rss/stats');
+  const result = await apiRequest<{ stats: RSSFeedStats }>(
+    '/api/v1/media-monitoring/rss/stats'
+  );
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get RSS stats');

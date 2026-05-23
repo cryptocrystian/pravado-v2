@@ -4,10 +4,11 @@
  * CompetitorComparison — Donut chart, head-to-head, topic table, content gaps.
  */
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { CheckCircle, Warning, XCircle } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+
 import {
   mockShareOfVoice,
   mockPravadoProfile,
@@ -47,10 +48,7 @@ function ProfileCard({
           value={`${profile.weakestEngine} (${profile.weakestEngineScore})`}
         />
         <Row label="Strong clusters" value={String(profile.strongClusters)} />
-        <Row
-          label={label ?? 'Gaps'}
-          value={String(profile.gaps)}
-        />
+        <Row label={label ?? 'Gaps'} value={String(profile.gaps)} />
       </div>
     </div>
   );
@@ -76,7 +74,9 @@ function Row({
 }
 
 const statusIcon: Record<string, React.ReactNode> = {
-  winning: <CheckCircle size={14} className="text-semantic-success" weight="fill" />,
+  winning: (
+    <CheckCircle size={14} className="text-semantic-success" weight="fill" />
+  ),
   narrow: <Warning size={14} className="text-amber-500" weight="fill" />,
   critical: <XCircle size={14} className="text-red-500" weight="fill" />,
 };
@@ -157,10 +157,7 @@ export function CompetitorComparison() {
             isYou
             label="Gaps vs them"
           />
-          <ProfileCard
-            profile={mockCompetitorXProfile}
-            label="Gaps vs you"
-          />
+          <ProfileCard profile={mockCompetitorXProfile} label="Gaps vs you" />
         </div>
       </section>
 
@@ -254,7 +251,7 @@ export function CompetitorComparison() {
                   type="button"
                   onClick={() =>
                     router.push(
-                      `/app/content/new?title=${encodeURIComponent(item.title)}`,
+                      `/app/content/new?title=${encodeURIComponent(item.title)}`
                     )
                   }
                   className="bg-cc-cyan text-cc-page rounded-xl px-3 py-1.5 text-xs font-medium hover:bg-cc-cyan/90 transition-colors shrink-0 ml-3"

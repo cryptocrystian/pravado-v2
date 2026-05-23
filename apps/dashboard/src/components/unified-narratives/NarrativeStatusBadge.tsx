@@ -6,7 +6,7 @@
 
 'use client';
 
-import React from 'react';
+import type { NarrativeStatus } from '@pravado/types';
 import {
   FileEdit,
   Loader2,
@@ -15,9 +15,10 @@ import {
   Send,
   Archive,
 } from 'lucide-react';
-import type { NarrativeStatus } from '@pravado/types';
-import { getStatusLabel, getStatusColor } from '@/lib/unifiedNarrativeApi';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
+import { getStatusLabel, getStatusColor } from '@/lib/unifiedNarrativeApi';
 import { cn } from '@/lib/utils';
 
 interface NarrativeStatusBadgeProps {

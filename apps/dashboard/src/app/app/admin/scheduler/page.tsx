@@ -38,7 +38,9 @@ export default function SchedulerPage() {
       setTasks(tasksData.tasks);
       setStats(statsData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load scheduler data');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load scheduler data'
+      );
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,9 @@ export default function SchedulerPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Scheduler Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Scheduler Dashboard
+          </h1>
           <p className="mt-2 text-gray-600">
             Manage scheduled background tasks and cron jobs
           </p>
@@ -129,7 +133,11 @@ export default function SchedulerPage() {
                   className="inline-flex text-red-400 hover:text-red-600"
                 >
                   <span className="sr-only">Dismiss</span>
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="h-5 w-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -146,28 +154,48 @@ export default function SchedulerPage() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-500">Total Tasks</div>
-              <div className="mt-1 text-3xl font-bold text-gray-900">{stats.totalTasks}</div>
+              <div className="text-sm font-medium text-gray-500">
+                Total Tasks
+              </div>
+              <div className="mt-1 text-3xl font-bold text-gray-900">
+                {stats.totalTasks}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-500">Enabled Tasks</div>
-              <div className="mt-1 text-3xl font-bold text-green-600">{stats.enabledTasks}</div>
+              <div className="text-sm font-medium text-gray-500">
+                Enabled Tasks
+              </div>
+              <div className="mt-1 text-3xl font-bold text-green-600">
+                {stats.enabledTasks}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-500">Total Runs</div>
-              <div className="mt-1 text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
+              <div className="text-sm font-medium text-gray-500">
+                Total Runs
+              </div>
+              <div className="mt-1 text-3xl font-bold text-gray-900">
+                {stats.totalRuns}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-500">Successful</div>
-              <div className="mt-1 text-3xl font-bold text-green-600">{stats.successfulRuns}</div>
+              <div className="text-sm font-medium text-gray-500">
+                Successful
+              </div>
+              <div className="mt-1 text-3xl font-bold text-green-600">
+                {stats.successfulRuns}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-sm font-medium text-gray-500">Failed</div>
-              <div className="mt-1 text-3xl font-bold text-red-600">{stats.failedRuns}</div>
+              <div className="mt-1 text-3xl font-bold text-red-600">
+                {stats.failedRuns}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-sm font-medium text-gray-500">Last 24h</div>
-              <div className="mt-1 text-3xl font-bold text-blue-600">{stats.last24hRuns}</div>
+              <div className="mt-1 text-3xl font-bold text-blue-600">
+                {stats.last24hRuns}
+              </div>
             </div>
           </div>
         )}
@@ -175,7 +203,9 @@ export default function SchedulerPage() {
         {/* Tasks Table */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Scheduled Tasks</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Scheduled Tasks
+            </h2>
           </div>
           <TaskListTable
             tasks={tasks}

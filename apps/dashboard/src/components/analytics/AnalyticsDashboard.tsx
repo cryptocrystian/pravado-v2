@@ -19,14 +19,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import {
-  getEVIBand,
-  DRIVER_CONFIGS,
-  TIME_RANGE_OPTIONS,
-  TIER_CONFIG,
-  ANALYTICS_PILLAR_CONFIG,
-} from './types';
-import type { TimeRange } from './types';
+
 import {
   MOCK_EVI_TIME_SERIES,
   MOCK_CURRENT_EVI,
@@ -35,6 +28,14 @@ import {
   MOCK_COVERAGE_EVENTS,
   MOCK_TOP_MOVERS,
 } from './mock-data';
+import {
+  getEVIBand,
+  DRIVER_CONFIGS,
+  TIME_RANGE_OPTIONS,
+  TIER_CONFIG,
+  ANALYTICS_PILLAR_CONFIG,
+} from './types';
+import type { TimeRange } from './types';
 
 // ============================================
 // SECTION 1: EVI SCORECARD
@@ -70,19 +71,36 @@ function EVIScorecard() {
             Earned Visibility Index
           </span>
           <div className="flex items-baseline gap-3">
-            <span className={`text-4xl font-bold tabular-nums ${band.colorClass}`}>
+            <span
+              className={`text-4xl font-bold tabular-nums ${band.colorClass}`}
+            >
               {current.eviScore.toFixed(1)}
             </span>
-            <span className={`${band.bgClass} ${band.colorClass} px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border border-current/20`}>
+            <span
+              className={`${band.bgClass} ${band.colorClass} px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border border-current/20`}
+            >
               {band.label}
             </span>
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <span className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-              {isPositive ? '+' : ''}{delta.toFixed(1)}
+            <span
+              className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}
+            >
+              {isPositive ? '+' : ''}
+              {delta.toFixed(1)}
             </span>
-            <svg className={`w-3.5 h-3.5 ${isPositive ? 'text-semantic-success' : 'text-semantic-danger rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+            <svg
+              className={`w-3.5 h-3.5 ${isPositive ? 'text-semantic-success' : 'text-semantic-danger rotate-180'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M5 15l7-7 7 7"
+              />
             </svg>
             <span className="text-[13px] text-white/50">vs 30 days ago</span>
           </div>
@@ -134,7 +152,9 @@ function DriverBreakdown() {
               className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-5"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-white/90">{driver.label}</span>
+                <span className="text-sm font-semibold text-white/90">
+                  {driver.label}
+                </span>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
                   {driver.weight}
                 </span>
@@ -144,11 +164,24 @@ function DriverBreakdown() {
                 <span className="text-2xl font-bold tabular-nums text-white/90">
                   {score.toFixed(1)}
                 </span>
-                <span className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-                  {isPositive ? '+' : ''}{delta.toFixed(1)}
+                <span
+                  className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}
+                >
+                  {isPositive ? '+' : ''}
+                  {delta.toFixed(1)}
                 </span>
-                <svg className={`w-3 h-3 ${isPositive ? 'text-semantic-success' : 'text-semantic-danger rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+                <svg
+                  className={`w-3 h-3 ${isPositive ? 'text-semantic-success' : 'text-semantic-danger rotate-180'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 15l7-7 7 7"
+                  />
                 </svg>
               </div>
 
@@ -181,7 +214,7 @@ function EVIOverTime() {
   const rangeConfig = TIME_RANGE_OPTIONS.find((r) => r.key === range)!;
   const data = useMemo(
     () => MOCK_EVI_TIME_SERIES.slice(-rangeConfig.days),
-    [rangeConfig.days],
+    [rangeConfig.days]
   );
 
   // Chart dimensions
@@ -199,11 +232,15 @@ function EVIOverTime() {
   const maxY = 100;
 
   const toX = (i: number) => padL + (i / (data.length - 1)) * plotW;
-  const toY = (v: number) => padT + plotH - ((v - minY) / (maxY - minY)) * plotH;
+  const toY = (v: number) =>
+    padT + plotH - ((v - minY) / (maxY - minY)) * plotH;
 
   // Build path
   const pathD = data
-    .map((d, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(d.eviScore).toFixed(1)}`)
+    .map(
+      (d, i) =>
+        `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(d.eviScore).toFixed(1)}`
+    )
     .join(' ');
 
   // Band zones (horizontal)
@@ -319,14 +356,16 @@ function EVIOverTime() {
 
 function ShareOfModelTrend() {
   const maxShare = Math.max(
-    ...MOCK_SOM_CLUSTERS.flatMap((c) => [c.yourShare, c.competitorShare]),
+    ...MOCK_SOM_CLUSTERS.flatMap((c) => [c.yourShare, c.competitorShare])
   );
   const barScale = 100 / (maxShare + 5); // leave breathing room
 
   return (
     <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-white/90">Share of Model by Topic</h2>
+        <h2 className="text-base font-semibold text-white/90">
+          Share of Model by Topic
+        </h2>
         <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
           30-day comparison
         </span>
@@ -340,9 +379,14 @@ function ShareOfModelTrend() {
             <div key={cluster.topicCluster}>
               {/* Cluster label + delta */}
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-white/85">{cluster.topicCluster}</span>
-                <span className={`text-[13px] font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-                  {isPositive ? '+' : ''}{cluster.delta30d.toFixed(1)}pp
+                <span className="text-sm text-white/85">
+                  {cluster.topicCluster}
+                </span>
+                <span
+                  className={`text-[13px] font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}
+                >
+                  {isPositive ? '+' : ''}
+                  {cluster.delta30d.toFixed(1)}pp
                 </span>
               </div>
 
@@ -364,7 +408,10 @@ function ShareOfModelTrend() {
 
               {/* Competitor bar */}
               <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 w-12 shrink-0 truncate" title={cluster.topCompetitor}>
+                <span
+                  className="text-[11px] font-bold uppercase tracking-wider text-white/40 w-12 shrink-0 truncate"
+                  title={cluster.topCompetitor}
+                >
                   {cluster.topCompetitor.slice(0, 6)}
                 </span>
                 <div className="flex-1 h-5 bg-slate-4 rounded overflow-hidden">
@@ -391,7 +438,9 @@ function ShareOfModelTrend() {
 
 function CoverageTimeline() {
   // Sort events by date ascending
-  const events = [...MOCK_COVERAGE_EVENTS].sort((a, b) => a.date.localeCompare(b.date));
+  const events = [...MOCK_COVERAGE_EVENTS].sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
 
   // Get EVI data for the same date range
   const earliestDate = events[0]?.date ?? '';
@@ -414,25 +463,39 @@ function CoverageTimeline() {
   const eviMin = Math.min(...eviSlice.map((d) => d.eviScore));
   const eviMax = Math.max(...eviSlice.map((d) => d.eviScore));
   const eviRange = eviMax - eviMin || 1;
-  const toY = (v: number) => 10 + (chartH - 20) - ((v - eviMin) / eviRange) * (chartH - 20);
+  const toY = (v: number) =>
+    10 + (chartH - 20) - ((v - eviMin) / eviRange) * (chartH - 20);
 
   const eviPath = eviSlice
-    .map((d, i) => `${i === 0 ? 'M' : 'L'} ${(padL + (i / (dateRange - 1)) * (chartW - padL - padR)).toFixed(1)} ${toY(d.eviScore).toFixed(1)}`)
+    .map(
+      (d, i) =>
+        `${i === 0 ? 'M' : 'L'} ${(padL + (i / (dateRange - 1)) * (chartW - padL - padR)).toFixed(1)} ${toY(d.eviScore).toFixed(1)}`
+    )
     .join(' ');
 
   return (
     <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-      <h2 className="text-base font-semibold text-white/90 mb-4">Coverage Timeline</h2>
+      <h2 className="text-base font-semibold text-white/90 mb-4">
+        Coverage Timeline
+      </h2>
 
       {/* Coverage events table */}
       <div className="mb-4">
         <table className="w-full">
           <thead>
             <tr className="border-b border-border-subtle">
-              <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">Date</th>
-              <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">Placement</th>
-              <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">Tier</th>
-              <th className="text-right pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">EVI Impact</th>
+              <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+                Date
+              </th>
+              <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+                Placement
+              </th>
+              <th className="text-left pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+                Tier
+              </th>
+              <th className="text-right pb-2 text-xs font-semibold uppercase tracking-wide text-white/55">
+                EVI Impact
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -440,17 +503,31 @@ function CoverageTimeline() {
               const tierConf = TIER_CONFIG[event.tier];
               const isPositive = event.eviImpact >= 0;
               return (
-                <tr key={event.id} className="border-b border-border-subtle/50 last:border-0">
-                  <td className="py-2 pr-4 text-[13px] text-white/55 whitespace-nowrap">{event.date.slice(5)}</td>
-                  <td className="py-2 pr-4 text-sm text-white/85 leading-snug">{event.title}</td>
+                <tr
+                  key={event.id}
+                  className="border-b border-border-subtle/50 last:border-0"
+                >
+                  <td className="py-2 pr-4 text-[13px] text-white/55 whitespace-nowrap">
+                    {event.date.slice(5)}
+                  </td>
+                  <td className="py-2 pr-4 text-sm text-white/85 leading-snug">
+                    {event.title}
+                  </td>
                   <td className="py-2 pr-4">
                     <div className="flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${tierConf.dotClass}`} />
-                      <span className="text-[13px] text-white/55">{tierConf.label}</span>
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${tierConf.dotClass}`}
+                      />
+                      <span className="text-[13px] text-white/55">
+                        {tierConf.label}
+                      </span>
                     </div>
                   </td>
-                  <td className={`py-2 text-right text-sm font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-                    {isPositive ? '+' : ''}{event.eviImpact.toFixed(1)}
+                  <td
+                    className={`py-2 text-right text-sm font-semibold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}
+                  >
+                    {isPositive ? '+' : ''}
+                    {event.eviImpact.toFixed(1)}
                   </td>
                 </tr>
               );
@@ -468,7 +545,9 @@ function CoverageTimeline() {
           <div className="flex items-center gap-3 ml-auto">
             {(['T1', 'T2', 'T3'] as const).map((tier) => (
               <div key={tier} className="flex items-center gap-1.5">
-                <span className={`w-1.5 h-1.5 rounded-full ${TIER_CONFIG[tier].dotClass}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${TIER_CONFIG[tier].dotClass}`}
+                />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
                   {TIER_CONFIG[tier].label}
                 </span>
@@ -477,7 +556,11 @@ function CoverageTimeline() {
           </div>
         </div>
 
-        <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full" preserveAspectRatio="none">
+        <svg
+          viewBox={`0 0 ${chartW} ${chartH}`}
+          className="w-full"
+          preserveAspectRatio="none"
+        >
           {/* EVI line */}
           <path
             d={eviPath}
@@ -523,19 +606,31 @@ function CoverageTimeline() {
 // ============================================
 
 function TopMovers() {
-  const sorted = [...MOCK_TOP_MOVERS].sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  const sorted = [...MOCK_TOP_MOVERS].sort(
+    (a, b) => Math.abs(b.delta) - Math.abs(a.delta)
+  );
 
   return (
     <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-      <h2 className="text-base font-semibold text-white/90 mb-4">Top Movers This Period</h2>
+      <h2 className="text-base font-semibold text-white/90 mb-4">
+        Top Movers This Period
+      </h2>
 
       <table className="w-full">
         <thead>
           <tr className="border-b border-border-subtle">
-            <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55 w-1/2">Factor</th>
-            <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Pillar</th>
-            <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Period</th>
-            <th className="text-right pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">Impact</th>
+            <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55 w-1/2">
+              Factor
+            </th>
+            <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+              Pillar
+            </th>
+            <th className="text-left pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+              Period
+            </th>
+            <th className="text-right pb-3 text-xs font-semibold uppercase tracking-wide text-white/55">
+              Impact
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -543,16 +638,28 @@ function TopMovers() {
             const isPositive = mover.delta >= 0;
             const pillarConf = ANALYTICS_PILLAR_CONFIG[mover.pillar];
             return (
-              <tr key={mover.id} className="border-b border-border-subtle/50 last:border-0">
-                <td className="py-3 pr-4 text-sm text-white/85 leading-snug">{mover.description}</td>
+              <tr
+                key={mover.id}
+                className="border-b border-border-subtle/50 last:border-0"
+              >
+                <td className="py-3 pr-4 text-sm text-white/85 leading-snug">
+                  {mover.description}
+                </td>
                 <td className="py-3 pr-4">
-                  <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${pillarConf.badgeClass}`}>
+                  <span
+                    className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${pillarConf.badgeClass}`}
+                  >
                     {pillarConf.label}
                   </span>
                 </td>
-                <td className="py-3 pr-4 text-[13px] text-white/55 whitespace-nowrap">{mover.period}</td>
-                <td className={`py-3 text-right text-base font-bold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-                  {isPositive ? '+' : ''}{mover.delta.toFixed(1)}
+                <td className="py-3 pr-4 text-[13px] text-white/55 whitespace-nowrap">
+                  {mover.period}
+                </td>
+                <td
+                  className={`py-3 text-right text-base font-bold tabular-nums ${isPositive ? 'text-semantic-success' : 'text-semantic-danger'}`}
+                >
+                  {isPositive ? '+' : ''}
+                  {mover.delta.toFixed(1)}
                 </td>
               </tr>
             );
@@ -598,7 +705,9 @@ export function AnalyticsDashboard() {
           <AnalyticsIcon />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white/95 tracking-tight">Analytics</h1>
+          <h1 className="text-2xl font-bold text-white/95 tracking-tight">
+            Analytics
+          </h1>
           <p className="text-[13px] text-white/55 mt-0.5">
             EVI health and visibility trends
           </p>

@@ -39,7 +39,6 @@ import type {
 import type { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-
 // Event emitter for generation progress
 export const prGenerationEmitter = new EventEmitter();
 
@@ -85,7 +84,9 @@ export class PressReleaseService {
     const [seoData, companyFootprint, personality] = await Promise.all([
       this.fetchSEOContext(orgId, input),
       this.fetchCompanyFootprint(orgId, input),
-      input.personalityId ? this.fetchPersonality(orgId, input.personalityId) : null,
+      input.personalityId
+        ? this.fetchPersonality(orgId, input.personalityId)
+        : null,
     ]);
 
     // Extract industry trends based on news type
@@ -123,12 +124,14 @@ export class PressReleaseService {
         .eq('org_id', orgId)
         .limit(10);
 
-      const opportunities: PRSEOOpportunity[] = (seoItems || []).map((item) => ({
-        keyword: item.keyword,
-        searchVolume: item.search_volume || 0,
-        difficulty: item.difficulty || 50,
-        relevance: item.relevance || 0.5,
-      }));
+      const opportunities: PRSEOOpportunity[] = (seoItems || []).map(
+        (item) => ({
+          keyword: item.keyword,
+          searchVolume: item.search_volume || 0,
+          difficulty: item.difficulty || 50,
+          relevance: item.relevance || 0.5,
+        })
+      );
 
       // Add keywords from opportunities
       opportunities.forEach((opp) => {
@@ -174,7 +177,9 @@ export class PressReleaseService {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      recentNews = (contentItems || []).map((item) => item.title).filter(Boolean);
+      recentNews = (contentItems || [])
+        .map((item) => item.title)
+        .filter(Boolean);
     } catch {
       // Content lookup failed
     }
@@ -248,13 +253,21 @@ export class PressReleaseService {
         trends.push('innovation', 'market expansion', 'customer demand');
         break;
       case 'funding':
-        trends.push('growth potential', 'investor confidence', 'market opportunity');
+        trends.push(
+          'growth potential',
+          'investor confidence',
+          'market opportunity'
+        );
         break;
       case 'partnership':
         trends.push('strategic alignment', 'market synergy', 'collaboration');
         break;
       case 'acquisition':
-        trends.push('market consolidation', 'strategic growth', 'capabilities expansion');
+        trends.push(
+          'market consolidation',
+          'strategic growth',
+          'capabilities expansion'
+        );
         break;
       case 'executive_hire':
         trends.push('leadership', 'industry expertise', 'growth trajectory');
@@ -306,7 +319,9 @@ export class PressReleaseService {
   /**
    * Generate angles using LLM
    */
-  private async generateAnglesWithLLM(context: PRGenerationContext): Promise<PRAngleOption[]> {
+  private async generateAnglesWithLLM(
+    context: PRGenerationContext
+  ): Promise<PRAngleOption[]> {
     if (!this.llmRouter) {
       return this.generateFallbackAngles(context);
     }
@@ -338,9 +353,9 @@ Return a JSON array of 5 angle objects.`;
         maxTokens: 1024,
       });
 
-      const parsed = this.parseJSONResponse<Array<{ title: string; description: string }>>(
-        response.completion
-      );
+      const parsed = this.parseJSONResponse<
+        Array<{ title: string; description: string }>
+      >(response.completion);
 
       if (parsed && Array.isArray(parsed)) {
         return parsed.map((item) => ({
@@ -354,7 +369,10 @@ Return a JSON array of 5 angle objects.`;
         }));
       }
     } catch (error) {
-      console.error('[PressRelease] LLM angle generation failed, using fallback:', error instanceof Error ? error.message : error);
+      console.error(
+        '[PressRelease] LLM angle generation failed, using fallback:',
+        error instanceof Error ? error.message : error
+      );
     }
 
     return this.generateFallbackAngles(context);
@@ -363,7 +381,9 @@ Return a JSON array of 5 angle objects.`;
   /**
    * Generate fallback angles without LLM
    */
-  private generateFallbackAngles(context: PRGenerationContext): PRAngleOption[] {
+  private generateFallbackAngles(
+    context: PRGenerationContext
+  ): PRAngleOption[] {
     const { input, companyFootprint } = context;
     const angles: PRAngleOption[] = [];
 
@@ -382,7 +402,8 @@ Return a JSON array of 5 angle objects.`;
           },
           {
             angleTitle: 'Customer Problem Solved',
-            angleDescription: 'New product addresses critical customer pain point with innovative approach.',
+            angleDescription:
+              'New product addresses critical customer pain point with innovative approach.',
             newsworthinessScore: 0,
             uniquenessScore: 0,
             relevanceScore: 0,
@@ -395,7 +416,8 @@ Return a JSON array of 5 angle objects.`;
         angles.push(
           {
             angleTitle: 'Growth Acceleration',
-            angleDescription: 'Investment fuels expansion plans and market opportunity capture.',
+            angleDescription:
+              'Investment fuels expansion plans and market opportunity capture.',
             newsworthinessScore: 0,
             uniquenessScore: 0,
             relevanceScore: 0,
@@ -404,7 +426,8 @@ Return a JSON array of 5 angle objects.`;
           },
           {
             angleTitle: 'Investor Confidence',
-            angleDescription: 'Funding validates market position and growth trajectory.',
+            angleDescription:
+              'Funding validates market position and growth trajectory.',
             newsworthinessScore: 0,
             uniquenessScore: 0,
             relevanceScore: 0,
@@ -426,7 +449,8 @@ Return a JSON array of 5 angle objects.`;
           },
           {
             angleTitle: 'Strategic Milestone',
-            angleDescription: 'Announcement marks significant step in company growth strategy.',
+            angleDescription:
+              'Announcement marks significant step in company growth strategy.',
             newsworthinessScore: 0,
             uniquenessScore: 0,
             relevanceScore: 0,
@@ -449,7 +473,8 @@ Return a JSON array of 5 angle objects.`;
       },
       {
         angleTitle: 'Future Vision',
-        angleDescription: 'Move signals company direction and long-term strategy.',
+        angleDescription:
+          'Move signals company direction and long-term strategy.',
         newsworthinessScore: 0,
         uniquenessScore: 0,
         relevanceScore: 0,
@@ -458,7 +483,8 @@ Return a JSON array of 5 angle objects.`;
       },
       {
         angleTitle: 'Competitive Advantage',
-        angleDescription: 'Development strengthens competitive position in market.',
+        angleDescription:
+          'Development strengthens competitive position in market.',
         newsworthinessScore: 0,
         uniquenessScore: 0,
         relevanceScore: 0,
@@ -473,9 +499,15 @@ Return a JSON array of 5 angle objects.`;
   /**
    * Score an angle based on multiple criteria
    */
-  private scoreAngle(angle: PRAngleOption, context: PRGenerationContext): PRAngleOption {
+  private scoreAngle(
+    angle: PRAngleOption,
+    context: PRGenerationContext
+  ): PRAngleOption {
     // Newsworthiness: Does it have news value?
-    const newsworthinessScore = this.calculateNewsworthinessScore(angle, context);
+    const newsworthinessScore = this.calculateNewsworthinessScore(
+      angle,
+      context
+    );
 
     // Uniqueness: Is it different from typical PR angles?
     const uniquenessScore = this.calculateUniquenessScore(angle);
@@ -484,7 +516,8 @@ Return a JSON array of 5 angle objects.`;
     const relevanceScore = this.calculateRelevanceScore(angle, context);
 
     // Calculate total score (weighted average)
-    const totalScore = newsworthinessScore * 0.4 + uniquenessScore * 0.3 + relevanceScore * 0.3;
+    const totalScore =
+      newsworthinessScore * 0.4 + uniquenessScore * 0.3 + relevanceScore * 0.3;
 
     return {
       ...angle,
@@ -495,11 +528,18 @@ Return a JSON array of 5 angle objects.`;
     };
   }
 
-  private calculateNewsworthinessScore(angle: PRAngleOption, context: PRGenerationContext): number {
+  private calculateNewsworthinessScore(
+    angle: PRAngleOption,
+    context: PRGenerationContext
+  ): number {
     let score = 50;
 
     // Boost for timely news types
-    if (['funding', 'acquisition', 'product_launch'].includes(context.input.newsType)) {
+    if (
+      ['funding', 'acquisition', 'product_launch'].includes(
+        context.input.newsType
+      )
+    ) {
       score += 20;
     }
 
@@ -534,14 +574,20 @@ Return a JSON array of 5 angle objects.`;
     return Math.min(100, Math.max(0, score));
   }
 
-  private calculateRelevanceScore(angle: PRAngleOption, context: PRGenerationContext): number {
+  private calculateRelevanceScore(
+    angle: PRAngleOption,
+    context: PRGenerationContext
+  ): number {
     let score = 50;
 
     // Check for keyword alignment
     context.seoKeywords.forEach((keyword) => {
       if (
         angle.angleTitle.toLowerCase().includes(keyword.toLowerCase()) ||
-        (angle.angleDescription?.toLowerCase().includes(keyword.toLowerCase()) ?? false)
+        (angle.angleDescription
+          ?.toLowerCase()
+          .includes(keyword.toLowerCase()) ??
+          false)
       ) {
         score += 10;
       }
@@ -562,10 +608,15 @@ Return a JSON array of 5 angle objects.`;
     selectedAngle: PRAngleOption
   ): Promise<PRHeadlineGenerationResult> {
     // Generate headlines using LLM or fallback
-    const variants = await this.generateHeadlinesWithLLM(context, selectedAngle);
+    const variants = await this.generateHeadlinesWithLLM(
+      context,
+      selectedAngle
+    );
 
     // Score and rank headlines
-    const scoredVariants = variants.map((variant) => this.scoreHeadline(variant, context));
+    const scoredVariants = variants.map((variant) =>
+      this.scoreHeadline(variant, context)
+    );
     scoredVariants.sort((a, b) => b.score - a.score);
 
     // Select best headline
@@ -633,7 +684,10 @@ Return a JSON array of 10 headline strings.`;
         }));
       }
     } catch (error) {
-      console.error('[PressRelease] LLM headline generation failed, using fallback:', error instanceof Error ? error.message : error);
+      console.error(
+        '[PressRelease] LLM headline generation failed, using fallback:',
+        error instanceof Error ? error.message : error
+      );
     }
 
     return this.generateFallbackHeadlines(context, selectedAngle);
@@ -713,12 +767,18 @@ Return a JSON array of 10 headline strings.`;
   /**
    * Score a headline
    */
-  private scoreHeadline(variant: PRHeadlineVariant, context: PRGenerationContext): PRHeadlineVariant {
+  private scoreHeadline(
+    variant: PRHeadlineVariant,
+    context: PRGenerationContext
+  ): PRHeadlineVariant {
     const seoScore = this.calculateHeadlineSEOScore(variant.headline, context);
     const viralityScore = this.calculateHeadlineViralityScore(variant.headline);
-    const readabilityScore = this.calculateHeadlineReadabilityScore(variant.headline);
+    const readabilityScore = this.calculateHeadlineReadabilityScore(
+      variant.headline
+    );
 
-    const score = seoScore * 0.4 + viralityScore * 0.35 + readabilityScore * 0.25;
+    const score =
+      seoScore * 0.4 + viralityScore * 0.35 + readabilityScore * 0.25;
 
     return {
       ...variant,
@@ -729,7 +789,10 @@ Return a JSON array of 10 headline strings.`;
     };
   }
 
-  private calculateHeadlineSEOScore(headline: string, context: PRGenerationContext): number {
+  private calculateHeadlineSEOScore(
+    headline: string,
+    context: PRGenerationContext
+  ): number {
     let score = 50;
 
     // Keyword presence
@@ -782,7 +845,7 @@ Return a JSON array of 10 headline strings.`;
     }
 
     // Avoid clickbait penalty
-    const clickbaitTerms = ['shocking', 'unbelievable', 'you won\'t believe'];
+    const clickbaitTerms = ['shocking', 'unbelievable', "you won't believe"];
     clickbaitTerms.forEach((term) => {
       if (headline.toLowerCase().includes(term)) {
         score -= 20;
@@ -797,7 +860,8 @@ Return a JSON array of 10 headline strings.`;
 
     // Short words are easier to read
     const words = headline.split(/\s+/);
-    const avgWordLength = words.reduce((sum, w) => sum + w.length, 0) / words.length;
+    const avgWordLength =
+      words.reduce((sum, w) => sum + w.length, 0) / words.length;
     if (avgWordLength > 8) {
       score -= 15;
     } else if (avgWordLength < 5) {
@@ -827,7 +891,11 @@ Return a JSON array of 10 headline strings.`;
   ): Promise<PRDraftResult> {
     // Generate draft using LLM or fallback
     if (this.llmRouter) {
-      return this.generateDraftWithLLM(context, selectedAngle, selectedHeadline);
+      return this.generateDraftWithLLM(
+        context,
+        selectedAngle,
+        selectedHeadline
+      );
     }
 
     return this.generateFallbackDraft(context, selectedAngle, selectedHeadline);
@@ -923,20 +991,29 @@ Return a JSON object with the press release sections.`;
 
         return {
           headline: selectedHeadline.headline,
-          subheadline: parsed.subheadline || `${context.companyFootprint.name} announces ${context.input.announcement}`,
+          subheadline:
+            parsed.subheadline ||
+            `${context.companyFootprint.name} announces ${context.input.announcement}`,
           dateline: parsed.dateline || this.generateDateline(context),
           body,
           paragraphs,
           quote1: parsed.quote1 || '',
-          quote1Attribution: parsed.quote1Attribution || context.input.spokespersonName || 'CEO',
+          quote1Attribution:
+            parsed.quote1Attribution || context.input.spokespersonName || 'CEO',
           quote2: parsed.quote2 || '',
-          quote2Attribution: parsed.quote2Attribution || context.input.secondarySpokesperson || '',
+          quote2Attribution:
+            parsed.quote2Attribution ||
+            context.input.secondarySpokesperson ||
+            '',
           boilerplate: context.companyFootprint.boilerplate,
           wordCount,
         };
       }
     } catch (error) {
-      console.error('[PressRelease] LLM draft generation failed, using fallback:', error instanceof Error ? error.message : error);
+      console.error(
+        '[PressRelease] LLM draft generation failed, using fallback:',
+        error instanceof Error ? error.message : error
+      );
     }
 
     return this.generateFallbackDraft(context, selectedAngle, selectedHeadline);
@@ -1009,7 +1086,10 @@ Return a JSON object with the press release sections.`;
   /**
    * Optimize a press release
    */
-  async optimizeRelease(releaseId: string, orgId: string): Promise<PROptimizationResult> {
+  async optimizeRelease(
+    releaseId: string,
+    orgId: string
+  ): Promise<PROptimizationResult> {
     // Fetch the release
     const release = await this.getRelease(releaseId, orgId);
     if (!release) {
@@ -1021,8 +1101,12 @@ Return a JSON object with the press release sections.`;
     const initialScore = initialSEO.readabilityScore || 50;
 
     // Apply optimizations
-    const optimizedBody = this.applyReadabilityOptimizations(release.body || '');
-    const optimizedHeadline = this.applyHeadlineOptimizations(release.headline || '');
+    const optimizedBody = this.applyReadabilityOptimizations(
+      release.body || ''
+    );
+    const optimizedHeadline = this.applyHeadlineOptimizations(
+      release.headline || ''
+    );
 
     // Calculate final scores
     const finalSEO = this.calculateSEOSummary({
@@ -1053,7 +1137,10 @@ Return a JSON object with the press release sections.`;
         headline: optimizedHeadline,
         seo_summary_json: finalSEO,
         readability_score: finalScore,
-        optimization_history: [...(release.optimizationHistory || []), optimizationEntry],
+        optimization_history: [
+          ...(release.optimizationHistory || []),
+          optimizationEntry,
+        ],
         updated_at: new Date().toISOString(),
       })
       .eq('id', releaseId)
@@ -1090,13 +1177,15 @@ Return a JSON object with the press release sections.`;
       const regex = new RegExp(keyword, 'gi');
       const matches = body.match(regex);
       const count = matches ? matches.length : 0;
-      keywordDensity[keyword] = words.length > 0 ? (count / words.length) * 100 : 0;
+      keywordDensity[keyword] =
+        words.length > 0 ? (count / words.length) * 100 : 0;
     });
 
     // Calculate readability (simplified Flesch-Kincaid)
     const avgSentenceLength = words.length / Math.max(sentences.length, 1);
     const avgSyllables = 1.5; // Approximation
-    const fleschScore = 206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllables;
+    const fleschScore =
+      206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllables;
     const readabilityScore = Math.min(100, Math.max(0, fleschScore));
 
     // Determine grade level
@@ -1108,8 +1197,9 @@ Return a JSON object with the press release sections.`;
     else if (readabilityScore >= 50) readabilityGrade = '10th-12th Grade';
 
     // Count passive voice (simplified)
-    const passiveVoiceCount = (body.match(/\b(was|were|been|being|is|are|am)\s+\w+ed\b/gi) || [])
-      .length;
+    const passiveVoiceCount = (
+      body.match(/\b(was|were|been|being|is|are|am)\s+\w+ed\b/gi) || []
+    ).length;
 
     // Generate suggestions
     const suggestions: PRSEOSuggestion[] = [];
@@ -1117,7 +1207,8 @@ Return a JSON object with the press release sections.`;
     if (readabilityScore < 60) {
       suggestions.push({
         type: 'readability',
-        message: 'Consider simplifying sentence structure for better readability.',
+        message:
+          'Consider simplifying sentence structure for better readability.',
         priority: 'high',
       });
     }
@@ -1125,7 +1216,8 @@ Return a JSON object with the press release sections.`;
     if (passiveVoiceCount > 3) {
       suggestions.push({
         type: 'readability',
-        message: 'Reduce passive voice usage for stronger, more direct writing.',
+        message:
+          'Reduce passive voice usage for stronger, more direct writing.',
         priority: 'medium',
       });
     }
@@ -1201,7 +1293,20 @@ Return a JSON object with the press release sections.`;
     optimized = optimized
       .split(' ')
       .map((word, index) => {
-        const lowercaseWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by'];
+        const lowercaseWords = [
+          'a',
+          'an',
+          'the',
+          'and',
+          'but',
+          'or',
+          'for',
+          'nor',
+          'on',
+          'at',
+          'to',
+          'by',
+        ];
         if (index === 0 || !lowercaseWords.includes(word.toLowerCase())) {
           return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         }
@@ -1260,26 +1365,56 @@ Return a JSON object with the press release sections.`;
       await this.updateReleaseStatus(releaseId, orgId, 'generating');
 
       // Emit progress event
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'started', releaseId });
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'started',
+        releaseId,
+      });
 
       // Step 1: Assemble context
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'progress', step: 'context', progress: 10 });
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'progress',
+        step: 'context',
+        progress: 10,
+      });
       const context = await this.assembleContext(orgId, input);
 
       // Step 2: Find angles
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'progress', step: 'angles', progress: 30 });
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'progress',
+        step: 'angles',
+        progress: 30,
+      });
       const angleResult = await this.findAngles(context);
 
       // Step 3: Generate headlines
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'progress', step: 'headlines', progress: 50 });
-      const headlineResult = await this.generateHeadlines(context, angleResult.selectedAngle);
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'progress',
+        step: 'headlines',
+        progress: 50,
+      });
+      const headlineResult = await this.generateHeadlines(
+        context,
+        angleResult.selectedAngle
+      );
 
       // Step 4: Generate draft
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'progress', step: 'draft', progress: 70 });
-      const draft = await this.generateDraft(context, angleResult.selectedAngle, headlineResult.selectedHeadline);
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'progress',
+        step: 'draft',
+        progress: 70,
+      });
+      const draft = await this.generateDraft(
+        context,
+        angleResult.selectedAngle,
+        headlineResult.selectedHeadline
+      );
 
       // Step 5: Calculate SEO summary
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'progress', step: 'seo', progress: 90 });
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'progress',
+        step: 'seo',
+        progress: 90,
+      });
       const seoSummary = this.calculateSEOSummary({
         body: draft.body,
         input,
@@ -1314,14 +1449,19 @@ Return a JSON object with the press release sections.`;
       await this.saveHeadlineVariants(releaseId, headlineResult.variants);
 
       // Emit completion
-      prGenerationEmitter.emit(`pr:${releaseId}`, { type: 'completed', releaseId, progress: 100 });
+      prGenerationEmitter.emit(`pr:${releaseId}`, {
+        type: 'completed',
+        releaseId,
+        progress: 100,
+      });
 
       // Return complete release
       const completeRelease = await this.getRelease(releaseId, orgId);
       return completeRelease!;
     } catch (error) {
       // Update status to failed
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       await this.updateReleaseStatus(releaseId, orgId, 'failed', errorMessage);
 
       prGenerationEmitter.emit(`pr:${releaseId}`, {
@@ -1389,7 +1529,10 @@ Return a JSON object with the press release sections.`;
   /**
    * Save angle options
    */
-  private async saveAngleOptions(releaseId: string, angles: PRAngleOption[]): Promise<void> {
+  private async saveAngleOptions(
+    releaseId: string,
+    angles: PRAngleOption[]
+  ): Promise<void> {
     const records = angles.map((angle) => ({
       release_id: releaseId,
       angle_title: angle.angleTitle,
@@ -1452,7 +1595,10 @@ Return a JSON object with the press release sections.`;
   /**
    * Get a release by ID
    */
-  async getRelease(releaseId: string, orgId: string): Promise<PRGeneratedRelease | null> {
+  async getRelease(
+    releaseId: string,
+    orgId: string
+  ): Promise<PRGeneratedRelease | null> {
     const { data, error } = await this.supabase
       .from('pr_generated_releases')
       .select('*')
@@ -1561,13 +1707,16 @@ Return a JSON object with the press release sections.`;
     }
 
     // Use database function for vector similarity search
-    const { data, error } = await this.supabase.rpc('find_similar_pr_releases', {
-      p_org_id: orgId,
-      p_release_id: releaseId,
-      p_embedding: releaseData.embeddings,
-      p_threshold: 0.3,
-      p_limit: limit,
-    });
+    const { data, error } = await this.supabase.rpc(
+      'find_similar_pr_releases',
+      {
+        p_org_id: orgId,
+        p_release_id: releaseId,
+        p_embedding: releaseData.embeddings,
+        p_threshold: 0.3,
+        p_limit: limit,
+      }
+    );
 
     if (error) {
       if (this.debugMode) {
@@ -1576,21 +1725,23 @@ Return a JSON object with the press release sections.`;
       return [];
     }
 
-    return (data || []).map((item: {
-      id: string;
-      headline: string | null;
-      angle: string | null;
-      status: PRReleaseStatus;
-      similarity: number;
-      created_at: string;
-    }) => ({
-      id: item.id,
-      headline: item.headline,
-      angle: item.angle,
-      status: item.status,
-      similarity: item.similarity,
-      createdAt: item.created_at,
-    }));
+    return (data || []).map(
+      (item: {
+        id: string;
+        headline: string | null;
+        angle: string | null;
+        status: PRReleaseStatus;
+        similarity: number;
+        created_at: string;
+      }) => ({
+        id: item.id,
+        headline: item.headline,
+        angle: item.angle,
+        status: item.status,
+        similarity: item.similarity,
+        createdAt: item.created_at,
+      })
+    );
   }
 
   /**
@@ -1648,7 +1799,9 @@ Return a JSON object with the press release sections.`;
   /**
    * Map database record to application type
    */
-  private mapReleaseFromDb(record: PRGeneratedReleaseRecord): PRGeneratedRelease {
+  private mapReleaseFromDb(
+    record: PRGeneratedReleaseRecord
+  ): PRGeneratedRelease {
     return {
       id: record.id,
       orgId: record.org_id,
@@ -1691,7 +1844,9 @@ Return a JSON object with the press release sections.`;
     };
   }
 
-  private mapHeadlineVariantFromDb(record: PRHeadlineVariantRecord): PRHeadlineVariant {
+  private mapHeadlineVariantFromDb(
+    record: PRHeadlineVariantRecord
+  ): PRHeadlineVariant {
     return {
       id: record.id,
       releaseId: record.release_id,

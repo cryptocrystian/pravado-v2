@@ -7,7 +7,13 @@
 
 import { useState, useEffect } from 'react';
 
-import type { EditorNode, AgentNodeConfig, DataNodeConfig, BranchNodeConfig, ApiNodeConfig } from '../types/graph';
+import type {
+  EditorNode,
+  AgentNodeConfig,
+  DataNodeConfig,
+  BranchNodeConfig,
+  ApiNodeConfig,
+} from '../types/graph';
 
 export interface InspectorProps {
   selectedNode: EditorNode | null;
@@ -28,7 +34,9 @@ export function Inspector({ selectedNode, onUpdateNode }: InspectorProps) {
   if (!selectedNode) {
     return (
       <div className="w-80 border-l border-gray-200 bg-gray-50 p-4">
-        <p className="text-sm text-gray-500 text-center mt-8">Select a node to configure</p>
+        <p className="text-sm text-gray-500 text-center mt-8">
+          Select a node to configure
+        </p>
       </div>
     );
   }
@@ -61,22 +69,36 @@ export function Inspector({ selectedNode, onUpdateNode }: InspectorProps) {
 
       {/* Type-specific config */}
       {selectedNode.type === 'AGENT' && (
-        <AgentConfig config={config as unknown as AgentNodeConfig} onChange={handleConfigChange} />
+        <AgentConfig
+          config={config as unknown as AgentNodeConfig}
+          onChange={handleConfigChange}
+        />
       )}
       {selectedNode.type === 'DATA' && (
-        <DataConfig config={config as unknown as DataNodeConfig} onChange={handleConfigChange} />
+        <DataConfig
+          config={config as unknown as DataNodeConfig}
+          onChange={handleConfigChange}
+        />
       )}
       {selectedNode.type === 'BRANCH' && (
-        <BranchConfig config={config as unknown as BranchNodeConfig} onChange={handleConfigChange} />
+        <BranchConfig
+          config={config as unknown as BranchNodeConfig}
+          onChange={handleConfigChange}
+        />
       )}
       {selectedNode.type === 'API' && (
-        <ApiConfig config={config as unknown as ApiNodeConfig} onChange={handleConfigChange} />
+        <ApiConfig
+          config={config as unknown as ApiNodeConfig}
+          onChange={handleConfigChange}
+        />
       )}
 
       {/* Errors */}
       {selectedNode.data.errors && selectedNode.data.errors.length > 0 && (
         <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
-          <h3 className="text-sm font-semibold text-red-800 mb-2">Validation Errors</h3>
+          <h3 className="text-sm font-semibold text-red-800 mb-2">
+            Validation Errors
+          </h3>
           <ul className="text-xs text-red-700 space-y-1">
             {selectedNode.data.errors.map((error, i) => (
               <li key={i}>• {error}</li>
@@ -88,7 +110,13 @@ export function Inspector({ selectedNode, onUpdateNode }: InspectorProps) {
   );
 }
 
-function AgentConfig({ config, onChange }: { config: AgentNodeConfig; onChange: (key: string, value: unknown) => void }) {
+function AgentConfig({
+  config,
+  onChange,
+}: {
+  config: AgentNodeConfig;
+  onChange: (key: string, value: unknown) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>
@@ -126,7 +154,13 @@ function AgentConfig({ config, onChange }: { config: AgentNodeConfig; onChange: 
   );
 }
 
-function DataConfig({ config, onChange }: { config: DataNodeConfig; onChange: (key: string, value: unknown) => void }) {
+function DataConfig({
+  config,
+  onChange,
+}: {
+  config: DataNodeConfig;
+  onChange: (key: string, value: unknown) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>
@@ -167,11 +201,19 @@ function DataConfig({ config, onChange }: { config: DataNodeConfig; onChange: (k
   );
 }
 
-function BranchConfig({ config, onChange }: { config: BranchNodeConfig; onChange: (key: string, value: unknown) => void }) {
+function BranchConfig({
+  config,
+  onChange,
+}: {
+  config: BranchNodeConfig;
+  onChange: (key: string, value: unknown) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Condition (JS expression)</label>
+        <label className="block text-sm font-medium mb-1">
+          Condition (JS expression)
+        </label>
         <textarea
           value={config.condition || ''}
           onChange={(e) => onChange('condition', e.target.value)}
@@ -181,12 +223,20 @@ function BranchConfig({ config, onChange }: { config: BranchNodeConfig; onChange
         />
       </div>
 
-      <p className="text-xs text-gray-500">Connect true/false branches using handles on the node</p>
+      <p className="text-xs text-gray-500">
+        Connect true/false branches using handles on the node
+      </p>
     </div>
   );
 }
 
-function ApiConfig({ config, onChange }: { config: ApiNodeConfig; onChange: (key: string, value: unknown) => void }) {
+function ApiConfig({
+  config,
+  onChange,
+}: {
+  config: ApiNodeConfig;
+  onChange: (key: string, value: unknown) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>

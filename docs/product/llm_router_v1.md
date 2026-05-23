@@ -35,22 +35,26 @@ The LLM Router is a provider abstraction layer that enables Pravado to use multi
 ## Features
 
 ### 1. Provider Abstraction
+
 - **OpenAI**: GPT-4, GPT-4-mini, GPT-3.5-turbo
 - **Anthropic**: Claude 3.5 Sonnet, Claude 3 Opus
 - **Stub**: Deterministic fallback for testing and development
 
 ### 2. Automatic Fallback
+
 - Falls back to stub when API keys are missing
 - Falls back to stub when API calls timeout
 - Falls back to stub when API calls fail
 - Configurable through environment variables
 
 ### 3. Timeout Protection
+
 - Configurable timeout (default: 20 seconds)
 - Uses AbortController for proper request cancellation
 - Prevents hanging requests
 
 ### 4. Error Recovery
+
 - Comprehensive error logging
 - Graceful degradation
 - Maintains service availability even when LLM providers are down
@@ -84,7 +88,7 @@ The LLM Router can be toggled using the `ENABLE_LLM` feature flag:
 
 ```typescript
 // In @pravado/feature-flags
-ENABLE_LLM: true  // Enable/disable LLM features globally
+ENABLE_LLM: true; // Enable/disable LLM features globally
 ```
 
 ## Usage
@@ -120,8 +124,8 @@ const response = await llmRouter.generate({
 });
 
 console.log(response.completion);
-console.log(response.provider);  // 'openai', 'anthropic', or 'stub'
-console.log(response.usage);     // Token usage statistics
+console.log(response.provider); // 'openai', 'anthropic', or 'stub'
+console.log(response.usage); // Token usage statistics
 ```
 
 ### 3. Per-Request Overrides
@@ -129,8 +133,8 @@ console.log(response.usage);     // Token usage statistics
 ```typescript
 // Override provider for a specific request
 const response = await llmRouter.generate({
-  provider: 'anthropic',  // Override default provider
-  model: 'claude-3-opus-20240229',  // Override default model
+  provider: 'anthropic', // Override default provider
+  model: 'claude-3-opus-20240229', // Override default model
   systemPrompt: 'You are a helpful assistant.',
   userPrompt: 'Explain quantum computing.',
   temperature: 0.5,
@@ -156,6 +160,7 @@ const result = await service.generateBrief(orgId, userId, {
 ```
 
 **How it works:**
+
 1. Builds system prompt from personality (tone, style)
 2. Builds user prompt with keyword, intent, SEO context
 3. Requests JSON-structured outline
@@ -180,6 +185,7 @@ const result = await service.generateRewrite(orgId, {
 ```
 
 **How it works:**
+
 1. Analyzes original content quality
 2. Builds system prompt from personality
 3. Builds user prompt with content + improvement goals
@@ -206,6 +212,7 @@ const run = await engine.startPlaybookRun(
 ```
 
 **How it works:**
+
 1. Loads personality for agent
 2. Builds system prompt with personality traits
 3. Builds user prompt from step config + context
@@ -217,6 +224,7 @@ const run = await engine.startPlaybookRun(
 When the LLM Router falls back to stub mode (no API keys, timeout, or error), it provides deterministic responses:
 
 ### Brief Generation Stub
+
 ```json
 {
   "title": "Generated Content Brief",
@@ -242,7 +250,9 @@ When the LLM Router falls back to stub mode (no API keys, timeout, or error), it
 ```
 
 ### Content Rewrite Stub
+
 The stub applies deterministic transformations:
+
 - Capitalizes first letter of sentences
 - Splits long sentences (>20 words)
 - Adds transitions between sections
@@ -250,6 +260,7 @@ The stub applies deterministic transformations:
 - Removes duplicate sentences
 
 ### Playbook Agent Stub
+
 ```json
 {
   "agent": "content-strategist",
@@ -272,6 +283,7 @@ The stub applies deterministic transformations:
 The LLM Router handles errors gracefully:
 
 ### 1. Missing API Keys
+
 ```typescript
 // No API key configured
 const router = LlmRouter.fromEnv({ LLM_PROVIDER: 'openai' });
@@ -280,6 +292,7 @@ const response = await router.generate({ userPrompt: 'Hello' });
 ```
 
 ### 2. Timeout
+
 ```typescript
 // Request times out after 20 seconds
 const router = new LlmRouter({ timeoutMs: 20000 });
@@ -288,6 +301,7 @@ const response = await router.generate({ userPrompt: 'Long task...' });
 ```
 
 ### 3. API Errors
+
 ```typescript
 // API returns error (rate limit, invalid key, etc.)
 const response = await router.generate({ userPrompt: 'Test' });
@@ -295,6 +309,7 @@ const response = await router.generate({ userPrompt: 'Test' });
 ```
 
 ### 4. Invalid JSON Response
+
 ```typescript
 // LLM returns malformed JSON
 const response = await router.generate({
@@ -312,7 +327,7 @@ The LLM Router provides comprehensive logging:
 logger.info('Generated outline using LLM', { provider: 'openai' });
 logger.info('Generated agent response using LLM', {
   agentId: 'content-strategist',
-  provider: 'anthropic'
+  provider: 'anthropic',
 });
 
 // Warning logs
@@ -325,6 +340,7 @@ logger.debug('Using stub agent response as fallback', { agentId: '...' });
 ```
 
 Monitor these logs to track:
+
 - LLM usage vs stub fallback rates
 - API errors and timeouts
 - Configuration issues
@@ -351,14 +367,17 @@ console.log(response.usage);
 Approximate costs per provider (as of 2024):
 
 **OpenAI GPT-4o-mini:**
+
 - Input: $0.15 / 1M tokens
 - Output: $0.60 / 1M tokens
 
 **Anthropic Claude 3.5 Sonnet:**
+
 - Input: $3.00 / 1M tokens
 - Output: $15.00 / 1M tokens
 
 Example calculation:
+
 ```
 Brief generation:
 - Prompt: ~500 tokens
@@ -370,16 +389,19 @@ Brief generation:
 ### Cost Optimization
 
 1. **Use stub mode in development**
+
    ```bash
    LLM_PROVIDER=stub  # No API costs
    ```
 
 2. **Choose appropriate models**
+
    ```bash
    LLM_OPENAI_MODEL=gpt-4o-mini  # Cheaper than gpt-4
    ```
 
 3. **Set token limits**
+
    ```bash
    LLM_MAX_TOKENS=1024  # Limit completion length
    ```
@@ -445,6 +467,7 @@ describe('BriefGeneratorService with LLM', () => {
 ### Existing Services
 
 Services already integrated with the LLM Router:
+
 - ✅ Brief Generator Service (S13)
 - ✅ Content Rewrite Service (S15)
 - ✅ Playbook Execution Engine (S7-S9)
@@ -452,11 +475,13 @@ Services already integrated with the LLM Router:
 ### Adding LLM to New Services
 
 1. **Import the LLM Router**
+
    ```typescript
    import { LlmRouter } from '@pravado/utils';
    ```
 
 2. **Add to service constructor**
+
    ```typescript
    constructor(
      private supabase: SupabaseClient,
@@ -465,6 +490,7 @@ Services already integrated with the LLM Router:
    ```
 
 3. **Use in methods**
+
    ```typescript
    async generateContent(input: string): Promise<string> {
      if (!this.llmRouter) {
@@ -497,6 +523,7 @@ Services already integrated with the LLM Router:
 **Cause**: Missing or invalid API keys
 
 **Solution**:
+
 1. Check `.env` file has correct API keys
 2. Verify LLM_PROVIDER is set to 'openai' or 'anthropic'
 3. Check logs for specific error messages
@@ -506,6 +533,7 @@ Services already integrated with the LLM Router:
 **Cause**: Requests taking longer than configured timeout
 
 **Solution**:
+
 1. Increase `LLM_TIMEOUT_MS` (default 20000)
 2. Reduce `LLM_MAX_TOKENS` to generate shorter responses
 3. Use faster models (gpt-4o-mini instead of gpt-4)
@@ -515,6 +543,7 @@ Services already integrated with the LLM Router:
 **Cause**: Exceeding provider rate limits
 
 **Solution**:
+
 1. Implement request queuing/throttling
 2. Upgrade API tier with provider
 3. Switch to stub mode during high load
@@ -524,6 +553,7 @@ Services already integrated with the LLM Router:
 **Cause**: Excessive token usage
 
 **Solution**:
+
 1. Review prompt engineering to reduce tokens
 2. Set lower `LLM_MAX_TOKENS`
 3. Use cheaper models (gpt-4o-mini, claude-haiku)
@@ -572,6 +602,7 @@ Services already integrated with the LLM Router:
 ## Support
 
 For issues or questions:
+
 1. Check logs for specific error messages
 2. Review this documentation
 3. Open an issue in the project repository

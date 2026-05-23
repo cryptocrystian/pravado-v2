@@ -20,18 +20,21 @@ The system automatically discovers journalists from diverse sources:
 Each discovered journalist receives a comprehensive confidence score (0-1) based on six weighted dimensions:
 
 #### Name Confidence (25% weight)
+
 - Full name completeness (first + last name)
 - Name quality (length, format, special characters)
 - Multi-part name bonus
 - Single-name penalty
 
 #### Email Confidence (30% weight)
+
 - Email format validity (RFC 5322)
 - Professional domain detection (non-Gmail/Yahoo/Hotmail)
 - Work email vs personal email discrimination
 - Domain reputation (known media outlets)
 
 #### Outlet Confidence (20% weight)
+
 - Outlet presence and identification
 - Known outlet database matching
 - Tier-1 outlets (TechCrunch, Wired, Forbes, WSJ, NYT): 0.95
@@ -39,18 +42,21 @@ Each discovered journalist receives a comprehensive confidence score (0-1) based
 - Unknown outlets: 0.6 base score
 
 #### Social Confidence (15% weight)
+
 - Number of verified social profiles
 - Platform credibility (LinkedIn > Twitter > others)
 - Profile completeness and verification status
 - Follower count and engagement signals
 
 #### Beat Confidence (10% weight)
+
 - Beat/topic classification present
 - Beat specificity (multiple beats vs single)
 - Beat alignment with outlet focus
 - Keyword-based beat extraction quality
 
 #### Overall Score Calculation
+
 ```
 overall_score = (name * 0.25) + (email * 0.30) + (outlet * 0.20) +
                 (social * 0.15) + (beat * 0.10)
@@ -61,12 +67,14 @@ overall_score = (name * 0.25) + (email * 0.30) + (outlet * 0.20) +
 The system uses fuzzy matching to detect duplicates across both the discovery table and the S46 journalist graph:
 
 #### Fuzzy Matching Algorithm
+
 - **Exact Email Match**: 1.0 similarity (highest confidence)
 - **Exact Name + Outlet**: 0.95 similarity
 - **Exact Name**: 0.85 similarity
 - **Fuzzy Name (Levenshtein)**: Variable (0.7-1.0) using pg_trgm extension
 
 #### Deduplication Recommendations
+
 - **≥95% similarity**: Auto-merge (exact matches)
 - **80-94% similarity**: Needs human review
 - **<80% similarity**: Create new journalist
@@ -76,12 +84,14 @@ The system uses fuzzy matching to detect duplicates across both the discovery ta
 Discoveries flow through a status workflow requiring human oversight:
 
 #### Status Flow
+
 1. **Pending** - Awaiting human review
 2. **Confirmed** - Vetted and ready to merge into S46 graph
 3. **Merged** - Successfully attached to journalist profile in S46
 4. **Rejected** - Not a journalist or invalid data
 
 #### Resolution Actions
+
 - **Merge** - Merge into existing S46 journalist profile
 - **Confirm** - Mark as valid, ready to create new profile
 - **Reject** - Mark as invalid, not a journalist
@@ -91,17 +101,20 @@ Discoveries flow through a status workflow requiring human oversight:
 Automated extraction of journalist authors from article content:
 
 #### Byline Pattern Matching
+
 - "By [Name]" pattern detection
 - "Written by [Name]" pattern detection
 - "Author: [Name]" pattern detection
 - Title and content scanning
 
 #### Email Inference
+
 - Outlet domain mapping (TechCrunch → techcrunch.com)
 - Name-based email generation (firstname.lastname@domain)
 - Email validation and confidence scoring
 
 #### Beat Extraction
+
 - Keyword-based topic classification
 - Content analysis for beat identification
 - Technology, Business, Finance, Healthcare, Politics, Sports, Entertainment
@@ -206,6 +219,7 @@ CREATE TABLE discovered_journalists (
 #### get_discovery_stats(p_org_id UUID)
 
 Returns aggregated statistics:
+
 - total_discoveries: Total discovery count
 - pending_count: Discoveries awaiting review
 - confirmed_count: Vetted discoveries
@@ -217,6 +231,7 @@ Returns aggregated statistics:
 #### find_duplicate_discoveries(p_org_id, p_full_name, p_email, p_outlet)
 
 Fuzzy matching for deduplication:
+
 - Returns top 10 matches with similarity scores
 - Uses pg_trgm extension for fuzzy name matching
 - Prioritizes exact email matches (1.0)
@@ -260,11 +275,13 @@ ingestSocialProfile(orgId, input): DiscoveredJournalist
 #### Integration Points
 
 **S40/S41 Media Monitoring**:
+
 - Processes monitored articles for author extraction
 - Batch processing for high-volume ingestion
 - Beat extraction from article content
 
 **S46 Journalist Graph**:
+
 - Fuzzy matching against existing profiles
 - Merge into existing journalist records
 - Activity log creation for discoveries
@@ -372,11 +389,11 @@ POST   /batch                Batch create discoveries
   "socialLinks": { "twitter": "@sarahtechwriter", "linkedin": "..." },
   "beats": ["technology", "startups"],
   "confidenceBreakdown": {
-    "nameConfidence": 0.9,      // Full name present
-    "emailConfidence": 0.9,     // Professional domain
-    "outletConfidence": 0.95,   // Tier-1 outlet
-    "socialConfidence": 0.6,    // 2 social profiles
-    "beatConfidence": 0.65,     // 2 beats identified
+    "nameConfidence": 0.9, // Full name present
+    "emailConfidence": 0.9, // Professional domain
+    "outletConfidence": 0.95, // Tier-1 outlet
+    "socialConfidence": 0.6, // 2 social profiles
+    "beatConfidence": 0.65, // 2 beats identified
     "overallScore": 0.86
   }
 }
@@ -392,11 +409,11 @@ POST   /batch                Batch create discoveries
   "socialLinks": { "twitter": "@techwriter" },
   "beats": ["technology"],
   "confidenceBreakdown": {
-    "nameConfidence": 0.6,      // Partial name
-    "emailConfidence": 0.7,     // Valid but Gmail
-    "outletConfidence": 0.6,    // Unknown outlet
-    "socialConfidence": 0.3,    // 1 social profile
-    "beatConfidence": 0.5,      // 1 beat
+    "nameConfidence": 0.6, // Partial name
+    "emailConfidence": 0.7, // Valid but Gmail
+    "outletConfidence": 0.6, // Unknown outlet
+    "socialConfidence": 0.3, // 1 social profile
+    "beatConfidence": 0.5, // 1 beat
     "overallScore": 0.58
   }
 }
@@ -412,11 +429,11 @@ POST   /batch                Batch create discoveries
   "socialLinks": {},
   "beats": [],
   "confidenceBreakdown": {
-    "nameConfidence": 0.5,      // Single name
-    "emailConfidence": 0.0,     // No email
-    "outletConfidence": 0.0,    // No outlet
-    "socialConfidence": 0.0,    // No social
-    "beatConfidence": 0.0,      // No beats
+    "nameConfidence": 0.5, // Single name
+    "emailConfidence": 0.0, // No email
+    "outletConfidence": 0.0, // No outlet
+    "socialConfidence": 0.0, // No social
+    "beatConfidence": 0.0, // No beats
     "overallScore": 0.13
   }
 }
@@ -462,29 +479,34 @@ POST   /batch                Batch create discoveries
 ## Future Enhancements (V2+)
 
 ### Enhanced Extraction
+
 - LLM-powered author extraction for complex bylines
 - Multi-author article support
 - Co-author detection and linking
 
 ### Live Social Ingestion
+
 - Real-time Twitter/X API integration
 - LinkedIn profile scraping
 - Mastodon federation support
 - Bluesky Protocol integration
 
 ### Outlet Staff Directories
+
 - Automated crawling of publication staff pages
 - Role and beat extraction
 - Contact information discovery
 - Org chart parsing
 
 ### Machine Learning
+
 - Confidence score model training
 - Beat classification with NLP
 - Journalist tier prediction
 - Duplicate detection with neural networks
 
 ### Advanced Workflows
+
 - Automated discovery pipelines (cron schedules)
 - Rule-based auto-resolution
 - Bulk merge operations

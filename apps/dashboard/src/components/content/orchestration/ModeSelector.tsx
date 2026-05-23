@@ -21,6 +21,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+
 import { modeTokens, motion } from '../tokens';
 import type { AutomationMode } from '../types';
 
@@ -49,7 +50,10 @@ function getModeIndex(mode: AutomationMode): number {
   return MODE_ORDER.indexOf(mode);
 }
 
-function isModeBelowCeiling(mode: AutomationMode, ceiling: AutomationMode): boolean {
+function isModeBelowCeiling(
+  mode: AutomationMode,
+  ceiling: AutomationMode
+): boolean {
   return getModeIndex(mode) <= getModeIndex(ceiling);
 }
 
@@ -57,19 +61,32 @@ function isModeBelowCeiling(mode: AutomationMode, ceiling: AutomationMode): bool
 // MODE CONFIGURATION
 // ============================================
 
-const MODE_CONFIG: Record<AutomationMode, {
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-  shortDescription: string;
-}> = {
+const MODE_CONFIG: Record<
+  AutomationMode,
+  {
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+    shortDescription: string;
+  }
+> = {
   manual: {
     label: 'Manual',
     description: 'You control everything. AI provides no suggestions.',
     shortDescription: 'Full control',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+        />
       </svg>
     ),
   },
@@ -78,8 +95,18 @@ const MODE_CONFIG: Record<AutomationMode, {
     description: 'AI suggests completions. You approve each suggestion.',
     shortDescription: 'AI assists',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
       </svg>
     ),
   },
@@ -88,8 +115,18 @@ const MODE_CONFIG: Record<AutomationMode, {
     description: 'AI drafts content. You review before publishing.',
     shortDescription: 'AI drafts',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 10V3L4 14h7v7l9-11h-7z"
+        />
       </svg>
     ),
   },
@@ -113,7 +150,10 @@ export function ModeSelector({
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -156,7 +196,9 @@ export function ModeSelector({
         aria-expanded={isOpen}
       >
         <span className={tokens.text}>{currentConfig.icon}</span>
-        <span className={`text-xs font-medium ${tokens.text}`}>{currentConfig.label}</span>
+        <span className={`text-xs font-medium ${tokens.text}`}>
+          {currentConfig.label}
+        </span>
         {!disabled && (
           <svg
             className={`w-3 h-3 ${tokens.text} ${motion.transition.fast} ${isOpen ? 'rotate-180' : ''}`}
@@ -164,7 +206,12 @@ export function ModeSelector({
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         )}
       </button>
@@ -182,7 +229,10 @@ export function ModeSelector({
           {/* Ceiling Notice */}
           <div className="px-3 py-2 border-b border-slate-4">
             <p className="text-xs text-white/40">
-              Mode ceiling for this action: <span className="text-white/60 font-medium">{MODE_CONFIG[modeCeiling].label}</span>
+              Mode ceiling for this action:{' '}
+              <span className="text-white/60 font-medium">
+                {MODE_CONFIG[modeCeiling].label}
+              </span>
             </p>
           </div>
 
@@ -214,12 +264,22 @@ export function ModeSelector({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={`text-sm font-medium ${isAvailable ? 'text-white' : 'text-white/40'}`}>
+                      <span
+                        className={`text-sm font-medium ${isAvailable ? 'text-white' : 'text-white/40'}`}
+                      >
                         {config.label}
                       </span>
                       {isSelected && (
-                        <svg className="w-3.5 h-3.5 text-brand-iris" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <svg
+                          className="w-3.5 h-3.5 text-brand-iris"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       )}
                       {!isAvailable && (
@@ -228,7 +288,9 @@ export function ModeSelector({
                         </span>
                       )}
                     </div>
-                    <p className={`text-xs ${isAvailable ? 'text-white/50' : 'text-white/30'}`}>
+                    <p
+                      className={`text-xs ${isAvailable ? 'text-white/50' : 'text-white/30'}`}
+                    >
                       {config.description}
                     </p>
                   </div>
@@ -251,16 +313,25 @@ interface ModeIndicatorProps {
   showDescription?: boolean;
 }
 
-export function ModeIndicator({ mode, showDescription = false }: ModeIndicatorProps) {
+export function ModeIndicator({
+  mode,
+  showDescription = false,
+}: ModeIndicatorProps) {
   const config = MODE_CONFIG[mode];
   const tokens = modeTokens[mode];
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${tokens.bg} ${tokens.border}`}>
+    <div
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${tokens.bg} ${tokens.border}`}
+    >
       <span className={tokens.text}>{config.icon}</span>
-      <span className={`text-xs font-medium ${tokens.text}`}>{config.label}</span>
+      <span className={`text-xs font-medium ${tokens.text}`}>
+        {config.label}
+      </span>
       {showDescription && (
-        <span className="text-xs text-white/40">• {config.shortDescription}</span>
+        <span className="text-xs text-white/40">
+          • {config.shortDescription}
+        </span>
       )}
     </div>
   );
@@ -275,10 +346,16 @@ interface ModeBehaviorBannerProps {
   isActive?: boolean;
 }
 
-export function ModeBehaviorBanner({ mode, isActive = false }: ModeBehaviorBannerProps) {
+export function ModeBehaviorBanner({
+  mode,
+  isActive = false,
+}: ModeBehaviorBannerProps) {
   const tokens = modeTokens[mode];
 
-  const behaviors: Record<AutomationMode, { action: string; indicator?: string }> = {
+  const behaviors: Record<
+    AutomationMode,
+    { action: string; indicator?: string }
+  > = {
     manual: {
       action: 'AI is inactive. Write your content manually.',
     },
@@ -297,10 +374,16 @@ export function ModeBehaviorBanner({ mode, isActive = false }: ModeBehaviorBanne
   if (!isActive) return null;
 
   return (
-    <div className={`flex items-center gap-3 px-3 py-2 rounded-lg border ${tokens.bg} ${tokens.border} ${motion.transition.fast}`}>
-      <span className={`w-2 h-2 rounded-full ${tokens.bg.replace('/10', '')} ${mode !== 'manual' ? 'animate-pulse' : ''}`} />
+    <div
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg border ${tokens.bg} ${tokens.border} ${motion.transition.fast}`}
+    >
+      <span
+        className={`w-2 h-2 rounded-full ${tokens.bg.replace('/10', '')} ${mode !== 'manual' ? 'animate-pulse' : ''}`}
+      />
       <div className="flex-1 min-w-0">
-        <p className={`text-xs font-medium ${tokens.text}`}>{behavior.action}</p>
+        <p className={`text-xs font-medium ${tokens.text}`}>
+          {behavior.action}
+        </p>
         {behavior.indicator && (
           <p className="text-xs text-white/40">{behavior.indicator}</p>
         )}

@@ -48,7 +48,9 @@ async function authPluginImpl(server: FastifyInstance) {
       } = await supabase.auth.getUser(token);
 
       if (error) {
-        logger.warn('[Auth] Supabase auth.getUser error', { error: error.message });
+        logger.warn('[Auth] Supabase auth.getUser error', {
+          error: error.message,
+        });
         return;
       }
 
@@ -63,11 +65,12 @@ async function authPluginImpl(server: FastifyInstance) {
       };
     } catch (error) {
       // Invalid token, continue without user
-      logger.error('[Auth] Exception during token validation', { error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('[Auth] Exception during token validation', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       return;
     }
   });
-
 }
 
 /**

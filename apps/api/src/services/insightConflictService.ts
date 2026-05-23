@@ -3,8 +3,6 @@
  * Autonomous Insight Conflict Resolution Engine V1
  */
 
-import { getSupabaseClient } from '../lib/supabase';
-import { routeLLM } from '@pravado/utils';
 import type {
   InsightConflict,
   InsightConflictItem,
@@ -63,6 +61,9 @@ import type {
   BatchDismissInput,
   BatchDismissResponse,
 } from '@pravado/types';
+import { routeLLM } from '@pravado/utils';
+
+import { getSupabaseClient } from '../lib/supabase';
 
 // ============================================================================
 // INTERNAL TYPES
@@ -568,7 +569,9 @@ export async function computeConflictSeverity(
   factors.push(`Conflict type: ${conflict.conflictType}`);
 
   // Average confidence factor
-  const avgConfidence = items.reduce((sum, item) => sum + (item.confidenceScore || 0.5), 0) / items.length;
+  const avgConfidence =
+    items.reduce((sum, item) => sum + (item.confidenceScore || 0.5), 0) /
+    items.length;
   if (avgConfidence >= 0.8) {
     score += 20;
     factors.push('High confidence sources');
@@ -662,7 +665,9 @@ export async function generateConflictGraph(
     nodes.push({
       id: item.id,
       type: 'item',
-      label: item.rawInsight.slice(0, 50) + (item.rawInsight.length > 50 ? '...' : ''),
+      label:
+        item.rawInsight.slice(0, 50) +
+        (item.rawInsight.length > 50 ? '...' : ''),
       data: {
         sourceSystem: item.sourceSystem,
         confidence: item.confidenceScore || undefined,
@@ -842,7 +847,10 @@ Provide a root cause analysis in JSON format:
       },
       contributingCauses: [],
       timeline: null,
-      recommendations: ['Review data sources for accuracy', 'Establish source priority'],
+      recommendations: [
+        'Review data sources for accuracy',
+        'Establish source priority',
+      ],
       confidence: 0.5,
     };
   }
@@ -908,7 +916,10 @@ export async function analyzeConflict(
   const items = (itemsData || []).map(mapDbItem);
 
   // Compute severity
-  const severityResult = await computeConflictSeverity(mapDbConflict(conflictData), items);
+  const severityResult = await computeConflictSeverity(
+    mapDbConflict(conflictData),
+    items
+  );
 
   // Find related conflicts
   let relatedConflicts: RelatedConflict[] = [];
@@ -929,13 +940,16 @@ export async function analyzeConflict(
   }
 
   // Vector analysis
-  let vectorSimilarities: VectorSimilarity[] = [];
+  const vectorSimilarities: VectorSimilarity[] = [];
   if (input?.includeVectorAnalysis) {
     // Compute pairwise similarities
     for (let i = 0; i < items.length; i++) {
       for (let j = i + 1; j < items.length; j++) {
         if (items[i].vector && items[j].vector) {
-          const similarity = cosineSimilarity(items[i].vector!, items[j].vector!);
+          const similarity = cosineSimilarity(
+            items[i].vector!,
+            items[j].vector!
+          );
           vectorSimilarities.push({
             itemAId: items[i].id,
             itemBId: items[j].id,
@@ -949,33 +963,51 @@ export async function analyzeConflict(
   // Root cause analysis
   let rootCauseAnalysis: RootCauseAnalysisResult | null = null;
   if (input?.includeRootCauseAnalysis) {
-    rootCauseAnalysis = await analyzeRootCause(mapDbConflict(conflictData), items);
+    rootCauseAnalysis = await analyzeRootCause(
+      mapDbConflict(conflictData),
+      items
+    );
   }
 
   // Affected systems analysis
-  const affectedSystemsAnalysis: AffectedSystemAnalysis[] = conflictData.affected_systems.map((system: string) => ({
-    system,
-    impactLevel: severityResult.severity === 'critical' ? 'high' : severityResult.severity === 'high' ? 'medium' : 'low',
-    description: `${system} contains conflicting information`,
-  }));
+  const affectedSystemsAnalysis: AffectedSystemAnalysis[] =
+    conflictData.affected_systems.map((system: string) => ({
+      system,
+      impactLevel:
+        severityResult.severity === 'critical'
+          ? 'high'
+          : severityResult.severity === 'high'
+            ? 'medium'
+            : 'low',
+      description: `${system} contains conflicting information`,
+    }));
 
   // Suggest resolution type
-  const suggestedResolutionType = suggestResolutionType(conflictData.conflict_type, items);
+  const suggestedResolutionType = suggestResolutionType(
+    conflictData.conflict_type,
+    items
+  );
 
   // Build analysis result
   const analysis: ConflictAnalysisResult = {
     conflictId,
     severityScore: severityResult.score,
     severityRationale: severityResult.rationale,
-    rootCauses: rootCauseAnalysis?.contributingCauses.map((c) => ({
-      cause: c.cause,
-      confidence: c.confidence,
-      sourceSystem: c.sourceSystem || null,
-      evidence: c.evidence || null,
-    })) || [],
+    rootCauses:
+      rootCauseAnalysis?.contributingCauses.map((c) => ({
+        cause: c.cause,
+        confidence: c.confidence,
+        sourceSystem: c.sourceSystem || null,
+        evidence: c.evidence || null,
+      })) || [],
     relatedConflicts,
     suggestedResolutionType,
-    estimatedResolutionDifficulty: severityResult.severity === 'critical' ? 'difficult' : severityResult.severity === 'high' ? 'moderate' : 'easy',
+    estimatedResolutionDifficulty:
+      severityResult.severity === 'critical'
+        ? 'difficult'
+        : severityResult.severity === 'high'
+          ? 'moderate'
+          : 'easy',
     affectedSystemsAnalysis,
     vectorSimilarities,
   };
@@ -1021,7 +1053,12 @@ export async function analyzeConflict(
 async function aiConsensusResolution(
   conflict: InsightConflict,
   items: InsightConflictItem[]
-): Promise<{ summary: string; narrative: string; actions: RecommendedAction[]; confidence: number }> {
+): Promise<{
+  summary: string;
+  narrative: string;
+  actions: RecommendedAction[];
+  confidence: number;
+}> {
   const prompt = `You are an expert at synthesizing conflicting information into a coherent consensus.
 
 Conflict Type: ${conflict.conflictType}
@@ -1029,8 +1066,15 @@ Title: ${conflict.title}
 Summary: ${conflict.conflictSummary || 'N/A'}
 
 Conflicting Insights:
-${items.map((item, i) => `${i + 1}. [${item.sourceSystem}] (Confidence: ${(item.confidenceScore || 0.5) * 100}%)
-   ${item.rawInsight}`).join('\n\n')}
+${items
+  .map(
+    (
+      item,
+      i
+    ) => `${i + 1}. [${item.sourceSystem}] (Confidence: ${(item.confidenceScore || 0.5) * 100}%)
+   ${item.rawInsight}`
+  )
+  .join('\n\n')}
 
 Analyze these conflicting insights and provide:
 1. A consensus summary that reconciles the differences
@@ -1060,9 +1104,17 @@ Response in JSON format:
     };
   } catch (err) {
     return {
-      summary: 'Unable to reach consensus automatically. Manual review required.',
-      narrative: 'AI consensus generation failed. Please review the conflicting insights manually.',
-      actions: [{ action: 'Manual review required', priority: 'high', description: 'Review conflicting insights' }],
+      summary:
+        'Unable to reach consensus automatically. Manual review required.',
+      narrative:
+        'AI consensus generation failed. Please review the conflicting insights manually.',
+      actions: [
+        {
+          action: 'Manual review required',
+          priority: 'high',
+          description: 'Review conflicting insights',
+        },
+      ],
       confidence: 0.3,
     };
   }
@@ -1075,7 +1127,12 @@ async function weightedTruthResolution(
   _conflict: InsightConflict,
   items: InsightConflictItem[],
   sourceWeights?: SourceWeight[]
-): Promise<{ summary: string; narrative: string; actions: RecommendedAction[]; confidence: number }> {
+): Promise<{
+  summary: string;
+  narrative: string;
+  actions: RecommendedAction[];
+  confidence: number;
+}> {
   // Calculate weights
   const weights: Record<string, number> = {};
 
@@ -1104,15 +1161,20 @@ async function weightedTruthResolution(
   const primarySource = sortedSources[0]?.[0];
   const primaryItems = items.filter((i) => i.sourceSystem === primarySource);
 
-  const summary = primaryItems.length > 0
-    ? `Based on weighted source analysis, the most reliable interpretation is: ${primaryItems[0].rawInsight}`
-    : 'Unable to determine weighted truth.';
+  const summary =
+    primaryItems.length > 0
+      ? `Based on weighted source analysis, the most reliable interpretation is: ${primaryItems[0].rawInsight}`
+      : 'Unable to determine weighted truth.';
 
   return {
     summary,
     narrative: `Source weights: ${sortedSources.map(([s, w]) => `${s}: ${(w * 100).toFixed(1)}%`).join(', ')}. Primary source: ${primarySource}.`,
     actions: [
-      { action: 'Update other sources to match', priority: 'medium', description: `Align other systems with ${primarySource}` },
+      {
+        action: 'Update other sources to match',
+        priority: 'medium',
+        description: `Align other systems with ${primarySource}`,
+      },
     ],
     confidence: sortedSources[0]?.[1] || 0.5,
   };
@@ -1125,22 +1187,35 @@ async function sourcePriorityResolution(
   _conflict: InsightConflict,
   items: InsightConflictItem[],
   priorityOrder?: string[]
-): Promise<{ summary: string; narrative: string; actions: RecommendedAction[]; confidence: number }> {
+): Promise<{
+  summary: string;
+  narrative: string;
+  actions: RecommendedAction[];
+  confidence: number;
+}> {
   const order = priorityOrder || items.map((i) => i.sourceSystem);
 
   // Find first source in priority order that has items
-  const primarySource = order.find((s) => items.some((i) => i.sourceSystem === s));
+  const primarySource = order.find((s) =>
+    items.some((i) => i.sourceSystem === s)
+  );
   const primaryItems = items.filter((i) => i.sourceSystem === primarySource);
 
-  const summary = primaryItems.length > 0
-    ? `Based on source priority (${order.slice(0, 3).join(' > ')}), the authoritative interpretation is: ${primaryItems[0].rawInsight}`
-    : 'No matching source found in priority order.';
+  const summary =
+    primaryItems.length > 0
+      ? `Based on source priority (${order.slice(0, 3).join(' > ')}), the authoritative interpretation is: ${primaryItems[0].rawInsight}`
+      : 'No matching source found in priority order.';
 
   return {
     summary,
     narrative: `Applied source priority order: ${order.join(' > ')}. ${primarySource} is the highest priority source with relevant data.`,
     actions: [
-      { action: 'Review priority order', priority: 'low', description: 'Ensure source priority reflects organizational trust levels' },
+      {
+        action: 'Review priority order',
+        priority: 'low',
+        description:
+          'Ensure source priority reflects organizational trust levels',
+      },
     ],
     confidence: 0.8,
   };
@@ -1154,7 +1229,12 @@ async function hybridResolution(
   items: InsightConflictItem[],
   sourceWeights?: SourceWeight[],
   priorityOrder?: string[]
-): Promise<{ summary: string; narrative: string; actions: RecommendedAction[]; confidence: number }> {
+): Promise<{
+  summary: string;
+  narrative: string;
+  actions: RecommendedAction[];
+  confidence: number;
+}> {
   // Get results from all strategies
   const [consensus, weighted, priority] = await Promise.all([
     aiConsensusResolution(conflict, items),
@@ -1170,9 +1250,13 @@ async function hybridResolution(
   ].sort((a, b) => b.result.confidence - a.result.confidence);
 
   const best = strategies[0];
-  const allActions = [...consensus.actions, ...weighted.actions, ...priority.actions];
-  const uniqueActions = allActions.filter((a, i) =>
-    allActions.findIndex((b) => b.action === a.action) === i
+  const allActions = [
+    ...consensus.actions,
+    ...weighted.actions,
+    ...priority.actions,
+  ];
+  const uniqueActions = allActions.filter(
+    (a, i) => allActions.findIndex((b) => b.action === a.action) === i
   );
 
   return {
@@ -1216,20 +1300,38 @@ export async function resolveConflict(
   const conflict = mapDbConflict(conflictData);
 
   // Run resolution strategy
-  let resolutionResult: { summary: string; narrative: string; actions: RecommendedAction[]; confidence: number };
+  let resolutionResult: {
+    summary: string;
+    narrative: string;
+    actions: RecommendedAction[];
+    confidence: number;
+  };
 
   switch (input.resolutionType) {
     case 'ai_consensus':
       resolutionResult = await aiConsensusResolution(conflict, items);
       break;
     case 'weighted_truth':
-      resolutionResult = await weightedTruthResolution(conflict, items, input.sourceWeights || undefined);
+      resolutionResult = await weightedTruthResolution(
+        conflict,
+        items,
+        input.sourceWeights || undefined
+      );
       break;
     case 'source_priority':
-      resolutionResult = await sourcePriorityResolution(conflict, items, input.priorityOrder || undefined);
+      resolutionResult = await sourcePriorityResolution(
+        conflict,
+        items,
+        input.priorityOrder || undefined
+      );
       break;
     case 'hybrid':
-      resolutionResult = await hybridResolution(conflict, items, input.sourceWeights || undefined, input.priorityOrder || undefined);
+      resolutionResult = await hybridResolution(
+        conflict,
+        items,
+        input.sourceWeights || undefined,
+        input.priorityOrder || undefined
+      );
       break;
     default:
       throw new Error('Invalid resolution type');
@@ -1353,7 +1455,11 @@ export async function reviewResolution(
     input.isAccepted ? 'resolution_accepted' : 'resolution_rejected',
     userId,
     'user',
-    { resolutionId, isAccepted: input.isAccepted, reviewNotes: input.reviewNotes }
+    {
+      resolutionId,
+      isAccepted: input.isAccepted,
+      reviewNotes: input.reviewNotes,
+    }
   );
 
   return mapDbResolution(resolutionData);
@@ -1412,13 +1518,10 @@ export async function createConflict(
   }
 
   // Log audit event
-  await logAuditEvent(
-    conflictData.id,
-    'created',
-    userId,
-    'user',
-    { title: input.title, conflictType: input.conflictType }
-  );
+  await logAuditEvent(conflictData.id, 'created', userId, 'user', {
+    title: input.title,
+    conflictType: input.conflictType,
+  });
 
   return {
     conflict: mapDbConflict(conflictData),
@@ -1431,7 +1534,11 @@ export async function createConflict(
 export async function getConflict(
   orgId: string,
   conflictId: string,
-  options?: { includeItems?: boolean; includeResolutions?: boolean; includeRelated?: boolean }
+  options?: {
+    includeItems?: boolean;
+    includeResolutions?: boolean;
+    includeRelated?: boolean;
+  }
 ): Promise<GetConflictResponse> {
   const supabase = getSupabaseClient();
 
@@ -1583,13 +1690,17 @@ export async function updateConflict(
   // Build update object
   const updateObj: Record<string, unknown> = {};
   if (input.title !== undefined) updateObj.title = input.title;
-  if (input.conflictSummary !== undefined) updateObj.conflict_summary = input.conflictSummary;
+  if (input.conflictSummary !== undefined)
+    updateObj.conflict_summary = input.conflictSummary;
   if (input.severity !== undefined) updateObj.severity = input.severity;
   if (input.status !== undefined) updateObj.status = input.status;
-  if (input.affectedSystems !== undefined) updateObj.affected_systems = input.affectedSystems;
+  if (input.affectedSystems !== undefined)
+    updateObj.affected_systems = input.affectedSystems;
   if (input.clusterId !== undefined) updateObj.cluster_id = input.clusterId;
-  if (input.linkedRealityMapId !== undefined) updateObj.linked_reality_map_id = input.linkedRealityMapId;
-  if (input.linkedNodeIds !== undefined) updateObj.linked_node_ids = input.linkedNodeIds;
+  if (input.linkedRealityMapId !== undefined)
+    updateObj.linked_reality_map_id = input.linkedRealityMapId;
+  if (input.linkedNodeIds !== undefined)
+    updateObj.linked_node_ids = input.linkedNodeIds;
 
   const { data: updatedData, error } = await supabase
     .from('insight_conflicts')
@@ -1966,7 +2077,9 @@ export async function createGraphEdge(
 /**
  * Get conflict statistics
  */
-export async function getConflictStats(orgId: string): Promise<GetConflictStatsResponse> {
+export async function getConflictStats(
+  orgId: string
+): Promise<GetConflictStatsResponse> {
   const supabase = getSupabaseClient();
 
   // Get all conflicts for stats
@@ -1995,23 +2108,39 @@ export async function getConflictStats(orgId: string): Promise<GetConflictStatsR
     highCount: conflictList.filter((c) => c.severity === 'high').length,
     mediumCount: conflictList.filter((c) => c.severity === 'medium').length,
     lowCount: conflictList.filter((c) => c.severity === 'low').length,
-    contradictionCount: conflictList.filter((c) => c.conflict_type === 'contradiction').length,
-    divergenceCount: conflictList.filter((c) => c.conflict_type === 'divergence').length,
-    ambiguityCount: conflictList.filter((c) => c.conflict_type === 'ambiguity').length,
-    missingDataCount: conflictList.filter((c) => c.conflict_type === 'missing_data').length,
-    inconsistencyCount: conflictList.filter((c) => c.conflict_type === 'inconsistency').length,
+    contradictionCount: conflictList.filter(
+      (c) => c.conflict_type === 'contradiction'
+    ).length,
+    divergenceCount: conflictList.filter(
+      (c) => c.conflict_type === 'divergence'
+    ).length,
+    ambiguityCount: conflictList.filter((c) => c.conflict_type === 'ambiguity')
+      .length,
+    missingDataCount: conflictList.filter(
+      (c) => c.conflict_type === 'missing_data'
+    ).length,
+    inconsistencyCount: conflictList.filter(
+      (c) => c.conflict_type === 'inconsistency'
+    ).length,
     averageResolutionTime: null,
-    resolutionRate: conflictList.length > 0
-      ? conflictList.filter((c) => c.status === 'resolved').length / conflictList.length
-      : null,
+    resolutionRate:
+      conflictList.length > 0
+        ? conflictList.filter((c) => c.status === 'resolved').length /
+          conflictList.length
+        : null,
     clusterCount: clusterCount || 0,
   };
 
   // Calculate average resolution time for resolved conflicts
-  const resolvedConflicts = conflictList.filter((c) => c.resolved_at && c.created_at);
+  const resolvedConflicts = conflictList.filter(
+    (c) => c.resolved_at && c.created_at
+  );
   if (resolvedConflicts.length > 0) {
     const totalTime = resolvedConflicts.reduce((sum, c) => {
-      return sum + (new Date(c.resolved_at).getTime() - new Date(c.created_at).getTime());
+      return (
+        sum +
+        (new Date(c.resolved_at).getTime() - new Date(c.created_at).getTime())
+      );
     }, 0);
     stats.averageResolutionTime = totalTime / resolvedConflicts.length;
   }
@@ -2035,7 +2164,12 @@ export async function batchAnalyze(
 
   for (const conflictId of input.conflictIds) {
     try {
-      const response = await analyzeConflict(orgId, userId, conflictId, input.options || undefined);
+      const response = await analyzeConflict(
+        orgId,
+        userId,
+        conflictId,
+        input.options || undefined
+      );
       results.push({
         conflictId,
         success: true,
@@ -2108,7 +2242,12 @@ export async function batchDismiss(
 
   for (const conflictId of input.conflictIds) {
     try {
-      await dismissConflict(orgId, userId, conflictId, input.reason || undefined);
+      await dismissConflict(
+        orgId,
+        userId,
+        conflictId,
+        input.reason || undefined
+      );
       results.push({
         conflictId,
         success: true,
@@ -2171,7 +2310,10 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-function suggestResolutionType(conflictType: ConflictType, _items: InsightConflictItem[]): ConflictResolutionType {
+function suggestResolutionType(
+  conflictType: ConflictType,
+  _items: InsightConflictItem[]
+): ConflictResolutionType {
   // Suggest based on conflict type and item characteristics
   switch (conflictType) {
     case 'contradiction':

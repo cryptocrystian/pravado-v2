@@ -13,7 +13,8 @@ export function AttributionBar() {
         What drove your growth?
       </h3>
       <p className="text-sm text-white/50 leading-relaxed">
-        Attribution data will appear once SAGE has tracked enough visibility changes to identify growth drivers.
+        Attribution data will appear once SAGE has tracked enough visibility
+        changes to identify growth drivers.
       </p>
     </div>
   );

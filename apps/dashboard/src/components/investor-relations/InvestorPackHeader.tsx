@@ -5,8 +5,23 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
+import {
+  FileText,
+  RefreshCw,
+  Send,
+  Download,
+  Edit,
+  Archive,
+  Trash2,
+  MoreVertical,
+  CheckCircle,
+  Clock,
+  Loader2,
+  Users,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,20 +40,6 @@ import {
   formatRelativeTime,
 } from '@/lib/investorRelationsApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  RefreshCw,
-  Send,
-  Download,
-  Edit,
-  Archive,
-  Trash2,
-  MoreVertical,
-  CheckCircle,
-  Clock,
-  Loader2,
-  Users,
-} from 'lucide-react';
 
 interface InvestorPackHeaderProps {
   pack: InvestorPack;
@@ -92,7 +93,9 @@ export function InvestorPackHeader({
             {pack.fiscalQuarter && (
               <>
                 <span>|</span>
-                <span>{formatFiscalQuarter(pack.fiscalQuarter, pack.fiscalYear)}</span>
+                <span>
+                  {formatFiscalQuarter(pack.fiscalQuarter, pack.fiscalYear)}
+                </span>
               </>
             )}
           </div>
@@ -134,11 +137,7 @@ export function InvestorPackHeader({
           )}
 
           {canPublish && (
-            <Button
-              size="sm"
-              onClick={onPublish}
-              disabled={isPublishing}
-            >
+            <Button size="sm" onClick={onPublish} disabled={isPublishing}>
               {isPublishing ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (

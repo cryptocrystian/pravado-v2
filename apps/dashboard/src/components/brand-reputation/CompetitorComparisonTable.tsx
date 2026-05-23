@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { CompetitorReputationComparison } from '@pravado/types';
+import { Users, ArrowUp, ArrowDown, Minus, Trophy, Target } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getScoreColor,
   getTrendColor,
@@ -14,8 +17,6 @@ import {
   formatRankChange,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { CompetitorReputationComparison } from '@pravado/types';
-import { Users, ArrowUp, ArrowDown, Minus, Trophy, Target } from 'lucide-react';
 
 interface CompetitorComparisonTableProps {
   brandScore: number;
@@ -58,9 +59,13 @@ export function CompetitorComparisonTable({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-800">Your Brand</span>
+              <span className="text-sm font-medium text-blue-800">
+                Your Brand
+              </span>
             </div>
-            <span className={cn('text-xl font-bold', getScoreColor(brandScore))}>
+            <span
+              className={cn('text-xl font-bold', getScoreColor(brandScore))}
+            >
               {brandScore.toFixed(0)}
             </span>
           </div>
@@ -80,11 +85,10 @@ export function CompetitorComparisonTable({
                 comp.scoreDelta > 0
                   ? 'text-green-600'
                   : comp.scoreDelta < 0
-                  ? 'text-red-600'
-                  : 'text-gray-600';
-              const { text: rankChangeText, colorClass: rankChangeColorClass } = formatRankChange(
-                comp.rankChange
-              );
+                    ? 'text-red-600'
+                    : 'text-gray-600';
+              const { text: rankChangeText, colorClass: rankChangeColorClass } =
+                formatRankChange(comp.rankChange);
 
               return (
                 <div
@@ -101,7 +105,9 @@ export function CompetitorComparisonTable({
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={cn('text-lg font-bold', scoreColorClass)}>
+                      <span
+                        className={cn('text-lg font-bold', scoreColorClass)}
+                      >
                         {comp.competitorScore.toFixed(0)}
                       </span>
                       <div className="flex items-center">
@@ -109,7 +115,9 @@ export function CompetitorComparisonTable({
                           <ArrowUp className={cn('h-3 w-3', trendColorClass)} />
                         )}
                         {comp.competitorTrend === 'down' && (
-                          <ArrowDown className={cn('h-3 w-3', trendColorClass)} />
+                          <ArrowDown
+                            className={cn('h-3 w-3', trendColorClass)}
+                          />
                         )}
                         {comp.competitorTrend === 'flat' && (
                           <Minus className={cn('h-3 w-3', trendColorClass)} />
@@ -124,7 +132,11 @@ export function CompetitorComparisonTable({
                     <span className={cn('font-medium', deltaColorClass)}>
                       {comp.scoreDelta > 0 ? '+' : ''}
                       {comp.scoreDelta.toFixed(1)} pts
-                      {comp.scoreDelta > 0 ? ' ahead' : comp.scoreDelta < 0 ? ' behind' : ''}
+                      {comp.scoreDelta > 0
+                        ? ' ahead'
+                        : comp.scoreDelta < 0
+                          ? ' behind'
+                          : ''}
                     </span>
                   </div>
 

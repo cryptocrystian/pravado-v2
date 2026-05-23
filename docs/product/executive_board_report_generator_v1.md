@@ -29,13 +29,13 @@ The Executive Board Report Generator creates comprehensive "Board Packs" and qua
 
 ### Tables
 
-| Table | Description |
-|-------|-------------|
-| `exec_board_reports` | Main report entity with metadata, status, and configuration |
-| `exec_board_report_sections` | Individual sections with generated content |
-| `exec_board_report_sources` | Data sources used for section generation |
-| `exec_board_report_audience` | Board members and stakeholders with access |
-| `exec_board_report_audit_log` | Activity tracking for compliance |
+| Table                         | Description                                                 |
+| ----------------------------- | ----------------------------------------------------------- |
+| `exec_board_reports`          | Main report entity with metadata, status, and configuration |
+| `exec_board_report_sections`  | Individual sections with generated content                  |
+| `exec_board_report_sources`   | Data sources used for section generation                    |
+| `exec_board_report_audience`  | Board members and stakeholders with access                  |
+| `exec_board_report_audit_log` | Activity tracking for compliance                            |
 
 ### Enums
 
@@ -87,6 +87,7 @@ CREATE TYPE exec_board_report_section_status AS ENUM (
 ### Key Columns
 
 **exec_board_reports:**
+
 - `id`, `org_id`, `created_by` - Identity and ownership
 - `title`, `description` - Report metadata
 - `format`, `status` - Type and lifecycle
@@ -107,64 +108,64 @@ Base path: `/api/v1/executive-board-reports`
 
 ### Report Operations
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | List reports with pagination and filters |
-| GET | `/stats` | Get report statistics for organization |
-| POST | `/` | Create a new board report |
-| GET | `/:reportId` | Get full report with sections and audience |
-| PUT | `/:reportId` | Update report settings |
-| DELETE | `/:reportId` | Delete or archive report |
+| Method | Endpoint     | Description                                |
+| ------ | ------------ | ------------------------------------------ |
+| GET    | `/`          | List reports with pagination and filters   |
+| GET    | `/stats`     | Get report statistics for organization     |
+| POST   | `/`          | Create a new board report                  |
+| GET    | `/:reportId` | Get full report with sections and audience |
+| PUT    | `/:reportId` | Update report settings                     |
+| DELETE | `/:reportId` | Delete or archive report                   |
 
 ### Generation & Workflow
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/:reportId/generate` | Trigger AI section generation |
-| POST | `/:reportId/approve` | Mark report as approved |
-| POST | `/:reportId/publish` | Publish and notify audience |
+| Method | Endpoint              | Description                   |
+| ------ | --------------------- | ----------------------------- |
+| POST   | `/:reportId/generate` | Trigger AI section generation |
+| POST   | `/:reportId/approve`  | Mark report as approved       |
+| POST   | `/:reportId/publish`  | Publish and notify audience   |
 
 ### Section Management
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/:reportId/sections` | List all sections |
-| PUT | `/:reportId/sections/:sectionId` | Update section content/visibility |
-| PUT | `/:reportId/sections/order` | Reorder sections |
+| Method | Endpoint                         | Description                       |
+| ------ | -------------------------------- | --------------------------------- |
+| GET    | `/:reportId/sections`            | List all sections                 |
+| PUT    | `/:reportId/sections/:sectionId` | Update section content/visibility |
+| PUT    | `/:reportId/sections/order`      | Reorder sections                  |
 
 ### Audience Management
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/:reportId/audience` | List audience members |
-| POST | `/:reportId/audience` | Add audience member |
-| PUT | `/:reportId/audience/:audienceId` | Update member settings |
-| DELETE | `/:reportId/audience/:audienceId` | Remove member |
+| Method | Endpoint                          | Description            |
+| ------ | --------------------------------- | ---------------------- |
+| GET    | `/:reportId/audience`             | List audience members  |
+| POST   | `/:reportId/audience`             | Add audience member    |
+| PUT    | `/:reportId/audience/:audienceId` | Update member settings |
+| DELETE | `/:reportId/audience/:audienceId` | Remove member          |
 
 ### Audit Log
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/:reportId/audit-logs` | Get activity history |
+| Method | Endpoint                | Description          |
+| ------ | ----------------------- | -------------------- |
+| GET    | `/:reportId/audit-logs` | Get activity history |
 
 ---
 
 ## Section Types Reference
 
-| Section Type | Label | Description |
-|--------------|-------|-------------|
-| `executive_summary` | Executive Summary | High-level overview of period performance |
-| `kpi_dashboard` | KPI Dashboard | Key performance indicators and metrics |
-| `content_performance` | Content Performance | Content marketing metrics and highlights |
-| `pr_coverage` | PR Coverage | Media coverage and PR campaign results |
-| `seo_rankings` | SEO Rankings | Search visibility and ranking changes |
-| `media_mentions` | Media Mentions | Brand mentions and sentiment analysis |
-| `competitive_analysis` | Competitive Analysis | Market positioning vs competitors |
-| `audience_insights` | Audience Insights | Audience demographics and behavior |
-| `risk_assessment` | Risk Assessment | Identified risks and mitigation status |
-| `strategic_recommendations` | Strategic Recommendations | AI-generated strategic guidance |
-| `financial_overview` | Financial Overview | Budget utilization and ROI |
-| `action_items` | Action Items | Prioritized next steps |
+| Section Type                | Label                     | Description                               |
+| --------------------------- | ------------------------- | ----------------------------------------- |
+| `executive_summary`         | Executive Summary         | High-level overview of period performance |
+| `kpi_dashboard`             | KPI Dashboard             | Key performance indicators and metrics    |
+| `content_performance`       | Content Performance       | Content marketing metrics and highlights  |
+| `pr_coverage`               | PR Coverage               | Media coverage and PR campaign results    |
+| `seo_rankings`              | SEO Rankings              | Search visibility and ranking changes     |
+| `media_mentions`            | Media Mentions            | Brand mentions and sentiment analysis     |
+| `competitive_analysis`      | Competitive Analysis      | Market positioning vs competitors         |
+| `audience_insights`         | Audience Insights         | Audience demographics and behavior        |
+| `risk_assessment`           | Risk Assessment           | Identified risks and mitigation status    |
+| `strategic_recommendations` | Strategic Recommendations | AI-generated strategic guidance           |
+| `financial_overview`        | Financial Overview        | Budget utilization and ROI                |
+| `action_items`              | Action Items              | Prioritized next steps                    |
 
 ### Default Section Order
 
@@ -186,15 +187,15 @@ const EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER = [
 
 ## Frontend Component Inventory
 
-| Component | File | Purpose |
-|-----------|------|---------|
-| `BoardReportCard` | `BoardReportCard.tsx` | Report summary card for list view |
-| `BoardReportHeader` | `BoardReportHeader.tsx` | Detail view header with workflow actions |
-| `BoardReportSectionList` | `BoardReportSectionList.tsx` | Collapsible section content display |
-| `BoardReportAudienceList` | `BoardReportAudienceList.tsx` | Audience management with add dialog |
-| `BoardReportAuditLog` | `BoardReportAuditLog.tsx` | Activity timeline display |
-| `BoardReportStatsCard` | `BoardReportStatsCard.tsx` | Statistics overview grid |
-| `BoardReportForm` | `BoardReportForm.tsx` | Create/edit form with section selection |
+| Component                 | File                          | Purpose                                  |
+| ------------------------- | ----------------------------- | ---------------------------------------- |
+| `BoardReportCard`         | `BoardReportCard.tsx`         | Report summary card for list view        |
+| `BoardReportHeader`       | `BoardReportHeader.tsx`       | Detail view header with workflow actions |
+| `BoardReportSectionList`  | `BoardReportSectionList.tsx`  | Collapsible section content display      |
+| `BoardReportAudienceList` | `BoardReportAudienceList.tsx` | Audience management with add dialog      |
+| `BoardReportAuditLog`     | `BoardReportAuditLog.tsx`     | Activity timeline display                |
+| `BoardReportStatsCard`    | `BoardReportStatsCard.tsx`    | Statistics overview grid                 |
+| `BoardReportForm`         | `BoardReportForm.tsx`         | Create/edit form with section selection  |
 
 ### Page Location
 
@@ -206,20 +207,20 @@ Main page: `apps/dashboard/src/app/app/exec/board-reports/page.tsx`
 
 S63 aggregates data from these upstream systems:
 
-| Sprint | System | Data Used |
-|--------|--------|-----------|
-| S38 | Audience Personas | Audience segmentation and insights |
-| S39 | Media Performance | Media monitoring metrics |
-| S40 | Competitive Intelligence | Competitor analysis data |
-| S41 | Billing System | Budget and financial metrics |
-| S42-45 | Audit System | Governance and compliance data |
-| S46-48 | Media Monitoring | Media mentions and sentiment |
-| S49-50 | PR Outreach | Outreach performance metrics |
-| S51 | Journalist Discovery | Media relationship data |
-| S52-55 | Journalist Intelligence | Contact enrichment and timeline |
-| S56-60 | Content System | Content performance data |
-| S61 | SEO Analytics | Search ranking data |
-| S62 | Executive Digests | Digest templates and patterns |
+| Sprint | System                   | Data Used                          |
+| ------ | ------------------------ | ---------------------------------- |
+| S38    | Audience Personas        | Audience segmentation and insights |
+| S39    | Media Performance        | Media monitoring metrics           |
+| S40    | Competitive Intelligence | Competitor analysis data           |
+| S41    | Billing System           | Budget and financial metrics       |
+| S42-45 | Audit System             | Governance and compliance data     |
+| S46-48 | Media Monitoring         | Media mentions and sentiment       |
+| S49-50 | PR Outreach              | Outreach performance metrics       |
+| S51    | Journalist Discovery     | Media relationship data            |
+| S52-55 | Journalist Intelligence  | Contact enrichment and timeline    |
+| S56-60 | Content System           | Content performance data           |
+| S61    | SEO Analytics            | Search ranking data                |
+| S62    | Executive Digests        | Digest templates and patterns      |
 
 ---
 
@@ -253,8 +254,8 @@ const report = await createReport({
 
 ```typescript
 await generateReport(reportId, {
-  forceRegenerate: false,  // Skip already-generated sections
-  generatePdf: true,       // Create PDF after generation
+  forceRegenerate: false, // Skip already-generated sections
+  generatePdf: true, // Create PDF after generation
   generatePptx: false,
 });
 ```
@@ -266,7 +267,7 @@ await addAudienceMember(reportId, {
   email: 'ceo@company.com',
   name: 'Jane Smith',
   role: 'CEO',
-  accessLevel: 'approve',  // Can approve the report
+  accessLevel: 'approve', // Can approve the report
 });
 ```
 
@@ -274,8 +275,8 @@ await addAudienceMember(reportId, {
 
 ```typescript
 await publishReport(reportId, {
-  notifyAudience: true,    // Send email notifications
-  regeneratePdf: true,     // Ensure latest PDF
+  notifyAudience: true, // Send email notifications
+  regeneratePdf: true, // Ensure latest PDF
 });
 ```
 
@@ -321,15 +322,16 @@ CREATE POLICY "Users can update reports they created or are org admins"
 
 ### Access Level Controls
 
-| Level | Permissions |
-|-------|-------------|
-| `view` | Can view published reports |
-| `comment` | Can view and add comments |
+| Level     | Permissions                         |
+| --------- | ----------------------------------- |
+| `view`    | Can view published reports          |
+| `comment` | Can view and add comments           |
 | `approve` | Can approve reports for publication |
 
 ### Audit Logging
 
 All significant actions are logged to `exec_board_report_audit_log`:
+
 - Report creation, updates, deletion
 - Section generation and modifications
 - Audience additions and removals
@@ -342,11 +344,11 @@ All significant actions are logged to `exec_board_report_audit_log`:
 
 ### Generation Settings
 
-| Setting | Options | Default |
-|---------|---------|---------|
-| `llmModel` | `gpt-4o`, `gpt-4-turbo`, `gpt-3.5-turbo` | `gpt-4o` |
-| `tone` | `professional`, `formal`, `executive` | `professional` |
-| `targetLength` | `brief`, `standard`, `comprehensive` | `comprehensive` |
+| Setting        | Options                                  | Default         |
+| -------------- | ---------------------------------------- | --------------- |
+| `llmModel`     | `gpt-4o`, `gpt-4-turbo`, `gpt-3.5-turbo` | `gpt-4o`        |
+| `tone`         | `professional`, `formal`, `executive`    | `professional`  |
+| `targetLength` | `brief`, `standard`, `comprehensive`     | `comprehensive` |
 
 ### Template Configuration
 
@@ -364,11 +366,11 @@ interface TemplateConfig {
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `LLM_OPENAI_API_KEY` | OpenAI API key for section generation |
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
+| Variable                    | Description                           |
+| --------------------------- | ------------------------------------- |
+| `LLM_OPENAI_API_KEY`        | OpenAI API key for section generation |
+| `SUPABASE_URL`              | Supabase project URL                  |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key             |
 
 ---
 
@@ -392,6 +394,7 @@ interface TemplateConfig {
 **File:** `apps/api/supabase/migrations/67_create_exec_board_reports_schema.sql`
 
 Creates:
+
 - 4 enum types
 - 5 tables with proper relationships
 - RLS policies for all tables
@@ -403,10 +406,12 @@ Creates:
 ## Test Coverage
 
 ### Backend Tests
+
 - `apps/api/tests/executiveBoardReportService.test.ts`
 - Covers: CRUD operations, audience management, statistics
 
 ### E2E Tests
+
 - `apps/dashboard/tests/executive-board-reports.e2e.ts`
 - Covers: List view, creation, detail view, sections, audience, workflows
 

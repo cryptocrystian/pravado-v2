@@ -154,27 +154,28 @@ describe('JournalistEnrichmentService', () => {
         location: 'New York, NY',
       };
 
-      mockSupabase.from = () => ({
-        insert: () => ({
-          select: () => ({
-            single: () =>
-              Promise.resolve({
-                data: {
-                  id: 'test-record-id',
-                  org_id: testOrgId,
-                  ...input,
-                  overall_confidence_score: 85,
-                  completeness_score: 90,
-                  data_freshness_score: 95,
-                  status: 'completed',
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                },
-                error: null,
-              }),
+      mockSupabase.from = () =>
+        ({
+          insert: () => ({
+            select: () => ({
+              single: () =>
+                Promise.resolve({
+                  data: {
+                    id: 'test-record-id',
+                    org_id: testOrgId,
+                    ...input,
+                    overall_confidence_score: 85,
+                    completeness_score: 90,
+                    data_freshness_score: 95,
+                    status: 'completed',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  },
+                  error: null,
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const record = await service.createRecord(testOrgId, input, testUserId);
 
@@ -190,21 +191,22 @@ describe('JournalistEnrichmentService', () => {
         email: 'test@example.com',
       };
 
-      mockSupabase.from = () => ({
-        insert: () => ({
-          select: () => ({
-            single: () =>
-              Promise.resolve({
-                data: null,
-                error: { message: 'Database error' },
-              }),
+      mockSupabase.from = () =>
+        ({
+          insert: () => ({
+            select: () => ({
+              single: () =>
+                Promise.resolve({
+                  data: null,
+                  error: { message: 'Database error' },
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
-      await expect(service.createRecord(testOrgId, input, testUserId)).rejects.toThrow(
-        'Database error'
-      );
+      await expect(
+        service.createRecord(testOrgId, input, testUserId)
+      ).rejects.toThrow('Database error');
     });
   });
 
@@ -221,26 +223,27 @@ describe('JournalistEnrichmentService', () => {
         status: 'completed' as const,
       };
 
-      mockSupabase.from = () => ({
-        update: () => ({
-          eq: () => ({
+      mockSupabase.from = () =>
+        ({
+          update: () => ({
             eq: () => ({
-              select: () => ({
-                single: () =>
-                  Promise.resolve({
-                    data: {
-                      id: recordId,
-                      org_id: testOrgId,
-                      ...updates,
-                      updated_at: new Date().toISOString(),
-                    },
-                    error: null,
-                  }),
+              eq: () => ({
+                select: () => ({
+                  single: () =>
+                    Promise.resolve({
+                      data: {
+                        id: recordId,
+                        org_id: testOrgId,
+                        ...updates,
+                        updated_at: new Date().toISOString(),
+                      },
+                      error: null,
+                    }),
+                }),
               }),
             }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const updated = await service.updateRecord(testOrgId, recordId, updates);
 
@@ -258,30 +261,31 @@ describe('JournalistEnrichmentService', () => {
     it('should find duplicate records by email', async () => {
       const email = 'duplicate@example.com';
 
-      mockSupabase.from = () => ({
-        select: () => ({
-          eq: () => ({
+      mockSupabase.from = () =>
+        ({
+          select: () => ({
             eq: () => ({
-              neq: () =>
-                Promise.resolve({
-                  data: [
-                    {
-                      id: 'duplicate-1',
-                      email,
-                      outlet: 'Test Outlet',
-                    },
-                    {
-                      id: 'duplicate-2',
-                      email,
-                      outlet: 'Another Outlet',
-                    },
-                  ],
-                  error: null,
-                }),
+              eq: () => ({
+                neq: () =>
+                  Promise.resolve({
+                    data: [
+                      {
+                        id: 'duplicate-1',
+                        email,
+                        outlet: 'Test Outlet',
+                      },
+                      {
+                        id: 'duplicate-2',
+                        email,
+                        outlet: 'Another Outlet',
+                      },
+                    ],
+                    error: null,
+                  }),
+              }),
             }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const duplicates = await service.findDuplicatesByEmail(testOrgId, email);
 
@@ -293,19 +297,20 @@ describe('JournalistEnrichmentService', () => {
       const email = 'test@example.com';
       const excludeId = 'exclude-me';
 
-      mockSupabase.from = () => ({
-        select: () => ({
-          eq: () => ({
+      mockSupabase.from = () =>
+        ({
+          select: () => ({
             eq: () => ({
-              neq: () =>
-                Promise.resolve({
-                  data: [],
-                  error: null,
-                }),
+              eq: () => ({
+                neq: () =>
+                  Promise.resolve({
+                    data: [],
+                    error: null,
+                  }),
+              }),
             }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const duplicates = await service.findDuplicatesByEmail(
         testOrgId,
@@ -339,7 +344,9 @@ describe('JournalistEnrichmentService', () => {
                         org_id: testOrgId,
                         email: 'test@example.com',
                         phone: '+1234567890',
-                        social_profiles: { twitter: 'https://twitter.com/test' },
+                        social_profiles: {
+                          twitter: 'https://twitter.com/test',
+                        },
                       },
                       error: null,
                     }),
@@ -363,7 +370,10 @@ describe('JournalistEnrichmentService', () => {
           error: null,
         });
 
-      const result = await service.generateMergeSuggestions(testOrgId, recordId);
+      const result = await service.generateMergeSuggestions(
+        testOrgId,
+        recordId
+      );
 
       expect(result.suggestions).toBeDefined();
       expect(result.totalSuggestions).toBeGreaterThanOrEqual(0);
@@ -386,24 +396,25 @@ describe('JournalistEnrichmentService', () => {
         autoMerge: false,
       };
 
-      mockSupabase.from = () => ({
-        insert: () => ({
-          select: () => ({
-            single: () =>
-              Promise.resolve({
-                data: {
-                  id: 'batch-job-id',
-                  org_id: testOrgId,
-                  job_type: 'batch_enrichment',
-                  status: 'queued',
-                  input_record_count: 2,
-                  created_at: new Date().toISOString(),
-                },
-                error: null,
-              }),
+      mockSupabase.from = () =>
+        ({
+          insert: () => ({
+            select: () => ({
+              single: () =>
+                Promise.resolve({
+                  data: {
+                    id: 'batch-job-id',
+                    org_id: testOrgId,
+                    job_type: 'batch_enrichment',
+                    status: 'queued',
+                    input_record_count: 2,
+                    created_at: new Date().toISOString(),
+                  },
+                  error: null,
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const result = await service.batchEnrich(testOrgId, request, testUserId);
 
@@ -420,7 +431,9 @@ describe('JournalistEnrichmentService', () => {
 
       // This should be caught by Zod validation before reaching service
       // But service should also handle it gracefully
-      await expect(service.batchEnrich(testOrgId, request as any)).rejects.toThrow();
+      await expect(
+        service.batchEnrich(testOrgId, request as any)
+      ).rejects.toThrow();
     });
   });
 
@@ -439,24 +452,25 @@ describe('JournalistEnrichmentService', () => {
         maxRetries: 3,
       };
 
-      mockSupabase.from = () => ({
-        insert: () => ({
-          select: () => ({
-            single: () =>
-              Promise.resolve({
-                data: {
-                  id: 'job-id',
-                  org_id: testOrgId,
-                  job_type: input.jobType,
-                  status: 'pending',
-                  input_record_count: 2,
-                  created_at: new Date().toISOString(),
-                },
-                error: null,
-              }),
+      mockSupabase.from = () =>
+        ({
+          insert: () => ({
+            select: () => ({
+              single: () =>
+                Promise.resolve({
+                  data: {
+                    id: 'job-id',
+                    org_id: testOrgId,
+                    job_type: input.jobType,
+                    status: 'pending',
+                    input_record_count: 2,
+                    created_at: new Date().toISOString(),
+                  },
+                  error: null,
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const job = await service.createJob(testOrgId, input, testUserId);
 
@@ -474,34 +488,35 @@ describe('JournalistEnrichmentService', () => {
         limit: 10,
       };
 
-      mockSupabase.from = () => ({
-        select: () => ({
-          eq: () => ({
-            in: () => ({
+      mockSupabase.from = () =>
+        ({
+          select: () => ({
+            eq: () => ({
               in: () => ({
-                order: () => ({
-                  range: () =>
-                    Promise.resolve({
-                      data: [
-                        {
-                          id: 'job-1',
-                          job_type: 'batch_enrichment',
-                          status: 'completed',
-                          input_record_count: 10,
-                          successful_records: 10,
-                          failed_records: 0,
-                          progress_percentage: 100,
-                        },
-                      ],
-                      error: null,
-                      count: 1,
-                    }),
+                in: () => ({
+                  order: () => ({
+                    range: () =>
+                      Promise.resolve({
+                        data: [
+                          {
+                            id: 'job-1',
+                            job_type: 'batch_enrichment',
+                            status: 'completed',
+                            input_record_count: 10,
+                            successful_records: 10,
+                            failed_records: 0,
+                            progress_percentage: 100,
+                          },
+                        ],
+                        error: null,
+                        count: 1,
+                      }),
+                  }),
                 }),
               }),
             }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const result = await service.listJobs(testOrgId, query);
 
@@ -524,22 +539,23 @@ describe('JournalistEnrichmentService', () => {
         linkReason: 'Email match',
       };
 
-      mockSupabase.from = () => ({
-        insert: () => ({
-          select: () => ({
-            single: () =>
-              Promise.resolve({
-                data: {
-                  id: 'link-id',
-                  org_id: testOrgId,
-                  ...input,
-                  created_at: new Date().toISOString(),
-                },
-                error: null,
-              }),
+      mockSupabase.from = () =>
+        ({
+          insert: () => ({
+            select: () => ({
+              single: () =>
+                Promise.resolve({
+                  data: {
+                    id: 'link-id',
+                    org_id: testOrgId,
+                    ...input,
+                    created_at: new Date().toISOString(),
+                  },
+                  error: null,
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       const link = await service.createLink(testOrgId, input, testUserId);
 
@@ -618,17 +634,18 @@ describe('JournalistEnrichmentService', () => {
     it('should delete enrichment record', async () => {
       const recordId = 'record-to-delete';
 
-      mockSupabase.from = () => ({
-        delete: () => ({
-          eq: () => ({
-            eq: () =>
-              Promise.resolve({
-                data: null,
-                error: null,
-              }),
+      mockSupabase.from = () =>
+        ({
+          delete: () => ({
+            eq: () => ({
+              eq: () =>
+                Promise.resolve({
+                  data: null,
+                  error: null,
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       await expect(
         service.deleteRecord(testOrgId, recordId)
@@ -638,17 +655,18 @@ describe('JournalistEnrichmentService', () => {
     it('should handle errors during deletion', async () => {
       const recordId = 'non-existent-record';
 
-      mockSupabase.from = () => ({
-        delete: () => ({
-          eq: () => ({
-            eq: () =>
-              Promise.resolve({
-                data: null,
-                error: { message: 'Record not found' },
-              }),
+      mockSupabase.from = () =>
+        ({
+          delete: () => ({
+            eq: () => ({
+              eq: () =>
+                Promise.resolve({
+                  data: null,
+                  error: { message: 'Record not found' },
+                }),
+            }),
           }),
-        }),
-      }) as any;
+        }) as any;
 
       await expect(service.deleteRecord(testOrgId, recordId)).rejects.toThrow(
         'Record not found'

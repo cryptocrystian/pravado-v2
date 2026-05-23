@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch -- try/catch preserved for future logging hooks; Phase 1 cleanup */
 /**
  * Personas Dashboard Page (Sprint S51.2)
  * Three-panel layout for persona management
@@ -5,25 +6,6 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { PersonaCard } from '@/components/personas/PersonaCard';
-import { PersonaTraitChips } from '@/components/personas/PersonaTraitChips';
-import { InsightPanel } from '@/components/personas/InsightPanel';
-import { PersonaHistoryTimeline } from '@/components/personas/PersonaHistoryTimeline';
-import { PersonaComparisonDrawer } from '@/components/personas/PersonaComparisonDrawer';
-import { PersonaGeneratorForm } from '@/components/personas/PersonaGeneratorForm';
-import { PersonaEditor } from '@/components/personas/PersonaEditor';
 import type {
   AudiencePersona,
   AudiencePersonaTrait,
@@ -34,7 +16,6 @@ import type {
   UpdatePersonaInput,
   PersonasQuery,
 } from '@pravado/types';
-import * as personaApi from '@/lib/personaApi';
 import {
   AlertCircle,
   GitCompare,
@@ -47,15 +28,41 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+import { InsightPanel } from '@/components/personas/InsightPanel';
+import { PersonaCard } from '@/components/personas/PersonaCard';
+import { PersonaComparisonDrawer } from '@/components/personas/PersonaComparisonDrawer';
+import { PersonaEditor } from '@/components/personas/PersonaEditor';
+import { PersonaGeneratorForm } from '@/components/personas/PersonaGeneratorForm';
+import { PersonaHistoryTimeline } from '@/components/personas/PersonaHistoryTimeline';
+import { PersonaTraitChips } from '@/components/personas/PersonaTraitChips';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import * as personaApi from '@/lib/personaApi';
+
 export default function PersonasPage() {
   // State
   const [personas, setPersonas] = useState<AudiencePersona[]>([]);
-  const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
-  const [selectedPersona, setSelectedPersona] = useState<AudiencePersona | null>(null);
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(
+    null
+  );
+  const [selectedPersona, setSelectedPersona] =
+    useState<AudiencePersona | null>(null);
   const [traits, setTraits] = useState<AudiencePersonaTrait[]>([]);
   const [insights, setInsights] = useState<AudiencePersonaInsight[]>([]);
   const [history, setHistory] = useState<AudiencePersonaHistory[]>([]);
-  const [comparison, setComparison] = useState<PersonaComparisonResult | null>(null);
+  const [comparison, setComparison] = useState<PersonaComparisonResult | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +77,9 @@ export default function PersonasPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [personaTypeFilter, _setPersonaTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('active');
-  const [sortBy, setSortBy] = useState<'overallScore' | 'relevanceScore' | 'updatedAt'>('overallScore');
+  const [sortBy, setSortBy] = useState<
+    'overallScore' | 'relevanceScore' | 'updatedAt'
+  >('overallScore');
 
   // Load personas
   useEffect(() => {
@@ -91,7 +100,8 @@ export default function PersonasPage() {
 
       const query: PersonasQuery = {
         searchQuery: searchQuery || undefined,
-        personaType: personaTypeFilter !== 'all' ? [personaTypeFilter as any] : undefined,
+        personaType:
+          personaTypeFilter !== 'all' ? [personaTypeFilter as any] : undefined,
         status: statusFilter !== 'all' ? [statusFilter as any] : undefined,
         sortBy: sortBy as any,
         sortOrder: 'desc',
@@ -162,7 +172,10 @@ export default function PersonasPage() {
     if (!selectedPersonaId) return;
 
     try {
-      const result = await personaApi.comparePersonas(selectedPersonaId, personaId2);
+      const result = await personaApi.comparePersonas(
+        selectedPersonaId,
+        personaId2
+      );
       setComparison(result.comparison);
       setShowComparison(true);
     } catch (err: any) {
@@ -256,13 +269,20 @@ export default function PersonasPage() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                  <Select
+                    value={sortBy}
+                    onValueChange={(v) => setSortBy(v as any)}
+                  >
                     <SelectTrigger className="text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="overallScore">Sort by Score</SelectItem>
-                      <SelectItem value="relevanceScore">Sort by Relevance</SelectItem>
+                      <SelectItem value="overallScore">
+                        Sort by Score
+                      </SelectItem>
+                      <SelectItem value="relevanceScore">
+                        Sort by Relevance
+                      </SelectItem>
                       <SelectItem value="updatedAt">Sort by Updated</SelectItem>
                     </SelectContent>
                   </Select>
@@ -307,10 +327,16 @@ export default function PersonasPage() {
                           {personaApi.formatPersonaName(selectedPersona)}
                         </h2>
                         {selectedPersona.description && (
-                          <p className="text-gray-600 mt-1">{selectedPersona.description}</p>
+                          <p className="text-gray-600 mt-1">
+                            {selectedPersona.description}
+                          </p>
                         )}
                       </div>
-                      <Button variant="outline" size="sm" onClick={() => setShowEditor(true)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEditor(true)}
+                      >
                         Edit
                       </Button>
                     </div>
@@ -356,7 +382,9 @@ export default function PersonasPage() {
               <Card>
                 <CardContent className="p-12 text-center">
                   <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">Select a persona to view details</p>
+                  <p className="text-gray-500">
+                    Select a persona to view details
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -395,7 +423,9 @@ export default function PersonasPage() {
                       size="sm"
                       className="w-full justify-start"
                       onClick={() => {
-                        const otherPersona = personas.find((p) => p.id !== selectedPersonaId);
+                        const otherPersona = personas.find(
+                          (p) => p.id !== selectedPersonaId
+                        );
                         if (otherPersona) handleCompare(otherPersona.id);
                       }}
                       disabled={personas.length < 2}
@@ -455,12 +485,19 @@ export default function PersonasPage() {
             <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-4 border-b flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Generate New Persona</h2>
-                <Button variant="ghost" size="sm" onClick={() => setShowGenerator(false)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowGenerator(false)}
+                >
                   Close
                 </Button>
               </div>
               <div className="p-4">
-                <PersonaGeneratorForm onGenerate={handleGenerate} isGenerating={isGenerating} />
+                <PersonaGeneratorForm
+                  onGenerate={handleGenerate}
+                  isGenerating={isGenerating}
+                />
               </div>
             </div>
           </div>

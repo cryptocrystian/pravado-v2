@@ -5,9 +5,18 @@
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {
+  Clock,
+  Target,
+  RefreshCw,
+  Loader2,
+  Plus,
+  Settings,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -22,14 +31,6 @@ import {
   getPrimaryFocusLabel,
 } from '@/lib/executiveCommandCenterApi';
 import { cn } from '@/lib/utils';
-import {
-  Clock,
-  Target,
-  RefreshCw,
-  Loader2,
-  Plus,
-  Settings,
-} from 'lucide-react';
 
 interface ExecFilterBarProps {
   timeWindow: ExecDashboardTimeWindow;
@@ -126,7 +127,9 @@ export function ExecFilterBar({
                   onClick={() => onPrimaryFocusChange?.(focus)}
                   disabled={disabled}
                 >
-                  {getPrimaryFocusLabel(focus).replace(' Overview', '').replace(' Management', '')}
+                  {getPrimaryFocusLabel(focus)
+                    .replace(' Overview', '')
+                    .replace(' Management', '')}
                 </Button>
               ))}
             </div>

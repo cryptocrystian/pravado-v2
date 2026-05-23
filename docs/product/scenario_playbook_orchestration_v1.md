@@ -35,80 +35,80 @@ An integrated playbook system that:
 
 Reusable templates defining response workflows:
 
-| Field | Description |
-|-------|-------------|
-| Name | Descriptive playbook name |
-| Category | Type: crisis_management, product_launch, reputation_repair, media_outreach, content_amplification, competitor_response, custom |
-| Steps | Ordered list of actions to execute |
-| Trigger Conditions | Optional automatic trigger criteria |
-| Version | Auto-incrementing version number |
+| Field              | Description                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| Name               | Descriptive playbook name                                                                                                      |
+| Category           | Type: crisis_management, product_launch, reputation_repair, media_outreach, content_amplification, competitor_response, custom |
+| Steps              | Ordered list of actions to execute                                                                                             |
+| Trigger Conditions | Optional automatic trigger criteria                                                                                            |
+| Version            | Auto-incrementing version number                                                                                               |
 
 ### Playbook Steps
 
 Individual actions within a playbook:
 
-| Field | Description |
-|-------|-------------|
-| Action Type | Type of action (see Action Types below) |
-| Action Payload | Configuration for the action |
-| Requires Approval | Whether human approval is needed |
-| Approval Roles | Roles that can approve |
-| Estimated Duration | Expected time to complete |
+| Field              | Description                             |
+| ------------------ | --------------------------------------- |
+| Action Type        | Type of action (see Action Types below) |
+| Action Payload     | Configuration for the action            |
+| Requires Approval  | Whether human approval is needed        |
+| Approval Roles     | Roles that can approve                  |
+| Estimated Duration | Expected time to complete               |
 
 ### Action Types
 
 11 supported action types:
 
-| Type | Description |
-|------|-------------|
-| `generate_content` | Create content using AI |
+| Type                | Description                   |
+| ------------------- | ----------------------------- |
+| `generate_content`  | Create content using AI       |
 | `analyze_sentiment` | Analyze sentiment of coverage |
-| `send_outreach` | Send media outreach |
-| `schedule_post` | Schedule social media posts |
-| `monitor_coverage` | Monitor media coverage |
-| `update_metrics` | Update tracking metrics |
-| `escalate` | Escalate to stakeholders |
-| `notify` | Send notifications |
-| `wait` | Pause for specified duration |
-| `branch` | Conditional branching |
-| `custom` | Custom action handler |
+| `send_outreach`     | Send media outreach           |
+| `schedule_post`     | Schedule social media posts   |
+| `monitor_coverage`  | Monitor media coverage        |
+| `update_metrics`    | Update tracking metrics       |
+| `escalate`          | Escalate to stakeholders      |
+| `notify`            | Send notifications            |
+| `wait`              | Pause for specified duration  |
+| `branch`            | Conditional branching         |
+| `custom`            | Custom action handler         |
 
 ### Scenarios
 
 Instances of playbooks with specific context:
 
-| Field | Description |
-|-------|-------------|
-| Scenario Type | crisis, opportunity, monitoring, proactive, reactive, scheduled |
-| Risk Level | low, medium, high, critical |
-| Context Parameters | Scenario-specific data (product, region, etc.) |
-| Status | draft, ready, in_progress, completed, archived |
+| Field              | Description                                                     |
+| ------------------ | --------------------------------------------------------------- |
+| Scenario Type      | crisis, opportunity, monitoring, proactive, reactive, scheduled |
+| Risk Level         | low, medium, high, critical                                     |
+| Context Parameters | Scenario-specific data (product, region, etc.)                  |
+| Status             | draft, ready, in_progress, completed, archived                  |
 
 ### Scenario Runs
 
 Execution instances of scenarios:
 
-| Status | Description |
-|--------|-------------|
-| `running` | Currently executing |
-| `paused` | Temporarily paused |
+| Status              | Description                |
+| ------------------- | -------------------------- |
+| `running`           | Currently executing        |
+| `paused`            | Temporarily paused         |
 | `awaiting_approval` | Waiting for human approval |
-| `completed` | Successfully finished |
-| `failed` | Encountered error |
-| `cancelled` | Manually cancelled |
+| `completed`         | Successfully finished      |
+| `failed`            | Encountered error          |
+| `cancelled`         | Manually cancelled         |
 
 ### Run Steps
 
 Individual step execution records:
 
-| Status | Description |
-|--------|-------------|
-| `pending` | Not yet started |
-| `ready` | Ready for execution/approval |
-| `running` | Currently executing |
-| `completed` | Successfully finished |
-| `failed` | Encountered error |
-| `skipped` | Skipped (rejected or bypassed) |
+| Status      | Description                    |
+| ----------- | ------------------------------ |
+| `pending`   | Not yet started                |
+| `ready`     | Ready for execution/approval   |
+| `running`   | Currently executing            |
+| `completed` | Successfully finished          |
+| `failed`    | Encountered error              |
+| `skipped`   | Skipped (rejected or bypassed) |
 
 ## Architecture
 
@@ -149,48 +149,48 @@ All endpoints under `/api/v1/scenario-playbooks`:
 
 #### Playbook Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /playbooks | Create playbook with steps |
-| GET | /playbooks/:id | Get playbook with steps |
-| PATCH | /playbooks/:id | Update playbook |
-| DELETE | /playbooks/:id | Delete playbook |
-| GET | /playbooks | List playbooks with filters |
+| Method | Endpoint       | Description                 |
+| ------ | -------------- | --------------------------- |
+| POST   | /playbooks     | Create playbook with steps  |
+| GET    | /playbooks/:id | Get playbook with steps     |
+| PATCH  | /playbooks/:id | Update playbook             |
+| DELETE | /playbooks/:id | Delete playbook             |
+| GET    | /playbooks     | List playbooks with filters |
 
 #### Scenario Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /scenarios | Create scenario |
-| GET | /scenarios/:id | Get scenario |
-| PATCH | /scenarios/:id | Update scenario |
-| DELETE | /scenarios/:id | Delete scenario |
-| GET | /scenarios | List scenarios with filters |
-| POST | /scenarios/:id/simulate | Run simulation |
+| Method | Endpoint                | Description                 |
+| ------ | ----------------------- | --------------------------- |
+| POST   | /scenarios              | Create scenario             |
+| GET    | /scenarios/:id          | Get scenario                |
+| PATCH  | /scenarios/:id          | Update scenario             |
+| DELETE | /scenarios/:id          | Delete scenario             |
+| GET    | /scenarios              | List scenarios with filters |
+| POST   | /scenarios/:id/simulate | Run simulation              |
 
 #### Run Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /runs | Start new run |
-| GET | /runs/:id | Get run with steps |
-| GET | /runs | List runs with filters |
-| POST | /runs/:id/pause | Pause running run |
-| POST | /runs/:id/resume | Resume paused run |
-| POST | /runs/:id/cancel | Cancel run |
+| Method | Endpoint         | Description            |
+| ------ | ---------------- | ---------------------- |
+| POST   | /runs            | Start new run          |
+| GET    | /runs/:id        | Get run with steps     |
+| GET    | /runs            | List runs with filters |
+| POST   | /runs/:id/pause  | Pause running run      |
+| POST   | /runs/:id/resume | Resume paused run      |
+| POST   | /runs/:id/cancel | Cancel run             |
 
 #### Step Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /steps/:id/approve | Approve or reject step |
+| Method | Endpoint           | Description            |
+| ------ | ------------------ | ---------------------- |
+| POST   | /steps/:id/approve | Approve or reject step |
 
 #### Statistics & Audit
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /stats | Get summary statistics |
-| GET | /audit | List audit logs |
+| Method | Endpoint | Description            |
+| ------ | -------- | ---------------------- |
+| GET    | /stats   | Get summary statistics |
+| GET    | /audit   | List audit logs        |
 
 ## Simulation Engine
 
@@ -211,9 +211,9 @@ interface SimulationResult {
   scenarioId: string;
   playbookId: string;
   simulatedAt: string;
-  riskScore: number;          // 0-100
-  opportunityScore: number;   // 0-100
-  confidenceScore: number;    // 0-1
+  riskScore: number; // 0-100
+  opportunityScore: number; // 0-100
+  confidenceScore: number; // 0-1
   projectedMetrics: {
     timeline: Array<{
       day: number;
@@ -281,20 +281,20 @@ Located at `/app/scenarios`:
 
 ### Components
 
-| Component | Purpose |
-|-----------|---------|
-| `ScenarioPlaybookStats` | Summary statistics display |
-| `PlaybookList` | Playbook listing with filters |
-| `PlaybookCard` | Individual playbook display |
-| `PlaybookStepEditor` | Step creation/editing |
-| `ScenarioList` | Scenario listing with filters |
-| `ScenarioCard` | Individual scenario display |
-| `RunList` | Run listing with status filters |
-| `RunCard` | Individual run display |
-| `SimulationResultsPanel` | Simulation output display |
-| `StepApprovalPanel` | Step review and approval |
-| `CreatePlaybookDialog` | Playbook creation modal |
-| `CreateScenarioDialog` | Scenario creation modal |
+| Component                | Purpose                         |
+| ------------------------ | ------------------------------- |
+| `ScenarioPlaybookStats`  | Summary statistics display      |
+| `PlaybookList`           | Playbook listing with filters   |
+| `PlaybookCard`           | Individual playbook display     |
+| `PlaybookStepEditor`     | Step creation/editing           |
+| `ScenarioList`           | Scenario listing with filters   |
+| `ScenarioCard`           | Individual scenario display     |
+| `RunList`                | Run listing with status filters |
+| `RunCard`                | Individual run display          |
+| `SimulationResultsPanel` | Simulation output display       |
+| `StepApprovalPanel`      | Step review and approval        |
+| `CreatePlaybookDialog`   | Playbook creation modal         |
+| `CreateScenarioDialog`   | Scenario creation modal         |
 
 ## Integration Points
 
@@ -315,28 +315,28 @@ Located at `/app/scenarios`:
 
 All operations are logged to `scenario_audit_log`:
 
-| Action | Description |
-|--------|-------------|
-| `create_playbook` | Playbook created |
-| `update_playbook` | Playbook updated |
-| `delete_playbook` | Playbook deleted |
-| `create_scenario` | Scenario created |
-| `update_scenario` | Scenario updated |
-| `delete_scenario` | Scenario deleted |
+| Action              | Description         |
+| ------------------- | ------------------- |
+| `create_playbook`   | Playbook created    |
+| `update_playbook`   | Playbook updated    |
+| `delete_playbook`   | Playbook deleted    |
+| `create_scenario`   | Scenario created    |
+| `update_scenario`   | Scenario updated    |
+| `delete_scenario`   | Scenario deleted    |
 | `simulate_scenario` | Simulation executed |
-| `start_run` | Run started |
-| `pause_run` | Run paused |
-| `resume_run` | Run resumed |
-| `cancel_run` | Run cancelled |
-| `complete_run` | Run completed |
-| `fail_run` | Run failed |
-| `approve_step` | Step approved |
-| `reject_step` | Step rejected |
+| `start_run`         | Run started         |
+| `pause_run`         | Run paused          |
+| `resume_run`        | Run resumed         |
+| `cancel_run`        | Run cancelled       |
+| `complete_run`      | Run completed       |
+| `fail_run`          | Run failed          |
+| `approve_step`      | Step approved       |
+| `reject_step`       | Step rejected       |
 
 ## Feature Flag
 
 ```typescript
-ENABLE_SCENARIO_PLAYBOOK: true
+ENABLE_SCENARIO_PLAYBOOK: true;
 ```
 
 ## Performance Considerations

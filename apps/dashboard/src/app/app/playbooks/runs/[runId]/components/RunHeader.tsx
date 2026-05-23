@@ -43,7 +43,10 @@ function getStreamingModeColor(mode: string): string {
 /**
  * Format duration from start to now/end
  */
-function formatDuration(startedAt: string | null, completedAt: string | null): string {
+function formatDuration(
+  startedAt: string | null,
+  completedAt: string | null
+): string {
   if (!startedAt) return '—';
 
   const start = new Date(startedAt).getTime();
@@ -65,9 +68,10 @@ function formatDuration(startedAt: string | null, completedAt: string | null): s
 
 export function RunHeader({ run, streamingMode }: RunHeaderProps) {
   const duration = formatDuration(run.startedAt, run.completedAt);
-  const completionRate = run.progress.total > 0
-    ? Math.round((run.progress.completed / run.progress.total) * 100)
-    : 0;
+  const completionRate =
+    run.progress.total > 0
+      ? Math.round((run.progress.completed / run.progress.total) * 100)
+      : 0;
 
   return (
     <div className="bg-white border-b border-gray-200 px-6 py-4">
@@ -103,7 +107,8 @@ export function RunHeader({ run, streamingMode }: RunHeaderProps) {
               <span className="font-mono text-xs">{run.id.slice(0, 8)}</span>
             </div>
             <div>
-              <span className="font-medium">Version:</span> v{run.playbookVersion}
+              <span className="font-medium">Version:</span> v
+              {run.playbookVersion}
             </div>
             <div>
               <span className="font-medium">Duration:</span> {duration}
@@ -156,7 +161,9 @@ export function RunHeader({ run, streamingMode }: RunHeaderProps) {
       {run.state === 'failed' && Boolean(run.error) && (
         <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-3">
           <div className="flex items-start gap-2">
-            <div className="text-red-600 font-semibold text-sm">⚠ Run Failed</div>
+            <div className="text-red-600 font-semibold text-sm">
+              ⚠ Run Failed
+            </div>
             <div className="text-sm text-red-800">
               {typeof run.error === 'object' && run.error !== null
                 ? (run.error as any).message || JSON.stringify(run.error)

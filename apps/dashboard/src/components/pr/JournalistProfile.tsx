@@ -9,6 +9,7 @@ import {
   CheckCircle,
   PencilSimple,
 } from '@phosphor-icons/react';
+
 import type { Journalist } from './pr-mock-data';
 import { citationBadgeConfig, relationshipDotConfig } from './pr-mock-data';
 
@@ -17,7 +18,10 @@ interface JournalistProfileProps {
   onNewPitch?: () => void;
 }
 
-export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileProps) {
+export function JournalistProfile({
+  journalist,
+  onNewPitch,
+}: JournalistProfileProps) {
   const citBadge = citationBadgeConfig[journalist.aiCitation];
   const relDot = relationshipDotConfig[journalist.relationship];
 
@@ -26,7 +30,9 @@ export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileP
       {/* ── Profile Header ────────────────────────────── */}
       <div className="flex items-start gap-4 mb-6">
         <div className="w-12 h-12 rounded-full bg-brand-magenta/15 flex items-center justify-center flex-shrink-0">
-          <span className="text-lg font-semibold text-brand-magenta">{journalist.initials}</span>
+          <span className="text-lg font-semibold text-brand-magenta">
+            {journalist.initials}
+          </span>
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-2xl font-bold text-white">{journalist.name}</h2>
@@ -64,7 +70,10 @@ export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileP
       {/* ── Beats ─────────────────────────────────────── */}
       <div className="flex flex-wrap gap-1.5 mb-6">
         {journalist.beats.map((beat) => (
-          <span key={beat} className="bg-slate-3 text-white/70 text-xs px-2 py-1 rounded-full">
+          <span
+            key={beat}
+            className="bg-slate-3 text-white/70 text-xs px-2 py-1 rounded-full"
+          >
             {beat}
           </span>
         ))}
@@ -77,15 +86,21 @@ export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileP
             <span className="text-[13px] font-semibold uppercase tracking-wider text-brand-magenta">
               AI Citation Intelligence
             </span>
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${citBadge.bg} ${citBadge.text}`}>
+            <span
+              className={`text-xs font-medium px-2 py-0.5 rounded-full ${citBadge.bg} ${citBadge.text}`}
+            >
               {journalist.aiCitation.toUpperCase()} &uarr;
             </span>
           </div>
-          <p className="text-sm text-white/70 mb-3">{journalist.citationStats.description}</p>
+          <p className="text-sm text-white/70 mb-3">
+            {journalist.citationStats.description}
+          </p>
           <div className="flex items-center gap-4 text-xs text-white/45">
             <span>{journalist.citationStats.totalCitations} citations</span>
             <span>{journalist.citationStats.aiEngines} AI engines</span>
-            <span>Top article cited {journalist.citationStats.topArticleCitations}x</span>
+            <span>
+              Top article cited {journalist.citationStats.topArticleCitations}x
+            </span>
           </div>
         </div>
       )}
@@ -98,13 +113,21 @@ export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileP
           </h3>
           <div className="flex items-center gap-2 mb-2">
             <div className={`w-1.5 h-1.5 rounded-full ${relDot}`} />
-            <span className="text-sm text-white capitalize">{journalist.relationship}</span>
+            <span className="text-sm text-white capitalize">
+              {journalist.relationship}
+            </span>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/45 mb-3">
             <span>Owned by: {journalist.relationshipStats.owner}</span>
-            <span>Last contact: {journalist.relationshipStats.lastContact}</span>
-            <span>Interactions: {journalist.relationshipStats.totalInteractions}</span>
-            <span>Coverage: {journalist.relationshipStats.coverageReceived} articles</span>
+            <span>
+              Last contact: {journalist.relationshipStats.lastContact}
+            </span>
+            <span>
+              Interactions: {journalist.relationshipStats.totalInteractions}
+            </span>
+            <span>
+              Coverage: {journalist.relationshipStats.coverageReceived} articles
+            </span>
           </div>
           {/* Warmth bar */}
           <div className="w-full h-1.5 bg-slate-4 rounded-full overflow-hidden">
@@ -130,7 +153,9 @@ export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileP
                   <span className="text-sm text-white hover:text-brand-magenta cursor-pointer transition-colors">
                     {article.title}
                   </span>
-                  <span className="text-xs text-white/30 ml-2">{article.date}</span>
+                  <span className="text-xs text-white/30 ml-2">
+                    {article.date}
+                  </span>
                 </div>
               </div>
             ))}
@@ -145,48 +170,59 @@ export function JournalistProfile({ journalist, onNewPitch }: JournalistProfileP
       )}
 
       {/* ── Activity Timeline ─────────────────────────── */}
-      {journalist.activityTimeline && journalist.activityTimeline.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-[13px] font-semibold uppercase tracking-wider text-white/50 mb-3">
-            Team Activity
-          </h3>
-          <div className="relative pl-4">
-            {/* Vertical line */}
-            <div className="absolute left-[3px] top-1 bottom-1 w-0.5 bg-brand-magenta/20" />
+      {journalist.activityTimeline &&
+        journalist.activityTimeline.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-white/50 mb-3">
+              Team Activity
+            </h3>
+            <div className="relative pl-4">
+              {/* Vertical line */}
+              <div className="absolute left-[3px] top-1 bottom-1 w-0.5 bg-brand-magenta/20" />
 
-            {journalist.activityTimeline.map((entry, i) => (
-              <div key={i} className="relative pb-3 last:pb-0">
-                {/* Dot */}
-                <div className={`absolute left-[-14px] top-1 w-2 h-2 rounded-full ${
-                  entry.type === 'replied' ? 'bg-brand-magenta' : 'bg-white/30'
-                }`} />
-                <div className="flex items-start gap-2">
-                  <span className="text-xs text-white/30 flex-shrink-0 w-12">{entry.date}</span>
-                  <span className={`text-sm ${
-                    entry.type === 'replied' ? 'text-white' : 'text-white/70'
-                  }`}>
-                    {entry.description}
-                  </span>
+              {journalist.activityTimeline.map((entry, i) => (
+                <div key={i} className="relative pb-3 last:pb-0">
+                  {/* Dot */}
+                  <div
+                    className={`absolute left-[-14px] top-1 w-2 h-2 rounded-full ${
+                      entry.type === 'replied'
+                        ? 'bg-brand-magenta'
+                        : 'bg-white/30'
+                    }`}
+                  />
+                  <div className="flex items-start gap-2">
+                    <span className="text-xs text-white/30 flex-shrink-0 w-12">
+                      {entry.date}
+                    </span>
+                    <span
+                      className={`text-sm ${
+                        entry.type === 'replied'
+                          ? 'text-white'
+                          : 'text-white/70'
+                      }`}
+                    >
+                      {entry.description}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-3">
+              <button
+                type="button"
+                className="text-xs text-brand-magenta hover:text-brand-magenta/80 transition-colors"
+              >
+                + Log activity
+              </button>
+              <button
+                type="button"
+                className="text-xs text-brand-magenta hover:text-brand-magenta/80 transition-colors"
+              >
+                + Add note
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-3 mt-3">
-            <button
-              type="button"
-              className="text-xs text-brand-magenta hover:text-brand-magenta/80 transition-colors"
-            >
-              + Log activity
-            </button>
-            <button
-              type="button"
-              className="text-xs text-brand-magenta hover:text-brand-magenta/80 transition-colors"
-            >
-              + Add note
-            </button>
-          </div>
-        </div>
-      )}
+        )}
 
       {/* ── Notes ─────────────────────────────────────── */}
       {journalist.notes && (

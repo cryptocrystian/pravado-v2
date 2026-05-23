@@ -6,10 +6,11 @@
 
 'use client';
 
-import React from 'react';
 import type { NarrativeSectionType } from '@pravado/types';
-import { getSectionTypeLabel } from '@/lib/unifiedNarrativeApi';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
+import { getSectionTypeLabel } from '@/lib/unifiedNarrativeApi';
 import { cn } from '@/lib/utils';
 
 interface NarrativeSectionTypeBadgeProps {
@@ -38,7 +39,8 @@ export default function NarrativeSectionTypeBadge({
   className = '',
   size = 'md',
 }: NarrativeSectionTypeBadgeProps) {
-  const colorClass = SECTION_TYPE_COLORS[sectionType] || 'bg-gray-100 text-gray-800';
+  const colorClass =
+    SECTION_TYPE_COLORS[sectionType] || 'bg-gray-100 text-gray-800';
   const label = getSectionTypeLabel(sectionType);
 
   return (

@@ -50,21 +50,21 @@ When space is used inefficiently:
 
 This is a physiological readability requirement, not a stylistic preference.
 
-| Category | Minimum Size | Tailwind Class | Violations |
-|----------|-------------|----------------|------------|
-| **Body Text** | 12px | `text-xs` minimum | Paragraphs, descriptions |
-| **Interactive Labels** | 12px | `text-xs` minimum | Buttons, links, form labels |
-| **List Items** | 12px | `text-xs` minimum | Queue rows, library items |
-| **Data Values** | 12px | `text-xs` minimum | Scores, dates, metrics |
+| Category               | Minimum Size | Tailwind Class    | Violations                  |
+| ---------------------- | ------------ | ----------------- | --------------------------- |
+| **Body Text**          | 12px         | `text-xs` minimum | Paragraphs, descriptions    |
+| **Interactive Labels** | 12px         | `text-xs` minimum | Buttons, links, form labels |
+| **List Items**         | 12px         | `text-xs` minimum | Queue rows, library items   |
+| **Data Values**        | 12px         | `text-xs` minimum | Scores, dates, metrics      |
 
 ### Micro-Label Exception
 
 The ONLY text permitted below 12px:
 
-| Category | Allowed Size | Tailwind Class | Examples |
-|----------|-------------|----------------|----------|
-| **Micro-Labels** | 10px | `text-[10px]` | Axis labels on charts, tooltips, badge modifiers |
-| **Decorative** | 10px | `text-[10px]` | "Beta" tags, version numbers |
+| Category         | Allowed Size | Tailwind Class | Examples                                         |
+| ---------------- | ------------ | -------------- | ------------------------------------------------ |
+| **Micro-Labels** | 10px         | `text-[10px]`  | Axis labels on charts, tooltips, badge modifiers |
+| **Decorative**   | 10px         | `text-[10px]`  | "Beta" tags, version numbers                     |
 
 **Micro-labels MUST:**
 
@@ -87,24 +87,24 @@ The following are **canonically forbidden**:
 
 ### Density Classification
 
-| Density Level | Definition | Use Cases |
-|---------------|------------|-----------|
-| **High** | Maximum information per viewport | Dashboards, analytics, data tables |
-| **Medium** | Balanced information and breathing room | Work queues, libraries, calendars |
-| **Low** | Generous space, focused attention | Editors, approval flows, empty states |
+| Density Level | Definition                              | Use Cases                             |
+| ------------- | --------------------------------------- | ------------------------------------- |
+| **High**      | Maximum information per viewport        | Dashboards, analytics, data tables    |
+| **Medium**    | Balanced information and breathing room | Work queues, libraries, calendars     |
+| **Low**       | Generous space, focused attention       | Editors, approval flows, empty states |
 
 ### Surface Density Assignments
 
-| Surface Type | Density Level | Rationale |
-|--------------|---------------|-----------|
-| **Command Center Dashboard** | High | Overview requires data density |
-| **Work Queue (Triage)** | Medium | Scanning efficiency balanced with readability |
-| **Library (Browse)** | Medium | Card-based browsing needs visual room |
-| **Calendar** | Medium | Time-based layout has inherent structure |
-| **Editor** | Low | Focus on single content item |
-| **Approval Flow (Copilot)** | Low | Decision-making needs space to think |
-| **Exception Console (Autopilot)** | Low | Sparse by design; exceptions only |
-| **Insights/Analytics** | High | Data visualization density acceptable |
+| Surface Type                      | Density Level | Rationale                                     |
+| --------------------------------- | ------------- | --------------------------------------------- |
+| **Command Center Dashboard**      | High          | Overview requires data density                |
+| **Work Queue (Triage)**           | Medium        | Scanning efficiency balanced with readability |
+| **Library (Browse)**              | Medium        | Card-based browsing needs visual room         |
+| **Calendar**                      | Medium        | Time-based layout has inherent structure      |
+| **Editor**                        | Low           | Focus on single content item                  |
+| **Approval Flow (Copilot)**       | Low           | Decision-making needs space to think          |
+| **Exception Console (Autopilot)** | Low           | Sparse by design; exceptions only             |
+| **Insights/Analytics**            | High          | Data visualization density acceptable         |
 
 ---
 
@@ -127,6 +127,7 @@ For any primary work surface (not settings, not modals):
 **No more than 50% of the viewport may be dead space.**
 
 Calculation:
+
 - Measure viewport area above the fold
 - Subtract meaningful content area (text, controls, structured whitespace)
 - Remaining "empty" area must be ≤50%
@@ -175,12 +176,12 @@ Components MUST have sufficient spacing to:
 
 **Components MUST NOT stack with zero spacing.**
 
-| Context | Minimum Gap | Tailwind Class |
-|---------|-------------|----------------|
-| **List Items** | 4px | `gap-1` or `space-y-1` |
-| **Card Grid** | 12px | `gap-3` |
-| **Form Fields** | 8px | `gap-2` or `space-y-2` |
-| **Section Separators** | 16px | `gap-4` or `mb-4` |
+| Context                | Minimum Gap | Tailwind Class         |
+| ---------------------- | ----------- | ---------------------- |
+| **List Items**         | 4px         | `gap-1` or `space-y-1` |
+| **Card Grid**          | 12px        | `gap-3`                |
+| **Form Fields**        | 8px         | `gap-2` or `space-y-2` |
+| **Section Separators** | 16px        | `gap-4` or `mb-4`      |
 
 ### Maximum Spacing
 
@@ -315,6 +316,6 @@ For any Pravado surface, verify:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-02-02 | Initial canonical version |
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-02-02 | Initial canonical version |

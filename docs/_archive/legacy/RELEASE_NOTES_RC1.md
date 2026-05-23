@@ -102,14 +102,14 @@ Pravado v1.0.0-rc1 is the first release candidate of the Pravado Platform, a com
 
 ### Package Versions
 
-| Package | Version |
-|---------|---------|
-| pravado-v2 (monorepo) | 1.0.0-rc1 |
-| @pravado/api | 1.0.0-rc1 |
-| @pravado/dashboard | 1.0.0-rc1 |
-| @pravado/types | 1.0.0-rc1 |
-| @pravado/validators | 1.0.0-rc1 |
-| @pravado/utils | 1.0.0-rc1 |
+| Package                | Version   |
+| ---------------------- | --------- |
+| pravado-v2 (monorepo)  | 1.0.0-rc1 |
+| @pravado/api           | 1.0.0-rc1 |
+| @pravado/dashboard     | 1.0.0-rc1 |
+| @pravado/types         | 1.0.0-rc1 |
+| @pravado/validators    | 1.0.0-rc1 |
+| @pravado/utils         | 1.0.0-rc1 |
 | @pravado/feature-flags | 1.0.0-rc1 |
 
 ### Database
@@ -219,6 +219,7 @@ Pravado v1.0.0-rc1 is the first release candidate of the Pravado Platform, a com
 ## Support
 
 For issues or questions:
+
 - **Documentation**: See `/docs` folder
 - **Issues**: GitHub Issues
 - **Email**: support@pravado.com

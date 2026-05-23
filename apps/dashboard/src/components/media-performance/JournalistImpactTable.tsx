@@ -5,13 +5,14 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { getScoreColor, getSentimentColor } from '@/lib/mediaPerformanceApi';
 import type { TopJournalist } from '@pravado/types';
 import { ArrowUpDown, TrendingUp, Award } from 'lucide-react';
 import { useState, useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getScoreColor, getSentimentColor } from '@/lib/mediaPerformanceApi';
+import { cn } from '@/lib/utils';
 
 interface JournalistImpactTableProps {
   journalists: TopJournalist[];
@@ -98,7 +99,9 @@ export function JournalistImpactTable({
               <thead className="border-b">
                 <tr className="text-left">
                   <th className="pb-2 pr-2 font-medium text-gray-600">Rank</th>
-                  <th className="pb-2 px-2 font-medium text-gray-600">Journalist</th>
+                  <th className="pb-2 px-2 font-medium text-gray-600">
+                    Journalist
+                  </th>
                   <th
                     className="pb-2 px-2 font-medium text-gray-600 cursor-pointer hover:text-gray-900"
                     onClick={() => handleSort('impactScore')}
@@ -129,7 +132,9 @@ export function JournalistImpactTable({
               <tbody>
                 {sortedJournalists.map((journalist, idx) => {
                   const impactColor = getScoreColor(journalist.impactScore);
-                  const sentimentColor = getSentimentColor(journalist.avgSentiment);
+                  const sentimentColor = getSentimentColor(
+                    journalist.avgSentiment
+                  );
 
                   return (
                     <tr
@@ -143,8 +148,12 @@ export function JournalistImpactTable({
                       {/* Rank */}
                       <td className="py-3 pr-2">
                         <div className="flex items-center gap-1">
-                          {idx === 0 && <Award className="h-4 w-4 text-yellow-500" />}
-                          <span className="text-gray-600 font-medium">#{idx + 1}</span>
+                          {idx === 0 && (
+                            <Award className="h-4 w-4 text-yellow-500" />
+                          )}
+                          <span className="text-gray-600 font-medium">
+                            #{idx + 1}
+                          </span>
                         </div>
                       </td>
 
@@ -162,11 +171,16 @@ export function JournalistImpactTable({
                             variant="outline"
                             className={cn(
                               'text-xs font-semibold',
-                              impactColor === 'green' && 'bg-green-100 text-green-800 border-green-200',
-                              impactColor === 'blue' && 'bg-blue-100 text-blue-800 border-blue-200',
-                              impactColor === 'yellow' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                              impactColor === 'red' && 'bg-red-100 text-red-800 border-red-200',
-                              impactColor === 'gray' && 'bg-gray-100 text-gray-800 border-gray-200'
+                              impactColor === 'green' &&
+                                'bg-green-100 text-green-800 border-green-200',
+                              impactColor === 'blue' &&
+                                'bg-blue-100 text-blue-800 border-blue-200',
+                              impactColor === 'yellow' &&
+                                'bg-yellow-100 text-yellow-800 border-yellow-200',
+                              impactColor === 'red' &&
+                                'bg-red-100 text-red-800 border-red-200',
+                              impactColor === 'gray' &&
+                                'bg-gray-100 text-gray-800 border-gray-200'
                             )}
                           >
                             {journalist.impactScore.toFixed(0)}
@@ -190,12 +204,18 @@ export function JournalistImpactTable({
                           variant="outline"
                           className={cn(
                             'text-xs',
-                            sentimentColor === 'green' && 'bg-green-100 text-green-800 border-green-200',
-                            sentimentColor === 'blue' && 'bg-blue-100 text-blue-800 border-blue-200',
-                            sentimentColor === 'yellow' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                            sentimentColor === 'orange' && 'bg-orange-100 text-orange-800 border-orange-200',
-                            sentimentColor === 'red' && 'bg-red-100 text-red-800 border-red-200',
-                            sentimentColor === 'gray' && 'bg-gray-100 text-gray-800 border-gray-200'
+                            sentimentColor === 'green' &&
+                              'bg-green-100 text-green-800 border-green-200',
+                            sentimentColor === 'blue' &&
+                              'bg-blue-100 text-blue-800 border-blue-200',
+                            sentimentColor === 'yellow' &&
+                              'bg-yellow-100 text-yellow-800 border-yellow-200',
+                            sentimentColor === 'orange' &&
+                              'bg-orange-100 text-orange-800 border-orange-200',
+                            sentimentColor === 'red' &&
+                              'bg-red-100 text-red-800 border-red-200',
+                            sentimentColor === 'gray' &&
+                              'bg-gray-100 text-gray-800 border-gray-200'
                           )}
                         >
                           {((journalist.avgSentiment + 1) * 50).toFixed(0)}%

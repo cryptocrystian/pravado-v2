@@ -1,13 +1,5 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import { BubbleMenu } from '@tiptap/react/menus';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Typography from '@tiptap/extension-typography';
-import CharacterCount from '@tiptap/extension-character-count';
-import Highlight from '@tiptap/extension-highlight';
 import {
   FloppyDisk,
   SidebarSimple,
@@ -15,9 +7,18 @@ import {
   X,
   Lightning,
 } from '@phosphor-icons/react';
-import { SlashCommandPalette } from './SlashCommandPalette';
+import CharacterCount from '@tiptap/extension-character-count';
+import Highlight from '@tiptap/extension-highlight';
+import Placeholder from '@tiptap/extension-placeholder';
+import Typography from '@tiptap/extension-typography';
+import { useEditor, EditorContent } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
+import StarterKit from '@tiptap/starter-kit';
+import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { BubbleToolbar } from './BubbleToolbar';
 import type { BriefContext, SlashCommand } from './editor-mock-data';
+import { SlashCommandPalette } from './SlashCommandPalette';
 import './editor-canvas-styles.css';
 
 interface EditorCanvasProps {
@@ -76,7 +77,7 @@ export function EditorCanvas({
       const textBefore = state.doc.textBetween(
         Math.max(0, from - 20),
         from,
-        '\n',
+        '\n'
       );
 
       const slashMatch = textBefore.match(/\/([a-zA-Z]*)$/);
@@ -144,15 +145,12 @@ export function EditorCanvas({
       setSlashMenu(null);
       slashStartPosRef.current = null;
     },
-    [editor],
+    [editor]
   );
 
-  const handleBubbleAction = useCallback(
-    (_action: string, _value?: string) => {
-      // In production, these trigger AI processing — stub for now
-    },
-    [],
-  );
+  const handleBubbleAction = useCallback((_action: string, _value?: string) => {
+    // In production, these trigger AI processing — stub for now
+  }, []);
 
   const wordCount = editor?.storage.characterCount?.words() ?? 0;
   const charCount = editor?.storage.characterCount?.characters() ?? 0;
@@ -282,12 +280,16 @@ export function EditorCanvas({
           <FloppyDisk
             size={12}
             className={
-              autoSaveStatus === 'Saved' ? 'text-semantic-success' : 'text-white/30'
+              autoSaveStatus === 'Saved'
+                ? 'text-semantic-success'
+                : 'text-white/30'
             }
           />
           <span
             className={`text-xs ${
-              autoSaveStatus === 'Saved' ? 'text-semantic-success' : 'text-white/30'
+              autoSaveStatus === 'Saved'
+                ? 'text-semantic-success'
+                : 'text-white/30'
             }`}
           >
             {autoSaveStatus}

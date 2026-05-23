@@ -7,6 +7,7 @@
 ## Overview
 
 The PR Pitch Engine transforms Pravado into a complete PR campaign platform by enabling:
+
 - Personalized pitch generation for individual journalists
 - Multi-step outreach sequences (initial pitch + follow-ups)
 - Contact status tracking with event logging
@@ -160,73 +161,74 @@ Generate personalized pitch with:
 
 Available for template interpolation:
 
-| Variable | Description |
-|----------|-------------|
-| `{{journalist.name}}` | Full name |
-| `{{journalist.firstName}}` | First name only |
-| `{{journalist.beat}}` | Coverage area |
-| `{{journalist.outlet}}` | Publication name |
-| `{{organization.name}}` | Company name |
-| `{{pressRelease.headline}}` | PR headline |
-| `{{pressRelease.angle}}` | Story angle |
+| Variable                    | Description      |
+| --------------------------- | ---------------- |
+| `{{journalist.name}}`       | Full name        |
+| `{{journalist.firstName}}`  | First name only  |
+| `{{journalist.beat}}`       | Coverage area    |
+| `{{journalist.outlet}}`     | Publication name |
+| `{{organization.name}}`     | Company name     |
+| `{{pressRelease.headline}}` | PR headline      |
+| `{{pressRelease.angle}}`    | Story angle      |
 
 ## Status Model
 
 ### Sequence Statuses
 
-| Status | Description |
-|--------|-------------|
-| `draft` | Being edited, not active |
-| `active` | Actively sending pitches |
-| `paused` | Temporarily stopped |
-| `completed` | All contacts processed |
-| `archived` | Soft deleted |
+| Status      | Description              |
+| ----------- | ------------------------ |
+| `draft`     | Being edited, not active |
+| `active`    | Actively sending pitches |
+| `paused`    | Temporarily stopped      |
+| `completed` | All contacts processed   |
+| `archived`  | Soft deleted             |
 
 ### Contact Statuses
 
-| Status | Description |
-|--------|-------------|
-| `queued` | Ready to send |
-| `sending` | Currently sending |
-| `sent` | Successfully sent |
-| `opened` | Email opened |
-| `replied` | Response received |
-| `bounced` | Delivery failed |
-| `opted_out` | Unsubscribed |
-| `failed` | Send failed |
+| Status      | Description       |
+| ----------- | ----------------- |
+| `queued`    | Ready to send     |
+| `sending`   | Currently sending |
+| `sent`      | Successfully sent |
+| `opened`    | Email opened      |
+| `replied`   | Response received |
+| `bounced`   | Delivery failed   |
+| `opted_out` | Unsubscribed      |
+| `failed`    | Send failed       |
 
 ### Event Types
 
-| Type | Description |
-|------|-------------|
-| `queued` | Pitch queued for sending |
-| `sent` | Pitch sent successfully |
-| `opened` | Email opened (tracking) |
-| `clicked` | Link clicked |
-| `replied` | Response received |
-| `bounced` | Delivery bounced |
-| `failed` | Send failed |
+| Type      | Description              |
+| --------- | ------------------------ |
+| `queued`  | Pitch queued for sending |
+| `sent`    | Pitch sent successfully  |
+| `opened`  | Email opened (tracking)  |
+| `clicked` | Link clicked             |
+| `replied` | Response received        |
+| `bounced` | Delivery bounced         |
+| `failed`  | Send failed              |
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/pr/pitches/sequences` | Create sequence |
-| GET | `/api/v1/pr/pitches/sequences` | List sequences |
-| GET | `/api/v1/pr/pitches/sequences/:id` | Get sequence |
-| PUT | `/api/v1/pr/pitches/sequences/:id` | Update sequence |
-| DELETE | `/api/v1/pr/pitches/sequences/:id` | Archive sequence |
-| POST | `/api/v1/pr/pitches/sequences/:id/contacts` | Add contacts |
-| GET | `/api/v1/pr/pitches/sequences/:id/contacts` | List contacts |
-| POST | `/api/v1/pr/pitches/preview` | Generate preview |
-| POST | `/api/v1/pr/pitches/contacts/:id/queue` | Queue pitch |
-| GET | `/api/v1/pr/pitches/contacts/:id` | Get contact |
+| Method | Endpoint                                    | Description      |
+| ------ | ------------------------------------------- | ---------------- |
+| POST   | `/api/v1/pr/pitches/sequences`              | Create sequence  |
+| GET    | `/api/v1/pr/pitches/sequences`              | List sequences   |
+| GET    | `/api/v1/pr/pitches/sequences/:id`          | Get sequence     |
+| PUT    | `/api/v1/pr/pitches/sequences/:id`          | Update sequence  |
+| DELETE | `/api/v1/pr/pitches/sequences/:id`          | Archive sequence |
+| POST   | `/api/v1/pr/pitches/sequences/:id/contacts` | Add contacts     |
+| GET    | `/api/v1/pr/pitches/sequences/:id/contacts` | List contacts    |
+| POST   | `/api/v1/pr/pitches/preview`                | Generate preview |
+| POST   | `/api/v1/pr/pitches/contacts/:id/queue`     | Queue pitch      |
+| GET    | `/api/v1/pr/pitches/contacts/:id`           | Get contact      |
 
 ## Dashboard UI
 
 ### Pitch Sequences Page
 
 Three-column layout:
+
 1. **Left**: Sequence list with status badges
 2. **Center**: Editor or contacts view
 3. **Right**: Stats sidebar

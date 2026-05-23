@@ -90,7 +90,11 @@ const mockNodes = [
       { name: 'Response Time', direction: 'positive', impact: 'medium' },
     ],
     riskFactors: [
-      { name: 'Reputational Damage', severity: 'high', description: 'Brand perception at risk' },
+      {
+        name: 'Reputational Damage',
+        severity: 'high',
+        description: 'Brand perception at risk',
+      },
     ],
     opportunityFactors: [],
   },
@@ -107,12 +111,14 @@ const mockNodes = [
     depth: 1,
     aiSummary: 'Rapid response mitigates immediate damage.',
     position: { x: 200, y: 150 },
-    keyDrivers: [
-      { name: 'Speed', direction: 'positive', impact: 'high' },
-    ],
+    keyDrivers: [{ name: 'Speed', direction: 'positive', impact: 'high' }],
     riskFactors: [],
     opportunityFactors: [
-      { name: 'Trust Recovery', potential: 'high', description: 'Fast action builds trust' },
+      {
+        name: 'Trust Recovery',
+        potential: 'high',
+        description: 'Fast action builds trust',
+      },
     ],
   },
   {
@@ -128,11 +134,13 @@ const mockNodes = [
     depth: 1,
     aiSummary: 'Slow response allows crisis to escalate.',
     position: { x: 600, y: 150 },
-    keyDrivers: [
-      { name: 'Escalation', direction: 'negative', impact: 'high' },
-    ],
+    keyDrivers: [{ name: 'Escalation', direction: 'negative', impact: 'high' }],
     riskFactors: [
-      { name: 'Viral Spread', severity: 'critical', description: 'Negative content goes viral' },
+      {
+        name: 'Viral Spread',
+        severity: 'critical',
+        description: 'Negative content goes viral',
+      },
     ],
     opportunityFactors: [],
   },
@@ -152,7 +160,11 @@ const mockNodes = [
     keyDrivers: [],
     riskFactors: [],
     opportunityFactors: [
-      { name: 'Stronger Brand', potential: 'high', description: 'Crisis handling improves brand' },
+      {
+        name: 'Stronger Brand',
+        potential: 'high',
+        description: 'Crisis handling improves brand',
+      },
     ],
   },
   {
@@ -170,18 +182,54 @@ const mockNodes = [
     position: { x: 700, y: 250 },
     keyDrivers: [],
     riskFactors: [
-      { name: 'Revenue Loss', severity: 'critical', description: 'Customer attrition' },
-      { name: 'Stock Impact', severity: 'high', description: 'Share price decline' },
+      {
+        name: 'Revenue Loss',
+        severity: 'critical',
+        description: 'Customer attrition',
+      },
+      {
+        name: 'Stock Impact',
+        severity: 'high',
+        description: 'Share price decline',
+      },
     ],
     opportunityFactors: [],
   },
 ];
 
 const mockEdges = [
-  { id: 'edge-1', mapId: 'map-1', source: 'node-1', target: 'node-2', probability: 0.6, label: 'Rapid response' },
-  { id: 'edge-2', mapId: 'map-1', source: 'node-1', target: 'node-3', probability: 0.4, label: 'Delayed response' },
-  { id: 'edge-3', mapId: 'map-1', source: 'node-2', target: 'node-4', probability: 0.7, label: 'Success' },
-  { id: 'edge-4', mapId: 'map-1', source: 'node-3', target: 'node-5', probability: 0.8, label: 'Escalation' },
+  {
+    id: 'edge-1',
+    mapId: 'map-1',
+    source: 'node-1',
+    target: 'node-2',
+    probability: 0.6,
+    label: 'Rapid response',
+  },
+  {
+    id: 'edge-2',
+    mapId: 'map-1',
+    source: 'node-1',
+    target: 'node-3',
+    probability: 0.4,
+    label: 'Delayed response',
+  },
+  {
+    id: 'edge-3',
+    mapId: 'map-1',
+    source: 'node-2',
+    target: 'node-4',
+    probability: 0.7,
+    label: 'Success',
+  },
+  {
+    id: 'edge-4',
+    mapId: 'map-1',
+    source: 'node-3',
+    target: 'node-5',
+    probability: 0.8,
+    label: 'Escalation',
+  },
 ];
 
 const mockPaths = [
@@ -194,7 +242,8 @@ const mockPaths = [
     cumulativeProbability: 0.42,
     riskScore: 15,
     opportunityScore: 80,
-    aiSummary: 'Optimal path through quick response leading to crisis containment.',
+    aiSummary:
+      'Optimal path through quick response leading to crisis containment.',
     keyDrivers: [
       { name: 'Speed', direction: 'positive', impact: 'high' },
       { name: 'Preparation', direction: 'positive', impact: 'medium' },
@@ -218,7 +267,7 @@ const mockPaths = [
 ];
 
 const mockGraphData = {
-  nodes: mockNodes.map(n => ({
+  nodes: mockNodes.map((n) => ({
     id: n.id,
     type: n.nodeType,
     label: n.label,
@@ -232,14 +281,14 @@ const mockGraphData = {
     parentId: n.parentId,
     childIds: [],
   })),
-  edges: mockEdges.map(e => ({
+  edges: mockEdges.map((e) => ({
     id: e.id,
     source: e.source,
     target: e.target,
     probability: e.probability,
     label: e.label,
   })),
-  paths: mockPaths.map(p => ({
+  paths: mockPaths.map((p) => ({
     id: p.id,
     pathNodes: p.pathNodes,
     label: p.label,
@@ -304,12 +353,28 @@ const mockAnalysis = {
     },
   ],
   aggregatedRisks: [
-    { name: 'Reputational Damage', severity: 'high', description: 'Primary risk across all scenarios' },
-    { name: 'Revenue Loss', severity: 'critical', description: 'Financial impact in negative outcomes' },
+    {
+      name: 'Reputational Damage',
+      severity: 'high',
+      description: 'Primary risk across all scenarios',
+    },
+    {
+      name: 'Revenue Loss',
+      severity: 'critical',
+      description: 'Financial impact in negative outcomes',
+    },
   ],
   aggregatedOpportunities: [
-    { name: 'Trust Recovery', potential: 'high', description: 'Positive response builds trust' },
-    { name: 'Stronger Brand', potential: 'high', description: 'Crisis handling can strengthen brand' },
+    {
+      name: 'Trust Recovery',
+      potential: 'high',
+      description: 'Positive response builds trust',
+    },
+    {
+      name: 'Stronger Brand',
+      potential: 'high',
+      description: 'Crisis handling can strengthen brand',
+    },
   ],
 };
 
@@ -345,31 +410,48 @@ const mockGlobalStats = {
 };
 
 // Mock fetch for API calls
-const mockFetch = async (url: string, options?: RequestInit): Promise<Response> => {
+const mockFetch = async (
+  url: string,
+  options?: RequestInit
+): Promise<Response> => {
   const path = url.replace('http://localhost:4000', '');
 
   // List reality maps
-  if (path.startsWith('/api/v1/reality-maps') && !path.includes('/') && (!options || options.method === 'GET')) {
-    return new Response(JSON.stringify({
-      maps: mockRealityMaps,
-      total: mockRealityMaps.length,
-      hasMore: false,
-    }), { status: 200 });
+  if (
+    path.startsWith('/api/v1/reality-maps') &&
+    !path.includes('/') &&
+    (!options || options.method === 'GET')
+  ) {
+    return new Response(
+      JSON.stringify({
+        maps: mockRealityMaps,
+        total: mockRealityMaps.length,
+        hasMore: false,
+      }),
+      { status: 200 }
+    );
   }
 
   // Get reality map by ID
-  if (path.match(/\/api\/v1\/reality-maps\/map-\d$/) && (!options || options.method === 'GET')) {
+  if (
+    path.match(/\/api\/v1\/reality-maps\/map-\d$/) &&
+    (!options || options.method === 'GET')
+  ) {
     const mapId = path.split('/').pop();
-    const map = mockRealityMaps.find(m => m.id === mapId);
+    const map = mockRealityMaps.find((m) => m.id === mapId);
     if (map) {
       return new Response(JSON.stringify({ map }), { status: 200 });
     }
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+    });
   }
 
   // Get graph data
   if (path.match(/\/api\/v1\/reality-maps\/map-\d\/graph/)) {
-    return new Response(JSON.stringify({ graph: mockGraphData }), { status: 200 });
+    return new Response(JSON.stringify({ graph: mockGraphData }), {
+      status: 200,
+    });
   }
 
   // Get analysis
@@ -379,15 +461,20 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
 
   // Get audit log
   if (path.match(/\/api\/v1\/reality-maps\/map-\d\/audit-log/)) {
-    return new Response(JSON.stringify({
-      events: mockAuditEvents,
-      total: mockAuditEvents.length,
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        events: mockAuditEvents,
+        total: mockAuditEvents.length,
+      }),
+      { status: 200 }
+    );
   }
 
   // Get global stats
   if (path === '/api/v1/reality-maps/stats') {
-    return new Response(JSON.stringify({ stats: mockGlobalStats }), { status: 200 });
+    return new Response(JSON.stringify({ stats: mockGlobalStats }), {
+      status: 200,
+    });
   }
 
   // Create reality map
@@ -408,24 +495,39 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
   }
 
   // Generate reality map
-  if (path.match(/\/api\/v1\/reality-maps\/map-\d\/generate/) && options?.method === 'POST') {
-    return new Response(JSON.stringify({
-      map: { ...mockRealityMaps[0], status: 'generating' },
-    }), { status: 200 });
+  if (
+    path.match(/\/api\/v1\/reality-maps\/map-\d\/generate/) &&
+    options?.method === 'POST'
+  ) {
+    return new Response(
+      JSON.stringify({
+        map: { ...mockRealityMaps[0], status: 'generating' },
+      }),
+      { status: 200 }
+    );
   }
 
   // Update reality map
-  if (path.match(/\/api\/v1\/reality-maps\/map-\d$/) && options?.method === 'PATCH') {
+  if (
+    path.match(/\/api\/v1\/reality-maps\/map-\d$/) &&
+    options?.method === 'PATCH'
+  ) {
     const mapId = path.split('/').pop();
-    const map = mockRealityMaps.find(m => m.id === mapId);
+    const map = mockRealityMaps.find((m) => m.id === mapId);
     const body = JSON.parse(options.body as string);
-    return new Response(JSON.stringify({
-      map: { ...map, ...body, updatedAt: new Date().toISOString() },
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        map: { ...map, ...body, updatedAt: new Date().toISOString() },
+      }),
+      { status: 200 }
+    );
   }
 
   // Delete reality map
-  if (path.match(/\/api\/v1\/reality-maps\/map-\d$/) && options?.method === 'DELETE') {
+  if (
+    path.match(/\/api\/v1\/reality-maps\/map-\d$/) &&
+    options?.method === 'DELETE'
+  ) {
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   }
 
@@ -460,7 +562,9 @@ describe('Reality Maps E2E Tests', () => {
       const response = await fetch('http://localhost:4000/api/v1/reality-maps');
       const data = await response.json();
 
-      const statuses = data.maps.map((m: typeof mockRealityMaps[0]) => m.status);
+      const statuses = data.maps.map(
+        (m: (typeof mockRealityMaps)[0]) => m.status
+      );
       expect(statuses).toContain('completed');
       expect(statuses).toContain('draft');
       expect(statuses).toContain('generating');
@@ -470,7 +574,9 @@ describe('Reality Maps E2E Tests', () => {
       const response = await fetch('http://localhost:4000/api/v1/reality-maps');
       const data = await response.json();
 
-      const completedMap = data.maps.find((m: typeof mockRealityMaps[0]) => m.status === 'completed');
+      const completedMap = data.maps.find(
+        (m: (typeof mockRealityMaps)[0]) => m.status === 'completed'
+      );
       expect(completedMap.totalNodes).toBe(25);
       expect(completedMap.totalPaths).toBe(8);
     });
@@ -492,15 +598,21 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('View Reality Map', () => {
     it('should display map details', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1'
+      );
       const data = await response.json();
 
       expect(data.map.name).toBe('Crisis Reality Map');
-      expect(data.map.description).toBe('Multi-outcome visualization for crisis scenarios');
+      expect(data.map.description).toBe(
+        'Multi-outcome visualization for crisis scenarios'
+      );
     });
 
     it('should load graph data for completed maps', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
       expect(data.graph.nodes).toHaveLength(5);
@@ -509,17 +621,23 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display nodes with correct properties', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
-      const rootNode = data.graph.nodes.find((n: typeof mockGraphData.nodes[0]) => n.type === 'root');
+      const rootNode = data.graph.nodes.find(
+        (n: (typeof mockGraphData.nodes)[0]) => n.type === 'root'
+      );
       expect(rootNode.label).toBe('Crisis Detection');
       expect(rootNode.probability).toBe(1.0);
       expect(rootNode.depth).toBe(0);
     });
 
     it('should display edges with probabilities', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
       const edge = data.graph.edges[0];
@@ -529,10 +647,14 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display paths with outcomes', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
-      const positivePath = data.graph.paths.find((p: typeof mockGraphData.paths[0]) => p.outcomeType === 'positive');
+      const positivePath = data.graph.paths.find(
+        (p: (typeof mockGraphData.paths)[0]) => p.outcomeType === 'positive'
+      );
       expect(positivePath.label).toContain('Best Case');
       expect(positivePath.cumulativeProbability).toBe(0.42);
     });
@@ -544,7 +666,9 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Reality Map Analysis', () => {
     it('should display outcome universe', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.outcomeUniverse.totalOutcomes).toBe(2);
@@ -553,7 +677,9 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display outcome distribution', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.outcomeUniverse.outcomeDistribution.positive).toBe(0.42);
@@ -561,7 +687,9 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display risk summary', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.outcomeUniverse.riskSummary.maxScore).toBe(90);
@@ -569,14 +697,18 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display opportunity summary', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.outcomeUniverse.opportunitySummary.maxScore).toBe(80);
     });
 
     it('should display contradictions', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.contradictions).toHaveLength(1);
@@ -584,7 +716,9 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display correlations', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.correlations).toHaveLength(1);
@@ -593,7 +727,9 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display aggregated risks', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.aggregatedRisks).toHaveLength(2);
@@ -601,7 +737,9 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display aggregated opportunities', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/analysis');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/analysis'
+      );
       const data = await response.json();
 
       expect(data.aggregatedOpportunities).toHaveLength(2);
@@ -615,18 +753,21 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Create Reality Map', () => {
     it('should create a new reality map', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'New Reality Map',
-          description: 'A new test map',
-          parameters: {
-            maxDepth: 5,
-            branchingFactor: 3,
-          },
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'New Reality Map',
+            description: 'A new test map',
+            parameters: {
+              maxDepth: 5,
+              branchingFactor: 3,
+            },
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(201);
@@ -635,13 +776,16 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should create map with default parameters', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Simple Map',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Simple Map',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.map.name).toBe('Simple Map');
@@ -650,14 +794,17 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should create map linked to suite', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Suite-linked Map',
-          suiteId: 'suite-123',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Suite-linked Map',
+            suiteId: 'suite-123',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.map.suiteId).toBe('suite-123');
@@ -670,11 +817,14 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Generate Reality Map', () => {
     it('should trigger generation', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/generate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -682,11 +832,14 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should allow regeneration of completed maps', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ regenerate: true }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/generate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ regenerate: true }),
+        }
+      );
 
       expect(response.status).toBe(200);
     });
@@ -698,14 +851,17 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Update Reality Map', () => {
     it('should update map name and description', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-2', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Updated Map Name',
-          description: 'Updated description',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-2',
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Updated Map Name',
+            description: 'Updated description',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.map.name).toBe('Updated Map Name');
@@ -713,15 +869,18 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should update parameters', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-2', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          parameters: {
-            maxDepth: 8,
-          },
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-2',
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            parameters: {
+              maxDepth: 8,
+            },
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.map.parameters.maxDepth).toBe(8);
@@ -734,9 +893,12 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Delete Reality Map', () => {
     it('should delete a reality map', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-2', {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-2',
+        {
+          method: 'DELETE',
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -750,7 +912,9 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Audit Log', () => {
     it('should display audit events', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/audit-log');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/audit-log'
+      );
       const data = await response.json();
 
       expect(data.events).toHaveLength(2);
@@ -765,7 +929,9 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Global Stats', () => {
     it('should display organization stats', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/stats');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/stats'
+      );
       const data = await response.json();
 
       expect(data.stats.totalMaps).toBe(3);
@@ -781,7 +947,9 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Node Interactions', () => {
     it('should display node details on click', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
       const node = data.graph.nodes[0];
@@ -815,7 +983,9 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Path Interactions', () => {
     it('should highlight path on selection', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
       const path = data.graph.paths[0];
@@ -824,18 +994,26 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should display path outcome type', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
-      const positivePath = data.graph.paths.find((p: typeof mockGraphData.paths[0]) => p.outcomeType === 'positive');
-      const negativePath = data.graph.paths.find((p: typeof mockGraphData.paths[0]) => p.outcomeType === 'negative');
+      const positivePath = data.graph.paths.find(
+        (p: (typeof mockGraphData.paths)[0]) => p.outcomeType === 'positive'
+      );
+      const negativePath = data.graph.paths.find(
+        (p: (typeof mockGraphData.paths)[0]) => p.outcomeType === 'negative'
+      );
 
       expect(positivePath).toBeDefined();
       expect(negativePath).toBeDefined();
     });
 
     it('should display cumulative probability for paths', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
       const path = data.graph.paths[0];
@@ -849,10 +1027,12 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Graph Visualization', () => {
     it('should have nodes with positions', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
-      data.graph.nodes.forEach((node: typeof mockGraphData.nodes[0]) => {
+      data.graph.nodes.forEach((node: (typeof mockGraphData.nodes)[0]) => {
         expect(node.position).toBeDefined();
         expect(typeof node.position.x).toBe('number');
         expect(typeof node.position.y).toBe('number');
@@ -860,7 +1040,9 @@ describe('Reality Maps E2E Tests', () => {
     });
 
     it('should have metadata for graph', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps/map-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps/map-1/graph'
+      );
       const data = await response.json();
 
       expect(data.graph.metadata.totalNodes).toBe(5);
@@ -875,40 +1057,49 @@ describe('Reality Maps E2E Tests', () => {
 
   describe('Parameter Validation', () => {
     it('should accept valid max depth range (1-10)', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Test Map',
-          parameters: { maxDepth: 10 },
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Test Map',
+            parameters: { maxDepth: 10 },
+          }),
+        }
+      );
 
       expect(response.status).toBe(201);
     });
 
     it('should accept valid branching factor range (1-10)', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Test Map',
-          parameters: { branchingFactor: 10 },
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Test Map',
+            parameters: { branchingFactor: 10 },
+          }),
+        }
+      );
 
       expect(response.status).toBe(201);
     });
 
     it('should accept valid min probability range (0-0.5)', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/reality-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Test Map',
-          parameters: { minProbability: 0.5 },
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/reality-maps',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Test Map',
+            parameters: { minProbability: 0.5 },
+          }),
+        }
+      );
 
       expect(response.status).toBe(201);
     });

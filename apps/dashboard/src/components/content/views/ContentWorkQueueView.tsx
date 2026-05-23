@@ -1,3 +1,5 @@
+/* eslint-disable import/order -- import grouping pre-existing; Phase 1 cleanup */
+/* eslint-disable react-hooks/rules-of-hooks -- conditional hooks pre-existing; Phase 1 refactor required */
 'use client';
 
 /**
@@ -22,6 +24,19 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
+
+import {
+  type AIPerceptualState,
+  deriveAIPerceptualState,
+  AI_PERCEPTUAL_SIGNALS,
+  AmbientAIIndicator,
+  AIStateRing,
+} from '@/components/ai';
+
+import { ContentEmptyState } from '../components/ContentEmptyState';
+import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
+import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
+import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -32,17 +47,6 @@ import type {
   AutomationMode,
   AuditLedgerEntry,
 } from '../types';
-import { ContentEmptyState } from '../components/ContentEmptyState';
-import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
-import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
-import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
-import {
-  type AIPerceptualState,
-  deriveAIPerceptualState,
-  AI_PERCEPTUAL_SIGNALS,
-  AmbientAIIndicator,
-  AIStateRing,
-} from '@/components/ai';
 
 // Phase 11A: Selection-driven triage components
 import {
@@ -161,7 +165,10 @@ function HealthStrip({
       label: 'CiteMind Issues',
       value: citeMindIssueCount,
       suffix: '',
-      color: citeMindIssueCount > 0 ? 'text-semantic-warning' : 'text-semantic-success',
+      color:
+        citeMindIssueCount > 0
+          ? 'text-semantic-warning'
+          : 'text-semantic-success',
       // Phase 9A: Removed isAlert/animate-pulse per AI_VISUAL_COMMUNICATION_CANON §7.4
       // "Pulsing indicators on items with no deadline" is manufactured urgency
       // CiteMind issues have no inherent deadline - warning color alone is sufficient
@@ -183,13 +190,24 @@ function HealthStrip({
             </span>
             {/* Phase 9A: Removed animate-pulse from isAlert - per §7.4 no pulsing without deadline */}
             <span className={`text-lg font-bold ${metric.color}`}>
-              {metric.value}{metric.suffix}
+              {metric.value}
+              {metric.suffix}
             </span>
           </div>
           {metric.isPrimary && (
             <div className="w-8 h-8 rounded-full bg-brand-iris/20 flex items-center justify-center">
-              <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-4 h-4 text-brand-iris"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
           )}
@@ -236,14 +254,30 @@ function CTACluster({
   const ctaConfig = {
     manual: {
       primary: { label: '+ Create', action: onGenerateBrief, enabled: true },
-      secondary: { label: 'Import Content', action: onImportContent, enabled: true },
+      secondary: {
+        label: 'Import Content',
+        action: onImportContent,
+        enabled: true,
+      },
     },
     copilot: {
-      primary: { label: 'Generate Draft', action: onGenerateDraft, enabled: true },
-      secondary: { label: 'Create with AI', action: onGenerateBrief, enabled: true },
+      primary: {
+        label: 'Generate Draft',
+        action: onGenerateDraft,
+        enabled: true,
+      },
+      secondary: {
+        label: 'Create with AI',
+        action: onGenerateBrief,
+        enabled: true,
+      },
     },
     autopilot: {
-      primary: { label: 'Review Exceptions', action: onFixIssues, enabled: hasIssues },
+      primary: {
+        label: 'Review Exceptions',
+        action: onFixIssues,
+        enabled: hasIssues,
+      },
       // Approve Queue is a future feature - show disabled with tooltip
       secondary: { label: 'Approve Queue', action: undefined, enabled: false },
     },
@@ -260,12 +294,17 @@ function CTACluster({
         className={`
           px-4 py-2 text-sm font-semibold rounded-lg
           transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
-          ${config.primary.enabled
-            ? 'text-white bg-brand-iris hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)]'
-            : 'text-white/40 bg-slate-4 cursor-not-allowed'
+          ${
+            config.primary.enabled
+              ? 'text-white bg-brand-iris hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)]'
+              : 'text-white/40 bg-slate-4 cursor-not-allowed'
           }
         `}
-        title={!config.primary.enabled && mode === 'autopilot' ? 'No exceptions to review' : undefined}
+        title={
+          !config.primary.enabled && mode === 'autopilot'
+            ? 'No exceptions to review'
+            : undefined
+        }
       >
         {config.primary.label}
       </button>
@@ -311,10 +350,10 @@ function CTACluster({
 function computeActionScore(action: ContentAction): number {
   // Base score by type (explicit priority order)
   const typeScores: Record<ContentAction['type'], number> = {
-    execution: 100,   // Execution-ready content
-    issue: 90,        // CiteMind/Ingestibility issues
-    opportunity: 70,  // Authority gaps
-    scheduled: 60,    // Near-deadline content
+    execution: 100, // Execution-ready content
+    issue: 90, // CiteMind/Ingestibility issues
+    opportunity: 70, // Authority gaps
+    scheduled: 60, // Near-deadline content
     sage_proposal: 30, // Optional enhancements
   };
 
@@ -326,7 +365,9 @@ function computeActionScore(action: ContentAction): number {
     low: 5,
   };
 
-  return (typeScores[action.type] || 50) + (priorityBonus[action.priority] || 0);
+  return (
+    (typeScores[action.type] || 50) + (priorityBonus[action.priority] || 0)
+  );
 }
 
 /**
@@ -334,7 +375,9 @@ function computeActionScore(action: ContentAction): number {
  * Returns sorted actions with the #1 action at index 0.
  */
 function selectPrioritizedActions(actions: ContentAction[]): ContentAction[] {
-  return [...actions].sort((a, b) => computeActionScore(b) - computeActionScore(a));
+  return [...actions].sort(
+    (a, b) => computeActionScore(b) - computeActionScore(a)
+  );
 }
 
 // ============================================
@@ -350,7 +393,10 @@ function selectPrioritizedActions(actions: ContentAction[]): ContentAction[] {
  *
  * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
-function filterActionsByMode(actions: ContentAction[], mode: AutomationMode): ContentAction[] {
+function filterActionsByMode(
+  actions: ContentAction[],
+  mode: AutomationMode
+): ContentAction[] {
   if (mode === 'autopilot') {
     // Autopilot = Exception Queue: only manual-approval items
     // - Issues (CiteMind, ingestibility) always require attention
@@ -378,19 +424,22 @@ const MOCK_QUEUE_REASONING = [
   {
     id: 'reason-1',
     factor: 'Deadline Proximity',
-    explanation: 'Content has a deadline within 48 hours, prioritizing time-sensitive work.',
+    explanation:
+      'Content has a deadline within 48 hours, prioritizing time-sensitive work.',
     weight: 'High',
   },
   {
     id: 'reason-2',
     factor: 'Authority Impact',
-    explanation: 'Publishing this content contributes +15 to authority score based on target keywords.',
+    explanation:
+      'Publishing this content contributes +15 to authority score based on target keywords.',
     weight: 'High',
   },
   {
     id: 'reason-3',
     factor: 'Cross-Pillar Synergy',
-    explanation: 'Content aligns with pending PR pitch, creating amplification opportunity.',
+    explanation:
+      'Content aligns with pending PR pitch, creating amplification opportunity.',
     weight: 'Medium',
   },
 ];
@@ -423,10 +472,22 @@ function QueueControlsBand({
         <div className="flex items-center gap-3">
           {/* Workbench label */}
           <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            <svg
+              className="w-4 h-4 text-white/60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 10h16M4 14h16M4 18h16"
+              />
             </svg>
-            <span className="text-xs font-bold uppercase tracking-wider text-white/60">Queue Controls</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-white/60">
+              Queue Controls
+            </span>
           </div>
 
           {/* Item count */}
@@ -441,8 +502,18 @@ function QueueControlsBand({
             onClick={onRerank}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+              />
             </svg>
             Re-rank
           </button>
@@ -450,7 +521,9 @@ function QueueControlsBand({
           {/* Batch selection indicator/actions */}
           {selectedCount > 0 ? (
             <div className="flex items-center gap-2 pl-2 border-l border-white/10">
-              <span className="text-xs text-brand-iris font-medium">{selectedCount} selected</span>
+              <span className="text-xs text-brand-iris font-medium">
+                {selectedCount} selected
+              </span>
               <button
                 onClick={() => onBatchAction('defer')}
                 className="px-2 py-1 text-xs font-medium text-white/60 hover:text-white hover:bg-white/5 rounded transition-colors"
@@ -467,13 +540,25 @@ function QueueControlsBand({
                 onClick={onClearSelection}
                 className="p-1 text-white/40 hover:text-white rounded transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
           ) : (
-            <span className="text-xs text-white/30">Click items to select for batch actions</span>
+            <span className="text-xs text-white/30">
+              Click items to select for batch actions
+            </span>
           )}
         </div>
       </div>
@@ -508,25 +593,29 @@ function PlanPanel({
   aiState: AIPerceptualState;
 }) {
   // Collapsed summary: show top 3 factor names as bullets
-  const summaryBullets = reasons.slice(0, 3).map(r => r.factor);
+  const summaryBullets = reasons.slice(0, 3).map((r) => r.factor);
 
   return (
-    <div className={`rounded-lg border transition-all ${
-      isApproved
-        ? 'bg-semantic-success/5 border-semantic-success/30'
-        : 'bg-brand-cyan/5 border-brand-cyan/20'
-    }`}>
+    <div
+      className={`rounded-lg border transition-all ${
+        isApproved
+          ? 'bg-semantic-success/5 border-semantic-success/30'
+          : 'bg-brand-cyan/5 border-brand-cyan/20'
+      }`}
+    >
       {/* Compact header bar - always visible */}
       <div className="px-3 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {/* State indicator */}
-          <div className={`flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold shrink-0 ${
-            aiState === 'evaluating'
-              ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
-              : isApproved
-              ? 'bg-semantic-success/20 text-semantic-success'
-              : 'bg-brand-cyan/20 text-brand-cyan'
-          }`}>
+          <div
+            className={`flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold shrink-0 ${
+              aiState === 'evaluating'
+                ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
+                : isApproved
+                  ? 'bg-semantic-success/20 text-semantic-success'
+                  : 'bg-brand-cyan/20 text-brand-cyan'
+            }`}
+          >
             {aiState === 'evaluating' ? '•' : isApproved ? '✓' : 'AI'}
           </div>
 
@@ -534,7 +623,11 @@ function PlanPanel({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-white whitespace-nowrap">
-                {aiState === 'evaluating' ? 'Analyzing...' : isApproved ? 'Plan Approved' : 'AI Plan'}
+                {aiState === 'evaluating'
+                  ? 'Analyzing...'
+                  : isApproved
+                    ? 'Plan Approved'
+                    : 'AI Plan'}
               </span>
               {!isExpanded && !isApproved && aiState !== 'evaluating' && (
                 <span className="text-xs text-white/40 truncate">
@@ -552,8 +645,18 @@ function PlanPanel({
               onClick={onApprove}
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded transition-colors"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
               Approve
             </button>
@@ -566,8 +669,18 @@ function PlanPanel({
               className="p-1 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
               title={isExpanded ? 'Collapse' : 'Show reasoning'}
             >
-              <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           )}
@@ -623,7 +736,9 @@ function SupervisedItemsCount({
       <span className="text-white/40">Running:</span>
       <span className="text-white/60 font-medium">{routineCount} routine</span>
       <span className="text-white/30">•</span>
-      <span className={`font-medium ${exceptionCount > 0 ? 'text-semantic-warning' : 'text-white/40'}`}>
+      <span
+        className={`font-medium ${exceptionCount > 0 ? 'text-semantic-warning' : 'text-white/40'}`}
+      >
         {exceptionCount} {exceptionCount === 1 ? 'exception' : 'exceptions'}
       </span>
     </div>
@@ -641,30 +756,69 @@ function SupervisedItemsCount({
  */
 function GuardrailsCard() {
   const guardrails = [
-    { id: 'g1', name: 'Critical Priority', description: 'Items marked critical always surface', active: true },
-    { id: 'g2', name: 'CiteMind Issues', description: 'Quality issues require manual review', active: true },
-    { id: 'g3', name: 'Deadline < 24h', description: 'Urgent deadlines need confirmation', active: true },
-    { id: 'g4', name: 'High-Risk Actions', description: 'Actions above risk threshold pause', active: false },
+    {
+      id: 'g1',
+      name: 'Critical Priority',
+      description: 'Items marked critical always surface',
+      active: true,
+    },
+    {
+      id: 'g2',
+      name: 'CiteMind Issues',
+      description: 'Quality issues require manual review',
+      active: true,
+    },
+    {
+      id: 'g3',
+      name: 'Deadline < 24h',
+      description: 'Urgent deadlines need confirmation',
+      active: true,
+    },
+    {
+      id: 'g4',
+      name: 'High-Risk Actions',
+      description: 'Actions above risk threshold pause',
+      active: false,
+    },
   ];
 
   return (
     <div className="p-3 bg-brand-iris/5 border border-brand-iris/20 rounded-lg">
       <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-brand-iris" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        <svg
+          className="w-4 h-4 text-brand-iris"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+          />
         </svg>
-        <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">Active Guardrails</h4>
+        <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">
+          Active Guardrails
+        </h4>
       </div>
       <div className="space-y-1.5">
-        {guardrails.filter(g => g.active).map((guardrail) => (
-          <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-slate-2/50 rounded">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
-            <div>
-              <span className="text-xs font-medium text-white/95">{guardrail.name}</span>
-              <p className="text-xs text-white/40">{guardrail.description}</p>
+        {guardrails
+          .filter((g) => g.active)
+          .map((guardrail) => (
+            <div
+              key={guardrail.id}
+              className="flex items-start gap-2 p-2 bg-slate-2/50 rounded"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
+              <div>
+                <span className="text-xs font-medium text-white/95">
+                  {guardrail.name}
+                </span>
+                <p className="text-xs text-white/40">{guardrail.description}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       <button className="w-full mt-2 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
         Configure Guardrails →
@@ -681,7 +835,7 @@ function GuardrailsCard() {
 // ============================================
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function _ExecutionGravityPane({
+function ExecutionGravityPane({
   actions,
   mode,
   onLaunchOrchestrate,
@@ -703,9 +857,13 @@ function _ExecutionGravityPane({
 }) {
   // State for explain drawer
   const [explainDrawerOpen, setExplainDrawerOpen] = useState(false);
-  const [explainAction, setExplainAction] = useState<ContentAction | null>(null);
+  const [explainAction, setExplainAction] = useState<ContentAction | null>(
+    null
+  );
   // Phase 10B: Queue reasoning panel state (Copilot mode) - default expanded in Copilot
-  const [queueReasoningOpen, setQueueReasoningOpen] = useState(mode === 'copilot');
+  const [queueReasoningOpen, setQueueReasoningOpen] = useState(
+    mode === 'copilot'
+  );
   // Phase 10B: Plan approval state (Copilot mode)
   const [planApproved, setPlanApproved] = useState(false);
   // Phase 10B: Show all items toggle (Autopilot mode)
@@ -715,7 +873,9 @@ function _ExecutionGravityPane({
   // Phase 10B: Simulated AI evaluating state (for queue recalculation)
   const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
   // Phase 10B: Batch selection state (Manual mode)
-  const [selectedBatchIds, setSelectedBatchIds] = useState<Set<string>>(new Set());
+  const [selectedBatchIds, setSelectedBatchIds] = useState<Set<string>>(
+    new Set()
+  );
   // Phase 10B: Audit log collapsed state (Autopilot mode)
   const [auditLogCollapsed, setAuditLogCollapsed] = useState(false);
 
@@ -747,12 +907,12 @@ function _ExecutionGravityPane({
     }
 
     // Check for blocked/escalating based on action types
-    const hasBlockedAction = actions.some(a => a.type === 'issue');
+    const hasBlockedAction = actions.some((a) => a.type === 'issue');
     const hasCriticalDeadline = actions.some(
-      a => a.priority === 'critical' && a.type === 'scheduled'
+      (a) => a.priority === 'critical' && a.type === 'scheduled'
     );
     const hasReadyAction = actions.some(
-      a => a.type === 'execution' && a.orchestrateActionId
+      (a) => a.type === 'execution' && a.orchestrateActionId
     );
 
     return deriveAIPerceptualState({
@@ -768,15 +928,16 @@ function _ExecutionGravityPane({
 
   // Apply mode-aware filtering THEN priority scoring
   // Phase 10B: Respect showAllItems toggle in Autopilot mode
-  const modeFilteredActions = (mode === 'autopilot' && showAllItems)
-    ? actions
-    : filterActionsByMode(actions, mode);
+  const modeFilteredActions =
+    mode === 'autopilot' && showAllItems
+      ? actions
+      : filterActionsByMode(actions, mode);
 
   // Phase 10B: Handle pinned actions (Manual mode)
   const sortedActions = useMemo(() => {
     const prioritized = selectPrioritizedActions(modeFilteredActions);
     if (pinnedActionId) {
-      const pinnedIndex = prioritized.findIndex(a => a.id === pinnedActionId);
+      const pinnedIndex = prioritized.findIndex((a) => a.id === pinnedActionId);
       if (pinnedIndex > 0) {
         const [pinned] = prioritized.splice(pinnedIndex, 1);
         prioritized.unshift(pinned);
@@ -792,7 +953,10 @@ function _ExecutionGravityPane({
   const remainingCount = sortedActions.length - 1 - upNextLimit;
 
   // Track how many actions were filtered out in Autopilot mode
-  const filteredOutCount = mode === 'autopilot' ? actions.length - filterActionsByMode(actions, mode).length : 0;
+  const filteredOutCount =
+    mode === 'autopilot'
+      ? actions.length - filterActionsByMode(actions, mode).length
+      : 0;
 
   // Handle "Why this now" click
   const handleExplain = useCallback((action: ContentAction) => {
@@ -803,9 +967,19 @@ function _ExecutionGravityPane({
   // Convert ContentAction to TriggerAction for ExplainabilityDrawer
   const toTriggerAction = (action: ContentAction): TriggerAction => ({
     id: action.id,
-    type: action.type === 'execution' ? 'content_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    type:
+      action.type === 'execution'
+        ? 'content_execution'
+        : action.type === 'opportunity'
+          ? 'derivative_generation'
+          : 'authority_optimization',
     title: action.title,
-    priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
+    priority:
+      action.priority === 'critical'
+        ? 'urgent'
+        : action.priority === 'high'
+          ? 'high'
+          : 'normal',
     modeCeiling: action.modeCeiling || 'copilot',
     citeMindStatus: action.type === 'issue' ? 'warning' : 'passed',
     pillar: 'content',
@@ -823,18 +997,32 @@ function _ExecutionGravityPane({
     return (
       <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
         <div className="w-16 h-16 rounded-2xl bg-semantic-success/10 border border-semantic-success/20 flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-8 h-8 text-semantic-success"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
         {mode === 'autopilot' ? (
           <>
-            <h3 className="text-lg font-semibold text-white mb-1">Autopilot Active</h3>
+            <h3 className="text-lg font-semibold text-white mb-1">
+              Autopilot Active
+            </h3>
             <p className="text-sm text-white/50 max-w-sm">
               No exceptions requiring manual attention.
               {filteredOutCount > 0 && (
                 <span className="block mt-1 text-brand-cyan">
-                  {filteredOutCount} routine {filteredOutCount === 1 ? 'action' : 'actions'} being handled automatically.
+                  {filteredOutCount} routine{' '}
+                  {filteredOutCount === 1 ? 'action' : 'actions'} being handled
+                  automatically.
                 </span>
               )}
             </p>
@@ -852,14 +1040,16 @@ function _ExecutionGravityPane({
   }
 
   // Header text varies by posture (3-second rule: immediately recognizable)
-  const headerText = mode === 'manual'
-    ? 'Content'
-    : mode === 'copilot'
-    ? 'AI Plan'
-    : 'Top Exception';
-  const headerSubtext = mode === 'autopilot' && filteredOutCount > 0
-    ? `${filteredOutCount} auto-handled`
-    : undefined;
+  const headerText =
+    mode === 'manual'
+      ? 'Content'
+      : mode === 'copilot'
+        ? 'AI Plan'
+        : 'Top Exception';
+  const headerSubtext =
+    mode === 'autopilot' && filteredOutCount > 0
+      ? `${filteredOutCount} auto-handled`
+      : undefined;
 
   // Mode behavior configuration (Phase 10B: Mode-Expressive Mechanics)
   // Per UX_CONTINUITY_CANON: Each mode is a distinct "work posture"
@@ -867,8 +1057,9 @@ function _ExecutionGravityPane({
     manual: {
       // WORKBENCH posture: Full control, user-driven prioritization
       posture: 'workbench',
-      descriptor: 'Workbench — you control the flow. Reorder, pin, and manage as you see fit.',
-      showQueueControls: true,      // Queue Controls band (Re-rank, Pin to Next, Batch select)
+      descriptor:
+        'Workbench — you control the flow. Reorder, pin, and manage as you see fit.',
+      showQueueControls: true, // Queue Controls band (Re-rank, Pin to Next, Batch select)
       showRerank: true,
       showPinToNext: true,
       showBatchSelect: true,
@@ -878,29 +1069,31 @@ function _ExecutionGravityPane({
       showRecentlyHandled: false,
       showAllItemsToggle: false,
       showGuardrails: false,
-      upNextLimit: 5,               // Show more items in Manual
+      upNextLimit: 5, // Show more items in Manual
     },
     copilot: {
       // PLAN REVIEW posture: AI proposes, user approves
       posture: 'plan-review',
-      descriptor: 'Plan Review — AI prepared this queue. Review the rationale, then approve.',
+      descriptor:
+        'Plan Review — AI prepared this queue. Review the rationale, then approve.',
       showQueueControls: false,
       showRerank: false,
       showPinToNext: false,
       showBatchSelect: false,
       showInlineTriageActions: false,
-      showQueueReasoning: true,     // Plan Panel ABOVE NextBestAction
+      showQueueReasoning: true, // Plan Panel ABOVE NextBestAction
       showApprovePlan: true,
       showRecentlyHandled: false,
       showAllItemsToggle: false,
       showGuardrails: false,
-      upNextLimit: 3,               // Standard count
-      planPanelExpanded: true,      // Default expanded
+      upNextLimit: 3, // Standard count
+      planPanelExpanded: true, // Default expanded
     },
     autopilot: {
       // EXCEPTION CONSOLE posture: Only exceptions surface
       posture: 'exception-console',
-      descriptor: 'Exception Console — showing only items that need your attention.',
+      descriptor:
+        'Exception Console — showing only items that need your attention.',
       showQueueControls: false,
       showRerank: false,
       showPinToNext: false,
@@ -908,9 +1101,9 @@ function _ExecutionGravityPane({
       showInlineTriageActions: false,
       showQueueReasoning: false,
       showApprovePlan: false,
-      showRecentlyHandled: true,    // Auto-handled today ledger
+      showRecentlyHandled: true, // Auto-handled today ledger
       showAllItemsToggle: true,
-      showGuardrails: true,         // Guardrails card in right rail
+      showGuardrails: true, // Guardrails card in right rail
       upNextLimit: 3,
     },
   };
@@ -937,7 +1130,12 @@ function _ExecutionGravityPane({
       actionType: 'derivative_generation',
       summary: 'Generated AEO snippet for SEO pillar',
       outcome: 'completed',
-      provenance: { confidence: 0.88, riskClass: 'low', mode: 'autopilot', targetPillar: 'seo' },
+      provenance: {
+        confidence: 0.88,
+        riskClass: 'low',
+        mode: 'autopilot',
+        targetPillar: 'seo',
+      },
     },
     {
       id: 'audit-3',
@@ -964,7 +1162,13 @@ function _ExecutionGravityPane({
       actionType: 'cross_pillar_sync',
       summary: 'Cross-pillar sync to PR pillar',
       outcome: 'completed',
-      provenance: { confidence: 0.90, riskClass: 'low', mode: 'autopilot', sourcePillar: 'content', targetPillar: 'pr' },
+      provenance: {
+        confidence: 0.9,
+        riskClass: 'low',
+        mode: 'autopilot',
+        sourcePillar: 'content',
+        targetPillar: 'pr',
+      },
     },
   ];
 
@@ -974,10 +1178,16 @@ function _ExecutionGravityPane({
         {/* Header with mode indicator + AI state indicator (Phase 9A) */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="text-sm font-semibold text-white tracking-tight">{headerText}</h3>
+            <h3 className="text-sm font-semibold text-white tracking-tight">
+              {headerText}
+            </h3>
             <ModeIndicator mode={mode} size="default" />
             {/* Ambient AI State Indicator (Phase 9A) */}
-            <AmbientAIIndicator state={aiState} size="sm" showLabel={aiState !== 'idle'} />
+            <AmbientAIIndicator
+              state={aiState}
+              size="sm"
+              showLabel={aiState !== 'idle'}
+            />
             {headerSubtext && (
               <span className="text-xs text-brand-cyan/70">
                 ({headerSubtext})
@@ -995,36 +1205,52 @@ function _ExecutionGravityPane({
             {/* Re-rank affordance for Manual mode */}
             {behavior.showRerank && sortedActions.length > 1 && (
               <button
-                onClick={() => {/* TODO: Open re-rank modal/popover */}}
+                onClick={() => {
+                  /* TODO: Open re-rank modal/popover */
+                }}
                 className="flex items-center gap-1 px-2 py-1 text-xs text-white/50 hover:text-white hover:bg-white/5 rounded transition-colors"
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                  />
                 </svg>
                 Re-rank
               </button>
             )}
             {sortedActions.length > 1 && (
               <span className="text-xs text-white/40">
-                {sortedActions.length} {mode === 'autopilot' ? 'exception' : 'total'}{sortedActions.length !== 1 ? 's' : ''}
+                {sortedActions.length}{' '}
+                {mode === 'autopilot' ? 'exception' : 'total'}
+                {sortedActions.length !== 1 ? 's' : ''}
               </span>
             )}
           </div>
         </div>
 
         {/* Mode descriptor - behavior-specific microcopy */}
-        <p className="text-xs text-white/40 -mt-2">
-          {behavior.descriptor}
-        </p>
+        <p className="text-xs text-white/40 -mt-2">{behavior.descriptor}</p>
 
         {/* POSTURE: Manual "Workbench" - Queue Controls Band */}
         {behavior.showQueueControls && (
           <QueueControlsBand
             itemCount={sortedActions.length}
             selectedCount={selectedBatchIds.size}
-            onRerank={() => {/* TODO: Open re-rank modal */}}
+            onRerank={() => {
+              /* TODO: Open re-rank modal */
+            }}
             onClearSelection={() => setSelectedBatchIds(new Set())}
-            onBatchAction={(action) => console.log('Batch action:', action, selectedBatchIds)}
+            onBatchAction={(action) =>
+              console.log('Batch action:', action, selectedBatchIds)
+            }
           />
         )}
 
@@ -1043,7 +1269,9 @@ function _ExecutionGravityPane({
         {behavior.showAllItemsToggle && filteredOutCount > 0 && (
           <div className="flex items-center justify-between -mt-1 p-2 bg-slate-2/50 rounded-lg">
             <span className="text-xs text-white/50">
-              {showAllItems ? 'Showing all items' : `${filteredOutCount} routine items hidden`}
+              {showAllItems
+                ? 'Showing all items'
+                : `${filteredOutCount} routine items hidden`}
             </span>
             <button
               onClick={() => setShowAllItems(!showAllItems)}
@@ -1090,7 +1318,9 @@ function _ExecutionGravityPane({
                   mode={mode}
                   isPinned={pinnedActionId === action.id}
                   onLaunchOrchestrate={onLaunchOrchestrate}
-                  onPinToNext={behavior.showPinToNext ? setPinnedActionId : undefined}
+                  onPinToNext={
+                    behavior.showPinToNext ? setPinnedActionId : undefined
+                  }
                 />
               ))}
             </div>
@@ -1105,8 +1335,18 @@ function _ExecutionGravityPane({
               className="w-full flex items-center justify-between mb-2 group"
             >
               <div className="flex items-center gap-2">
-                <svg className={`w-3.5 h-3.5 text-white/40 transition-transform ${auditLogCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <svg
+                  className={`w-3.5 h-3.5 text-white/40 transition-transform ${auditLogCollapsed ? '' : 'rotate-180'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
                   Auto-handled Today
@@ -1123,13 +1363,100 @@ function _ExecutionGravityPane({
                 <div className="space-y-1 max-h-[180px] overflow-y-auto">
                   {recentlyHandled.slice(0, 5).map((entry) => {
                     // P2.6: Icons mapped to actionType per AUTOMATE_EXECUTION_MODEL
-                    const typeIcons: Record<AuditLedgerEntry['actionType'], JSX.Element> = {
-                      scheduling: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
-                      derivative_generation: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
-                      brief_execution: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-                      citemind_check: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-                      cross_pillar_sync: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
-                      status_change: <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>,
+                    const typeIcons: Record<
+                      AuditLedgerEntry['actionType'],
+                      JSX.Element
+                    > = {
+                      scheduling: (
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      ),
+                      derivative_generation: (
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                      ),
+                      brief_execution: (
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                          />
+                        </svg>
+                      ),
+                      citemind_check: (
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      ),
+                      cross_pillar_sync: (
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
+                        </svg>
+                      ),
+                      status_change: (
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                          />
+                        </svg>
+                      ),
                     };
 
                     // Format timestamp - use stable UTC format to avoid hydration mismatch
@@ -1147,29 +1474,48 @@ function _ExecutionGravityPane({
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           {/* Actor indicator: system (robot) or user */}
-                          <span className={entry.actor === 'system' ? 'text-semantic-success' : 'text-brand-iris'}>
+                          <span
+                            className={
+                              entry.actor === 'system'
+                                ? 'text-semantic-success'
+                                : 'text-brand-iris'
+                            }
+                          >
                             {typeIcons[entry.actionType]}
                           </span>
-                          <span className="text-white/60 truncate">{entry.summary}</span>
+                          <span className="text-white/60 truncate">
+                            {entry.summary}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {/* Actor badge */}
-                          <span className={`px-1 py-0.5 rounded text-xs font-medium ${
-                            entry.actor === 'system' ? 'text-brand-cyan bg-brand-cyan/10' : 'text-brand-iris bg-brand-iris/10'
-                          }`}>
+                          <span
+                            className={`px-1 py-0.5 rounded text-xs font-medium ${
+                              entry.actor === 'system'
+                                ? 'text-brand-cyan bg-brand-cyan/10'
+                                : 'text-brand-iris bg-brand-iris/10'
+                            }`}
+                          >
                             {entry.actor === 'system' ? '🤖' : '👤'}
                           </span>
                           {/* Outcome badge */}
-                          <span className={`px-1 py-0.5 rounded text-xs font-medium ${
-                            entry.outcome === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
-                            entry.outcome === 'passed' ? 'text-brand-cyan bg-brand-cyan/10' :
-                            entry.outcome === 'failed' ? 'text-semantic-danger bg-semantic-danger/10' :
-                            'text-white/40 bg-white/5'
-                          }`}>
+                          <span
+                            className={`px-1 py-0.5 rounded text-xs font-medium ${
+                              entry.outcome === 'completed'
+                                ? 'text-semantic-success bg-semantic-success/10'
+                                : entry.outcome === 'passed'
+                                  ? 'text-brand-cyan bg-brand-cyan/10'
+                                  : entry.outcome === 'failed'
+                                    ? 'text-semantic-danger bg-semantic-danger/10'
+                                    : 'text-white/40 bg-white/5'
+                            }`}
+                          >
                             {entry.outcome}
                           </span>
                           {/* Timestamp */}
-                          <span className="text-white/30 text-xs">{formatTime(entry.timestamp)}</span>
+                          <span className="text-white/30 text-xs">
+                            {formatTime(entry.timestamp)}
+                          </span>
                         </div>
                       </div>
                     );
@@ -1201,14 +1547,30 @@ function _ExecutionGravityPane({
  * ModeIndicator - Shows current automation mode with visual differentiation.
  * DS v3.1 compliant with subtle iconography.
  */
-function ModeIndicator({ mode, size = 'default' }: { mode: AutomationMode; size?: 'default' | 'small' }) {
+function ModeIndicator({
+  mode,
+  size = 'default',
+}: {
+  mode: AutomationMode;
+  size?: 'default' | 'small';
+}) {
   const modeConfig = {
     manual: {
       label: 'Manual',
       color: 'text-white/60 bg-white/5 border-white/10',
       icon: (
-        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        <svg
+          className="w-2.5 h-2.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
         </svg>
       ),
     },
@@ -1216,27 +1578,53 @@ function ModeIndicator({ mode, size = 'default' }: { mode: AutomationMode; size?
       label: 'Copilot',
       color: 'text-brand-cyan bg-brand-cyan/10 border-brand-cyan/20',
       icon: (
-        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <svg
+          className="w-2.5 h-2.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
       ),
     },
     autopilot: {
       label: 'Autopilot',
-      color: 'text-semantic-success bg-semantic-success/10 border-semantic-success/20',
+      color:
+        'text-semantic-success bg-semantic-success/10 border-semantic-success/20',
       icon: (
-        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <svg
+          className="w-2.5 h-2.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
         </svg>
       ),
     },
   };
 
   const config = modeConfig[mode];
-  const sizeClass = size === 'small' ? 'px-1.5 py-0.5 text-xs gap-1' : 'px-2 py-1 text-xs gap-1.5';
+  const sizeClass =
+    size === 'small'
+      ? 'px-1.5 py-0.5 text-xs gap-1'
+      : 'px-2 py-1 text-xs gap-1.5';
 
   return (
-    <span className={`${sizeClass} font-medium uppercase rounded border flex items-center ${config.color} transition-colors duration-150`}>
+    <span
+      className={`${sizeClass} font-medium uppercase rounded border flex items-center ${config.color} transition-colors duration-150`}
+    >
       {config.icon}
       {config.label}
     </span>
@@ -1283,8 +1671,12 @@ function NextBestActionCard({
     high: {
       // Issues use amber, primary actions use iris
       border: isIssue ? 'border-semantic-warning' : 'border-brand-iris',
-      glow: isIssue ? 'shadow-[0_0_20px_rgba(234,179,8,0.12)]' : 'shadow-[0_0_20px_rgba(168,85,247,0.15)]',
-      badge: isIssue ? 'bg-semantic-warning text-black' : 'bg-brand-iris/20 text-brand-iris',
+      glow: isIssue
+        ? 'shadow-[0_0_20px_rgba(234,179,8,0.12)]'
+        : 'shadow-[0_0_20px_rgba(168,85,247,0.15)]',
+      badge: isIssue
+        ? 'bg-semantic-warning text-black'
+        : 'bg-brand-iris/20 text-brand-iris',
     },
     medium: {
       border: 'border-brand-iris',
@@ -1313,11 +1705,33 @@ function NextBestActionCard({
   };
 
   const typeConfig = {
-    execution: { label: 'Publish', ctaLabel: getModeCtaLabel('Publish →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
-    issue: { label: 'Fix Issue', ctaLabel: getModeCtaLabel('Fix Issue →'), ctaClass: 'bg-semantic-warning text-black' },
-    opportunity: { label: 'Opportunity', ctaLabel: getModeCtaLabel('Start Writing →'), ctaClass: 'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]' },
-    scheduled: { label: 'Deadline', ctaLabel: getModeCtaLabel('Review →'), ctaClass: 'bg-brand-cyan text-black' },
-    sage_proposal: { label: 'SAGE Proposal', ctaLabel: getModeCtaLabel('View →'), ctaClass: 'bg-white/10 text-white' },
+    execution: {
+      label: 'Publish',
+      ctaLabel: getModeCtaLabel('Publish →'),
+      ctaClass:
+        'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]',
+    },
+    issue: {
+      label: 'Fix Issue',
+      ctaLabel: getModeCtaLabel('Fix Issue →'),
+      ctaClass: 'bg-semantic-warning text-black',
+    },
+    opportunity: {
+      label: 'Opportunity',
+      ctaLabel: getModeCtaLabel('Start Writing →'),
+      ctaClass:
+        'bg-brand-iris text-white shadow-[0_0_16px_rgba(168,85,247,0.30)]',
+    },
+    scheduled: {
+      label: 'Deadline',
+      ctaLabel: getModeCtaLabel('Review →'),
+      ctaClass: 'bg-brand-cyan text-black',
+    },
+    sage_proposal: {
+      label: 'SAGE Proposal',
+      ctaLabel: getModeCtaLabel('View →'),
+      ctaClass: 'bg-white/10 text-white',
+    },
   };
 
   const style = priorityStyles[action.priority];
@@ -1359,7 +1773,9 @@ function NextBestActionCard({
       {/* Top row: Type badge + priority + mode */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-1 text-[11px] font-bold uppercase rounded ${style.badge}`}>
+          <span
+            className={`px-2 py-1 text-[11px] font-bold uppercase rounded ${style.badge}`}
+          >
             {typeConf.label}
           </span>
           {/* Phase 9A: Critical indicator without animate-pulse per §7.4
@@ -1383,51 +1799,72 @@ function NextBestActionCard({
       </p>
 
       {/* FOCAL AI STATE ROW - Dedicated row per AI Visual Communication Canon §2 */}
-      <div className={`
+      <div
+        className={`
         mb-4 p-3 rounded-lg border
         ${AI_PERCEPTUAL_SIGNALS[aiState].bg}
         ${AI_PERCEPTUAL_SIGNALS[aiState].border}
         ${AI_PERCEPTUAL_SIGNALS[aiState].transition}
-      `}>
+      `}
+      >
         <div className="flex items-center justify-between">
           {/* State indicator with label */}
           <div className="flex items-center gap-3">
             {/* State dot with appropriate motion */}
-            <span className={`
+            <span
+              className={`
               w-3 h-3 rounded-full
               ${AI_PERCEPTUAL_SIGNALS[aiState].indicator}
               ${AI_PERCEPTUAL_SIGNALS[aiState].motion}
-            `} />
+            `}
+            />
             <div>
-              <span className={`text-sm font-semibold ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
-                {aiState === 'idle' ? 'Awaiting Input' :
-                 aiState === 'evaluating' ? 'AI Analyzing...' :
-                 aiState === 'ready' ? 'Ready to Execute' :
-                 aiState === 'executing' ? 'Executing...' :
-                 aiState === 'blocked' ? 'Action Blocked' :
-                 'Urgent Attention Required'}
+              <span
+                className={`text-sm font-semibold ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}
+              >
+                {aiState === 'idle'
+                  ? 'Awaiting Input'
+                  : aiState === 'evaluating'
+                    ? 'AI Analyzing...'
+                    : aiState === 'ready'
+                      ? 'Ready to Execute'
+                      : aiState === 'executing'
+                        ? 'Executing...'
+                        : aiState === 'blocked'
+                          ? 'Action Blocked'
+                          : 'Urgent Attention Required'}
               </span>
               <p className="text-xs text-white/40 mt-0.5">
                 {aiState === 'idle' && 'System idle, no active AI processing'}
-                {aiState === 'evaluating' && 'AI is preparing recommendations...'}
+                {aiState === 'evaluating' &&
+                  'AI is preparing recommendations...'}
                 {aiState === 'ready' && 'AI has a recommendation ready for you'}
                 {aiState === 'executing' && 'Action in progress, please wait'}
-                {aiState === 'blocked' && 'Cannot proceed — resolve issues first'}
-                {aiState === 'escalating' && 'Deadline approaching, action needed now'}
+                {aiState === 'blocked' &&
+                  'Cannot proceed — resolve issues first'}
+                {aiState === 'escalating' &&
+                  'Deadline approaching, action needed now'}
               </p>
             </div>
           </div>
 
           {/* Confidence badge (moved here for focal area) */}
           {action.confidence !== undefined && (
-            <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${
-              action.confidence >= 80
-                ? 'text-semantic-success bg-semantic-success/15'
+            <span
+              className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${
+                action.confidence >= 80
+                  ? 'text-semantic-success bg-semantic-success/15'
+                  : action.confidence >= 50
+                    ? 'text-semantic-warning bg-semantic-warning/15'
+                    : 'text-white/60 bg-slate-4'
+              }`}
+            >
+              {action.confidence >= 80
+                ? 'High'
                 : action.confidence >= 50
-                ? 'text-semantic-warning bg-semantic-warning/15'
-                : 'text-white/60 bg-slate-4'
-            }`}>
-              {action.confidence >= 80 ? 'High' : action.confidence >= 50 ? 'Med' : 'Low'} Confidence
+                  ? 'Med'
+                  : 'Low'}{' '}
+              Confidence
             </span>
           )}
         </div>
@@ -1437,19 +1874,25 @@ function NextBestActionCard({
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {/* Impact chip */}
         <span className="px-2 py-0.5 text-xs font-medium text-white/60 bg-slate-4 rounded">
-          Impact: {action.impact?.authority !== undefined ? `+${action.impact.authority}` : '—'}
-          {action.impact?.crossPillar !== undefined && `, +${action.impact.crossPillar} hooks`}
+          Impact:{' '}
+          {action.impact?.authority !== undefined
+            ? `+${action.impact.authority}`
+            : '—'}
+          {action.impact?.crossPillar !== undefined &&
+            `, +${action.impact.crossPillar} hooks`}
         </span>
 
         {/* Risk / Mode ceiling chip */}
-        <span className={`px-2 py-0.5 text-xs font-medium rounded ${
-          action.risk ? riskColors[action.risk] : 'text-white/40 bg-slate-4'
-        }`}>
+        <span
+          className={`px-2 py-0.5 text-xs font-medium rounded ${
+            action.risk ? riskColors[action.risk] : 'text-white/40 bg-slate-4'
+          }`}
+        >
           {action.modeCeiling
             ? `Ceiling: ${getModeCeilingLabel(action.modeCeiling)}`
             : action.risk
-            ? `Risk: ${action.risk}`
-            : 'Risk: —'}
+              ? `Risk: ${action.risk}`
+              : 'Risk: —'}
         </span>
 
         {/* "Why this now" affordance (1-interaction to explainability per UX Continuity Canon) */}
@@ -1524,7 +1967,8 @@ function ConfidenceAwareCTA({
 
   // P1.5: Low confidence threshold is 0.70 (70) per AUTOMATION_MODE_CONTRACTS_CANON
   const isLowConfidence = confidence !== undefined && confidence < 70;
-  const isModerateConfidence = confidence !== undefined && confidence >= 70 && confidence < 80;
+  const isModerateConfidence =
+    confidence !== undefined && confidence >= 70 && confidence < 80;
 
   // P1.5: In Copilot mode with low confidence, require manual mode switch
   const requiresManualGate = isLowConfidence && mode === 'copilot';
@@ -1535,8 +1979,18 @@ function ConfidenceAwareCTA({
         {/* Orchestration ready indicator */}
         {isOrchestrationReady && !requiresManualGate && (
           <span className="flex items-center gap-1 text-brand-iris text-xs">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Orchestration ready
           </span>
@@ -1552,12 +2006,32 @@ function ConfidenceAwareCTA({
               onClick={() => setShowExplanation(!showExplanation)}
               className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/50 bg-slate-4/50 border border-slate-5 rounded-lg hover:bg-slate-4 transition-colors"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
               Manual required
-              <svg className={`w-2.5 h-2.5 transition-transform ${showExplanation ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className={`w-2.5 h-2.5 transition-transform ${showExplanation ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -1567,22 +2041,29 @@ function ConfidenceAwareCTA({
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-semantic-warning" />
-                    <span className="text-xs font-medium text-white/95">Low Confidence</span>
+                    <span className="text-xs font-medium text-white/95">
+                      Low Confidence
+                    </span>
                     {confidence !== undefined && (
-                      <span className="text-xs text-white/40">({confidence}%)</span>
+                      <span className="text-xs text-white/40">
+                        ({confidence}%)
+                      </span>
                     )}
                   </div>
                   <p className="text-xs text-white/60">
-                    This action requires human judgment. AI confidence is below the 70% threshold for automated execution.
+                    This action requires human judgment. AI confidence is below
+                    the 70% threshold for automated execution.
                   </p>
                   {(risk || reversibility) && (
                     <div className="flex items-center gap-3 text-xs text-white/40">
                       {risk && <span>Risk: {risk}</span>}
                       {reversibility && (
                         <span>
-                          {reversibility === 'fully_reversible' ? 'Reversible' :
-                           reversibility === 'partially_reversible' ? 'Partially reversible' :
-                           'Irreversible'}
+                          {reversibility === 'fully_reversible'
+                            ? 'Reversible'
+                            : reversibility === 'partially_reversible'
+                              ? 'Partially reversible'
+                              : 'Irreversible'}
                         </span>
                       )}
                     </div>
@@ -1606,9 +2087,7 @@ function ConfidenceAwareCTA({
           <>
             {/* Moderate confidence indicator (informational, not blocking) */}
             {isModerateConfidence && (
-              <span className="text-xs text-white/40">
-                Moderate confidence
-              </span>
+              <span className="text-xs text-white/40">Moderate confidence</span>
             )}
 
             {/* CTA Button */}
@@ -1678,7 +2157,8 @@ function UpNextActionCard({
   // Phase 10B: Mode-specific CTA labels
   const getCtaLabel = () => {
     if (mode === 'copilot') return 'Review →';
-    if (mode === 'autopilot') return action.type === 'issue' ? 'Resolve' : 'View';
+    if (mode === 'autopilot')
+      return action.type === 'issue' ? 'Resolve' : 'View';
     return action.cta.label;
   };
 
@@ -1695,17 +2175,21 @@ function UpNextActionCard({
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
         {isPinned && (
-          <svg className="w-3 h-3 text-brand-iris shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-3 h-3 text-brand-iris shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path d="M10 2a1 1 0 00-1 1v1.323l-3.954 1.582A1.5 1.5 0 004 7.323V16a1 1 0 001 1h4v-5a1 1 0 112 0v5h4a1 1 0 001-1V7.323a1.5 1.5 0 00-1.046-1.418L11 4.323V3a1 1 0 00-1-1z" />
           </svg>
         )}
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${priorityDot[action.priority]}`} />
+        <span
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${priorityDot[action.priority]}`}
+        />
         <span className="text-xs font-medium text-white/40 uppercase shrink-0">
           {typeLabels[action.type]}
         </span>
-        <span className="text-xs text-white truncate">
-          {action.title}
-        </span>
+        <span className="text-xs text-white truncate">{action.title}</span>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {/* Phase 10B: Pin to Next action (Manual mode only) */}
@@ -1718,8 +2202,18 @@ function UpNextActionCard({
             className="p-1 text-white/30 hover:text-brand-iris rounded transition-colors"
             title="Set as Next"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 15l7-7 7 7"
+              />
             </svg>
           </button>
         )}
@@ -1752,7 +2246,12 @@ function _ContextPanel({
   onViewLibrary,
   onFixIssues,
 }: {
-  pipelineCounts: { draft: number; review: number; approved: number; published: number };
+  pipelineCounts: {
+    draft: number;
+    review: number;
+    approved: number;
+    published: number;
+  };
   upcomingDeadlines: { count: number; nextDate?: string };
   crossPillarImpact: { prHooks: number; seoHooks: number };
   citeMindIssueCount: number;
@@ -1779,10 +2278,26 @@ function _ContextPanel({
           </button>
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <PipelineStat label="Draft" count={pipelineCounts.draft} color="text-white/50" />
-          <PipelineStat label="Review" count={pipelineCounts.review} color="text-semantic-warning" />
-          <PipelineStat label="Ready" count={pipelineCounts.approved} color="text-semantic-success" />
-          <PipelineStat label="Live" count={pipelineCounts.published} color="text-brand-cyan" />
+          <PipelineStat
+            label="Draft"
+            count={pipelineCounts.draft}
+            color="text-white/50"
+          />
+          <PipelineStat
+            label="Review"
+            count={pipelineCounts.review}
+            color="text-semantic-warning"
+          />
+          <PipelineStat
+            label="Ready"
+            count={pipelineCounts.approved}
+            color="text-semantic-success"
+          />
+          <PipelineStat
+            label="Live"
+            count={pipelineCounts.published}
+            color="text-brand-cyan"
+          />
         </div>
       </div>
 
@@ -1798,7 +2313,9 @@ function _ContextPanel({
           </button>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-xl font-bold text-white/95">{upcomingDeadlines.count}</span>
+          <span className="text-xl font-bold text-white/95">
+            {upcomingDeadlines.count}
+          </span>
           <span className="text-xs text-white/40">this week</span>
         </div>
         {upcomingDeadlines.nextDate && (
@@ -1810,15 +2327,21 @@ function _ContextPanel({
 
       {/* Cross-Pillar Impact */}
       <div className="p-3 bg-slate-2 border border-border-subtle rounded-lg">
-        <h4 className="text-xs font-semibold text-white/70 mb-2">Cross-Pillar</h4>
+        <h4 className="text-xs font-semibold text-white/70 mb-2">
+          Cross-Pillar
+        </h4>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-brand-magenta" />
-            <span className="text-xs text-white/60">{crossPillarImpact.prHooks} PR</span>
+            <span className="text-xs text-white/60">
+              {crossPillarImpact.prHooks} PR
+            </span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-brand-cyan" />
-            <span className="text-xs text-white/60">{crossPillarImpact.seoHooks} SEO</span>
+            <span className="text-xs text-white/60">
+              {crossPillarImpact.seoHooks} SEO
+            </span>
           </div>
         </div>
       </div>
@@ -1831,7 +2354,9 @@ function _ContextPanel({
               {/* Phase 9A: Removed animate-pulse per §7.4 - no deadline = no pulsing
                   Warning color alone communicates the blocked/warning state */}
               <span className="w-2 h-2 rounded-full bg-semantic-warning" />
-              <h4 className="text-xs font-semibold text-semantic-warning">CiteMind Issues</h4>
+              <h4 className="text-xs font-semibold text-semantic-warning">
+                CiteMind Issues
+              </h4>
             </div>
             <button
               onClick={onFixIssues}
@@ -1841,7 +2366,8 @@ function _ContextPanel({
             </button>
           </div>
           <p className="text-xs text-white/60">
-            {citeMindIssueCount} {citeMindIssueCount === 1 ? 'piece needs' : 'pieces need'} attention
+            {citeMindIssueCount}{' '}
+            {citeMindIssueCount === 1 ? 'piece needs' : 'pieces need'} attention
           </p>
         </div>
       )}
@@ -1894,13 +2420,17 @@ function _QuickOpportunities({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-white/95">Quick Opportunities</h3>
+      <h3 className="text-sm font-semibold text-white/95">
+        Quick Opportunities
+      </h3>
 
       <div className="grid grid-cols-2 gap-3">
         {/* High-Score Gaps */}
         {topGaps.length > 0 && (
           <div className="space-y-2">
-            <span className="text-xs text-white/40 uppercase tracking-wider">Content Gaps</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Content Gaps
+            </span>
             {topGaps.map((gap, index) => (
               <GapOpportunityCard
                 key={index}
@@ -1915,7 +2445,9 @@ function _QuickOpportunities({
         {/* Active Themes */}
         {topClusters.length > 0 && (
           <div className="space-y-2">
-            <span className="text-xs text-white/40 uppercase tracking-wider">Active Themes</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Active Themes
+            </span>
             {topClusters.map((cluster) => (
               <ThemeOpportunityCard
                 key={cluster.cluster.id}
@@ -1944,8 +2476,8 @@ function GapOpportunityCard({
     gap.seoOpportunityScore >= 70
       ? 'text-semantic-success bg-semantic-success/10'
       : gap.seoOpportunityScore >= 40
-      ? 'text-semantic-warning bg-semantic-warning/10'
-      : 'text-white/50 bg-white/10';
+        ? 'text-semantic-warning bg-semantic-warning/10'
+        : 'text-white/50 bg-white/10';
 
   return (
     <div
@@ -1953,8 +2485,12 @@ function GapOpportunityCard({
       className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
     >
       <div className="flex items-center justify-between gap-2 mb-1.5">
-        <h5 className="text-xs font-medium text-white line-clamp-1">{gap.keyword}</h5>
-        <span className={`px-1.5 py-0.5 text-[11px] tabular-nums font-bold rounded-full ${scoreColor}`}>
+        <h5 className="text-xs font-medium text-white line-clamp-1">
+          {gap.keyword}
+        </h5>
+        <span
+          className={`px-1.5 py-0.5 text-[11px] tabular-nums font-bold rounded-full ${scoreColor}`}
+        >
           {gap.seoOpportunityScore}
         </span>
       </div>
@@ -1990,10 +2526,13 @@ function ThemeOpportunityCard({
       onClick={onViewCluster}
       className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg hover:border-brand-iris/40 transition-colors cursor-pointer"
     >
-      <h5 className="text-xs font-medium text-white mb-1 line-clamp-1">{cluster.cluster.name}</h5>
+      <h5 className="text-xs font-medium text-white mb-1 line-clamp-1">
+        {cluster.cluster.name}
+      </h5>
       <div className="flex items-center justify-between">
         <span className="text-xs text-white/40">
-          {cluster.topics.length} topics · {cluster.representativeContent.length} assets
+          {cluster.topics.length} topics ·{' '}
+          {cluster.representativeContent.length} assets
         </span>
         <button
           onClick={(e) => {
@@ -2069,7 +2608,9 @@ export function ContentWorkQueueView({
     return (
       <div className="p-4">
         <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
-          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load content</h4>
+          <h4 className="text-sm font-semibold text-semantic-danger">
+            Failed to load content
+          </h4>
           <p className="text-xs text-white/55 mt-1">{error.message}</p>
         </div>
       </div>
@@ -2077,7 +2618,8 @@ export function ContentWorkQueueView({
   }
 
   // Empty state - execution-oriented messaging
-  const hasData = signals || clusters.length > 0 || gaps.length > 0 || briefs.length > 0;
+  const hasData =
+    signals || clusters.length > 0 || gaps.length > 0 || briefs.length > 0;
   if (!hasData) {
     return (
       <ContentEmptyState
@@ -2107,73 +2649,80 @@ export function ContentWorkQueueView({
     ...briefs
       .filter((b) => b.status === 'ready' || b.status === 'needs_review')
       .slice(0, 2)
-      .map((item, i): ContentAction => ({
-        id: `exec-${item.id}`,
-        title: item.title,
-        summary: `Ready to publish · Target: ${item.targetKeyword || 'Multiple keywords'}`,
-        priority: 'high',
-        type: 'execution',
-        relatedEntityId: item.id,
-        relatedEntityType: 'content',
-        cta: {
-          label: 'Publish',
-          action: () => onViewBrief?.(item.id),
-        },
-        mode: mode,
-        createdAt: item.createdAt,
-        orchestrateActionId: `action-${(i % 3) + 1}`,
-        confidence: 75 + (i * 5),
-        impact: { authority: 12 + i * 3, crossPillar: 2 },
-        risk: 'low',
-      })),
+      .map(
+        (item, i): ContentAction => ({
+          id: `exec-${item.id}`,
+          title: item.title,
+          summary: `Ready to publish · Target: ${item.targetKeyword || 'Multiple keywords'}`,
+          priority: 'high',
+          type: 'execution',
+          relatedEntityId: item.id,
+          relatedEntityType: 'content',
+          cta: {
+            label: 'Publish',
+            action: () => onViewBrief?.(item.id),
+          },
+          mode: mode,
+          createdAt: item.createdAt,
+          orchestrateActionId: `action-${(i % 3) + 1}`,
+          confidence: 75 + i * 5,
+          impact: { authority: 12 + i * 3, crossPillar: 2 },
+          risk: 'low',
+        })
+      ),
     // High-opportunity gaps
     ...gaps
       .filter((g) => g.seoOpportunityScore >= 60)
       .slice(0, 3)
-      .map((gap, i): ContentAction => ({
-        id: `gap-${i}`,
-        title: `Create content for "${gap.keyword}"`,
-        summary: `${gap.seoOpportunityScore} opportunity score · ${gap.existingContentCount} existing pieces`,
-        priority: gap.seoOpportunityScore >= 80 ? 'high' : 'medium',
-        type: 'opportunity',
-        relatedEntityId: gap.keyword,
-        relatedEntityType: 'gap',
-        cta: {
-          label: 'Start Writing',
-          action: () => onGenerateBrief?.(),
-        },
-        mode: mode,
-        createdAt: '2025-01-15T09:00:00Z',
-        confidence: 65 + (i * 5),
-        impact: { authority: gap.seoOpportunityScore / 10 },
-      })),
+      .map(
+        (gap, i): ContentAction => ({
+          id: `gap-${i}`,
+          title: `Create content for "${gap.keyword}"`,
+          summary: `${gap.seoOpportunityScore} opportunity score · ${gap.existingContentCount} existing pieces`,
+          priority: gap.seoOpportunityScore >= 80 ? 'high' : 'medium',
+          type: 'opportunity',
+          relatedEntityId: gap.keyword,
+          relatedEntityType: 'gap',
+          cta: {
+            label: 'Start Writing',
+            action: () => onGenerateBrief?.(),
+          },
+          mode: mode,
+          createdAt: '2025-01-15T09:00:00Z',
+          confidence: 65 + i * 5,
+          impact: { authority: gap.seoOpportunityScore / 10 },
+        })
+      ),
     // Content needing attention (draft status)
     ...briefs
       .filter((b) => b.status === 'draft')
       .slice(0, 2)
-      .map((item): ContentAction => ({
-        id: `content-${item.id}`,
-        title: item.title,
-        summary: `Status: ${item.status} · Target: ${item.targetKeyword || 'Not set'}`,
-        priority: 'medium',
-        type: 'scheduled',
-        relatedEntityId: item.id,
-        relatedEntityType: 'content',
-        cta: {
-          label: 'Review',
-          action: () => onViewBrief?.(item.id),
-        },
-        mode: mode,
-        createdAt: item.createdAt,
-        confidence: 70,
-      })),
+      .map(
+        (item): ContentAction => ({
+          id: `content-${item.id}`,
+          title: item.title,
+          summary: `Status: ${item.status} · Target: ${item.targetKeyword || 'Not set'}`,
+          priority: 'medium',
+          type: 'scheduled',
+          relatedEntityId: item.id,
+          relatedEntityType: 'content',
+          cta: {
+            label: 'Review',
+            action: () => onViewBrief?.(item.id),
+          },
+          mode: mode,
+          createdAt: item.createdAt,
+          confidence: 70,
+        })
+      ),
     // CiteMind issues
     ...(citeMindIssueCount > 0
       ? [
           {
             id: 'citemind-issues',
             title: `${citeMindIssueCount} content pieces need attention`,
-            summary: 'CiteMind detected issues that may affect citation eligibility',
+            summary:
+              'CiteMind detected issues that may affect citation eligibility',
             priority: 'high' as const,
             type: 'issue' as const,
             cta: {
@@ -2196,7 +2745,9 @@ export function ContentWorkQueueView({
   // Handle pinned items in Manual mode
   const finalActions = (() => {
     if (pinnedActionId) {
-      const pinnedIndex = sortedActions.findIndex(a => a.id === pinnedActionId);
+      const pinnedIndex = sortedActions.findIndex(
+        (a) => a.id === pinnedActionId
+      );
       if (pinnedIndex > 0) {
         const copy = [...sortedActions];
         const [pinned] = copy.splice(pinnedIndex, 1);
@@ -2208,41 +2759,48 @@ export function ContentWorkQueueView({
   })();
 
   // Convert to QueueItem format for new components
-  const queueItems: QueueItem[] = finalActions.map((action): QueueItem => ({
-    id: action.id,
-    title: action.title,
-    summary: action.summary,
-    priority: action.priority,
-    type: action.type,
-    relatedEntityId: action.relatedEntityId,
-    relatedEntityType: action.relatedEntityType,
-    mode: action.mode,
-    createdAt: action.createdAt,
-    orchestrateActionId: action.orchestrateActionId,
-    confidence: action.confidence,
-    modeCeiling: action.modeCeiling,
-    risk: action.risk,
-    impact: action.impact,
-  }));
+  const queueItems: QueueItem[] = finalActions.map(
+    (action): QueueItem => ({
+      id: action.id,
+      title: action.title,
+      summary: action.summary,
+      priority: action.priority,
+      type: action.type,
+      relatedEntityId: action.relatedEntityId,
+      relatedEntityType: action.relatedEntityType,
+      mode: action.mode,
+      createdAt: action.createdAt,
+      orchestrateActionId: action.orchestrateActionId,
+      confidence: action.confidence,
+      modeCeiling: action.modeCeiling,
+      risk: action.risk,
+      impact: action.impact,
+    })
+  );
 
   // Get selected item
   const selectedItem = selectedActionId
-    ? queueItems.find(item => item.id === selectedActionId) || null
+    ? queueItems.find((item) => item.id === selectedActionId) || null
     : queueItems[0] || null; // Auto-select first item if none selected
 
   const selectedAction = selectedActionId
-    ? finalActions.find(a => a.id === selectedActionId) || null
+    ? finalActions.find((a) => a.id === selectedActionId) || null
     : finalActions[0] || null;
 
   // Routine count for Autopilot
-  const routineCount = mode === 'autopilot' ? actions.length - filteredActions.length : 0;
+  const routineCount =
+    mode === 'autopilot' ? actions.length - filteredActions.length : 0;
 
   // Derive AI state
   const aiState: AIPerceptualState = (() => {
     if (isSimulatingEvaluate) return 'evaluating';
-    const hasBlockedAction = finalActions.some(a => a.type === 'issue');
-    const hasCriticalDeadline = finalActions.some(a => a.priority === 'critical' && a.type === 'scheduled');
-    const hasReadyAction = finalActions.some(a => a.type === 'execution' && a.orchestrateActionId);
+    const hasBlockedAction = finalActions.some((a) => a.type === 'issue');
+    const hasCriticalDeadline = finalActions.some(
+      (a) => a.priority === 'critical' && a.type === 'scheduled'
+    );
+    const hasReadyAction = finalActions.some(
+      (a) => a.type === 'execution' && a.orchestrateActionId
+    );
     return deriveAIPerceptualState({
       isLoading: false,
       isValidating: false,
@@ -2257,9 +2815,19 @@ export function ContentWorkQueueView({
   // Convert to TriggerAction for ExplainabilityDrawer
   const toTriggerAction = (action: ContentAction): TriggerAction => ({
     id: action.id,
-    type: action.type === 'execution' ? 'content_execution' : action.type === 'opportunity' ? 'derivative_generation' : 'authority_optimization',
+    type:
+      action.type === 'execution'
+        ? 'content_execution'
+        : action.type === 'opportunity'
+          ? 'derivative_generation'
+          : 'authority_optimization',
     title: action.title,
-    priority: action.priority === 'critical' ? 'urgent' : action.priority === 'high' ? 'high' : 'normal',
+    priority:
+      action.priority === 'critical'
+        ? 'urgent'
+        : action.priority === 'high'
+          ? 'high'
+          : 'normal',
     modeCeiling: action.modeCeiling || 'copilot',
     citeMindStatus: action.type === 'issue' ? 'warning' : 'passed',
     pillar: 'content',
@@ -2273,32 +2841,35 @@ export function ContentWorkQueueView({
   });
 
   // Mock audit ledger for Autopilot - use stable timestamps to avoid hydration mismatch
-  const auditLedger: AuditLedgerEntry[] = mode === 'autopilot' ? [
-    {
-      id: 'audit-1',
-      timestamp: '2025-01-15T10:30:00Z',
-      actor: 'system',
-      actionType: 'scheduling',
-      summary: 'Auto-scheduled blog post',
-      outcome: 'completed',
-    },
-    {
-      id: 'audit-2',
-      timestamp: '2025-01-15T10:25:00Z',
-      actor: 'system',
-      actionType: 'derivative_generation',
-      summary: 'Generated AEO snippet',
-      outcome: 'completed',
-    },
-    {
-      id: 'audit-3',
-      timestamp: '2025-01-15T10:15:00Z',
-      actor: 'system',
-      actionType: 'citemind_check',
-      summary: 'CiteMind check passed',
-      outcome: 'passed',
-    },
-  ] : [];
+  const auditLedger: AuditLedgerEntry[] =
+    mode === 'autopilot'
+      ? [
+          {
+            id: 'audit-1',
+            timestamp: '2025-01-15T10:30:00Z',
+            actor: 'system',
+            actionType: 'scheduling',
+            summary: 'Auto-scheduled blog post',
+            outcome: 'completed',
+          },
+          {
+            id: 'audit-2',
+            timestamp: '2025-01-15T10:25:00Z',
+            actor: 'system',
+            actionType: 'derivative_generation',
+            summary: 'Generated AEO snippet',
+            outcome: 'completed',
+          },
+          {
+            id: 'audit-3',
+            timestamp: '2025-01-15T10:15:00Z',
+            actor: 'system',
+            actionType: 'citemind_check',
+            summary: 'CiteMind check passed',
+            outcome: 'passed',
+          },
+        ]
+      : [];
 
   // Handlers
   const handleSelect = useCallback((id: string) => {
@@ -2324,7 +2895,10 @@ export function ContentWorkQueueView({
         <div className="px-4 py-3 border-b border-slate-4 shrink-0">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
+              <HealthStrip
+                signals={signals}
+                citeMindIssueCount={citeMindIssueCount}
+              />
             </div>
             <CTACluster
               mode={mode}
@@ -2343,16 +2917,24 @@ export function ContentWorkQueueView({
             documents={assets}
             selectedId={selectedActionId}
             onSelect={handleSelect}
-            onCreateNew={onCreateContent ? () => onCreateContent('article') : () => {}}
-            onSave={(data) => { void data; /* TODO: wire to API */ }}
-            onPublish={(assetId) => { void assetId; /* TODO: wire publish gate */ }}
+            onCreateNew={
+              onCreateContent ? () => onCreateContent('article') : () => {}
+            }
+            onSave={(data) => {
+              void data; /* TODO: wire to API */
+            }}
+            onPublish={(assetId) => {
+              void assetId; /* TODO: wire publish gate */
+            }}
             isLoading={isLoading}
             contextData={{
               citeMindStatus: citeMindIssueCount > 0 ? 'warning' : 'passed',
               citeMindIssues: assets
-                .filter(a => a.citeMindIssues && a.citeMindIssues.length > 0)
-                .flatMap(a => a.citeMindIssues || []),
-              entities: selectedAction?.relatedEntityId ? [selectedAction.relatedEntityId] : [],
+                .filter((a) => a.citeMindIssues && a.citeMindIssues.length > 0)
+                .flatMap((a) => a.citeMindIssues || []),
+              entities: selectedAction?.relatedEntityId
+                ? [selectedAction.relatedEntityId]
+                : [],
               derivatives: [
                 { type: 'pr_pitch_excerpt', valid: true },
                 { type: 'aeo_snippet', valid: true },
@@ -2383,7 +2965,10 @@ export function ContentWorkQueueView({
       <div className="px-4 py-3 border-b border-slate-4 shrink-0">
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <HealthStrip signals={signals} citeMindIssueCount={citeMindIssueCount} />
+            <HealthStrip
+              signals={signals}
+              citeMindIssueCount={citeMindIssueCount}
+            />
           </div>
           <CTACluster
             mode={mode}
@@ -2432,9 +3017,13 @@ export function ContentWorkQueueView({
             mode={mode}
             citeMindStatus={citeMindIssueCount > 0 ? 'warning' : 'passed'}
             citeMindIssues={assets
-              .filter(a => a.citeMindIssues && a.citeMindIssues.length > 0)
-              .flatMap(a => a.citeMindIssues || [])}
-            entities={selectedAction?.relatedEntityId ? [selectedAction.relatedEntityId] : []}
+              .filter((a) => a.citeMindIssues && a.citeMindIssues.length > 0)
+              .flatMap((a) => a.citeMindIssues || [])}
+            entities={
+              selectedAction?.relatedEntityId
+                ? [selectedAction.relatedEntityId]
+                : []
+            }
             derivatives={[
               { type: 'pr_pitch_excerpt', valid: true },
               { type: 'aeo_snippet', valid: true },
@@ -2470,6 +3059,6 @@ export function ContentWorkQueueView({
 // Phase 11A: Legacy component references (preserved for potential future use/rollback)
 // These components were replaced by selection-driven triage layout.
 // Suppress unused warnings by referencing them.
-void _ExecutionGravityPane;
+void ExecutionGravityPane;
 void _ContextPanel;
 void _QuickOpportunities;

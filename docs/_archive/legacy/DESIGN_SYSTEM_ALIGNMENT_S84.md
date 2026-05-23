@@ -14,11 +14,13 @@ Sprint S84 enforced Pravado Design System v2 compliance across all authenticatio
 ## Scope
 
 ### In Scope
+
 - Auth pages: login, signup, callback, onboarding
 - App shell: layout, sidebar, top navigation
 - Error pages: error.tsx, global-error.tsx, not-found.tsx
 
 ### Out of Scope
+
 - Pillar pages (covered in S83)
 - Component library internals
 - Feature-specific pages (billing, playbooks, etc.)
@@ -28,32 +30,37 @@ Sprint S84 enforced Pravado Design System v2 compliance across all authenticatio
 ## Phase 1: Audit Results
 
 ### Already DS v2 Compliant (No Changes Needed)
-| File | Status | Notes |
-|------|--------|-------|
-| `apps/dashboard/src/app/login/page.tsx` | Compliant | Uses auth-card, btn-oauth, btn-magic-link, btn-primary, input-field, alert-error/success, AIPresenceDot |
-| `apps/dashboard/src/app/callback/page.tsx` | Compliant | Uses auth-card, alert-error, btn-primary, btn-secondary, AIPresenceDot |
-| `apps/dashboard/src/app/onboarding/page.tsx` | Compliant | Uses auth-card, input-field, btn-primary, alert-error, alert-info |
-| `apps/dashboard/src/app/app/layout.tsx` | Compliant | Uses bg-page, bg-slate-1, border-border-subtle, text-gradient-hero, brand-iris, brand-cyan |
+
+| File                                         | Status    | Notes                                                                                                   |
+| -------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| `apps/dashboard/src/app/login/page.tsx`      | Compliant | Uses auth-card, btn-oauth, btn-magic-link, btn-primary, input-field, alert-error/success, AIPresenceDot |
+| `apps/dashboard/src/app/callback/page.tsx`   | Compliant | Uses auth-card, alert-error, btn-primary, btn-secondary, AIPresenceDot                                  |
+| `apps/dashboard/src/app/onboarding/page.tsx` | Compliant | Uses auth-card, input-field, btn-primary, alert-error, alert-info                                       |
+| `apps/dashboard/src/app/app/layout.tsx`      | Compliant | Uses bg-page, bg-slate-1, border-border-subtle, text-gradient-hero, brand-iris, brand-cyan              |
 
 ### Updated to DS v2
-| File | Status | Changes Applied |
-|------|--------|-----------------|
-| `apps/dashboard/src/app/error.tsx` | Updated | Replaced bg-gray-50, text-gray-*, bg-blue-* with DS v2 tokens |
+
+| File                                      | Status  | Changes Applied                                                    |
+| ----------------------------------------- | ------- | ------------------------------------------------------------------ |
+| `apps/dashboard/src/app/error.tsx`        | Updated | Replaced bg-gray-50, text-gray-_, bg-blue-_ with DS v2 tokens      |
 | `apps/dashboard/src/app/global-error.tsx` | Updated | Full inline DS v2 styling (required since it replaces root layout) |
-| `apps/dashboard/src/app/not-found.tsx` | Updated | Replaced legacy colors with DS v2 tokens |
+| `apps/dashboard/src/app/not-found.tsx`    | Updated | Replaced legacy colors with DS v2 tokens                           |
 
 ---
 
 ## Phase 2: Changes Applied
 
 ### error.tsx
+
 **Before:**
+
 ```tsx
-bg-gray-50, text-gray-900, text-gray-600, text-gray-500
-bg-blue-600, bg-gray-200
+(bg - gray - 50, text - gray - 900, text - gray - 600, text - gray - 500);
+(bg - blue - 600, bg - gray - 200);
 ```
 
 **After:**
+
 ```tsx
 bg-page, text-white-0, text-muted, text-slate-6
 btn-primary, btn-secondary, auth-card, alert-error
@@ -62,13 +69,16 @@ Radial gradient background with semantic-danger
 ```
 
 ### global-error.tsx
+
 **Before:**
+
 ```tsx
-bg-gray-50, text-gray-900, text-gray-600, text-gray-500
-bg-blue-600
+(bg - gray - 50, text - gray - 900, text - gray - 600, text - gray - 500);
+bg - blue - 600;
 ```
 
 **After:**
+
 ```tsx
 Inline styles using DS v2 hex values (required since this replaces root layout):
 - Background: #0B0F14 (--slate-0)
@@ -79,13 +89,16 @@ Inline styles using DS v2 hex values (required since this replaces root layout):
 ```
 
 ### not-found.tsx
+
 **Before:**
+
 ```tsx
-bg-gray-50, text-gray-900, text-gray-600
-bg-blue-600
+(bg - gray - 50, text - gray - 900, text - gray - 600);
+bg - blue - 600;
 ```
 
 **After:**
+
 ```tsx
 bg-page, text-white-0, text-muted, text-slate-6
 text-gradient-hero for 404 number
@@ -99,7 +112,9 @@ Radial gradient background with brand-iris
 ## DS v2 Patterns Established
 
 ### Auth Page Pattern
+
 All auth-related pages follow this consistent structure:
+
 1. **Background**: `bg-page` with radial gradient overlay
 2. **Card**: `auth-card` class for glassmorphic container
 3. **Title**: `text-white-0` for headings, `text-muted` for subtitles
@@ -109,7 +124,9 @@ All auth-related pages follow this consistent structure:
 7. **AI Presence**: `AIPresenceDot` component with idle/analyzing/generating states
 
 ### Error Page Pattern
+
 Error pages follow this structure:
+
 1. **Background**: `bg-page` with semantic-danger/brand-iris radial gradient
 2. **Card**: `auth-card` class for consistent styling
 3. **Icon**: Circular background with `semantic-danger/10` or `brand-iris/10`
@@ -117,7 +134,9 @@ Error pages follow this structure:
 5. **Support**: Contact link styled with `text-brand-cyan`
 
 ### App Shell Pattern
+
 The app shell (layout.tsx) follows:
+
 1. **Sidebar**: `bg-slate-1` with `border-border-subtle`
 2. **Logo**: `text-gradient-hero` gradient text
 3. **Nav Items**: `text-slate-6` default, `text-brand-cyan` active
@@ -129,57 +148,62 @@ The app shell (layout.tsx) follows:
 ## Token Mapping Reference
 
 ### Legacy to DS v2 Colors
-| Legacy Class | DS v2 Replacement |
-|--------------|-------------------|
-| `bg-gray-50` | `bg-page` (via globals.css) |
-| `bg-gray-100` | `bg-slate-3` or `bg-slate-4` |
-| `bg-gray-200` | `btn-secondary` class |
-| `bg-blue-600` | `btn-primary` class or `bg-brand-iris` |
-| `text-gray-900` | `text-white-0` |
-| `text-gray-600` | `text-muted` |
-| `text-gray-500` | `text-muted` or `text-slate-6` |
-| `text-gray-400` | `text-slate-6` |
+
+| Legacy Class    | DS v2 Replacement                      |
+| --------------- | -------------------------------------- |
+| `bg-gray-50`    | `bg-page` (via globals.css)            |
+| `bg-gray-100`   | `bg-slate-3` or `bg-slate-4`           |
+| `bg-gray-200`   | `btn-secondary` class                  |
+| `bg-blue-600`   | `btn-primary` class or `bg-brand-iris` |
+| `text-gray-900` | `text-white-0`                         |
+| `text-gray-600` | `text-muted`                           |
+| `text-gray-500` | `text-muted` or `text-slate-6`         |
+| `text-gray-400` | `text-slate-6`                         |
 | `text-blue-600` | `text-brand-cyan` or `text-brand-iris` |
 
 ### Component Class Usage
-| Scenario | DS v2 Class |
-|----------|-------------|
-| Primary action button | `btn-primary` |
-| Secondary action button | `btn-secondary` |
-| OAuth sign-in button | `btn-oauth` |
-| Magic link button | `btn-magic-link` |
-| Ghost/text button | `btn-ghost` |
-| Form input | `input-field` |
-| Auth page card | `auth-card` |
-| Dashboard panel | `panel-card` |
-| Error alert | `alert-error` |
-| Success alert | `alert-success` |
-| Info alert | `alert-info` |
+
+| Scenario                | DS v2 Class      |
+| ----------------------- | ---------------- |
+| Primary action button   | `btn-primary`    |
+| Secondary action button | `btn-secondary`  |
+| OAuth sign-in button    | `btn-oauth`      |
+| Magic link button       | `btn-magic-link` |
+| Ghost/text button       | `btn-ghost`      |
+| Form input              | `input-field`    |
+| Auth page card          | `auth-card`      |
+| Dashboard panel         | `panel-card`     |
+| Error alert             | `alert-error`    |
+| Success alert           | `alert-success`  |
+| Info alert              | `alert-info`     |
 
 ---
 
 ## Build Verification
 
-| Check | Status |
-|-------|--------|
-| TypeScript (`tsc --noEmit`) | Passed |
-| Next.js lint | Passed (no new errors) |
-| No hardcoded grays in updated files | Verified |
-| DS v2 tokens consistently applied | Verified |
+| Check                               | Status                 |
+| ----------------------------------- | ---------------------- |
+| TypeScript (`tsc --noEmit`)         | Passed                 |
+| Next.js lint                        | Passed (no new errors) |
+| No hardcoded grays in updated files | Verified               |
+| DS v2 tokens consistently applied   | Verified               |
 
 ---
 
 ## Files Modified
 
 ### Error Pages
+
 - `apps/dashboard/src/app/error.tsx`
 - `apps/dashboard/src/app/global-error.tsx`
 - `apps/dashboard/src/app/not-found.tsx`
 
 ### Documentation
+
 - `docs/DESIGN_SYSTEM_ALIGNMENT_S84.md` (this file)
 
 ### Files Audited (Already Compliant)
+
 - `apps/dashboard/src/app/login/page.tsx`
 - `apps/dashboard/src/app/callback/page.tsx`
 - `apps/dashboard/src/app/onboarding/page.tsx`
@@ -191,15 +215,15 @@ The app shell (layout.tsx) follows:
 
 The following files are now **canonical DS v2 reference implementations**:
 
-| Category | Reference File | Key Patterns |
-|----------|---------------|--------------|
-| Login/Signup | `login/page.tsx` | OAuth flow, magic link, form inputs, alerts |
-| Auth Callback | `callback/page.tsx` | Loading states, error handling, redirects |
-| Onboarding | `onboarding/page.tsx` | Multi-step forms, validation, progress |
-| App Shell | `app/layout.tsx` | Sidebar, navigation, user menu |
-| Error Page | `error.tsx` | Runtime error display, retry actions |
-| 404 Page | `not-found.tsx` | Not found state, navigation options |
-| Critical Error | `global-error.tsx` | Root-level error (inline styles) |
+| Category       | Reference File        | Key Patterns                                |
+| -------------- | --------------------- | ------------------------------------------- |
+| Login/Signup   | `login/page.tsx`      | OAuth flow, magic link, form inputs, alerts |
+| Auth Callback  | `callback/page.tsx`   | Loading states, error handling, redirects   |
+| Onboarding     | `onboarding/page.tsx` | Multi-step forms, validation, progress      |
+| App Shell      | `app/layout.tsx`      | Sidebar, navigation, user menu              |
+| Error Page     | `error.tsx`           | Runtime error display, retry actions        |
+| 404 Page       | `not-found.tsx`       | Not found state, navigation options         |
+| Critical Error | `global-error.tsx`    | Root-level error (inline styles)            |
 
 ---
 

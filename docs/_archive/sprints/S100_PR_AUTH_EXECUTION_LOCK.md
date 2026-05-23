@@ -83,31 +83,31 @@ Sprint S100 implements a strict architectural constraint:
 
 ### Core Server Modules
 
-| File | Purpose |
-|------|---------|
+| File                               | Purpose                         |
+| ---------------------------------- | ------------------------------- |
 | `src/server/supabaseServerAuth.ts` | Canonical auth token extraction |
-| `src/server/prBackendProxy.ts` | Authenticated fetch wrapper |
+| `src/server/prBackendProxy.ts`     | Authenticated fetch wrapper     |
 
 ### Route Handlers
 
-| Route | Endpoint |
-|-------|----------|
-| `/api/pr/journalists` | Journalist profiles |
-| `/api/pr/releases` | Press releases list |
-| `/api/pr/releases/[id]` | Single press release |
-| `/api/pr/releases/generate` | Generate new release |
-| `/api/pr/deliverability/summary` | Deliverability stats |
-| `/api/pr/deliverability/messages` | Email messages |
+| Route                                | Endpoint                |
+| ------------------------------------ | ----------------------- |
+| `/api/pr/journalists`                | Journalist profiles     |
+| `/api/pr/releases`                   | Press releases list     |
+| `/api/pr/releases/[id]`              | Single press release    |
+| `/api/pr/releases/generate`          | Generate new release    |
+| `/api/pr/deliverability/summary`     | Deliverability stats    |
+| `/api/pr/deliverability/messages`    | Email messages          |
 | `/api/pr/deliverability/top-engaged` | Top engaged journalists |
-| `/api/pr/outreach/stats` | Outreach statistics |
-| `/api/pr/pitches/sequences` | Pitch sequences |
+| `/api/pr/outreach/stats`             | Outreach statistics     |
+| `/api/pr/pitches/sequences`          | Pitch sequences         |
 
 ### Refactored Pages
 
-| Page | Change |
-|------|--------|
-| `/app/pr/journalists/page.tsx` | Removed prDataServer import, renders client shell |
-| `/app/pr/generator/page.tsx` | Removed prDataServer import, renders client shell |
+| Page                              | Change                                            |
+| --------------------------------- | ------------------------------------------------- |
+| `/app/pr/journalists/page.tsx`    | Removed prDataServer import, renders client shell |
+| `/app/pr/generator/page.tsx`      | Removed prDataServer import, renders client shell |
 | `/app/pr/deliverability/page.tsx` | Removed prDataServer import, renders client shell |
 
 ## Debug Logging
@@ -131,11 +131,13 @@ cd apps/dashboard
 ```
 
 This script checks:
+
 1. No PR page imports from `@/server/prDataServer`
 2. All expected route handlers exist
 3. Page components are not async (no SSR data fetching)
 
 Add to CI pipeline:
+
 ```yaml
 - name: Check PR Auth Invariants
   run: cd apps/dashboard && ./scripts/check-pr-no-direct-api.sh
@@ -147,16 +149,17 @@ Add to CI pipeline:
 
 The system handles auth errors with specific codes:
 
-| Code | Description |
-|------|-------------|
-| `AUTH_MISSING` | No session or access token found |
-| `AUTH_SESSION_ERROR` | Failed to retrieve session |
+| Code                 | Description                      |
+| -------------------- | -------------------------------- |
+| `AUTH_MISSING`       | No session or access token found |
+| `AUTH_SESSION_ERROR` | Failed to retrieve session       |
 
 Client components should handle 401 responses by showing auth required UI.
 
 ### Backend Errors
 
 Backend errors are wrapped in `BackendProxyError` with:
+
 - HTTP status code
 - Error message
 - Optional error code
@@ -179,12 +182,12 @@ export default function MyPage() {
 }
 
 // MyClient.tsx - Fetches via internal API
-'use client';
+('use client');
 
 useEffect(() => {
   fetch('/api/pr/my-endpoint')
-    .then(res => res.json())
-    .then(data => setData(data));
+    .then((res) => res.json())
+    .then((data) => setData(data));
 }, []);
 ```
 
@@ -199,6 +202,7 @@ useEffect(() => {
 ## Rollback Plan
 
 If issues arise:
+
 1. Revert to S99.2 commit
 2. Update route handlers to use legacy auth approach
 3. Investigate cookie/session issues in route handler context

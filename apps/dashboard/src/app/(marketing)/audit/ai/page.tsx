@@ -23,8 +23,6 @@
  * Pillar accent: cyber-blue (#00D9FF) — AI Citation pillar color.
  */
 
-import { useState } from 'react';
-import Link from 'next/link';
 import {
   Brain,
   Newspaper,
@@ -34,12 +32,17 @@ import {
   CaretDown,
   ArrowRight,
 } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import type { ScanResponse } from '@/components/marketing/audit-types';
 import { AuditForm } from '@/components/marketing/AuditForm';
 import { EVIScorecardResults } from '@/components/marketing/EVIScorecardResults';
-import type { ScanResponse } from '@/components/marketing/audit-types';
 
 function TM() {
-  return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;
+  return (
+    <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>
+  );
 }
 
 const KEYFRAMES = `
@@ -129,7 +132,6 @@ export default function AuditAiPage() {
       />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 1: HERO                                            */}
         {/* ─────────────────────────────────────────────────────────── */}
@@ -173,7 +175,8 @@ export default function AuditAiPage() {
                   lineHeight: 1.05,
                   marginTop: 0,
                   marginBottom: 24,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #00D9FF 60%, #06B6D4 100%)',
+                  background:
+                    'linear-gradient(135deg, #ffffff 0%, #00D9FF 60%, #06B6D4 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -193,12 +196,13 @@ export default function AuditAiPage() {
                   maxWidth: 580,
                 }}
               >
-                Semrush shows your AI Visibility Score dipped. Profound shows the
-                competitor took the share-of-model on three buyer-intent queries.
-                You rewrite the page. The score pops back. Two weeks later it dips
-                again. Monitoring is not strategy. AI citation is a downstream
-                outcome of PR signal and content authority — and your AEO stack was
-                designed to measure the outcome, not move the inputs.
+                Semrush shows your AI Visibility Score dipped. Profound shows
+                the competitor took the share-of-model on three buyer-intent
+                queries. You rewrite the page. The score pops back. Two weeks
+                later it dips again. Monitoring is not strategy. AI citation is
+                a downstream outcome of PR signal and content authority — and
+                your AEO stack was designed to measure the outcome, not move the
+                inputs.
               </p>
 
               <div
@@ -210,15 +214,33 @@ export default function AuditAiPage() {
                   color: 'rgba(255,255,255,0.5)',
                 }}
               >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   Free, no credit card
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   20–30 seconds
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   5-engine citation scan
                 </span>
@@ -273,7 +295,13 @@ export default function AuditAiPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 2: PROBLEM (Layer 1) — names lived experience      */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <div
               style={{
@@ -300,7 +328,8 @@ export default function AuditAiPage() {
                 letterSpacing: '-0.01em',
               }}
             >
-              The dashboard tells you the citation dropped. It can&apos;t tell you why.
+              The dashboard tells you the citation dropped. It can&apos;t tell
+              you why.
             </h2>
             <p
               style={{
@@ -310,16 +339,17 @@ export default function AuditAiPage() {
                 margin: 0,
               }}
             >
-              You have an AEO tool. The AI Visibility Score is on the dashboard. The
-              query-level breakdown is granular. You see exactly which prompts cite
-              the competitor instead of you. You rewrite the page. Add the FAQ
-              schema. Republish. The score recovers — sometimes. Two weeks later, a
-              new query you weren&apos;t tracking starts citing somebody else&apos;s
-              press hit from Bloomberg. You go fix that one. Then another. The
-              monitoring is sharp. The remediation is whack-a-mole. Because what
-              actually moves AI citation isn&apos;t a single page edit — it&apos;s
-              the upstream PR signal and the architectural integrity of your
-              content authority. Your tool was built to measure the symptom.
+              You have an AEO tool. The AI Visibility Score is on the dashboard.
+              The query-level breakdown is granular. You see exactly which
+              prompts cite the competitor instead of you. You rewrite the page.
+              Add the FAQ schema. Republish. The score recovers — sometimes. Two
+              weeks later, a new query you weren&apos;t tracking starts citing
+              somebody else&apos;s press hit from Bloomberg. You go fix that
+              one. Then another. The monitoring is sharp. The remediation is
+              whack-a-mole. Because what actually moves AI citation isn&apos;t a
+              single page edit — it&apos;s the upstream PR signal and the
+              architectural integrity of your content authority. Your tool was
+              built to measure the symptom.
             </p>
           </div>
         </section>
@@ -327,7 +357,13 @@ export default function AuditAiPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 3: STRUCTURAL (Layer 2) — names the silo            */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 920, margin: '0 auto' }}>
             <div
               style={{
@@ -361,22 +397,40 @@ export default function AuditAiPage() {
             </h2>
 
             <div style={{ maxWidth: 720, margin: '0 auto', marginBottom: 40 }}>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, marginTop: 0, marginBottom: 20 }}>
-                Semrush AI Visibility, Profound, Search Atlas, Otterly — all credible
-                measurement instruments. They tell you whether ChatGPT cited you,
-                which queries the competitor took, how share-of-model trended this
-                week. None of them generate the press hit that puts you in next
-                quarter&apos;s training data. None of them produce the pillar page
-                with the FAQ schema and named-entity coverage that lets the engines
-                extract the answer. None of them route a journalist pitch.
+              <p
+                style={{
+                  fontSize: 17,
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.75,
+                  marginTop: 0,
+                  marginBottom: 20,
+                }}
+              >
+                Semrush AI Visibility, Profound, Search Atlas, Otterly — all
+                credible measurement instruments. They tell you whether ChatGPT
+                cited you, which queries the competitor took, how share-of-model
+                trended this week. None of them generate the press hit that puts
+                you in next quarter&apos;s training data. None of them produce
+                the pillar page with the FAQ schema and named-entity coverage
+                that lets the engines extract the answer. None of them route a
+                journalist pitch.
               </p>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, marginTop: 0, marginBottom: 0 }}>
+              <p
+                style={{
+                  fontSize: 17,
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.75,
+                  marginTop: 0,
+                  marginBottom: 0,
+                }}
+              >
                 AI citations are an output. The inputs are PR signal (does the
-                trained-on web know you&apos;re the brand to cite for this topic?)
-                and content authority (when an engine retrieves, is your page the
-                clean extraction it wants?). AEO-only tools watch the output dial.
-                Pravado moves the upstream inputs <em>and</em> watches the output —
-                because the output is fed by inputs the tool itself controls.
+                trained-on web know you&apos;re the brand to cite for this
+                topic?) and content authority (when an engine retrieves, is your
+                page the clean extraction it wants?). AEO-only tools watch the
+                output dial. Pravado moves the upstream inputs <em>and</em>{' '}
+                watches the output — because the output is fed by inputs the
+                tool itself controls.
               </p>
             </div>
 
@@ -392,9 +446,22 @@ export default function AuditAiPage() {
               }}
             >
               {[
-                { name: 'Semrush', sees: 'AI Visibility Score, query-level citations, competitive share-of-model', misses: 'No PR signal generation, no content authority remediation' },
-                { name: 'Profound', sees: 'Deep query tracking, agent action visibility, brand mention sentiment', misses: 'No upstream input control — measurement-only' },
-                { name: 'Pravado', sees: 'All of the above + PR signal generation + content authority architecture', misses: null },
+                {
+                  name: 'Semrush',
+                  sees: 'AI Visibility Score, query-level citations, competitive share-of-model',
+                  misses:
+                    'No PR signal generation, no content authority remediation',
+                },
+                {
+                  name: 'Profound',
+                  sees: 'Deep query tracking, agent action visibility, brand mention sentiment',
+                  misses: 'No upstream input control — measurement-only',
+                },
+                {
+                  name: 'Pravado',
+                  sees: 'All of the above + PR signal generation + content authority architecture',
+                  misses: null,
+                },
               ].map((tool) => {
                 const isPravado = tool.name === 'Pravado';
                 return (
@@ -403,27 +470,68 @@ export default function AuditAiPage() {
                     style={{
                       padding: 20,
                       borderRadius: 12,
-                      background: isPravado ? 'rgba(0,217,255,0.06)' : 'rgba(255,255,255,0.03)',
-                      border: isPravado ? '1px solid rgba(0,217,255,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                      background: isPravado
+                        ? 'rgba(0,217,255,0.06)'
+                        : 'rgba(255,255,255,0.03)',
+                      border: isPravado
+                        ? '1px solid rgba(0,217,255,0.3)'
+                        : '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
-                    <div style={{ fontSize: 16, fontWeight: 700, color: isPravado ? '#00D9FF' : '#ffffff', marginBottom: 16 }}>
+                    <div
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 700,
+                        color: isPravado ? '#00D9FF' : '#ffffff',
+                        marginBottom: 16,
+                      }}
+                    >
                       {tool.name}
                     </div>
                     <div style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(34,197,94,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: 'rgba(34,197,94,0.9)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.08em',
+                          marginBottom: 6,
+                        }}
+                      >
                         Sees
                       </div>
-                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: 'rgba(255,255,255,0.75)',
+                          lineHeight: 1.5,
+                        }}
+                      >
                         {tool.sees}
                       </div>
                     </div>
                     {tool.misses && (
                       <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(239,68,68,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                        <div
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: 'rgba(239,68,68,0.9)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            marginBottom: 6,
+                          }}
+                        >
                           Misses
                         </div>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: 'rgba(255,255,255,0.55)',
+                            lineHeight: 1.5,
+                          }}
+                        >
                           {tool.misses}
                         </div>
                       </div>
@@ -455,7 +563,13 @@ export default function AuditAiPage() {
         {/* AI Citation gets longest treatment, then pivots to         */}
         {/* cross-pillar dependency.                                   */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div
               style={{
@@ -485,7 +599,8 @@ export default function AuditAiPage() {
                 marginRight: 'auto',
               }}
             >
-              Three pillars of earned visibility. One scorecard. One platform that runs them together.
+              Three pillars of earned visibility. One scorecard. One platform
+              that runs them together.
             </h2>
             <p
               style={{
@@ -497,10 +612,10 @@ export default function AuditAiPage() {
                 maxWidth: 720,
               }}
             >
-              Best-in-class AI citation tracking. Compounding when paired with the
-              PR and Content layers that feed the citation outcome — because the
-              schema is shared at the platform level, not retrofitted across an
-              acquisition stack.
+              Best-in-class AI citation tracking. Compounding when paired with
+              the PR and Content layers that feed the citation outcome — because
+              the schema is shared at the platform level, not retrofitted across
+              an acquisition stack.
             </p>
 
             {/* AI Citation Pillar — long treatment */}
@@ -533,23 +648,61 @@ export default function AuditAiPage() {
                 >
                   <Brain size={26} weight="regular" color="#00D9FF" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#00D9FF', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#00D9FF',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 8,
+                  }}
+                >
                   Pillar 1
                 </div>
-                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#ffffff', lineHeight: 1.2, marginTop: 0, marginBottom: 0 }}>
+                <h3
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.2,
+                    marginTop: 0,
+                    marginBottom: 0,
+                  }}
+                >
                   AI Citation Authority
                 </h3>
               </div>
               <div>
-                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginTop: 0, marginBottom: 16 }}>
-                  CiteMind<TM /> tracks brand citations across <strong style={{ color: '#ffffff' }}>five major
-                  engines</strong> (ChatGPT, Perplexity, Gemini, Claude, Bing
-                  Copilot) at the query level — share-of-model, sentiment,
-                  competitor displacement, entity disambiguation accuracy,
-                  unlinked-mention rate. As a measurement instrument, it is on
-                  parity with the best AEO-only tools shipping today.
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.75)',
+                    lineHeight: 1.7,
+                    marginTop: 0,
+                    marginBottom: 16,
+                  }}
+                >
+                  CiteMind
+                  <TM /> tracks brand citations across{' '}
+                  <strong style={{ color: '#ffffff' }}>
+                    five major engines
+                  </strong>{' '}
+                  (ChatGPT, Perplexity, Gemini, Claude, Bing Copilot) at the
+                  query level — share-of-model, sentiment, competitor
+                  displacement, entity disambiguation accuracy, unlinked-mention
+                  rate. As a measurement instrument, it is on parity with the
+                  best AEO-only tools shipping today.
                 </p>
-                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginTop: 0, marginBottom: 16 }}>
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.75)',
+                    lineHeight: 1.7,
+                    marginTop: 0,
+                    marginBottom: 16,
+                  }}
+                >
                   But measurement isn&apos;t the moat. The moat is what the
                   platform does with the gap CiteMind surfaces — generate the
                   press release, route it through the 283K-profile journalist
@@ -578,7 +731,14 @@ export default function AuditAiPage() {
                     'Competitor displacement alerts',
                     'Citation-gap remediation hooks',
                   ].map((feature) => (
-                    <li key={feature} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <li
+                      key={feature}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
                       <CheckCircle size={14} weight="fill" color="#00D9FF" />
                       {feature}
                     </li>
@@ -590,7 +750,11 @@ export default function AuditAiPage() {
             {/* PR + Content — briefer treatment, framed as the upstream inputs */}
             <div
               className="audit-pillars-grid"
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 24,
+              }}
             >
               <div
                 style={{
@@ -614,18 +778,43 @@ export default function AuditAiPage() {
                 >
                   <Newspaper size={22} weight="regular" color="#E879F9" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#E879F9', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#E879F9',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 6,
+                  }}
+                >
                   Pillar 2 — Upstream input
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.25, marginTop: 0, marginBottom: 14 }}>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.25,
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
                   PR Authority
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
-                  The press hits in tier-1 outlets are what put your brand in next
-                  quarter&apos;s LLM training data. Pravado&apos;s 283K-profile
-                  media database, beat-aware matching, and named-spokesperson
-                  routing exist so the citation gap CiteMind surfaces today has a
-                  press signal closing it tomorrow.
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  The press hits in tier-1 outlets are what put your brand in
+                  next quarter&apos;s LLM training data. Pravado&apos;s
+                  283K-profile media database, beat-aware matching, and
+                  named-spokesperson routing exist so the citation gap CiteMind
+                  surfaces today has a press signal closing it tomorrow.
                 </p>
               </div>
 
@@ -651,18 +840,43 @@ export default function AuditAiPage() {
                 >
                   <FileText size={22} weight="regular" color="#A855F7" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#A855F7', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#A855F7',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 6,
+                  }}
+                >
                   Pillar 3 — Upstream input
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.25, marginTop: 0, marginBottom: 14 }}>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.25,
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
                   Content Authority
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
-                  When an engine retrieves to answer a buyer query, the content it
-                  finds has to be the clean extraction it wants. CRAFT scaffolds
-                  pillar pages with FAQ schema, named-entity coverage, and topic
-                  cluster integrity — the architecture that makes your content
-                  the citation, not someone else&apos;s.
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  When an engine retrieves to answer a buyer query, the content
+                  it finds has to be the clean extraction it wants. CRAFT
+                  scaffolds pillar pages with FAQ schema, named-entity coverage,
+                  and topic cluster integrity — the architecture that makes your
+                  content the citation, not someone else&apos;s.
                 </p>
               </div>
             </div>
@@ -689,13 +903,16 @@ export default function AuditAiPage() {
                   marginRight: 'auto',
                 }}
               >
-                The orchestration layer (<strong style={{ color: '#A855F7' }}>SAGE</strong>
-                <TM /> strategy mesh, <strong style={{ color: '#00D9FF' }}>CRAFT</strong>
-                <TM /> execution, <strong style={{ color: '#E879F9' }}>CiteMind</strong>
-                <TM /> citation intelligence) is what no AEO-only tool can ship —
-                because moving the inputs requires schema shared with the PR and
-                Content pillars at the platform level. Acquisition stacks can&apos;t
-                retrofit it.
+                The orchestration layer (
+                <strong style={{ color: '#A855F7' }}>SAGE</strong>
+                <TM /> strategy mesh,{' '}
+                <strong style={{ color: '#00D9FF' }}>CRAFT</strong>
+                <TM /> execution,{' '}
+                <strong style={{ color: '#E879F9' }}>CiteMind</strong>
+                <TM /> citation intelligence) is what no AEO-only tool can ship
+                — because moving the inputs requires schema shared with the PR
+                and Content pillars at the platform level. Acquisition stacks
+                can&apos;t retrofit it.
               </p>
             </div>
           </div>
@@ -704,7 +921,13 @@ export default function AuditAiPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 5: MID-PAGE FORM REPEAT                            */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
             <h2
               style={{
@@ -731,7 +954,8 @@ export default function AuditAiPage() {
               }}
             >
               Free three-pillar scorecard. AI citation share-of-model plus the
-              upstream PR and content gaps that decide whether it grows. 20–30 seconds.
+              upstream PR and content gaps that decide whether it grows. 20–30
+              seconds.
             </p>
             <div
               style={{
@@ -753,7 +977,13 @@ export default function AuditAiPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 6: SOCIAL PROOF / CATEGORY POSITIONING             */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div
               style={{
@@ -792,10 +1022,10 @@ export default function AuditAiPage() {
                 maxWidth: 720,
               }}
             >
-              Semrush AI Visibility and Profound are credible measurement instruments
-              and Pravado overlaps where it matters: query-level citation tracking
-              across the same five engines. The differentiation is everything that
-              happens after a gap is found.
+              Semrush AI Visibility and Profound are credible measurement
+              instruments and Pravado overlaps where it matters: query-level
+              citation tracking across the same five engines. The
+              differentiation is everything that happens after a gap is found.
             </p>
 
             {/* Comparison table */}
@@ -812,63 +1042,164 @@ export default function AuditAiPage() {
                 className="audit-compare-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
+                  gridTemplateColumns:
+                    'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                   background: 'rgba(0,0,0,0.2)',
                 }}
               >
-                <div style={{ padding: '16px 20px', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.5)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                  }}
+                >
                   Capability
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textAlign: 'center',
+                  }}
+                >
                   Semrush AI
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textAlign: 'center',
+                  }}
+                >
                   Profound
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: '#00D9FF', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#00D9FF',
+                    textAlign: 'center',
+                  }}
+                >
                   Pravado
                 </div>
               </div>
               {[
-                { capability: 'Multi-engine citation tracking',           sem: true,  prof: true,  pravado: true },
-                { capability: 'Query-level share-of-model',               sem: true,  prof: true,  pravado: true },
-                { capability: 'Competitor citation displacement alerts',  sem: true,  prof: true,  pravado: true },
-                { capability: 'Pre-publish citation worthiness scoring',  sem: false, prof: false, pravado: true },
-                { capability: 'PR pillar (283K media database)',          sem: false, prof: false, pravado: true },
-                { capability: 'Pillar page + schema content layer',       sem: false, prof: false, pravado: true },
-                { capability: 'Cross-pillar EVI scorecard',               sem: false, prof: false, pravado: true },
-                { capability: 'Shared schema across PR / Content / AEO',  sem: false, prof: false, pravado: true },
+                {
+                  capability: 'Multi-engine citation tracking',
+                  sem: true,
+                  prof: true,
+                  pravado: true,
+                },
+                {
+                  capability: 'Query-level share-of-model',
+                  sem: true,
+                  prof: true,
+                  pravado: true,
+                },
+                {
+                  capability: 'Competitor citation displacement alerts',
+                  sem: true,
+                  prof: true,
+                  pravado: true,
+                },
+                {
+                  capability: 'Pre-publish citation worthiness scoring',
+                  sem: false,
+                  prof: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'PR pillar (283K media database)',
+                  sem: false,
+                  prof: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Pillar page + schema content layer',
+                  sem: false,
+                  prof: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Cross-pillar EVI scorecard',
+                  sem: false,
+                  prof: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Shared schema across PR / Content / AEO',
+                  sem: false,
+                  prof: false,
+                  pravado: true,
+                },
               ].map((row, i) => (
                 <div
                   key={row.capability}
                   className="audit-compare-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
-                    borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
-                    background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
+                    gridTemplateColumns:
+                      'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
+                    borderTop:
+                      i === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                    background:
+                      i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
                   }}
                 >
-                  <div style={{ padding: '14px 20px', fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>
+                  <div
+                    style={{
+                      padding: '14px 20px',
+                      fontSize: 14,
+                      color: 'rgba(255,255,255,0.85)',
+                    }}
+                  >
                     {row.capability}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
                     {row.sem ? (
-                      <CheckCircle size={20} weight="fill" color="rgba(34,197,94,0.7)" />
+                      <CheckCircle
+                        size={20}
+                        weight="fill"
+                        color="rgba(34,197,94,0.7)"
+                      />
                     ) : (
-                      <XCircle size={20} weight="regular" color="rgba(255,255,255,0.2)" />
+                      <XCircle
+                        size={20}
+                        weight="regular"
+                        color="rgba(255,255,255,0.2)"
+                      />
                     )}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
                     {row.prof ? (
-                      <CheckCircle size={20} weight="fill" color="rgba(34,197,94,0.7)" />
+                      <CheckCircle
+                        size={20}
+                        weight="fill"
+                        color="rgba(34,197,94,0.7)"
+                      />
                     ) : (
-                      <XCircle size={20} weight="regular" color="rgba(255,255,255,0.2)" />
+                      <XCircle
+                        size={20}
+                        weight="regular"
+                        color="rgba(255,255,255,0.2)"
+                      />
                     )}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
-                    {row.pravado && <CheckCircle size={20} weight="fill" color="#00D9FF" />}
+                    {row.pravado && (
+                      <CheckCircle size={20} weight="fill" color="#00D9FF" />
+                    )}
                   </div>
                 </div>
               ))}
@@ -883,7 +1214,8 @@ export default function AuditAiPage() {
                 marginBottom: 0,
               }}
             >
-              Comparison reflects publicly stated capabilities of Semrush AI Visibility and Profound as of 2026.
+              Comparison reflects publicly stated capabilities of Semrush AI
+              Visibility and Profound as of 2026.
             </p>
           </div>
         </section>
@@ -891,7 +1223,13 @@ export default function AuditAiPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 7: FAQ                                              */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <h2
               style={{
@@ -974,7 +1312,13 @@ export default function AuditAiPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 8: FOOTER CTA                                      */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
             <h2
               style={{
@@ -998,9 +1342,10 @@ export default function AuditAiPage() {
                 maxWidth: 560,
               }}
             >
-              Free three-pillar EVI<TM /> scorecard. No credit card. No upgrade
-              pitch. The conversation that matters happens after the scan, on a
-              call where your specifics are on the table.
+              Free three-pillar EVI
+              <TM /> scorecard. No credit card. No upgrade pitch. The
+              conversation that matters happens after the scan, on a call where
+              your specifics are on the table.
             </p>
 
             <div
@@ -1020,7 +1365,13 @@ export default function AuditAiPage() {
               />
             </div>
 
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: 0 }}>
+            <p
+              style={{
+                fontSize: 13,
+                color: 'rgba(255,255,255,0.45)',
+                margin: 0,
+              }}
+            >
               Or skip the scan and{' '}
               <Link
                 href="https://pravado.io/contact"

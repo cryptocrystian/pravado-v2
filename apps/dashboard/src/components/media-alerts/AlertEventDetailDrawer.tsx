@@ -53,7 +53,9 @@ export function AlertEventDetailDrawer({
         {/* Header */}
         <div className="p-6 border-b border-gray-200 flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Alert Event Details</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Alert Event Details
+            </h2>
             <p className="text-sm text-gray-500 mt-1">
               {new Date(event.triggeredAt).toLocaleString()}
             </p>
@@ -62,8 +64,18 @@ export function AlertEventDetailDrawer({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -72,20 +84,26 @@ export function AlertEventDetailDrawer({
         <div className="p-6 space-y-6">
           {/* Summary */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">Summary</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+              Summary
+            </h3>
             <p className="text-gray-900">{event.summary}</p>
           </div>
 
           {/* Alert Info */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-1">Alert Type</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-1">
+                Alert Type
+              </h3>
               <span className="inline-block px-3 py-1 bg-gray-100 text-gray-800 rounded text-sm">
                 {event.alertType.replace('_', ' ')}
               </span>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-1">Severity</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-1">
+                Severity
+              </h3>
               <span
                 className={`inline-block px-3 py-1 rounded text-sm font-medium ${
                   event.severity === 'critical'
@@ -103,7 +121,9 @@ export function AlertEventDetailDrawer({
           {/* Details */}
           {event.details && Object.keys(event.details).length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Details</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                Details
+              </h3>
               <div className="bg-gray-50 p-4 rounded border border-gray-200">
                 <pre className="text-xs text-gray-800 overflow-x-auto">
                   {JSON.stringify(event.details, null, 2)}
@@ -116,7 +136,9 @@ export function AlertEventDetailDrawer({
           <div className="space-y-3">
             {event.articleId && (
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-1">Article ID</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-1">
+                  Article ID
+                </h3>
                 <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                   {event.articleId}
                 </code>
@@ -124,7 +146,9 @@ export function AlertEventDetailDrawer({
             )}
             {event.mentionId && (
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-1">Mention ID</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-1">
+                  Mention ID
+                </h3>
                 <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                   {event.mentionId}
                 </code>

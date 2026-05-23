@@ -13,7 +13,12 @@ export const actorTypeSchema = z.enum(['user', 'system', 'agent']);
 /**
  * Severity level schema
  */
-export const auditSeveritySchema = z.enum(['info', 'warning', 'error', 'critical']);
+export const auditSeveritySchema = z.enum([
+  'info',
+  'warning',
+  'error',
+  'critical',
+]);
 
 /**
  * Comprehensive event type schema
@@ -163,18 +168,13 @@ export const auditLogRecordSchema = z.object({
  * Audit query filters schema
  */
 export const auditQueryFiltersSchema = z.object({
-  eventType: z.union([
-    auditEventTypeSchema,
-    z.array(auditEventTypeSchema),
-  ]).optional(),
-  severity: z.union([
-    auditSeveritySchema,
-    z.array(auditSeveritySchema),
-  ]).optional(),
-  actorType: z.union([
-    actorTypeSchema,
-    z.array(actorTypeSchema),
-  ]).optional(),
+  eventType: z
+    .union([auditEventTypeSchema, z.array(auditEventTypeSchema)])
+    .optional(),
+  severity: z
+    .union([auditSeveritySchema, z.array(auditSeveritySchema)])
+    .optional(),
+  actorType: z.union([actorTypeSchema, z.array(actorTypeSchema)]).optional(),
   userId: z.string().uuid().optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
@@ -311,121 +311,481 @@ export type AuditQueryFilters = z.infer<typeof auditQueryFiltersSchema>;
 export type AuditQueryResult = z.infer<typeof auditQueryResultSchema>;
 export type GetAuditLogsQuery = z.infer<typeof getAuditLogsQuerySchema>;
 export type GetAuditLogParams = z.infer<typeof getAuditLogParamsSchema>;
-export type GetAuditEventTypesQuery = z.infer<typeof getAuditEventTypesQuerySchema>;
+export type GetAuditEventTypesQuery = z.infer<
+  typeof getAuditEventTypesQuerySchema
+>;
 export type AuthLoginContext = z.infer<typeof authLoginContextSchema>;
-export type BillingPlanChangeContext = z.infer<typeof billingPlanChangeContextSchema>;
+export type BillingPlanChangeContext = z.infer<
+  typeof billingPlanChangeContextSchema
+>;
 export type LLMCallContext = z.infer<typeof llmCallContextSchema>;
-export type AuditPlaybookExecutionContext = z.infer<typeof auditPlaybookExecutionContextSchema>;
+export type AuditPlaybookExecutionContext = z.infer<
+  typeof auditPlaybookExecutionContextSchema
+>;
 export type PRListContext = z.infer<typeof prListContextSchema>;
-export type ContentOperationContext = z.infer<typeof contentOperationContextSchema>;
+export type ContentOperationContext = z.infer<
+  typeof contentOperationContextSchema
+>;
 export type OverageChargeContext = z.infer<typeof overageChargeContextSchema>;
-export type AuditEventTypeMetadata = z.infer<typeof auditEventTypeMetadataSchema>;
+export type AuditEventTypeMetadata = z.infer<
+  typeof auditEventTypeMetadataSchema
+>;
 
 /**
  * Event type metadata registry
  */
-export const AUDIT_EVENT_METADATA: Record<AuditEventType, Omit<AuditEventTypeMetadata, 'type'>> = {
+export const AUDIT_EVENT_METADATA: Record<
+  AuditEventType,
+  Omit<AuditEventTypeMetadata, 'type'>
+> = {
   // Authentication & Authorization
-  'auth.login': { category: 'auth', description: 'User logged in', defaultSeverity: 'info', requiresUserContext: true },
-  'auth.logout': { category: 'auth', description: 'User logged out', defaultSeverity: 'info', requiresUserContext: true },
-  'auth.login_failed': { category: 'auth', description: 'Login attempt failed', defaultSeverity: 'warning', requiresUserContext: false },
-  'auth.password_reset': { category: 'auth', description: 'Password reset requested', defaultSeverity: 'info', requiresUserContext: true },
-  'auth.token_refresh': { category: 'auth', description: 'Auth token refreshed', defaultSeverity: 'info', requiresUserContext: true },
+  'auth.login': {
+    category: 'auth',
+    description: 'User logged in',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'auth.logout': {
+    category: 'auth',
+    description: 'User logged out',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'auth.login_failed': {
+    category: 'auth',
+    description: 'Login attempt failed',
+    defaultSeverity: 'warning',
+    requiresUserContext: false,
+  },
+  'auth.password_reset': {
+    category: 'auth',
+    description: 'Password reset requested',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'auth.token_refresh': {
+    category: 'auth',
+    description: 'Auth token refreshed',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
 
   // User Management
-  'user.invite_sent': { category: 'user', description: 'Team invitation sent', defaultSeverity: 'info', requiresUserContext: true },
-  'user.invite_accepted': { category: 'user', description: 'Team invitation accepted', defaultSeverity: 'info', requiresUserContext: true },
-  'user.invite_revoked': { category: 'user', description: 'Team invitation revoked', defaultSeverity: 'info', requiresUserContext: true },
-  'user.role_changed': { category: 'user', description: 'User role changed', defaultSeverity: 'info', requiresUserContext: true },
-  'user.removed': { category: 'user', description: 'User removed from organization', defaultSeverity: 'warning', requiresUserContext: true },
+  'user.invite_sent': {
+    category: 'user',
+    description: 'Team invitation sent',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'user.invite_accepted': {
+    category: 'user',
+    description: 'Team invitation accepted',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'user.invite_revoked': {
+    category: 'user',
+    description: 'Team invitation revoked',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'user.role_changed': {
+    category: 'user',
+    description: 'User role changed',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'user.removed': {
+    category: 'user',
+    description: 'User removed from organization',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
 
   // Billing Events
-  'billing.plan_change': { category: 'billing', description: 'Subscription plan changed', defaultSeverity: 'info', requiresUserContext: true },
-  'billing.plan_upgraded': { category: 'billing', description: 'Plan upgraded', defaultSeverity: 'info', requiresUserContext: true },
-  'billing.plan_downgraded': { category: 'billing', description: 'Plan downgraded', defaultSeverity: 'info', requiresUserContext: true },
-  'billing.downgrade_blocked': { category: 'billing', description: 'Downgrade blocked due to usage', defaultSeverity: 'warning', requiresUserContext: true },
-  'billing.subscription_created': { category: 'billing', description: 'Subscription created', defaultSeverity: 'info', requiresUserContext: true },
-  'billing.subscription_canceled': { category: 'billing', description: 'Subscription canceled', defaultSeverity: 'warning', requiresUserContext: true },
-  'billing.subscription_resumed': { category: 'billing', description: 'Subscription resumed', defaultSeverity: 'info', requiresUserContext: true },
-  'billing.trial_started': { category: 'billing', description: 'Trial period started', defaultSeverity: 'info', requiresUserContext: false },
-  'billing.trial_expiring': { category: 'billing', description: 'Trial expiring soon', defaultSeverity: 'warning', requiresUserContext: false },
-  'billing.trial_ended': { category: 'billing', description: 'Trial period ended', defaultSeverity: 'info', requiresUserContext: false },
-  'billing.invoice_synced': { category: 'billing', description: 'Invoice synced from Stripe', defaultSeverity: 'info', requiresUserContext: false },
-  'billing.invoice_finalized': { category: 'billing', description: 'Invoice finalized', defaultSeverity: 'info', requiresUserContext: false },
-  'billing.payment_succeeded': { category: 'billing', description: 'Payment succeeded', defaultSeverity: 'info', requiresUserContext: false },
-  'billing.payment_failed': { category: 'billing', description: 'Payment failed', defaultSeverity: 'error', requiresUserContext: false },
-  'billing.overage_charged': { category: 'billing', description: 'Overage charges applied', defaultSeverity: 'warning', requiresUserContext: false },
-  'billing.usage_alert_triggered': { category: 'billing', description: 'Usage threshold alert triggered', defaultSeverity: 'warning', requiresUserContext: false },
+  'billing.plan_change': {
+    category: 'billing',
+    description: 'Subscription plan changed',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'billing.plan_upgraded': {
+    category: 'billing',
+    description: 'Plan upgraded',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'billing.plan_downgraded': {
+    category: 'billing',
+    description: 'Plan downgraded',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'billing.downgrade_blocked': {
+    category: 'billing',
+    description: 'Downgrade blocked due to usage',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'billing.subscription_created': {
+    category: 'billing',
+    description: 'Subscription created',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'billing.subscription_canceled': {
+    category: 'billing',
+    description: 'Subscription canceled',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'billing.subscription_resumed': {
+    category: 'billing',
+    description: 'Subscription resumed',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'billing.trial_started': {
+    category: 'billing',
+    description: 'Trial period started',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'billing.trial_expiring': {
+    category: 'billing',
+    description: 'Trial expiring soon',
+    defaultSeverity: 'warning',
+    requiresUserContext: false,
+  },
+  'billing.trial_ended': {
+    category: 'billing',
+    description: 'Trial period ended',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'billing.invoice_synced': {
+    category: 'billing',
+    description: 'Invoice synced from Stripe',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'billing.invoice_finalized': {
+    category: 'billing',
+    description: 'Invoice finalized',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'billing.payment_succeeded': {
+    category: 'billing',
+    description: 'Payment succeeded',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'billing.payment_failed': {
+    category: 'billing',
+    description: 'Payment failed',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
+  'billing.overage_charged': {
+    category: 'billing',
+    description: 'Overage charges applied',
+    defaultSeverity: 'warning',
+    requiresUserContext: false,
+  },
+  'billing.usage_alert_triggered': {
+    category: 'billing',
+    description: 'Usage threshold alert triggered',
+    defaultSeverity: 'warning',
+    requiresUserContext: false,
+  },
 
   // LLM Operations
-  'llm.call': { category: 'llm', description: 'LLM API call made', defaultSeverity: 'info', requiresUserContext: false },
-  'llm.call_success': { category: 'llm', description: 'LLM call succeeded', defaultSeverity: 'info', requiresUserContext: false },
-  'llm.call_failure': { category: 'llm', description: 'LLM call failed', defaultSeverity: 'error', requiresUserContext: false },
-  'llm.rate_limit_exceeded': { category: 'llm', description: 'LLM rate limit exceeded', defaultSeverity: 'warning', requiresUserContext: false },
-  'llm.timeout': { category: 'llm', description: 'LLM call timed out', defaultSeverity: 'error', requiresUserContext: false },
-  'llm.provider_error': { category: 'llm', description: 'LLM provider error', defaultSeverity: 'error', requiresUserContext: false },
+  'llm.call': {
+    category: 'llm',
+    description: 'LLM API call made',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'llm.call_success': {
+    category: 'llm',
+    description: 'LLM call succeeded',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'llm.call_failure': {
+    category: 'llm',
+    description: 'LLM call failed',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
+  'llm.rate_limit_exceeded': {
+    category: 'llm',
+    description: 'LLM rate limit exceeded',
+    defaultSeverity: 'warning',
+    requiresUserContext: false,
+  },
+  'llm.timeout': {
+    category: 'llm',
+    description: 'LLM call timed out',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
+  'llm.provider_error': {
+    category: 'llm',
+    description: 'LLM provider error',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
 
   // Playbook Execution
-  'playbook.created': { category: 'playbook', description: 'Playbook created', defaultSeverity: 'info', requiresUserContext: true },
-  'playbook.updated': { category: 'playbook', description: 'Playbook updated', defaultSeverity: 'info', requiresUserContext: true },
-  'playbook.deleted': { category: 'playbook', description: 'Playbook deleted', defaultSeverity: 'warning', requiresUserContext: true },
-  'playbook.execution_started': { category: 'playbook', description: 'Playbook execution started', defaultSeverity: 'info', requiresUserContext: false },
-  'playbook.execution_completed': { category: 'playbook', description: 'Playbook execution completed', defaultSeverity: 'info', requiresUserContext: false },
-  'playbook.execution_failed': { category: 'playbook', description: 'Playbook execution failed', defaultSeverity: 'error', requiresUserContext: false },
-  'playbook.execution_step_completed': { category: 'playbook', description: 'Playbook step completed', defaultSeverity: 'info', requiresUserContext: false },
-  'playbook.execution_step_failed': { category: 'playbook', description: 'Playbook step failed', defaultSeverity: 'error', requiresUserContext: false },
-  'playbook.retry_scheduled': { category: 'playbook', description: 'Playbook retry scheduled', defaultSeverity: 'info', requiresUserContext: false },
-  'playbook.retry_executed': { category: 'playbook', description: 'Playbook retry executed', defaultSeverity: 'info', requiresUserContext: false },
+  'playbook.created': {
+    category: 'playbook',
+    description: 'Playbook created',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'playbook.updated': {
+    category: 'playbook',
+    description: 'Playbook updated',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'playbook.deleted': {
+    category: 'playbook',
+    description: 'Playbook deleted',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'playbook.execution_started': {
+    category: 'playbook',
+    description: 'Playbook execution started',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'playbook.execution_completed': {
+    category: 'playbook',
+    description: 'Playbook execution completed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'playbook.execution_failed': {
+    category: 'playbook',
+    description: 'Playbook execution failed',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
+  'playbook.execution_step_completed': {
+    category: 'playbook',
+    description: 'Playbook step completed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'playbook.execution_step_failed': {
+    category: 'playbook',
+    description: 'Playbook step failed',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
+  'playbook.retry_scheduled': {
+    category: 'playbook',
+    description: 'Playbook retry scheduled',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'playbook.retry_executed': {
+    category: 'playbook',
+    description: 'Playbook retry executed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
 
   // PR Intelligence
-  'pr.list_created': { category: 'pr', description: 'PR list created', defaultSeverity: 'info', requiresUserContext: true },
-  'pr.list_updated': { category: 'pr', description: 'PR list updated', defaultSeverity: 'info', requiresUserContext: true },
-  'pr.list_deleted': { category: 'pr', description: 'PR list deleted', defaultSeverity: 'warning', requiresUserContext: true },
-  'pr.member_added': { category: 'pr', description: 'Member added to PR list', defaultSeverity: 'info', requiresUserContext: true },
-  'pr.member_removed': { category: 'pr', description: 'Member removed from PR list', defaultSeverity: 'info', requiresUserContext: true },
-  'pr.journalist_contacted': { category: 'pr', description: 'Journalist contacted', defaultSeverity: 'info', requiresUserContext: true },
+  'pr.list_created': {
+    category: 'pr',
+    description: 'PR list created',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'pr.list_updated': {
+    category: 'pr',
+    description: 'PR list updated',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'pr.list_deleted': {
+    category: 'pr',
+    description: 'PR list deleted',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'pr.member_added': {
+    category: 'pr',
+    description: 'Member added to PR list',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'pr.member_removed': {
+    category: 'pr',
+    description: 'Member removed from PR list',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'pr.journalist_contacted': {
+    category: 'pr',
+    description: 'Journalist contacted',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
 
   // SEO Operations
-  'seo.audit_generated': { category: 'seo', description: 'SEO audit generated', defaultSeverity: 'info', requiresUserContext: true },
-  'seo.keyword_analysis_completed': { category: 'seo', description: 'Keyword analysis completed', defaultSeverity: 'info', requiresUserContext: false },
-  'seo.backlink_analysis_completed': { category: 'seo', description: 'Backlink analysis completed', defaultSeverity: 'info', requiresUserContext: false },
-  'seo.opportunity_identified': { category: 'seo', description: 'SEO opportunity identified', defaultSeverity: 'info', requiresUserContext: false },
+  'seo.audit_generated': {
+    category: 'seo',
+    description: 'SEO audit generated',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'seo.keyword_analysis_completed': {
+    category: 'seo',
+    description: 'Keyword analysis completed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'seo.backlink_analysis_completed': {
+    category: 'seo',
+    description: 'Backlink analysis completed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'seo.opportunity_identified': {
+    category: 'seo',
+    description: 'SEO opportunity identified',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
 
   // Content Operations
-  'content.created': { category: 'content', description: 'Content created', defaultSeverity: 'info', requiresUserContext: true },
-  'content.updated': { category: 'content', description: 'Content updated', defaultSeverity: 'info', requiresUserContext: true },
-  'content.deleted': { category: 'content', description: 'Content deleted', defaultSeverity: 'warning', requiresUserContext: true },
-  'content.brief_generated': { category: 'content', description: 'Content brief generated', defaultSeverity: 'info', requiresUserContext: true },
-  'content.rewrite_generated': { category: 'content', description: 'Content rewrite generated', defaultSeverity: 'info', requiresUserContext: true },
-  'content.quality_scored': { category: 'content', description: 'Content quality scored', defaultSeverity: 'info', requiresUserContext: false },
+  'content.created': {
+    category: 'content',
+    description: 'Content created',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'content.updated': {
+    category: 'content',
+    description: 'Content updated',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'content.deleted': {
+    category: 'content',
+    description: 'Content deleted',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'content.brief_generated': {
+    category: 'content',
+    description: 'Content brief generated',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'content.rewrite_generated': {
+    category: 'content',
+    description: 'Content rewrite generated',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'content.quality_scored': {
+    category: 'content',
+    description: 'Content quality scored',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
 
   // System Events
-  'system.migration_executed': { category: 'system', description: 'Database migration executed', defaultSeverity: 'info', requiresUserContext: false },
-  'system.backup_completed': { category: 'system', description: 'System backup completed', defaultSeverity: 'info', requiresUserContext: false },
-  'system.maintenance_started': { category: 'system', description: 'System maintenance started', defaultSeverity: 'warning', requiresUserContext: false },
-  'system.maintenance_completed': { category: 'system', description: 'System maintenance completed', defaultSeverity: 'info', requiresUserContext: false },
-  'system.error': { category: 'system', description: 'System error occurred', defaultSeverity: 'error', requiresUserContext: false },
+  'system.migration_executed': {
+    category: 'system',
+    description: 'Database migration executed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'system.backup_completed': {
+    category: 'system',
+    description: 'System backup completed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'system.maintenance_started': {
+    category: 'system',
+    description: 'System maintenance started',
+    defaultSeverity: 'warning',
+    requiresUserContext: false,
+  },
+  'system.maintenance_completed': {
+    category: 'system',
+    description: 'System maintenance completed',
+    defaultSeverity: 'info',
+    requiresUserContext: false,
+  },
+  'system.error': {
+    category: 'system',
+    description: 'System error occurred',
+    defaultSeverity: 'error',
+    requiresUserContext: false,
+  },
 
   // Admin Actions
-  'admin.user_impersonation': { category: 'admin', description: 'Admin impersonated user', defaultSeverity: 'critical', requiresUserContext: true },
-  'admin.config_changed': { category: 'admin', description: 'System config changed', defaultSeverity: 'warning', requiresUserContext: true },
-  'admin.feature_flag_toggled': { category: 'admin', description: 'Feature flag toggled', defaultSeverity: 'info', requiresUserContext: true },
-  'admin.data_export': { category: 'admin', description: 'Data exported', defaultSeverity: 'warning', requiresUserContext: true },
-  'admin.data_deletion': { category: 'admin', description: 'Data deleted', defaultSeverity: 'critical', requiresUserContext: true },
+  'admin.user_impersonation': {
+    category: 'admin',
+    description: 'Admin impersonated user',
+    defaultSeverity: 'critical',
+    requiresUserContext: true,
+  },
+  'admin.config_changed': {
+    category: 'admin',
+    description: 'System config changed',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'admin.feature_flag_toggled': {
+    category: 'admin',
+    description: 'Feature flag toggled',
+    defaultSeverity: 'info',
+    requiresUserContext: true,
+  },
+  'admin.data_export': {
+    category: 'admin',
+    description: 'Data exported',
+    defaultSeverity: 'warning',
+    requiresUserContext: true,
+  },
+  'admin.data_deletion': {
+    category: 'admin',
+    description: 'Data deleted',
+    defaultSeverity: 'critical',
+    requiresUserContext: true,
+  },
 };
 
 /**
  * Helper to get event categories
  */
 export function getEventCategories(): string[] {
-  return [...new Set(Object.values(AUDIT_EVENT_METADATA).map(m => m.category))];
+  return [
+    ...new Set(Object.values(AUDIT_EVENT_METADATA).map((m) => m.category)),
+  ];
 }
 
 /**
  * Helper to get events by category
  */
 export function getEventsByCategory(category: string): AuditEventType[] {
-  return (Object.entries(AUDIT_EVENT_METADATA) as [AuditEventType, Omit<AuditEventTypeMetadata, 'type'>][])
+  return (
+    Object.entries(AUDIT_EVENT_METADATA) as [
+      AuditEventType,
+      Omit<AuditEventTypeMetadata, 'type'>,
+    ][]
+  )
     .filter(([_, meta]) => meta.category === category)
     .map(([type]) => type);
 }

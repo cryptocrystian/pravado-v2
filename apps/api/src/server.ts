@@ -6,30 +6,71 @@ import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
-import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { FLAGS } from '@pravado/feature-flags';
 import { createLogger } from '@pravado/utils';
+import * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import Fastify from 'fastify';
+import rawBody from 'fastify-raw-body';
+
+// Module augmentation for fastify-raw-body ? the plugin's own plugin.d.ts
+// declares this but moduleResolution:Bundler doesn't pick it up because
+// the package's package.json#exports is empty. Mirror here so all routes
+// in apps/api see `FastifyRequest.rawBody` and `FastifyContextConfig.rawBody`.
+declare module 'fastify' {
+  interface FastifyRequest {
+    rawBody?: string | Buffer;
+  }
+  interface FastifyContextConfig {
+    rawBody?: boolean;
+  }
+}
 
 import { config } from './config';
-
 import { authPlugin } from './plugins/auth';
 import { mailerPlugin } from './plugins/mailer';
 import { platformFreezePlugin } from './plugins/platformFreeze';
+import { adminRoutes } from './routes/admin'; // Admin panel
 import { agentsRoutes } from './routes/agents';
+import aiScenarioSimulationRoutes from './routes/aiScenarioSimulations'; // S71
+import audiencePersonasRoutes from './routes/audiencePersonas'; // S51
 import { auditRoutes } from './routes/audit'; // S35
 import { auditReplayRoutes } from './routes/auditReplay'; // S37
 import { authRoutes } from './routes/auth';
+import { betaRoutes } from './routes/beta'; // S-INT-09
 import { billingRoutes } from './routes/billing'; // S28
+import brandReputationRoutes from './routes/brandReputation'; // S56
+import brandReputationAlertsRoutes from './routes/brandReputationAlerts'; // S57
+import { citeMindRoutes } from './routes/citeMind'; // S-INT-04
+import { clientLogsRoutes } from './routes/clientLogs'; // S79
+import competitorIntelligenceRoutes from './routes/competitorIntelligence'; // S53
 import { contentRoutes } from './routes/content';
 import { contentBriefGeneratorRoutes } from './routes/contentBriefGenerator'; // S13
 import { contentQualityRoutes } from './routes/contentQuality'; // S14
 import { contentRewriteRoutes } from './routes/contentRewrite'; // S15
+import crisisRoutes from './routes/crisis'; // S55
+import { eviRoutes } from './routes/evi'; // S-INT-01
+import { executiveBoardReportRoutes } from './routes/executiveBoardReports'; // S63
+import { executiveCommandCenterRoutes } from './routes/executiveCommandCenter'; // S61
+import { executiveDigestRoutes } from './routes/executiveDigests'; // S62
+import { governanceRoutes } from './routes/governance'; // S59
 import { healthRoutes } from './routes/health';
+import insightConflictRoutes from './routes/insightConflicts'; // S74
+import { gscRoutes } from './routes/integrations/gsc'; // S-INT-06
+import { investorRelationsRoutes } from './routes/investorRelations'; // S64
 import { invitesRoutes } from './routes/invites';
+import { journalistDiscoveryRoutes } from './routes/journalistDiscovery'; // S48
+import journalistGraphRoutes from './routes/journalistGraph'; // S46
+import { journalistEnrichmentRoutes } from './routes/journalists/enrichment'; // S-INT-06
+import { journalistTimelineRoutes } from './routes/journalistTimeline'; // S49
+import { mediaAlertsRoutes } from './routes/mediaAlerts'; // S43
+import mediaBriefingRoutes from './routes/mediaBriefings'; // S54
+import { mediaListRoutes } from './routes/mediaLists'; // S47
 import { mediaMonitoringRoutes } from './routes/mediaMonitoring'; // S40
 import { rssRoutes } from './routes/mediaMonitoring/rss'; // S41
+import mediaPerformanceRoutes from './routes/mediaPerformance'; // S52
+import { notificationRoutes } from './routes/notifications';
+import { onboardingRoutes } from './routes/onboarding'; // S-INT-07
 import { opsRoutes } from './routes/ops'; // S27
 import { orgsRoutes } from './routes/orgs';
 import { personalitiesRoutes } from './routes/personalities'; // S11
@@ -37,48 +78,20 @@ import { playbookRunsRoutes } from './routes/playbookRuns'; // S19
 import { playbooksRoutes } from './routes/playbooks';
 import { prRoutes } from './routes/pr';
 import { pressReleaseRoutes } from './routes/pressReleases'; // S38
-import { prPitchRoutes } from './routes/prPitches'; // S39
-import { riskRadarRoutes } from './routes/riskRadar'; // S60
-import { schedulerRoutes } from './routes/scheduler'; // S42
-import { mediaAlertsRoutes } from './routes/mediaAlerts'; // S43
 import prOutreachRoutes from './routes/prOutreach'; // S44
 import prOutreachDeliverabilityRoutes from './routes/prOutreachDeliverability'; // S45
-import journalistGraphRoutes from './routes/journalistGraph'; // S46
-import { mediaListRoutes } from './routes/mediaLists'; // S47
-import { journalistDiscoveryRoutes } from './routes/journalistDiscovery'; // S48
-import { journalistTimelineRoutes } from './routes/journalistTimeline'; // S49
-import audiencePersonasRoutes from './routes/audiencePersonas'; // S51
-import mediaPerformanceRoutes from './routes/mediaPerformance'; // S52
-import competitorIntelligenceRoutes from './routes/competitorIntelligence'; // S53
-import mediaBriefingRoutes from './routes/mediaBriefings'; // S54
-import crisisRoutes from './routes/crisis'; // S55
-import brandReputationRoutes from './routes/brandReputation'; // S56
-import brandReputationAlertsRoutes from './routes/brandReputationAlerts'; // S57
-import { governanceRoutes } from './routes/governance'; // S59
-import { executiveCommandCenterRoutes } from './routes/executiveCommandCenter'; // S61
-import { executiveDigestRoutes } from './routes/executiveDigests'; // S62
-import { executiveBoardReportRoutes } from './routes/executiveBoardReports'; // S63
-import { investorRelationsRoutes } from './routes/investorRelations'; // S64
+import { prPitchRoutes } from './routes/prPitches'; // S39
+import realityMapsRoutes from './routes/realityMaps'; // S73
+import { riskRadarRoutes } from './routes/riskRadar'; // S60
+import { sageRoutes } from './routes/sage'; // S-INT-02
+import scenarioOrchestrationRoutes from './routes/scenarioOrchestrations'; // S72
+import scenarioPlaybookRoutes from './routes/scenarioPlaybook'; // S67
+import { schedulerRoutes } from './routes/scheduler'; // S42
+import { seoRoutes } from './routes/seo';
+import { siloTaxAuditRoutes } from './routes/siloTaxAudit';
 import strategicIntelligenceRoutes from './routes/strategicIntelligence'; // S65
 import unifiedGraphRoutes from './routes/unifiedGraph'; // S66
-import scenarioPlaybookRoutes from './routes/scenarioPlaybook'; // S67
 import unifiedNarrativeRoutes from './routes/unifiedNarratives'; // S70
-import aiScenarioSimulationRoutes from './routes/aiScenarioSimulations'; // S71
-import scenarioOrchestrationRoutes from './routes/scenarioOrchestrations'; // S72
-import realityMapsRoutes from './routes/realityMaps'; // S73
-import insightConflictRoutes from './routes/insightConflicts'; // S74
-import { seoRoutes } from './routes/seo';
-import { eviRoutes } from './routes/evi'; // S-INT-01
-import { sageRoutes } from './routes/sage'; // S-INT-02
-import { citeMindRoutes } from './routes/citeMind'; // S-INT-04
-import { gscRoutes } from './routes/integrations/gsc'; // S-INT-06
-import { journalistEnrichmentRoutes } from './routes/journalists/enrichment'; // S-INT-06
-import { onboardingRoutes } from './routes/onboarding'; // S-INT-07
-import { betaRoutes } from './routes/beta'; // S-INT-09
-import { adminRoutes } from './routes/admin'; // Admin panel
-import { clientLogsRoutes } from './routes/clientLogs'; // S79
-import { notificationRoutes } from './routes/notifications';
-import { siloTaxAuditRoutes } from './routes/siloTaxAudit';
 
 const logger = createLogger('api:server');
 
@@ -98,7 +111,9 @@ export async function createServer() {
     });
     logger.info('Sentry initialized');
   } else if (sentryDsn) {
-    logger.warn('Sentry DSN not configured or invalid format — skipping Sentry init');
+    logger.warn(
+      'Sentry DSN not configured or invalid format — skipping Sentry init'
+    );
   }
 
   const server = Fastify({
@@ -107,15 +122,25 @@ export async function createServer() {
     disableRequestLogging: false,
   });
 
+  // Raw-body plugin (route opt-in via config.rawBody: true) ? required for
+  // SendGrid webhook HMAC signature verification at /api/pr-outreach-deliverability/webhooks/:provider
+  await server.register(rawBody, {
+    field: 'rawBody',
+    global: false,
+    encoding: 'utf8',
+    runFirst: true,
+  });
+
   await server.register(cookie, {
     secret: config.COOKIE_SECRET,
   });
 
   // CORS (S-INT-10: production-hardened)
   await server.register(cors, {
-    origin: config.NODE_ENV === 'production'
-      ? config.CORS_ORIGIN.split(',').map((o: string) => o.trim())
-      : true,
+    origin:
+      config.NODE_ENV === 'production'
+        ? config.CORS_ORIGIN.split(',').map((o: string) => o.trim())
+        : true,
     credentials: true,
   });
 
@@ -135,7 +160,9 @@ export async function createServer() {
     max: 200,
     timeWindow: '1 minute',
     keyGenerator: (request) => {
-      return (request as any).user?.orgId ?? (request as any).orgId ?? request.ip;
+      return (
+        (request as any).user?.orgId ?? (request as any).orgId ?? request.ip
+      );
     },
     errorResponseBuilder: (_request, context) => ({
       success: false,
@@ -193,9 +220,13 @@ export async function createServer() {
   await server.register(contentRoutes, { prefix: '/api/v1/content' });
   await server.register(seoRoutes, { prefix: '/api/v1/seo' });
   await server.register(playbooksRoutes, { prefix: '/api/v1/playbooks' });
-  await server.register(playbookRunsRoutes, { prefix: '/api/v1/playbook-runs' }); // S19
+  await server.register(playbookRunsRoutes, {
+    prefix: '/api/v1/playbook-runs',
+  }); // S19
   await server.register(agentsRoutes, { prefix: '/api/v1/agents' });
-  await server.register(personalitiesRoutes, { prefix: '/api/v1/personalities' }); // S11
+  await server.register(personalitiesRoutes, {
+    prefix: '/api/v1/personalities',
+  }); // S11
 
   // Brief Generator routes (S13)
   // NOTE: Removed duplicate registration at /api/v1/content/briefs
@@ -487,7 +518,9 @@ export async function createServer() {
   // BULLMQ INITIALIZATION (S-INT-01)
   // ========================================
   if (FLAGS.ENABLE_EVI) {
-    const { initializeBullMQ, setupEVIScheduler } = await import('./queue/bullmqQueue');
+    const { initializeBullMQ, setupEVIScheduler } = await import(
+      './queue/bullmqQueue'
+    );
     const redisUrl = process.env.REDIS_URL;
     await initializeBullMQ({ redisUrl });
     await setupEVIScheduler({ redisUrl });
@@ -500,9 +533,15 @@ export async function createServer() {
     logger.info('Starting scheduler cron tick (every 60 seconds)');
 
     // Import scheduler dependencies dynamically
-    const { createMediaMonitoringService } = await import('./services/mediaMonitoringService');
-    const { createMediaCrawlerService } = await import('./services/mediaCrawlerService');
-    const { createSchedulerService } = await import('./services/schedulerService');
+    const { createMediaMonitoringService } = await import(
+      './services/mediaMonitoringService'
+    );
+    const { createMediaCrawlerService } = await import(
+      './services/mediaCrawlerService'
+    );
+    const { createSchedulerService } = await import(
+      './services/schedulerService'
+    );
 
     const supabase = (server as any).supabase;
     const openaiApiKey = config.LLM_OPENAI_API_KEY;

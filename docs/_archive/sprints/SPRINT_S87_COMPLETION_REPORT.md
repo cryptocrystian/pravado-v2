@@ -15,22 +15,23 @@ Sprint S87 was initially scoped to implement production-grade billing with Strip
 
 ### Billing Infrastructure Already Complete
 
-| Component | Status | Sprint Implemented |
-|-----------|--------|-------------------|
-| Database Schema (migrations 35-39) | Complete | S28-S34 |
-| Types (`packages/types/src/billing.ts`) | Complete | S28 |
-| Validators (`packages/validators/src/billing.ts`) | Complete | S28 |
-| StripeService (1039 lines) | Complete | S30 |
-| BillingService (2100 lines) | Complete | S28-S34 |
-| Billing Routes (1288 lines) | Complete | S28-S34 |
-| Frontend billingApi (524 lines) | Complete | S33 |
-| Billing Page (445 lines) | Complete | S33 |
-| Subscription Enforcement | Complete | S29 |
-| Tests | Complete | S33 |
+| Component                                         | Status   | Sprint Implemented |
+| ------------------------------------------------- | -------- | ------------------ |
+| Database Schema (migrations 35-39)                | Complete | S28-S34            |
+| Types (`packages/types/src/billing.ts`)           | Complete | S28                |
+| Validators (`packages/validators/src/billing.ts`) | Complete | S28                |
+| StripeService (1039 lines)                        | Complete | S30                |
+| BillingService (2100 lines)                       | Complete | S28-S34            |
+| Billing Routes (1288 lines)                       | Complete | S28-S34            |
+| Frontend billingApi (524 lines)                   | Complete | S33                |
+| Billing Page (445 lines)                          | Complete | S33                |
+| Subscription Enforcement                          | Complete | S29                |
+| Tests                                             | Complete | S33                |
 
 ### Subscription Enforcement Guard
 
 `enforceOrgQuotaOrThrow()` is already integrated in:
+
 - `playbookExecutionEngineV2.ts`
 - `narrativeGeneratorService.ts`
 - `briefGeneratorService.ts`
@@ -40,6 +41,7 @@ Sprint S87 was initially scoped to implement production-grade billing with Strip
 ### Billing Page Wiring
 
 The billing page at `/app/billing` is fully wired to:
+
 - Stripe Checkout sessions (upgrades)
 - Stripe Customer Portal (payment management)
 - Direct plan switching (downgrades)
@@ -53,6 +55,7 @@ The billing page at `/app/billing` is fully wired to:
 ### 1. Activation Documentation
 
 Created `docs/BILLING_ACTIVATION_S87.md` with comprehensive coverage:
+
 - Architecture overview
 - Environment variable configuration
 - Stripe setup instructions (products, prices, webhooks)
@@ -66,19 +69,20 @@ Created `docs/BILLING_ACTIVATION_S87.md` with comprehensive coverage:
 
 ## Build Verification
 
-| Check | Status |
-|-------|--------|
-| TypeScript (`@pravado/validators build`) | Passed |
-| TypeScript (`@pravado/types --noEmit`) | Passed |
-| TypeScript (`@pravado/dashboard --noEmit`) | Passed |
-| TypeScript (`@pravado/api --noEmit`) | Passed |
-| No new TypeScript errors introduced | Verified |
+| Check                                      | Status   |
+| ------------------------------------------ | -------- |
+| TypeScript (`@pravado/validators build`)   | Passed   |
+| TypeScript (`@pravado/types --noEmit`)     | Passed   |
+| TypeScript (`@pravado/dashboard --noEmit`) | Passed   |
+| TypeScript (`@pravado/api --noEmit`)       | Passed   |
+| No new TypeScript errors introduced        | Verified |
 
 ---
 
 ## Files Created
 
 ### Documentation
+
 - `docs/BILLING_ACTIVATION_S87.md` - Comprehensive activation guide
 - `docs/SPRINT_S87_COMPLETION_REPORT.md` - This file
 
@@ -86,14 +90,14 @@ Created `docs/BILLING_ACTIVATION_S87.md` with comprehensive coverage:
 
 ## Acceptance Criteria Status
 
-| Criterion | Status | Notes |
-|-----------|--------|-------|
-| Stripe checkout flow works | Pre-existing | Implemented in S30 |
-| Subscription state persists | Pre-existing | Implemented in S30 |
-| Quota guard blocks over-limit | Pre-existing | Implemented in S29 |
-| Billing page shows real data | Pre-existing | Implemented in S33 |
-| TypeScript builds clean | Verified | No errors |
-| Tests exist | Pre-existing | `billingPlanManagement.test.ts` |
+| Criterion                     | Status       | Notes                           |
+| ----------------------------- | ------------ | ------------------------------- |
+| Stripe checkout flow works    | Pre-existing | Implemented in S30              |
+| Subscription state persists   | Pre-existing | Implemented in S30              |
+| Quota guard blocks over-limit | Pre-existing | Implemented in S29              |
+| Billing page shows real data  | Pre-existing | Implemented in S33              |
+| TypeScript builds clean       | Verified     | No errors                       |
+| Tests exist                   | Pre-existing | `billingPlanManagement.test.ts` |
 
 ---
 
@@ -117,6 +121,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
 ## Feature Flags
 
 All billing flags are enabled by default in `packages/feature-flags/src/flags.ts`:
+
 - `ENABLE_STRIPE_BILLING: true`
 - `ENABLE_BILLING_HARD_LIMITS: true`
 - `ENABLE_OVERAGE_BILLING: true`
@@ -139,14 +144,14 @@ All billing flags are enabled by default in `packages/feature-flags/src/flags.ts
 
 ## Reference to Previous Sprints
 
-| Sprint | Billing Feature |
-|--------|-----------------|
-| S28 | Billing schema, quota kernel, BillingService core |
-| S29 | Hard limit enforcement (`enforceOrgQuotaOrThrow`) |
-| S30 | Stripe integration, checkout, webhooks |
-| S31 | Overage billing calculations |
-| S32 | Usage alerts and notifications |
-| S33 | Self-service plan management UI |
-| S34 | Invoice history and sync |
-| S86 | Billing page DS v2 polish |
-| S87 | Activation documentation (this sprint) |
+| Sprint | Billing Feature                                   |
+| ------ | ------------------------------------------------- |
+| S28    | Billing schema, quota kernel, BillingService core |
+| S29    | Hard limit enforcement (`enforceOrgQuotaOrThrow`) |
+| S30    | Stripe integration, checkout, webhooks            |
+| S31    | Overage billing calculations                      |
+| S32    | Usage alerts and notifications                    |
+| S33    | Self-service plan management UI                   |
+| S34    | Invoice history and sync                          |
+| S86    | Billing page DS v2 polish                         |
+| S87    | Activation documentation (this sprint)            |

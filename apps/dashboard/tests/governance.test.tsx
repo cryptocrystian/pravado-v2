@@ -304,7 +304,9 @@ describe('Governance Components (S59)', () => {
           onQueryChange={() => {}}
         />
       );
-      expect(screen.getByText('Negative sentiment detected')).toBeInTheDocument();
+      expect(
+        screen.getByText('Negative sentiment detected')
+      ).toBeInTheDocument();
     });
 
     it('renders status filter buttons', () => {
@@ -340,7 +342,9 @@ describe('Governance Components (S59)', () => {
       const onClick = vi.fn();
       render(<RiskScoreCard riskScore={mockRiskScore} onClick={onClick} />);
 
-      const card = screen.getByText('Test Brand').closest('[class*="cursor-pointer"]');
+      const card = screen
+        .getByText('Test Brand')
+        .closest('[class*="cursor-pointer"]');
       if (card) {
         fireEvent.click(card);
         expect(onClick).toHaveBeenCalled();
@@ -361,7 +365,12 @@ describe('Governance Components (S59)', () => {
 
   describe('ComplianceMetricsPanel', () => {
     it('renders loading state', () => {
-      render(<ComplianceMetricsPanel metrics={mockComplianceMetrics} loading={true} />);
+      render(
+        <ComplianceMetricsPanel
+          metrics={mockComplianceMetrics}
+          loading={true}
+        />
+      );
       expect(screen.getByText('Loading metrics...')).toBeInTheDocument();
     });
 

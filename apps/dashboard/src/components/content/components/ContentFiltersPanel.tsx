@@ -60,7 +60,8 @@ export function ContentFiltersPanel({
   availableEntities = [],
   availableThemes = [],
 }: ContentFiltersPanelProps) {
-  const hasActiveFilters = statusFilter || typeFilter || entityFilter || themeFilter || searchQuery;
+  const hasActiveFilters =
+    statusFilter || typeFilter || entityFilter || themeFilter || searchQuery;
 
   const clearAllFilters = () => {
     onStatusChange('');
@@ -99,8 +100,18 @@ export function ContentFiltersPanel({
             onClick={() => onSearchChange('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         )}
@@ -212,16 +223,29 @@ export function ContentFiltersPanel({
 // FILTER CHIP COMPONENT
 // ============================================
 
-function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+function FilterChip({
+  label,
+  onRemove,
+}: {
+  label: string;
+  onRemove: () => void;
+}) {
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-brand-iris/10 text-brand-iris rounded-full">
       {label}
-      <button
-        onClick={onRemove}
-        className="hover:text-white transition-colors"
-      >
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      <button onClick={onRemove} className="hover:text-white transition-colors">
+        <svg
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </span>
@@ -238,7 +262,11 @@ interface QuickFilterBarProps {
   counts?: Record<string, number>;
 }
 
-export function QuickFilterBar({ activeFilter, onFilterChange, counts = {} }: QuickFilterBarProps) {
+export function QuickFilterBar({
+  activeFilter,
+  onFilterChange,
+  counts = {},
+}: QuickFilterBarProps) {
   const filters = [
     { key: 'all', label: 'All' },
     { key: 'draft', label: 'Draft' },
@@ -263,7 +291,9 @@ export function QuickFilterBar({ activeFilter, onFilterChange, counts = {} }: Qu
         >
           {filter.label}
           {counts[filter.key] !== undefined && (
-            <span className="ml-1 text-[11px] tabular-nums opacity-60">({counts[filter.key]})</span>
+            <span className="ml-1 text-[11px] tabular-nums opacity-60">
+              ({counts[filter.key]})
+            </span>
           )}
         </button>
       ))}

@@ -21,20 +21,6 @@
  * - See: /contracts/examples/omni-tray-pr-events.json
  */
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
-import type { InboxItem, InboxItemType, SAGEDimension, Mode } from '../types';
-import { priorityStyles, modeStyles, eviDriverStyles } from '../prWorkSurfaceStyles';
-import {
-  LocalAIIndicator,
-  AIStateDot,
-  AmbientAIIndicator,
-  deriveUrgencyFromDeadline,
-  type AIPerceptualState,
-} from '@/components/ai';
-import { useMode } from '@/lib/ModeContext';
-import type { AutomationMode } from '@/lib/mode-preferences';
 import {
   Tray,
   Clock,
@@ -55,6 +41,26 @@ import {
   CaretRight,
   Warning,
 } from '@phosphor-icons/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import useSWR from 'swr';
+
+import {
+  LocalAIIndicator,
+  AIStateDot,
+  AmbientAIIndicator,
+  deriveUrgencyFromDeadline,
+  type AIPerceptualState,
+} from '@/components/ai';
+import type { AutomationMode } from '@/lib/mode-preferences';
+import { useMode } from '@/lib/ModeContext';
+
+import {
+  priorityStyles,
+  modeStyles,
+  eviDriverStyles,
+} from '../prWorkSurfaceStyles';
+import type { InboxItem, InboxItemType, SAGEDimension, Mode } from '../types';
 
 // ============================================
 // API TYPES & FETCHER
@@ -93,9 +99,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     label: 'Inquiry',
     pluralLabel: 'Inbound Inquiries',
     description: 'Journalist requests requiring response',
-    icon: (
-      <Tray weight="regular" className="w-4 h-4" />
-    ),
+    icon: <Tray weight="regular" className="w-4 h-4" />,
     color: 'text-semantic-warning',
     bgColor: 'bg-semantic-warning/10',
   },
@@ -103,9 +107,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     label: 'Follow-up',
     pluralLabel: 'Follow-ups Due',
     description: 'Pitches in optimal follow-up window',
-    icon: (
-      <Clock weight="regular" className="w-4 h-4" />
-    ),
+    icon: <Clock weight="regular" className="w-4 h-4" />,
     color: 'text-brand-cyan',
     bgColor: 'bg-brand-cyan/10',
   },
@@ -113,9 +115,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     label: 'Coverage',
     pluralLabel: 'Coverage Triage',
     description: 'New mentions requiring review',
-    icon: (
-      <Newspaper weight="regular" className="w-4 h-4" />
-    ),
+    icon: <Newspaper weight="regular" className="w-4 h-4" />,
     color: 'text-semantic-success',
     bgColor: 'bg-semantic-success/10',
   },
@@ -123,9 +123,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     label: 'Decay',
     pluralLabel: 'Relationship Decay',
     description: 'Contacts losing engagement momentum',
-    icon: (
-      <TrendDown weight="regular" className="w-4 h-4" />
-    ),
+    icon: <TrendDown weight="regular" className="w-4 h-4" />,
     color: 'text-semantic-danger',
     bgColor: 'bg-semantic-danger/10',
   },
@@ -133,9 +131,7 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     label: 'Approval',
     pluralLabel: 'Approval Queue',
     description: 'AI drafts awaiting your review',
-    icon: (
-      <CheckCircle weight="regular" className="w-4 h-4" />
-    ),
+    icon: <CheckCircle weight="regular" className="w-4 h-4" />,
     color: 'text-brand-iris',
     bgColor: 'bg-brand-iris/10',
   },
@@ -143,19 +139,36 @@ const INBOX_TYPE_CONFIG: Record<InboxItemType, InboxTypeConfig> = {
     label: 'Data',
     pluralLabel: 'Data Hygiene',
     description: 'Contact updates and enrichment',
-    icon: (
-      <Database weight="regular" className="w-4 h-4" />
-    ),
+    icon: <Database weight="regular" className="w-4 h-4" />,
     color: 'text-white/50',
     bgColor: 'bg-white/5',
   },
 };
 
-const SAGE_LABELS: Record<SAGEDimension, { label: string; short: string; description: string }> = {
-  signal: { label: 'Signal', short: 'S', description: 'Trend detection & newsworthiness' },
-  authority: { label: 'Authority', short: 'A', description: 'Credibility & thought leadership' },
-  growth: { label: 'Growth', short: 'G', description: 'Relationship building & momentum' },
-  exposure: { label: 'Exposure', short: 'E', description: 'Reach & visibility expansion' },
+const SAGE_LABELS: Record<
+  SAGEDimension,
+  { label: string; short: string; description: string }
+> = {
+  signal: {
+    label: 'Signal',
+    short: 'S',
+    description: 'Trend detection & newsworthiness',
+  },
+  authority: {
+    label: 'Authority',
+    short: 'A',
+    description: 'Credibility & thought leadership',
+  },
+  growth: {
+    label: 'Growth',
+    short: 'G',
+    description: 'Relationship building & momentum',
+  },
+  exposure: {
+    label: 'Exposure',
+    short: 'E',
+    description: 'Reach & visibility expansion',
+  },
 };
 
 /**
@@ -164,7 +177,8 @@ const SAGE_LABELS: Record<SAGEDimension, { label: string; short: string; descrip
  */
 function deriveItemAIState(item: InboxItem): AIPerceptualState {
   const hasUrgentDeadline = deriveUrgencyFromDeadline(item.dueAt);
-  const isHighPriority = item.priority === 'critical' || item.priority === 'high';
+  const isHighPriority =
+    item.priority === 'critical' || item.priority === 'high';
 
   // Escalating: Real urgency (deadline + critical/high priority)
   if (hasUrgentDeadline && isHighPriority) {
@@ -172,17 +186,27 @@ function deriveItemAIState(item: InboxItem): AIPerceptualState {
   }
 
   // Blocked: Items with high risk (relationship decay, data issues)
-  if (item.risk === 'high' || (item.type === 'relationship_decay' && item.urgency < 30)) {
+  if (
+    item.risk === 'high' ||
+    (item.type === 'relationship_decay' && item.urgency < 30)
+  ) {
     return 'blocked';
   }
 
   // Ready: Approval queue items with AI drafts ready
-  if (item.type === 'approval_queue' && item.confidence && item.confidence >= 70) {
+  if (
+    item.type === 'approval_queue' &&
+    item.confidence &&
+    item.confidence >= 70
+  ) {
     return 'ready';
   }
 
   // Evaluating: Data hygiene items being processed, or low-confidence items
-  if (item.type === 'data_hygiene' || (item.confidence && item.confidence < 60)) {
+  if (
+    item.type === 'data_hygiene' ||
+    (item.confidence && item.confidence < 60)
+  ) {
     return 'evaluating';
   }
 
@@ -199,7 +223,10 @@ function deriveItemAIState(item: InboxItem): AIPerceptualState {
 // ============================================
 
 // Mock relationship context for inbox items
-const MOCK_RELATIONSHIP_CONTEXT: Record<string, { stage: string; lastInteraction: string }> = {
+const MOCK_RELATIONSHIP_CONTEXT: Record<
+  string,
+  { stage: string; lastInteraction: string }
+> = {
   'contact-sarah': { stage: 'warm', lastInteraction: '2 days ago' },
   'contact-michael': { stage: 'cold', lastInteraction: '12 days ago' },
   'contact-jennifer': { stage: 'engaged', lastInteraction: '75 days ago' },
@@ -208,13 +235,30 @@ const MOCK_RELATIONSHIP_CONTEXT: Record<string, { stage: string; lastInteraction
 };
 
 // Copilot reasoning types and labels
-type CopilotReasoningType = 'similar_wins' | 'timing_signal' | 'relationship_risk' | 'trending_topic' | 'data_signal';
+type CopilotReasoningType =
+  | 'similar_wins'
+  | 'timing_signal'
+  | 'relationship_risk'
+  | 'trending_topic'
+  | 'data_signal';
 
-const COPILOT_REASONING_LABELS: Record<CopilotReasoningType, { label: string; color: string }> = {
-  similar_wins: { label: 'Based on Similar Wins', color: 'text-semantic-success' },
+const COPILOT_REASONING_LABELS: Record<
+  CopilotReasoningType,
+  { label: string; color: string }
+> = {
+  similar_wins: {
+    label: 'Based on Similar Wins',
+    color: 'text-semantic-success',
+  },
   timing_signal: { label: 'Based on Timing Signal', color: 'text-brand-cyan' },
-  relationship_risk: { label: 'Based on Relationship Risk', color: 'text-semantic-warning' },
-  trending_topic: { label: 'Based on Trending Topic', color: 'text-brand-iris' },
+  relationship_risk: {
+    label: 'Based on Relationship Risk',
+    color: 'text-semantic-warning',
+  },
+  trending_topic: {
+    label: 'Based on Trending Topic',
+    color: 'text-brand-iris',
+  },
   data_signal: { label: 'Based on Data Signal', color: 'text-white/60' },
 };
 
@@ -234,21 +278,28 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
     type: 'inquiry',
     priority: 'high',
     title: 'TechCrunch inquiry about AI marketing tools',
-    description: 'Sarah Chen from TechCrunch is working on a piece about AI marketing platforms and requested comment. Story deadline is end of day.',
+    description:
+      'Sarah Chen from TechCrunch is working on a piece about AI marketing platforms and requested comment. Story deadline is end of day.',
     dueAt: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
     urgency: 85,
     risk: 'medium',
     relatedContactId: 'contact-sarah',
     primaryAction: {
       label: 'Draft Response',
-      targetRoute: '/app/pr?tab=pitches&compose=true&contactId=contact-sarah&type=inquiry',
+      targetRoute:
+        '/app/pr?tab=pitches&compose=true&contactId=contact-sarah&type=inquiry',
     },
     modeCeiling: 'manual',
     sageContributions: [
       { dimension: 'signal', isPrimary: true },
       { dimension: 'authority', isPrimary: false },
     ],
-    eviImpact: { driver: 'visibility', direction: 'positive', delta: 8, explanation: 'Tier-1 coverage opportunity' },
+    eviImpact: {
+      driver: 'visibility',
+      direction: 'positive',
+      delta: 8,
+      explanation: 'Tier-1 coverage opportunity',
+    },
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -256,7 +307,8 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
     type: 'follow_up_due',
     priority: 'medium',
     title: 'Follow up with Michael Park @ VentureBeat',
-    description: 'Pitch sent 5 days ago. Email was opened 3 times but no response. This is the optimal follow-up window (5-7 days). Guardrail: max 2 follow-ups per contact per week.',
+    description:
+      'Pitch sent 5 days ago. Email was opened 3 times but no response. This is the optimal follow-up window (5-7 days). Guardrail: max 2 follow-ups per contact per week.',
     dueAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     urgency: 65,
     confidence: 72,
@@ -267,10 +319,12 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
       targetRoute: '/app/pr?tab=pitches&pitchId=pitch-123&followup=true',
     },
     modeCeiling: 'manual',
-    sageContributions: [
-      { dimension: 'growth', isPrimary: true },
-    ],
-    eviImpact: { driver: 'momentum', direction: 'neutral', explanation: 'Maintains pipeline velocity' },
+    sageContributions: [{ dimension: 'growth', isPrimary: true }],
+    eviImpact: {
+      driver: 'momentum',
+      direction: 'neutral',
+      explanation: 'Maintains pipeline velocity',
+    },
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -278,19 +332,26 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
     type: 'coverage_triage',
     priority: 'medium',
     title: 'New coverage detected: Forbes mention',
-    description: 'Your brand was mentioned in "Top 10 Marketing Platforms for 2026" article by Jennifer Wong. Attribution analysis pending—may link to recent pitch.',
+    description:
+      'Your brand was mentioned in "Top 10 Marketing Platforms for 2026" article by Jennifer Wong. Attribution analysis pending—may link to recent pitch.',
     urgency: 50,
     relatedCoverageId: 'coverage-forbes',
     primaryAction: {
       label: 'Review & Attribute',
-      targetRoute: '/app/pr?tab=coverage&coverageId=coverage-forbes&triage=true',
+      targetRoute:
+        '/app/pr?tab=coverage&coverageId=coverage-forbes&triage=true',
     },
     modeCeiling: 'copilot',
     sageContributions: [
       { dimension: 'authority', isPrimary: true },
       { dimension: 'exposure', isPrimary: false },
     ],
-    eviImpact: { driver: 'authority', direction: 'positive', delta: 12, explanation: 'Tier-1 publication mention' },
+    eviImpact: {
+      driver: 'authority',
+      direction: 'positive',
+      delta: 12,
+      explanation: 'Tier-1 publication mention',
+    },
     createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -298,19 +359,24 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
     type: 'relationship_decay',
     priority: 'low',
     title: 'Relationship decay: Jennifer Liu @ WSJ',
-    description: 'No interaction in 75 days. Relationship score dropped from 72 to 58. This warm contact is at risk of going cold. Consider a touch-base or share relevant content.',
+    description:
+      'No interaction in 75 days. Relationship score dropped from 72 to 58. This warm contact is at risk of going cold. Consider a touch-base or share relevant content.',
     urgency: 35,
     risk: 'low',
     relatedContactId: 'contact-jennifer',
     primaryAction: {
       label: 'View Contact',
-      targetRoute: '/app/pr?tab=database&contactId=contact-jennifer&section=ledger',
+      targetRoute:
+        '/app/pr?tab=database&contactId=contact-jennifer&section=ledger',
     },
     modeCeiling: 'manual',
-    sageContributions: [
-      { dimension: 'growth', isPrimary: true },
-    ],
-    eviImpact: { driver: 'momentum', direction: 'negative', delta: -5, explanation: 'Relationship momentum declining' },
+    sageContributions: [{ dimension: 'growth', isPrimary: true }],
+    eviImpact: {
+      driver: 'momentum',
+      direction: 'negative',
+      delta: -5,
+      explanation: 'Relationship momentum declining',
+    },
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -318,7 +384,8 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
     type: 'approval_queue',
     priority: 'medium',
     title: 'Draft pitch ready: AI governance angle',
-    description: 'SAGE generated a pitch for Alex Thompson @ Wired based on trending AI governance topic. Personalization score: 78%. This draft requires your review before sending.',
+    description:
+      'SAGE generated a pitch for Alex Thompson @ Wired based on trending AI governance topic. Personalization score: 78%. This draft requires your review before sending.',
     urgency: 55,
     confidence: 78,
     relatedContactId: 'contact-alex',
@@ -332,7 +399,12 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
       { dimension: 'signal', isPrimary: true },
       { dimension: 'authority', isPrimary: false },
     ],
-    eviImpact: { driver: 'visibility', direction: 'positive', delta: 6, explanation: 'Aligned with trending topic' },
+    eviImpact: {
+      driver: 'visibility',
+      direction: 'positive',
+      delta: 6,
+      explanation: 'Aligned with trending topic',
+    },
     createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -340,17 +412,23 @@ const MOCK_INBOX_ITEMS: InboxItem[] = [
     type: 'data_hygiene',
     priority: 'low',
     title: 'Enrichment: Maria Santos moved outlets',
-    description: 'CiteMind detected that Maria Santos moved from Wired to The Verge. Confidence: 92%. Review and approve to update your database.',
+    description:
+      'CiteMind detected that Maria Santos moved from Wired to The Verge. Confidence: 92%. Review and approve to update your database.',
     urgency: 20,
     confidence: 92,
     relatedContactId: 'contact-maria',
     primaryAction: {
       label: 'Review Update',
-      targetRoute: '/app/pr?tab=database&contactId=contact-maria&enrichment=true',
+      targetRoute:
+        '/app/pr?tab=database&contactId=contact-maria&enrichment=true',
     },
     modeCeiling: 'copilot',
     sageContributions: [],
-    eviImpact: { driver: 'authority', direction: 'neutral', explanation: 'Database accuracy' },
+    eviImpact: {
+      driver: 'authority',
+      direction: 'neutral',
+      explanation: 'Database accuracy',
+    },
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
@@ -367,7 +445,8 @@ const MOCK_PR_QUEUE_REASONING = [
   {
     id: 'reason-1',
     factor: 'Deadline Urgency',
-    explanation: 'TechCrunch inquiry has 3-hour deadline, prioritizing time-sensitive responses.',
+    explanation:
+      'TechCrunch inquiry has 3-hour deadline, prioritizing time-sensitive responses.',
     weight: 'High',
   },
   {
@@ -379,7 +458,8 @@ const MOCK_PR_QUEUE_REASONING = [
   {
     id: 'reason-3',
     factor: 'EVI Impact',
-    explanation: 'Coverage opportunity contributes +8 EVI points to visibility driver.',
+    explanation:
+      'Coverage opportunity contributes +8 EVI points to visibility driver.',
     weight: 'Medium',
   },
 ];
@@ -389,18 +469,52 @@ const MOCK_PR_QUEUE_REASONING = [
  * Shows recently auto-handled items.
  */
 const MOCK_PR_AUDIT_LOG = [
-  { id: 'audit-1', title: 'Follow-up sent to Michael Park', type: 'follow_up', time: '3 min ago', status: 'completed' },
-  { id: 'audit-2', title: 'Coverage attributed to pitch', type: 'coverage', time: '8 min ago', status: 'completed' },
-  { id: 'audit-3', title: 'Data enrichment applied', type: 'data', time: '15 min ago', status: 'completed' },
-  { id: 'audit-4', title: 'Relationship score updated', type: 'relationship', time: '22 min ago', status: 'completed' },
-  { id: 'audit-5', title: 'Draft pitch generated', type: 'draft', time: '30 min ago', status: 'pending_approval' },
+  {
+    id: 'audit-1',
+    title: 'Follow-up sent to Michael Park',
+    type: 'follow_up',
+    time: '3 min ago',
+    status: 'completed',
+  },
+  {
+    id: 'audit-2',
+    title: 'Coverage attributed to pitch',
+    type: 'coverage',
+    time: '8 min ago',
+    status: 'completed',
+  },
+  {
+    id: 'audit-3',
+    title: 'Data enrichment applied',
+    type: 'data',
+    time: '15 min ago',
+    status: 'completed',
+  },
+  {
+    id: 'audit-4',
+    title: 'Relationship score updated',
+    type: 'relationship',
+    time: '22 min ago',
+    status: 'completed',
+  },
+  {
+    id: 'audit-5',
+    title: 'Draft pitch generated',
+    type: 'draft',
+    time: '30 min ago',
+    status: 'pending_approval',
+  },
 ];
 
 /**
  * Audit Log Panel - Autopilot mode transparency
  * Shows recently auto-handled items for user awareness.
  */
-function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_PR_AUDIT_LOG }) {
+function AuditLogPanel({
+  entries = MOCK_PR_AUDIT_LOG,
+}: {
+  entries?: typeof MOCK_PR_AUDIT_LOG;
+}) {
   const typeIcons: Record<string, JSX.Element> = {
     follow_up: <Clock weight="regular" className="w-3 h-3" />,
     coverage: <Newspaper weight="regular" className="w-3 h-3" />,
@@ -420,7 +534,9 @@ function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_
             Live
           </span>
         </div>
-        <span className="text-[13px] text-white/30">Auto-executed by CRAFT</span>
+        <span className="text-[13px] text-white/30">
+          Auto-executed by CRAFT
+        </span>
       </div>
       <div className="space-y-1 max-h-[180px] overflow-y-auto">
         {entries.slice(0, 5).map((item) => (
@@ -429,18 +545,30 @@ function AuditLogPanel({ entries = MOCK_PR_AUDIT_LOG }: { entries?: typeof MOCK_
             className="flex items-center justify-between px-2.5 py-2 bg-panel hover:bg-panel rounded text-[13px] transition-colors"
           >
             <div className="flex items-center gap-2">
-              <span className={item.status === 'completed' ? 'text-semantic-success' : 'text-semantic-warning'}>
+              <span
+                className={
+                  item.status === 'completed'
+                    ? 'text-semantic-success'
+                    : 'text-semantic-warning'
+                }
+              >
                 {typeIcons[item.type] || typeIcons.draft}
               </span>
               <span className="text-white/60">{item.title}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`px-1 py-0.5 rounded text-[13px] font-semibold ${
-                item.status === 'completed' ? 'text-semantic-success bg-semantic-success/10' :
-                item.status === 'pending_approval' ? 'text-semantic-warning bg-semantic-warning/10' :
-                'text-white/40 bg-white/5'
-              }`}>
-                {item.status === 'pending_approval' ? 'needs approval' : item.status}
+              <span
+                className={`px-1 py-0.5 rounded text-[13px] font-semibold ${
+                  item.status === 'completed'
+                    ? 'text-semantic-success bg-semantic-success/10'
+                    : item.status === 'pending_approval'
+                      ? 'text-semantic-warning bg-semantic-warning/10'
+                      : 'text-white/40 bg-white/5'
+                }`}
+              >
+                {item.status === 'pending_approval'
+                  ? 'needs approval'
+                  : item.status}
               </span>
               <span className="text-white/30">{item.time}</span>
             </div>
@@ -479,7 +607,9 @@ function PRQueueControlsBand({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <List weight="regular" className="w-4 h-4 text-white/60" />
-            <span className="text-xs font-bold uppercase tracking-wider text-white/60">Queue Controls</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-white/60">
+              Queue Controls
+            </span>
           </div>
           <span className="px-2 py-0.5 text-[13px] font-medium text-white/40 bg-white/5 rounded">
             {itemCount} items
@@ -533,20 +663,24 @@ function PRPlanPanel({
   reasons?: typeof MOCK_PR_QUEUE_REASONING;
 }) {
   return (
-    <div className={`mb-4 rounded-lg border overflow-hidden transition-all ${
-      isApproved
-        ? 'bg-semantic-success/5 border-semantic-success/30'
-        : 'bg-brand-magenta/5 border-brand-magenta/20'
-    }`}>
+    <div
+      className={`mb-4 rounded-lg border overflow-hidden transition-all ${
+        isApproved
+          ? 'bg-semantic-success/5 border-semantic-success/30'
+          : 'bg-brand-magenta/5 border-brand-magenta/20'
+      }`}
+    >
       <div className="p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[13px] font-bold ${
-            isEvaluating
-              ? 'bg-brand-magenta/20 text-brand-magenta animate-pulse'
-              : isApproved
-              ? 'bg-semantic-success/20 text-semantic-success'
-              : 'bg-brand-magenta/20 text-brand-magenta'
-          }`}>
+          <div
+            className={`flex items-center justify-center w-6 h-6 rounded-full text-[13px] font-bold ${
+              isEvaluating
+                ? 'bg-brand-magenta/20 text-brand-magenta animate-pulse'
+                : isApproved
+                  ? 'bg-semantic-success/20 text-semantic-success'
+                  : 'bg-brand-magenta/20 text-brand-magenta'
+            }`}
+          >
             {isEvaluating ? '...' : isApproved ? '✓' : '1'}
           </div>
           <div>
@@ -557,8 +691,8 @@ function PRPlanPanel({
               {isEvaluating
                 ? 'Analyzing priorities and context'
                 : isApproved
-                ? 'Plan approved — execute when ready'
-                : 'Review the reasoning below'}
+                  ? 'Plan approved — execute when ready'
+                  : 'Review the reasoning below'}
             </p>
           </div>
         </div>
@@ -583,7 +717,10 @@ function PRPlanPanel({
             onClick={onToggle}
             className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors"
           >
-            <CaretDown weight="regular" className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+            <CaretDown
+              weight="regular"
+              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            />
           </button>
         </div>
       </div>
@@ -592,20 +729,31 @@ function PRPlanPanel({
         <div className="px-3 pb-3 border-t border-white/5">
           <div className="pt-3 space-y-2">
             {reasons.map((reason, index) => (
-              <div key={reason.id} className="flex items-start gap-3 p-2 bg-panel rounded">
+              <div
+                key={reason.id}
+                className="flex items-start gap-3 p-2 bg-panel rounded"
+              >
                 <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-magenta/20 text-brand-magenta text-[13px] font-bold shrink-0">
                   {index + 1}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-white/90">{reason.factor}</span>
-                    <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
-                      reason.weight === 'High' ? 'text-brand-magenta bg-brand-magenta/10' : 'text-white/50 bg-white/5'
-                    }`}>
+                    <span className="text-xs font-medium text-white/90">
+                      {reason.factor}
+                    </span>
+                    <span
+                      className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
+                        reason.weight === 'High'
+                          ? 'text-brand-magenta bg-brand-magenta/10'
+                          : 'text-white/50 bg-white/5'
+                      }`}
+                    >
                       {reason.weight}
                     </span>
                   </div>
-                  <p className="text-[13px] text-white/50 mt-0.5">{reason.explanation}</p>
+                  <p className="text-[13px] text-white/50 mt-0.5">
+                    {reason.explanation}
+                  </p>
                 </div>
               </div>
             ))}
@@ -625,28 +773,59 @@ function PRPlanPanel({
  */
 function PRGuardrailsCard() {
   const guardrails = [
-    { id: 'g1', name: 'Journalist Inquiries', description: 'All inbound inquiries require response', active: true },
-    { id: 'g2', name: 'Approval Queue', description: 'AI drafts need explicit approval', active: true },
-    { id: 'g3', name: 'Critical Priority', description: 'Critical items always surface', active: true },
-    { id: 'g4', name: 'High-Risk Decay', description: 'Tier-1 relationships at risk', active: true },
+    {
+      id: 'g1',
+      name: 'Journalist Inquiries',
+      description: 'All inbound inquiries require response',
+      active: true,
+    },
+    {
+      id: 'g2',
+      name: 'Approval Queue',
+      description: 'AI drafts need explicit approval',
+      active: true,
+    },
+    {
+      id: 'g3',
+      name: 'Critical Priority',
+      description: 'Critical items always surface',
+      active: true,
+    },
+    {
+      id: 'g4',
+      name: 'High-Risk Decay',
+      description: 'Tier-1 relationships at risk',
+      active: true,
+    },
   ];
 
   return (
     <div className="p-3 bg-brand-iris/5 border border-brand-iris/20 rounded-lg">
       <div className="flex items-center gap-2 mb-2">
         <ShieldCheck weight="regular" className="w-4 h-4 text-brand-iris" />
-        <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">Active Guardrails</h4>
+        <h4 className="text-xs font-bold uppercase tracking-wider text-brand-iris">
+          Active Guardrails
+        </h4>
       </div>
       <div className="space-y-1.5">
-        {guardrails.filter(g => g.active).map((guardrail) => (
-          <div key={guardrail.id} className="flex items-start gap-2 p-2 bg-panel rounded">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
-            <div>
-              <span className="text-[13px] font-medium text-white/90">{guardrail.name}</span>
-              <p className="text-[13px] text-white/40">{guardrail.description}</p>
+        {guardrails
+          .filter((g) => g.active)
+          .map((guardrail) => (
+            <div
+              key={guardrail.id}
+              className="flex items-start gap-2 p-2 bg-panel rounded"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-iris mt-1.5 shrink-0" />
+              <div>
+                <span className="text-[13px] font-medium text-white/90">
+                  {guardrail.name}
+                </span>
+                <p className="text-[13px] text-white/40">
+                  {guardrail.description}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       <button className="w-full mt-2 py-1.5 text-[13px] text-brand-iris hover:bg-brand-iris/5 rounded transition-colors">
         Configure Guardrails →
@@ -664,7 +843,8 @@ const PR_MODE_BEHAVIOR = {
   manual: {
     // WORKBENCH posture: Full control, user-driven prioritization
     posture: 'workbench',
-    descriptor: 'Workbench — you control the queue. Triage, prioritize, and act at your pace.',
+    descriptor:
+      'Workbench — you control the queue. Triage, prioritize, and act at your pace.',
     showQueueControls: true,
     showQueueReasoning: false,
     showApprovePlan: false,
@@ -676,7 +856,8 @@ const PR_MODE_BEHAVIOR = {
   copilot: {
     // PLAN REVIEW posture: AI proposes, user approves
     posture: 'plan-review',
-    descriptor: 'Plan Review — AI prioritized this queue. Review the rationale, then approve.',
+    descriptor:
+      'Plan Review — AI prioritized this queue. Review the rationale, then approve.',
     showQueueControls: false,
     showQueueReasoning: true,
     showApprovePlan: true,
@@ -688,7 +869,8 @@ const PR_MODE_BEHAVIOR = {
   autopilot: {
     // EXCEPTION CONSOLE posture: Only exceptions surface
     posture: 'exception-console',
-    descriptor: 'Exception Console — showing only items that need your attention.',
+    descriptor:
+      'Exception Console — showing only items that need your attention.',
     showQueueControls: false,
     showQueueReasoning: false,
     showApprovePlan: false,
@@ -703,7 +885,11 @@ const PR_MODE_BEHAVIOR = {
  * Get mode-specific CTA label.
  * Per AUTOMATION_MODES_UX: Different verbs for different modes.
  */
-function getModeCtaLabel(baseLabel: string, mode: AutomationMode, itemType: InboxItemType): string {
+function getModeCtaLabel(
+  baseLabel: string,
+  mode: AutomationMode,
+  itemType: InboxItemType
+): string {
   if (mode === 'copilot') {
     if (itemType === 'approval_queue') return 'Review & Approve';
     if (itemType === 'inquiry') return 'Review Response';
@@ -721,7 +907,10 @@ function getModeCtaLabel(baseLabel: string, mode: AutomationMode, itemType: Inbo
  * Filter items based on mode.
  * Autopilot: Show only exceptions (inquiries, critical, approval_queue, relationship_decay).
  */
-function filterItemsByMode(items: InboxItem[], mode: AutomationMode): InboxItem[] {
+function filterItemsByMode(
+  items: InboxItem[],
+  mode: AutomationMode
+): InboxItem[] {
   if (mode === 'autopilot') {
     // Exception queue: only items requiring manual attention
     return items.filter(
@@ -740,18 +929,12 @@ function filterItemsByMode(items: InboxItem[], mode: AutomationMode): InboxItem[
  */
 function ModeIconHeader({ mode }: { mode: AutomationMode }) {
   if (mode === 'manual') {
-    return (
-      <Lock weight="regular" className="w-3 h-3" />
-    );
+    return <Lock weight="regular" className="w-3 h-3" />;
   }
   if (mode === 'copilot') {
-    return (
-      <User weight="regular" className="w-3 h-3" />
-    );
+    return <User weight="regular" className="w-3 h-3" />;
   }
-  return (
-    <Lightning weight="regular" className="w-3 h-3" />
-  );
+  return <Lightning weight="regular" className="w-3 h-3" />;
 }
 
 // ============================================
@@ -764,7 +947,11 @@ interface SectionNavProps {
   onSectionChange: (section: InboxItemType | 'all') => void;
 }
 
-function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps) {
+function SectionNav({
+  activeSection,
+  counts,
+  onSectionChange,
+}: SectionNavProps) {
   const sections: (InboxItemType | 'all')[] = [
     'all',
     'inquiry',
@@ -778,7 +965,9 @@ function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps)
   return (
     <div className="w-40 shrink-0 bg-slate-1 rounded-xl border border-border-subtle overflow-hidden">
       <div className="p-3 border-b border-border-subtle">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">Queue Sections</h3>
+        <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+          Queue Sections
+        </h3>
       </div>
       <div className="p-2 space-y-0.5">
         {sections.map((section) => {
@@ -797,9 +986,13 @@ function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps)
                 }`}
               >
                 <span className="font-medium">All Items</span>
-                <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
-                  isActive ? 'bg-brand-magenta/20 text-brand-magenta' : 'bg-white/10 text-white/50'
-                }`}>
+                <span
+                  className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
+                    isActive
+                      ? 'bg-brand-magenta/20 text-brand-magenta'
+                      : 'bg-white/10 text-white/50'
+                  }`}
+                >
                   {counts.all}
                 </span>
               </button>
@@ -819,11 +1012,17 @@ function SectionNav({ activeSection, counts, onSectionChange }: SectionNavProps)
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
-              <span className={isActive ? config.color : 'text-white/40'}>{config.icon}</span>
+              <span className={isActive ? config.color : 'text-white/40'}>
+                {config.icon}
+              </span>
               <span className="flex-1 text-left truncate">{config.label}</span>
-              <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
-                isActive ? `${config.bgColor} ${config.color}` : 'bg-white/10 text-white/50'
-              }`}>
+              <span
+                className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${
+                  isActive
+                    ? `${config.bgColor} ${config.color}`
+                    : 'bg-white/10 text-white/50'
+                }`}
+              >
                 {count}
               </span>
             </button>
@@ -852,11 +1051,15 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
   const aiState = deriveItemAIState(item);
 
   // Relationship context lookup
-  const relationshipCtx = item.relatedContactId ? MOCK_RELATIONSHIP_CONTEXT[item.relatedContactId] : null;
+  const relationshipCtx = item.relatedContactId
+    ? MOCK_RELATIONSHIP_CONTEXT[item.relatedContactId]
+    : null;
 
   // Copilot reasoning lookup
   const copilotReasoningType = MOCK_COPILOT_REASONING[item.id];
-  const copilotReasoning = copilotReasoningType ? COPILOT_REASONING_LABELS[copilotReasoningType] : null;
+  const copilotReasoning = copilotReasoningType
+    ? COPILOT_REASONING_LABELS[copilotReasoningType]
+    : null;
 
   // Calculate time remaining on client-side only to avoid hydration mismatch
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
@@ -922,31 +1125,45 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
 
         <div className="flex-1 min-w-0">
           {/* Title */}
-          <h4 className={`text-sm font-medium line-clamp-1 ${
-            isSelected ? 'text-white' : 'text-white/85 group-hover:text-white'
-          }`}>
+          <h4
+            className={`text-sm font-medium line-clamp-1 ${
+              isSelected ? 'text-white' : 'text-white/85 group-hover:text-white'
+            }`}
+          >
             {item.title}
           </h4>
 
           {/* Meta row - DS 3.0: minimum 13px for semantic content */}
           <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <span className={`flex items-center gap-1 text-[13px] font-medium ${typeConfig.color}`}>
+            <span
+              className={`flex items-center gap-1 text-[13px] font-medium ${typeConfig.color}`}
+            >
               {typeConfig.icon}
               {typeConfig.label}
             </span>
             {timeRemaining && (
-              <span className={`text-[13px] font-medium ${
-                timeRemaining === 'Overdue' ? 'text-semantic-danger' : 'text-white/50'
-              }`}>
+              <span
+                className={`text-[13px] font-medium ${
+                  timeRemaining === 'Overdue'
+                    ? 'text-semantic-danger'
+                    : 'text-white/50'
+                }`}
+              >
                 {timeRemaining}
               </span>
             )}
             {item.eviImpact?.delta && (
-              <span className={`text-[13px] font-medium ${
-                item.eviImpact.direction === 'positive' ? 'text-semantic-success' :
-                item.eviImpact.direction === 'negative' ? 'text-semantic-danger' : 'text-white/50'
-              }`}>
-                {item.eviImpact.direction === 'positive' ? '+' : ''}{item.eviImpact.delta} EVI
+              <span
+                className={`text-[13px] font-medium ${
+                  item.eviImpact.direction === 'positive'
+                    ? 'text-semantic-success'
+                    : item.eviImpact.direction === 'negative'
+                      ? 'text-semantic-danger'
+                      : 'text-white/50'
+                }`}
+              >
+                {item.eviImpact.direction === 'positive' ? '+' : ''}
+                {item.eviImpact.delta} EVI
               </span>
             )}
           </div>
@@ -954,7 +1171,9 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
           {/* Relationship context - compact inline */}
           {relationshipCtx && (
             <div className="flex items-center gap-1.5 mt-1.5 text-[13px] text-white/40">
-              <span className={stageStyle(relationshipCtx.stage)}>{relationshipCtx.stage}</span>
+              <span className={stageStyle(relationshipCtx.stage)}>
+                {relationshipCtx.stage}
+              </span>
               <span>·</span>
               <span>{relationshipCtx.lastInteraction}</span>
             </div>
@@ -962,7 +1181,9 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
 
           {/* Copilot reasoning label - visible in queue list */}
           {copilotReasoning && (
-            <div className={`mt-1.5 text-[13px] font-medium ${copilotReasoning.color}`}>
+            <div
+              className={`mt-1.5 text-[13px] font-medium ${copilotReasoning.color}`}
+            >
               {copilotReasoning.label}
             </div>
           )}
@@ -972,7 +1193,9 @@ function QueueItem({ item, isSelected, onClick }: QueueItemProps) {
         <CaretRight
           weight="regular"
           className={`w-4 h-4 shrink-0 mt-1 transition-colors ${
-            isSelected ? 'text-brand-magenta' : 'text-white/20 group-hover:text-white/40'
+            isSelected
+              ? 'text-brand-magenta'
+              : 'text-white/20 group-hover:text-white/40'
           }`}
         />
       </div>
@@ -1001,7 +1224,15 @@ interface DetailPanelProps {
   onAddNote: () => void;
 }
 
-function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenContact, onAddNote }: DetailPanelProps) {
+function DetailPanel({
+  item,
+  mode,
+  onPrimaryAction,
+  onSnooze,
+  onDismiss,
+  onOpenContact,
+  onAddNote,
+}: DetailPanelProps) {
   const typeConfig = INBOX_TYPE_CONFIG[item.type];
   const pConfig = priorityStyles[item.priority];
   const mConfig = modeStyles[item.modeCeiling];
@@ -1011,7 +1242,9 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 
   // Copilot reasoning lookup
   const copilotReasoningType = MOCK_COPILOT_REASONING[item.id];
-  const copilotReasoning = copilotReasoningType ? COPILOT_REASONING_LABELS[copilotReasoningType] : null;
+  const copilotReasoning = copilotReasoningType
+    ? COPILOT_REASONING_LABELS[copilotReasoningType]
+    : null;
 
   // Calculate time remaining on client-side only to avoid hydration mismatch
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
@@ -1044,8 +1277,10 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 
   // Generate "Why this matters now" explanation
   const whyThisMatters = useMemo(() => {
-    const primarySage = item.sageContributions?.find(c => c.isPrimary);
-    const sageName = primarySage ? SAGE_LABELS[primarySage.dimension].label : 'Relevance';
+    const primarySage = item.sageContributions?.find((c) => c.isPrimary);
+    const sageName = primarySage
+      ? SAGE_LABELS[primarySage.dimension].label
+      : 'Relevance';
     const eviDriver = item.eviImpact?.driver || 'momentum';
     const action = item.primaryAction.label.toLowerCase();
 
@@ -1062,24 +1297,36 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
       {/* Header */}
       <div className="p-4 border-b border-border-subtle">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <span className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-bold uppercase border ${typeConfig.bgColor} ${typeConfig.color} border-transparent`}>
+          <span
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-bold uppercase border ${typeConfig.bgColor} ${typeConfig.color} border-transparent`}
+          >
             {typeConfig.icon}
             {typeConfig.label}
           </span>
-          <span className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase border ${pConfig.bg} ${pConfig.text} ${pConfig.border}`}>
+          <span
+            className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase border ${pConfig.bg} ${pConfig.text} ${pConfig.border}`}
+          >
             {pConfig.label}
           </span>
-          <span className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium uppercase border ${mConfig.bg} ${mConfig.text} ${mConfig.border}`}>
+          <span
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium uppercase border ${mConfig.bg} ${mConfig.text} ${mConfig.border}`}
+          >
             <ModeIcon mode={item.modeCeiling} />
             {mConfig.label}
           </span>
           {/* Local AI State Indicator - per AI_VISUAL_COMMUNICATION_CANON §2 */}
           <LocalAIIndicator state={aiState} />
         </div>
-        <h2 className="text-base font-semibold text-white/95 leading-tight">{item.title}</h2>
+        <h2 className="text-base font-semibold text-white/95 leading-tight">
+          {item.title}
+        </h2>
         {timeRemaining && (
-          <p className={`text-[13px] mt-1 ${timeRemaining === 'Overdue' ? 'text-semantic-danger font-medium' : 'text-white/50'}`}>
-            {timeRemaining === 'Overdue' ? 'Overdue' : `Due in ${timeRemaining}`}
+          <p
+            className={`text-[13px] mt-1 ${timeRemaining === 'Overdue' ? 'text-semantic-danger font-medium' : 'text-white/50'}`}
+          >
+            {timeRemaining === 'Overdue'
+              ? 'Overdue'
+              : `Due in ${timeRemaining}`}
           </p>
         )}
       </div>
@@ -1089,21 +1336,31 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
         {/* Why This Matters Now - Prominent */}
         <div className="p-3 rounded-lg bg-brand-magenta/5 border border-brand-magenta/20">
           <div className="flex items-center justify-between mb-1.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-brand-magenta/70">Why This Matters Now</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-brand-magenta/70">
+              Why This Matters Now
+            </h3>
             {/* Copilot Reasoning Label - visible without hover */}
             {copilotReasoning && (
-              <span className={`text-[13px] font-medium ${copilotReasoning.color}`}>
+              <span
+                className={`text-[13px] font-medium ${copilotReasoning.color}`}
+              >
                 {copilotReasoning.label}
               </span>
             )}
           </div>
-          <p className="text-sm text-white/85 leading-relaxed">{whyThisMatters}</p>
+          <p className="text-sm text-white/85 leading-relaxed">
+            {whyThisMatters}
+          </p>
         </div>
 
         {/* Context */}
         <div className="p-3 rounded-lg bg-panel border border-border-subtle">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-1.5">Context</h3>
-          <p className="text-sm text-white/70 leading-relaxed">{item.description}</p>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
+            Context
+          </h3>
+          <p className="text-sm text-white/70 leading-relaxed">
+            {item.description}
+          </p>
         </div>
 
         {/* EVI Impact + SAGE Rationale Combined Row */}
@@ -1111,27 +1368,46 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
           {/* EVI Impact Module */}
           {item.eviImpact && (
             <div className="p-3 rounded-lg bg-panel border border-border-subtle">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">EVI Impact</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">
+                EVI Impact
+              </h3>
               <div className="flex items-center gap-2">
-                <div className={`p-1.5 rounded-md ${eviDriverStyles[item.eviImpact.driver as keyof typeof eviDriverStyles]?.bg || 'bg-white/5'}`}>
-                  <span className={`text-lg font-bold ${
-                    item.eviImpact.direction === 'positive' ? 'text-semantic-success' :
-                    item.eviImpact.direction === 'negative' ? 'text-semantic-danger' : 'text-white/50'
-                  }`}>
-                    {item.eviImpact.direction === 'positive' ? '↑' :
-                     item.eviImpact.direction === 'negative' ? '↓' : '→'}
+                <div
+                  className={`p-1.5 rounded-md ${eviDriverStyles[item.eviImpact.driver as keyof typeof eviDriverStyles]?.bg || 'bg-white/5'}`}
+                >
+                  <span
+                    className={`text-lg font-bold ${
+                      item.eviImpact.direction === 'positive'
+                        ? 'text-semantic-success'
+                        : item.eviImpact.direction === 'negative'
+                          ? 'text-semantic-danger'
+                          : 'text-white/50'
+                    }`}
+                  >
+                    {item.eviImpact.direction === 'positive'
+                      ? '↑'
+                      : item.eviImpact.direction === 'negative'
+                        ? '↓'
+                        : '→'}
                   </span>
                 </div>
                 <div>
                   <div className="flex items-baseline gap-1.5">
-                    <span className={`text-[13px] font-semibold capitalize ${eviDriverStyles[item.eviImpact.driver as keyof typeof eviDriverStyles]?.text || 'text-white'}`}>
+                    <span
+                      className={`text-[13px] font-semibold capitalize ${eviDriverStyles[item.eviImpact.driver as keyof typeof eviDriverStyles]?.text || 'text-white'}`}
+                    >
                       {item.eviImpact.driver}
                     </span>
                     {item.eviImpact.delta && (
-                      <span className={`text-[13px] font-bold ${
-                        item.eviImpact.delta > 0 ? 'text-semantic-success' : 'text-semantic-danger'
-                      }`}>
-                        {item.eviImpact.delta > 0 ? '+' : ''}{item.eviImpact.delta}
+                      <span
+                        className={`text-[13px] font-bold ${
+                          item.eviImpact.delta > 0
+                            ? 'text-semantic-success'
+                            : 'text-semantic-danger'
+                        }`}
+                      >
+                        {item.eviImpact.delta > 0 ? '+' : ''}
+                        {item.eviImpact.delta}
                       </span>
                     )}
                   </div>
@@ -1143,7 +1419,9 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
           {/* SAGE Rationale Module */}
           {item.sageContributions && item.sageContributions.length > 0 && (
             <div className="p-3 rounded-lg bg-panel border border-border-subtle">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">SAGE Signal</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">
+                SAGE Signal
+              </h3>
               <div className="flex gap-1.5">
                 {item.sageContributions.map((contrib) => {
                   const sage = SAGE_LABELS[contrib.dimension];
@@ -1151,16 +1429,24 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
                     <div
                       key={contrib.dimension}
                       className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${
-                        contrib.isPrimary ? 'bg-brand-magenta/10 ring-1 ring-brand-magenta/30' : 'bg-white/5'
+                        contrib.isPrimary
+                          ? 'bg-brand-magenta/10 ring-1 ring-brand-magenta/30'
+                          : 'bg-white/5'
                       }`}
                       title={sage.description}
                     >
-                      <span className={`w-5 h-5 rounded flex items-center justify-center text-[13px] font-bold ${
-                        contrib.isPrimary ? 'bg-brand-magenta/20 text-brand-magenta' : 'bg-white/10 text-white/50'
-                      }`}>
+                      <span
+                        className={`w-5 h-5 rounded flex items-center justify-center text-[13px] font-bold ${
+                          contrib.isPrimary
+                            ? 'bg-brand-magenta/20 text-brand-magenta'
+                            : 'bg-white/10 text-white/50'
+                        }`}
+                      >
                         {sage.short}
                       </span>
-                      <span className="text-[13px] font-medium text-white/80">{sage.label}</span>
+                      <span className="text-[13px] font-medium text-white/80">
+                        {sage.label}
+                      </span>
                     </div>
                   );
                 })}
@@ -1172,15 +1458,23 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
         {/* Relationship Timeline Preview */}
         {item.relatedContactId && (
           <div className="p-3 rounded-lg bg-panel border border-border-subtle">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">Relationship Timeline</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 mb-2">
+              Relationship Timeline
+            </h3>
             <div className="relative pl-3">
               <div className="absolute left-0.5 top-0 bottom-0 w-px bg-slate-4" />
               <div className="space-y-2">
                 {MOCK_TIMELINE_EVENTS.slice(0, 3).map((event, idx) => (
                   <div key={idx} className="relative flex items-center gap-2">
-                    <div className={`absolute -left-[9px] w-2 h-2 rounded-full ${idx === 0 ? 'bg-brand-magenta' : 'bg-slate-5'}`} />
-                    <span className="text-[13px] text-white/70">{event.label}</span>
-                    <span className="text-[13px] text-white/40 ml-auto">{event.date}</span>
+                    <div
+                      className={`absolute -left-[9px] w-2 h-2 rounded-full ${idx === 0 ? 'bg-brand-magenta' : 'bg-slate-5'}`}
+                    />
+                    <span className="text-[13px] text-white/70">
+                      {event.label}
+                    </span>
+                    <span className="text-[13px] text-white/40 ml-auto">
+                      {event.date}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -1192,14 +1486,21 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
         {item.confidence && (
           <div className="p-3 rounded-lg bg-panel border border-border-subtle">
             <div className="flex items-center justify-between mb-1.5">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">AI Confidence</h3>
-              <span className="text-[13px] font-bold text-white/95">{item.confidence}%</span>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+                AI Confidence
+              </h3>
+              <span className="text-[13px] font-bold text-white/95">
+                {item.confidence}%
+              </span>
             </div>
             <div className="h-1.5 rounded-full bg-slate-4 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
-                  item.confidence >= 80 ? 'bg-semantic-success' :
-                  item.confidence >= 60 ? 'bg-semantic-warning' : 'bg-semantic-danger'
+                  item.confidence >= 80
+                    ? 'bg-semantic-success'
+                    : item.confidence >= 60
+                      ? 'bg-semantic-warning'
+                      : 'bg-semantic-danger'
                 }`}
                 style={{ width: `${item.confidence}%` }}
               />
@@ -1290,18 +1591,12 @@ function DetailPanel({ item, mode, onPrimaryAction, onSnooze, onDismiss, onOpenC
 // Mode icon helper
 function ModeIcon({ mode }: { mode: Mode }) {
   if (mode === 'manual') {
-    return (
-      <Lock weight="regular" className="w-3 h-3" />
-    );
+    return <Lock weight="regular" className="w-3 h-3" />;
   }
   if (mode === 'copilot') {
-    return (
-      <User weight="regular" className="w-3 h-3" />
-    );
+    return <User weight="regular" className="w-3 h-3" />;
   }
-  return (
-    <Lightning weight="regular" className="w-3 h-3" />
-  );
+  return <Lightning weight="regular" className="w-3 h-3" />;
 }
 
 // ============================================
@@ -1313,10 +1608,17 @@ function EmptyDetailPanel() {
     <div className="h-full flex items-center justify-center p-8">
       <div className="text-center">
         <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-brand-magenta/10 flex items-center justify-center">
-          <CursorClick weight="regular" className="w-8 h-8 text-brand-magenta/50" />
+          <CursorClick
+            weight="regular"
+            className="w-8 h-8 text-brand-magenta/50"
+          />
         </div>
-        <h3 className="text-sm font-medium text-white/90 mb-1">Select an item</h3>
-        <p className="text-[13px] text-white/50">Choose from the queue to see details and take action</p>
+        <h3 className="text-sm font-medium text-white/90 mb-1">
+          Select an item
+        </h3>
+        <p className="text-[13px] text-white/50">
+          Choose from the queue to see details and take action
+        </p>
       </div>
     </div>
   );
@@ -1327,11 +1629,17 @@ function InboxZeroState() {
     <div className="h-full flex items-center justify-center p-8">
       <div className="text-center">
         <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-semantic-success/10 flex items-center justify-center">
-          <CheckCircle weight="regular" className="w-10 h-10 text-semantic-success" />
+          <CheckCircle
+            weight="regular"
+            className="w-10 h-10 text-semantic-success"
+          />
         </div>
-        <h3 className="text-lg font-semibold text-white/95 mb-2">Inbox Zero!</h3>
+        <h3 className="text-lg font-semibold text-white/95 mb-2">
+          Inbox Zero!
+        </h3>
         <p className="text-sm text-white/50 max-w-xs mx-auto">
-          All caught up. Check back later for new items requiring your attention.
+          All caught up. Check back later for new items requiring your
+          attention.
         </p>
       </div>
     </div>
@@ -1359,7 +1667,11 @@ export function PRInbox() {
   const modeBehavior = PR_MODE_BEHAVIOR[safeMode];
 
   // Fetch inbox items from real API
-  const { data: inboxData, error: inboxError, isLoading } = useSWR<InboxResponse>(
+  const {
+    data: inboxData,
+    error: inboxError,
+    isLoading,
+  } = useSWR<InboxResponse>(
     '/api/pr/inbox',
     fetcher,
     { revalidateOnFocus: false, refreshInterval: 60000 } // Refresh every minute
@@ -1375,7 +1687,9 @@ export function PRInbox() {
   }, [inboxData]);
 
   // Phase 10B: Mode-based state - queueReasoningOpen defaults expanded in Copilot
-  const [queueReasoningOpen, setQueueReasoningOpen] = useState(() => effectiveMode === 'copilot');
+  const [queueReasoningOpen, setQueueReasoningOpen] = useState(
+    () => effectiveMode === 'copilot'
+  );
   const [planApproved, setPlanApproved] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
   const [isSimulatingEvaluate, setIsSimulatingEvaluate] = useState(false);
@@ -1420,17 +1734,19 @@ export function PRInbox() {
   const globalAIState = useMemo((): AIPerceptualState => {
     if (isSimulatingEvaluate) return 'evaluating';
     if (isLoading) return 'evaluating';
-    const hasCritical = items.some(i => i.priority === 'critical');
-    const hasUrgent = items.some(i => deriveUrgencyFromDeadline(i.dueAt));
+    const hasCritical = items.some((i) => i.priority === 'critical');
+    const hasUrgent = items.some((i) => deriveUrgencyFromDeadline(i.dueAt));
     if (hasCritical && hasUrgent) return 'escalating';
-    if (items.some(i => i.type === 'approval_queue')) return 'ready';
+    if (items.some((i) => i.type === 'approval_queue')) return 'ready';
     return 'idle';
   }, [items, isLoading, isSimulatingEvaluate]);
 
   const [selectedId, setSelectedId] = useState<string | null>(() => {
     return searchParams?.get('item') || null;
   });
-  const [activeSection, setActiveSection] = useState<InboxItemType | 'all'>('all');
+  const [activeSection, setActiveSection] = useState<InboxItemType | 'all'>(
+    'all'
+  );
 
   // Keyboard navigation
   useEffect(() => {
@@ -1438,13 +1754,17 @@ export function PRInbox() {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
         const currentItems = filteredItems;
-        const currentIndex = currentItems.findIndex(item => item.id === selectedId);
+        const currentIndex = currentItems.findIndex(
+          (item) => item.id === selectedId
+        );
         let newIndex: number;
 
         if (e.key === 'ArrowDown') {
-          newIndex = currentIndex < currentItems.length - 1 ? currentIndex + 1 : 0;
+          newIndex =
+            currentIndex < currentItems.length - 1 ? currentIndex + 1 : 0;
         } else {
-          newIndex = currentIndex > 0 ? currentIndex - 1 : currentItems.length - 1;
+          newIndex =
+            currentIndex > 0 ? currentIndex - 1 : currentItems.length - 1;
         }
 
         if (currentItems[newIndex]) {
@@ -1459,14 +1779,15 @@ export function PRInbox() {
 
   // Selected item
   const selectedItem = useMemo(() => {
-    return items.find(item => item.id === selectedId) || null;
+    return items.find((item) => item.id === selectedId) || null;
   }, [items, selectedId]);
 
   // Filtered items
   const filteredItems = useMemo(() => {
-    const filtered = activeSection === 'all'
-      ? items
-      : items.filter(item => item.type === activeSection);
+    const filtered =
+      activeSection === 'all'
+        ? items
+        : items.filter((item) => item.type === activeSection);
 
     // Sort by priority then urgency
     return [...filtered].sort((a, b) => {
@@ -1480,14 +1801,14 @@ export function PRInbox() {
   // Counts
   const counts = useMemo(() => {
     const result: Record<string, number> = { all: items.length };
-    items.forEach(item => {
+    items.forEach((item) => {
       result[item.type] = (result[item.type] || 0) + 1;
     });
     return result;
   }, [items]);
 
-  const criticalCount = items.filter(i => i.priority === 'critical').length;
-  const highCount = items.filter(i => i.priority === 'high').length;
+  const criticalCount = items.filter((i) => i.priority === 'critical').length;
+  const highCount = items.filter((i) => i.priority === 'high').length;
 
   // Handlers
   const handleSelectItem = useCallback((id: string) => {
@@ -1523,7 +1844,9 @@ export function PRInbox() {
 
   const handleOpenContact = useCallback(() => {
     if (selectedItem?.relatedContactId) {
-      router.push(`/app/pr?tab=database&contactId=${selectedItem.relatedContactId}`);
+      router.push(
+        `/app/pr?tab=database&contactId=${selectedItem.relatedContactId}`
+      );
     }
   }, [router, selectedItem]);
 
@@ -1540,14 +1863,20 @@ export function PRInbox() {
     return (
       <div className="h-[calc(100vh-200px)] min-h-[500px] flex flex-col items-center justify-center p-8">
         <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-semantic-success/10 flex items-center justify-center">
-          <Lightning weight="regular" className="w-10 h-10 text-semantic-success" />
+          <Lightning
+            weight="regular"
+            className="w-10 h-10 text-semantic-success"
+          />
         </div>
-        <h3 className="text-lg font-semibold text-white/95 mb-2">Autopilot Active</h3>
+        <h3 className="text-lg font-semibold text-white/95 mb-2">
+          Autopilot Active
+        </h3>
         <p className="text-sm text-white/50 max-w-xs mx-auto text-center">
           No exceptions requiring attention.
           {filteredOutCount > 0 && (
             <span className="block mt-1 text-brand-magenta">
-              {filteredOutCount} routine {filteredOutCount === 1 ? 'item' : 'items'} handled automatically.
+              {filteredOutCount} routine{' '}
+              {filteredOutCount === 1 ? 'item' : 'items'} handled automatically.
             </span>
           )}
         </p>
@@ -1561,9 +1890,21 @@ export function PRInbox() {
 
   // Mode indicator badge styling
   const modeTokens = {
-    manual: { bg: 'bg-white/5', border: 'border-white/10', text: 'text-white/60' },
-    copilot: { bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30', text: 'text-brand-cyan' },
-    autopilot: { bg: 'bg-brand-iris/10', border: 'border-brand-iris/30', text: 'text-brand-iris' },
+    manual: {
+      bg: 'bg-white/5',
+      border: 'border-white/10',
+      text: 'text-white/60',
+    },
+    copilot: {
+      bg: 'bg-brand-cyan/10',
+      border: 'border-brand-cyan/30',
+      text: 'text-brand-cyan',
+    },
+    autopilot: {
+      bg: 'bg-brand-iris/10',
+      border: 'border-brand-iris/30',
+      text: 'text-brand-iris',
+    },
   };
   const currentModeTokens = modeTokens[safeMode];
 
@@ -1577,18 +1918,26 @@ export function PRInbox() {
             {safeMode === 'manual'
               ? 'PR Inbox'
               : safeMode === 'copilot'
-              ? 'AI Queue Plan'
-              : 'Exception Queue'}
+                ? 'AI Queue Plan'
+                : 'Exception Queue'}
           </h2>
           {/* Mode badge */}
-          <span className={`flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${currentModeTokens.bg} ${currentModeTokens.border} ${currentModeTokens.text}`}>
+          <span
+            className={`flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase rounded border ${currentModeTokens.bg} ${currentModeTokens.border} ${currentModeTokens.text}`}
+          >
             <ModeIconHeader mode={safeMode} />
             {safeMode}
           </span>
           {/* AI state indicator */}
-          <AmbientAIIndicator state={globalAIState} size="sm" showLabel={globalAIState !== 'idle'} />
+          <AmbientAIIndicator
+            state={globalAIState}
+            size="sm"
+            showLabel={globalAIState !== 'idle'}
+          />
           <span className="px-2 py-0.5 text-[13px] font-semibold rounded bg-white/10 text-white/70">
-            {isLoading ? 'Loading...' : `${items.length} ${safeMode === 'autopilot' ? 'exception' : 'item'}${items.length !== 1 ? 's' : ''}`}
+            {isLoading
+              ? 'Loading...'
+              : `${items.length} ${safeMode === 'autopilot' ? 'exception' : 'item'}${items.length !== 1 ? 's' : ''}`}
           </span>
           {safeMode === 'autopilot' && filteredOutCount > 0 && (
             <span className="text-[13px] text-brand-iris/70">
@@ -1614,13 +1963,17 @@ export function PRInbox() {
         <div className="mb-4 p-3 rounded-lg bg-semantic-danger/10 border border-semantic-danger/30">
           <div className="flex items-center gap-2 text-semantic-danger">
             <Warning weight="regular" className="w-4 h-4" />
-            <span className="text-xs font-medium">Failed to load inbox from server. Showing demo data.</span>
+            <span className="text-xs font-medium">
+              Failed to load inbox from server. Showing demo data.
+            </span>
           </div>
         </div>
       )}
 
       {/* Mode Descriptor - behavior-specific microcopy */}
-      <p className="text-[13px] text-white/40 mb-2">{modeBehavior.descriptor}</p>
+      <p className="text-[13px] text-white/40 mb-2">
+        {modeBehavior.descriptor}
+      </p>
 
       {/* POSTURE: Manual "Workbench" - Queue Controls Band */}
       {modeBehavior.showQueueControls && (
@@ -1656,7 +2009,9 @@ export function PRInbox() {
       {modeBehavior.showAllItemsToggle && filteredOutCount > 0 && (
         <div className="flex items-center justify-between mb-4 p-2 bg-panel rounded-lg">
           <span className="text-xs text-white/50">
-            {showAllItems ? 'Showing all items' : `${filteredOutCount} routine items hidden`}
+            {showAllItems
+              ? 'Showing all items'
+              : `${filteredOutCount} routine items hidden`}
           </span>
           <button
             onClick={() => setShowAllItems(!showAllItems)}
@@ -1680,12 +2035,16 @@ export function PRInbox() {
         <div className="w-80 shrink-0 bg-slate-1 rounded-xl border border-border-subtle overflow-hidden flex flex-col">
           <div className="p-3 border-b border-border-subtle flex items-center justify-between">
             <span className="text-[12px] font-bold uppercase tracking-wider text-white/50">
-              {activeSection === 'all' ? 'All Items' : INBOX_TYPE_CONFIG[activeSection].pluralLabel}
+              {activeSection === 'all'
+                ? 'All Items'
+                : INBOX_TYPE_CONFIG[activeSection].pluralLabel}
             </span>
-            <span className="text-[13px] text-white/40">{filteredItems.length}</span>
+            <span className="text-[13px] text-white/40">
+              {filteredItems.length}
+            </span>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
-            {filteredItems.map(item => (
+            {filteredItems.map((item) => (
               <QueueItem
                 key={item.id}
                 item={item}

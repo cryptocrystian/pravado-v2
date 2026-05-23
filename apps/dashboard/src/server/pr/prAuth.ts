@@ -10,12 +10,17 @@
 
 import 'server-only';
 
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-export type PRAuthStatus = 'ok' | 'missing_session' | 'no_org' | 'forbidden' | 'error';
+export type PRAuthStatus =
+  | 'ok'
+  | 'missing_session'
+  | 'no_org'
+  | 'forbidden'
+  | 'error';
 
 // Environment variables
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -58,10 +63,16 @@ export async function authenticatePRRequest(): Promise<PRAuthResult> {
     });
 
     // Verify user session
-    const { data: { user }, error: userError } = await userClient.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await userClient.auth.getUser();
 
     if (userError || !user) {
-      return { status: 'missing_session', error: userError?.message || 'No user session' };
+      return {
+        status: 'missing_session',
+        error: userError?.message || 'No user session',
+      };
     }
 
     // Use service role key to query org membership (bypasses RLS)
@@ -143,7 +154,8 @@ export function createAuthErrorResponse(
   const statusMessages: Record<PRAuthStatus, string> = {
     ok: 'OK',
     missing_session: 'Authentication required. Please log in.',
-    no_org: 'No organization membership. Please join or create an organization.',
+    no_org:
+      'No organization membership. Please join or create an organization.',
     forbidden: 'Access forbidden for this resource.',
     error: 'Internal authentication error.',
   };
@@ -166,7 +178,10 @@ export function createAuthErrorResponse(
 /**
  * Add debug header to a successful response.
  */
-export function addPRAuthHeader(response: NextResponse, status: PRAuthStatus): NextResponse {
+export function addPRAuthHeader(
+  response: NextResponse,
+  status: PRAuthStatus
+): NextResponse {
   response.headers.set('x-pr-auth', status);
   return response;
 }

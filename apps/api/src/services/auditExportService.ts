@@ -60,14 +60,19 @@ export class AuditExportService {
         fs.mkdirSync(this.storageDir, { recursive: true });
       }
     } catch (error) {
-      logger.error('Failed to create storage directory', { error, storageDir: this.storageDir });
+      logger.error('Failed to create storage directory', {
+        error,
+        storageDir: this.storageDir,
+      });
     }
   }
 
   /**
    * Create a new export job
    */
-  async createExportJob(options: CreateExportOptions): Promise<AuditExportJob | null> {
+  async createExportJob(
+    options: CreateExportOptions
+  ): Promise<AuditExportJob | null> {
     try {
       const { orgId, userId, filters = {} } = options;
 
@@ -105,7 +110,10 @@ export class AuditExportService {
   /**
    * Get export job by ID
    */
-  async getExportJob(orgId: string, jobId: string): Promise<AuditExportJob | null> {
+  async getExportJob(
+    orgId: string,
+    jobId: string
+  ): Promise<AuditExportJob | null> {
     try {
       const { data, error } = await this.supabase
         .from('audit_exports')
@@ -239,7 +247,8 @@ export class AuditExportService {
         .from('audit_exports')
         .update({
           status: 'failed',
-          error_message: error instanceof Error ? error.message : 'Unknown error',
+          error_message:
+            error instanceof Error ? error.message : 'Unknown error',
           completed_at: new Date().toISOString(),
         })
         .eq('id', jobId);
@@ -346,10 +355,7 @@ export class AuditExportService {
       updates.started_at = new Date().toISOString();
     }
 
-    await this.supabase
-      .from('audit_exports')
-      .update(updates)
-      .eq('id', jobId);
+    await this.supabase.from('audit_exports').update(updates).eq('id', jobId);
   }
 
   /**
@@ -399,10 +405,7 @@ export class AuditExportService {
           }
 
           // Delete record
-          await this.supabase
-            .from('audit_exports')
-            .delete()
-            .eq('id', job.id);
+          await this.supabase.from('audit_exports').delete().eq('id', job.id);
 
           cleaned++;
         } catch (error) {
@@ -432,7 +435,11 @@ export function initAuditExportService(
   auditService: AuditService,
   storageDir?: string
 ): AuditExportService {
-  exportServiceInstance = new AuditExportService(supabase, auditService, storageDir);
+  exportServiceInstance = new AuditExportService(
+    supabase,
+    auditService,
+    storageDir
+  );
   return exportServiceInstance;
 }
 

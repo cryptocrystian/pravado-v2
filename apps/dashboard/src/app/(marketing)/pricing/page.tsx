@@ -151,83 +151,86 @@ export default function PricingPage() {
         }}
       >
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <div
-          className="grid gap-4"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 16,
-          }}
-        >
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              style={{
-                padding: 24,
-                borderRadius: 12,
-                background: 'rgba(8,8,18,0.72)',
-                border: '1px solid rgba(168,85,247,0.15)',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: '#ffffff',
-                  marginBottom: 8,
-                }}
-              >
-                {plan.name}
-              </p>
-              <p
-                style={{
-                  fontSize: 24,
-                  fontWeight: 800,
-                  color: '#00D9FF',
-                  fontFamily: 'monospace',
-                  marginBottom: 24,
-                }}
-              >
-                {plan.price}
-              </p>
-              <ul className="flex flex-col gap-3" style={{ marginBottom: 24 }}>
-                {plan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-start gap-2"
-                    style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}
-                  >
-                    <span
-                      style={{
-                        width: 5,
-                        height: 5,
-                        borderRadius: '50%',
-                        background: '#00D9FF',
-                        flexShrink: 0,
-                        marginTop: 6,
-                      }}
-                    />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+          <div
+            className="grid gap-4"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: 16,
+            }}
+          >
+            {plans.map((plan) => (
               <div
+                key={plan.name}
                 style={{
-                  background: 'rgba(168,85,247,0.1)',
-                  color: '#A855F7',
-                  border: '1px solid rgba(168,85,247,0.2)',
-                  borderRadius: 6,
-                  padding: '6px 12px',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  textAlign: 'center',
+                  padding: 24,
+                  borderRadius: 12,
+                  background: 'rgba(8,8,18,0.72)',
+                  border: '1px solid rgba(168,85,247,0.15)',
                 }}
               >
-                Coming Soon
+                <p
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    marginBottom: 8,
+                  }}
+                >
+                  {plan.name}
+                </p>
+                <p
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 800,
+                    color: '#00D9FF',
+                    fontFamily: 'monospace',
+                    marginBottom: 24,
+                  }}
+                >
+                  {plan.price}
+                </p>
+                <ul
+                  className="flex flex-col gap-3"
+                  style={{ marginBottom: 24 }}
+                >
+                  {plan.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-2"
+                      style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}
+                    >
+                      <span
+                        style={{
+                          width: 5,
+                          height: 5,
+                          borderRadius: '50%',
+                          background: '#00D9FF',
+                          flexShrink: 0,
+                          marginTop: 6,
+                        }}
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <div
+                  style={{
+                    background: 'rgba(168,85,247,0.1)',
+                    color: '#A855F7',
+                    border: '1px solid rgba(168,85,247,0.2)',
+                    borderRadius: 6,
+                    padding: '6px 12px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    textAlign: 'center',
+                  }}
+                >
+                  Coming Soon
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -267,9 +270,7 @@ export default function PricingPage() {
                     alignItems: 'center',
                     cursor: 'pointer',
                   }}
-                  onClick={() =>
-                    setOpenFaq(openFaq === index ? null : index)
-                  }
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 >
                   <span
                     style={{

@@ -17,6 +17,7 @@ Sprint S71 delivers the Autonomous AI Scenario Simulation Engine, enabling multi
 **File:** `apps/api/supabase/migrations/73_create_ai_scenario_simulation_schema.sql`
 
 Created comprehensive schema with:
+
 - `ai_scenario_simulations` - Main simulation records
 - `ai_scenario_runs` - Individual run instances
 - `ai_scenario_agents` - Agent configurations per run
@@ -24,6 +25,7 @@ Created comprehensive schema with:
 - `ai_scenario_audit_log` - Complete audit trail
 
 Features:
+
 - Proper foreign key relationships
 - RLS policies for org-level isolation
 - Optimized indexes for common queries
@@ -34,6 +36,7 @@ Features:
 **File:** `packages/types/src/aiScenarioSimulation.ts`
 
 Comprehensive TypeScript types including:
+
 - Simulation status/objective/mode enums
 - Agent role types (internal_exec, journalist, investor, etc.)
 - Risk level classifications
@@ -45,6 +48,7 @@ Comprehensive TypeScript types including:
 **File:** `packages/validators/src/aiScenarioSimulation.ts`
 
 Zod validation schemas for:
+
 - Simulation creation/update
 - Run start parameters
 - Agent configuration
@@ -56,6 +60,7 @@ Zod validation schemas for:
 **File:** `apps/api/src/services/aiScenarioSimulationService.ts`
 
 ~1,700 lines of service implementation:
+
 - Full CRUD for simulations
 - Run lifecycle management (start, step, complete, abort)
 - LLM-powered dialogue generation
@@ -69,6 +74,7 @@ Zod validation schemas for:
 **File:** `apps/api/src/routes/aiScenarioSimulations/index.ts`
 
 RESTful endpoints:
+
 - `POST /api/v1/ai-scenario-simulations` - Create simulation
 - `GET /api/v1/ai-scenario-simulations` - List with pagination
 - `GET /api/v1/ai-scenario-simulations/:id` - Get by ID
@@ -97,6 +103,7 @@ Added `ENABLE_AI_SCENARIO_SIMULATIONS` feature flag for controlled rollout.
 **File:** `apps/dashboard/src/lib/aiScenarioSimulationApi.ts`
 
 Complete API client with:
+
 - All CRUD operations
 - Run lifecycle functions
 - Agent preset fetching
@@ -108,6 +115,7 @@ Complete API client with:
 **Directory:** `apps/dashboard/src/components/ai-scenario-simulations/`
 
 Components:
+
 - `SimulationCard.tsx` - Card with status, actions
 - `SimulationList.tsx` - Paginated list with search/filters
 - `CreateSimulationModal.tsx` - Creation form modal
@@ -119,6 +127,7 @@ Components:
 **File:** `apps/dashboard/src/app/app/scenarios/simulations/page.tsx`
 
 Full-featured page with:
+
 - Simulation list view
 - Quick stats cards
 - Create simulation modal
@@ -130,6 +139,7 @@ Full-featured page with:
 **File:** `apps/api/tests/aiScenarioSimulationService.test.ts`
 
 12 passing tests covering:
+
 - Simulation CRUD operations
 - Run lifecycle
 - Statistics calculation
@@ -141,6 +151,7 @@ Full-featured page with:
 **File:** `apps/dashboard/tests/e2e/aiScenarioSimulations.e2e.test.ts`
 
 Comprehensive E2E tests:
+
 - Feature flag verification
 - Simulation CRUD operations
 - Run lifecycle (start, step, abort)
@@ -153,30 +164,31 @@ Comprehensive E2E tests:
 ### S71-L: Documentation
 
 **Files:**
+
 - `docs/product/ai_scenario_simulation_v1.md` - Product specification
 - `docs/SPRINT_S71_COMPLETION_REPORT.md` - This report
 
 ## Agent Role Types
 
-| Role | Description |
-|------|-------------|
-| `internal_exec` | Company executives (CEO, PR Director) |
-| `journalist` | Media representatives |
-| `investor` | Shareholders and analysts |
-| `customer` | End users and clients |
-| `employee` | Internal staff |
-| `regulator` | Government/regulatory bodies |
-| `market_analyst` | Industry analysts |
-| `critic` | Adversarial personas |
-| `system` | Narrator/moderator |
+| Role             | Description                           |
+| ---------------- | ------------------------------------- |
+| `internal_exec`  | Company executives (CEO, PR Director) |
+| `journalist`     | Media representatives                 |
+| `investor`       | Shareholders and analysts             |
+| `customer`       | End users and clients                 |
+| `employee`       | Internal staff                        |
+| `regulator`      | Government/regulatory bodies          |
+| `market_analyst` | Industry analysts                     |
+| `critic`         | Adversarial personas                  |
+| `system`         | Narrator/moderator                    |
 
 ## Simulation Modes
 
-| Mode | Description |
-|------|-------------|
-| `single_run` | One complete simulation run |
-| `multi_run` | Multiple runs with variations |
-| `what_if` | Explore alternative outcomes |
+| Mode         | Description                   |
+| ------------ | ----------------------------- |
+| `single_run` | One complete simulation run   |
+| `multi_run`  | Multiple runs with variations |
+| `what_if`    | Explore alternative outcomes  |
 
 ## Objective Types
 

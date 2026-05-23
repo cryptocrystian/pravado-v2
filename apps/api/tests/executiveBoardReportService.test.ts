@@ -14,6 +14,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createExecutiveBoardReportService } from '../src/services/executiveBoardReportService';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { createMockQuery } from './_helpers/supabase-mock';
 
 // Mock Supabase client
 function createMockSupabaseClient() {
@@ -26,43 +27,22 @@ function createMockSupabaseClient() {
   };
 
   const createChainMock = (tableName: string) => {
-    return {
-      select: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockImplementation((data) => {
-        const newRecord = Array.isArray(data) ? data[0] : data;
-        const record = {
-          id: `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          ...newRecord,
-        };
-        mockData[tableName].push(record);
-        return {
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: record, error: null }),
-          }),
-        };
-      }),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      in: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      not: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      range: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: mockData[tableName][0] || null, error: null }),
-    };
+    return createMockQuery({
+      data: mockData[tableName][0] || null,
+      error: null,
+    });
   };
 
   return {
     from: vi.fn((tableName: string) => createChainMock(tableName)),
     storage: {
       from: vi.fn().mockReturnValue({
-        upload: vi.fn().mockResolvedValue({ data: { path: 'test/path' }, error: null }),
-        getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'https://example.com/test' } }),
+        upload: vi
+          .fn()
+          .mockResolvedValue({ data: { path: 'test/path' }, error: null }),
+        getPublicUrl: vi
+          .fn()
+          .mockReturnValue({ data: { publicUrl: 'https://example.com/test' } }),
       }),
     },
   } as unknown as SupabaseClient;
@@ -109,24 +89,28 @@ describe('ExecutiveBoardReportService', () => {
         format: 'board_meeting' as const,
         periodStart: '2025-01-01',
         periodEnd: '2025-03-31',
-        sectionTypes: ['executive_summary', 'kpi_dashboard', 'action_items'] as const,
+        sectionTypes: [
+          'executive_summary',
+          'kpi_dashboard',
+          'action_items',
+        ] as const,
       };
 
       const result = await service.createReport(testOrgId, testUserId, input);
 
       expect(result).toBeDefined();
-      expect(mockSupabase.from).toHaveBeenCalledWith('exec_board_report_sections');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'exec_board_report_sections'
+      );
     });
   });
 
   describe('getReport', () => {
     it('should return null for non-existent report', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValueOnce({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: null, error: null }),
-      });
+      mockFrom.mockReturnValueOnce(
+        createMockQuery({ data: null, error: null })
+      );
 
       const result = await service.getReport(testOrgId, 'non-existent-id');
 
@@ -157,17 +141,9 @@ describe('ExecutiveBoardReportService', () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
       mockFrom.mockImplementation((tableName: string) => {
         if (tableName === 'exec_board_reports') {
-          return {
-            select: vi.fn().mockReturnThis(),
-            eq: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({ data: mockReport, error: null }),
-          };
+          return createMockQuery({ data: mockReport, error: null });
         }
-        return {
-          select: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockReturnThis(),
-          order: vi.fn().mockResolvedValue({ data: [], error: null }),
-        };
+        return createMockQuery({ data: [], error: null });
       });
 
       const result = await service.getReport(testOrgId, 'test-report-123');
@@ -200,16 +176,18 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        update: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockReport, error: null }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockReport, error: null })
+      );
 
-      const result = await service.updateReport(testOrgId, 'test-report-123', testUserId, {
-        title: 'Updated Report',
-      });
+      const result = await service.updateReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        {
+          title: 'Updated Report',
+        }
+      );
 
       expect(result).toBeDefined();
       expect(result?.title).toBe('Updated Report');
@@ -226,16 +204,18 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        update: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockReport, error: null }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockReport, error: null })
+      );
 
-      const result = await service.updateReport(testOrgId, 'test-report-123', testUserId, {
-        isArchived: true,
-      });
+      const result = await service.updateReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        {
+          isArchived: true,
+        }
+      );
 
       expect(result?.isArchived).toBe(true);
     });
@@ -244,14 +224,16 @@ describe('ExecutiveBoardReportService', () => {
   describe('deleteReport', () => {
     it('should soft delete (archive) by default', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        update: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: { is_archived: true }, error: null }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: { is_archived: true }, error: null })
+      );
 
-      const result = await service.deleteReport(testOrgId, 'test-report-123', testUserId, false);
+      const result = await service.deleteReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        false
+      );
 
       expect(result.archived).toBe(true);
       expect(result.deleted).toBe(false);
@@ -259,12 +241,14 @@ describe('ExecutiveBoardReportService', () => {
 
     it('should hard delete when specified', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        delete: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockResolvedValue({ error: null }),
-      });
+      mockFrom.mockReturnValue(createMockQuery({ error: null }));
 
-      const result = await service.deleteReport(testOrgId, 'test-report-123', testUserId, true);
+      const result = await service.deleteReport(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        true
+      );
 
       expect(result.deleted).toBe(true);
       expect(result.archived).toBe(false);
@@ -288,18 +272,21 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockMember, error: null }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockMember, error: null })
+      );
 
-      const result = await service.addAudienceMember(testOrgId, 'test-report-123', testUserId, {
-        email: 'ceo@company.com',
-        name: 'John CEO',
-        role: 'CEO',
-        accessLevel: 'approve',
-      });
+      const result = await service.addAudienceMember(
+        testOrgId,
+        'test-report-123',
+        testUserId,
+        {
+          email: 'ceo@company.com',
+          name: 'John CEO',
+          role: 'CEO',
+          accessLevel: 'approve',
+        }
+      );
 
       expect(result).toBeDefined();
       expect(result.email).toBe('ceo@company.com');
@@ -324,12 +311,9 @@ describe('ExecutiveBoardReportService', () => {
       };
 
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        update: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockMember, error: null }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: mockMember, error: null })
+      );
 
       const result = await service.updateAudienceMember(
         testOrgId,
@@ -347,31 +331,29 @@ describe('ExecutiveBoardReportService', () => {
   describe('removeAudienceMember', () => {
     it('should remove audience member', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        delete: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockResolvedValue({ error: null }),
-      });
+      mockFrom.mockReturnValue(createMockQuery({ error: null }));
 
       await expect(
-        service.removeAudienceMember(testOrgId, 'test-report-123', 'test-member-123', testUserId)
+        service.removeAudienceMember(
+          testOrgId,
+          'test-report-123',
+          'test-member-123',
+          testUserId
+        )
       ).resolves.not.toThrow();
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('exec_board_report_audience');
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'exec_board_report_audience'
+      );
     });
   });
 
   describe('getReportStats', () => {
     it('should return statistics for organization', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        not: vi.fn().mockReturnThis(),
-        in: vi.fn().mockReturnThis(),
-        gte: vi.fn().mockReturnThis(),
-        order: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: [], error: null, count: 0 })
+      );
 
       const result = await service.getReportStats(testOrgId);
 
@@ -409,20 +391,15 @@ describe('ExecutiveBoardReportService', () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
       mockFrom.mockImplementation((tableName: string) => {
         if (tableName === 'exec_board_reports') {
-          return {
-            select: vi.fn().mockReturnThis(),
-            eq: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            range: vi.fn().mockResolvedValue({ data: mockReports, error: null, count: 1 }),
-          };
+          return createMockQuery({ data: mockReports, error: null, count: 1 });
         }
-        return {
-          select: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
-        };
+        return createMockQuery({ data: [], error: null, count: 0 });
       });
 
-      const result = await service.listReports(testOrgId, { limit: 10, offset: 0 });
+      const result = await service.listReports(testOrgId, {
+        limit: 10,
+        offset: 0,
+      });
 
       expect(result.reports).toBeDefined();
       expect(result.total).toBe(1);
@@ -430,12 +407,9 @@ describe('ExecutiveBoardReportService', () => {
 
     it('should filter reports by format', async () => {
       const mockFrom = mockSupabase.from as ReturnType<typeof vi.fn>;
-      mockFrom.mockReturnValue({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        order: vi.fn().mockReturnThis(),
-        range: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
-      });
+      mockFrom.mockReturnValue(
+        createMockQuery({ data: [], error: null, count: 0 })
+      );
 
       await service.listReports(testOrgId, { format: 'quarterly' });
 

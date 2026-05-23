@@ -241,7 +241,11 @@ describe('PRPitchService', () => {
         data: [{ ...sampleStepRecord, body_template: 'Hello!' }],
       });
 
-      const sequence = await service.createSequence(sampleOrgId, sampleUserId, input);
+      const sequence = await service.createSequence(
+        sampleOrgId,
+        sampleUserId,
+        input
+      );
 
       expect(sequence.name).toBe('New Campaign');
       expect(sequence.steps).toHaveLength(1);
@@ -277,18 +281,23 @@ describe('PRPitchService', () => {
 
       // Mock stats RPC
       mockSupabase.rpc.mockResolvedValueOnce({
-        data: [{
-          total_contacts: 10,
-          queued_count: 5,
-          sent_count: 3,
-          opened_count: 2,
-          replied_count: 1,
-          bounced_count: 0,
-          failed_count: 0,
-        }],
+        data: [
+          {
+            total_contacts: 10,
+            queued_count: 5,
+            sent_count: 3,
+            opened_count: 2,
+            replied_count: 1,
+            bounced_count: 0,
+            failed_count: 0,
+          },
+        ],
       });
 
-      const sequence = await service.getSequenceWithSteps(sampleSequenceId, sampleOrgId);
+      const sequence = await service.getSequenceWithSteps(
+        sampleSequenceId,
+        sampleOrgId
+      );
 
       expect(sequence).not.toBeNull();
       expect(sequence?.steps).toHaveLength(1);
@@ -333,16 +342,18 @@ describe('PRPitchService', () => {
 
     it('should list contacts with journalist info', async () => {
       mockSupabase.range.mockResolvedValueOnce({
-        data: [{
-          ...sampleContactRecord,
-          journalists: {
-            id: sampleJournalistId,
-            name: 'Test Journalist',
-            email: 'test@example.com',
-            beat: 'tech',
-            media_outlets: { name: 'Outlet', tier: 'tier2' },
+        data: [
+          {
+            ...sampleContactRecord,
+            journalists: {
+              id: sampleJournalistId,
+              name: 'Test Journalist',
+              email: 'test@example.com',
+              beat: 'tech',
+              media_outlets: { name: 'Outlet', tier: 'tier2' },
+            },
           },
-        }],
+        ],
         count: 1,
       });
 
@@ -359,7 +370,9 @@ describe('PRPitchService', () => {
       mockSupabase.rpc.mockResolvedValueOnce({ data: [] });
 
       await expect(
-        service.attachContactsToSequence(sampleSequenceId, 'wrong-org', [sampleJournalistId])
+        service.attachContactsToSequence(sampleSequenceId, 'wrong-org', [
+          sampleJournalistId,
+        ])
       ).rejects.toThrow('Sequence not found');
     });
   });
@@ -421,7 +434,11 @@ describe('PRPitchService', () => {
         stepPosition: 1,
       };
 
-      const preview = await service.generatePitchPreview(sampleOrgId, sampleUserId, input);
+      const preview = await service.generatePitchPreview(
+        sampleOrgId,
+        sampleUserId,
+        input
+      );
 
       expect(preview.subject).toBe('Personalized Subject for John');
       expect(preview.personalizationScore).toBe(85);
@@ -464,7 +481,11 @@ describe('PRPitchService', () => {
         journalistId: sampleJournalistId,
       };
 
-      const preview = await serviceNoLlm.generatePitchPreview(sampleOrgId, sampleUserId, input);
+      const preview = await serviceNoLlm.generatePitchPreview(
+        sampleOrgId,
+        sampleUserId,
+        input
+      );
 
       expect(preview.subject).toBeDefined();
       expect(preview.body).toContain('Jane');
@@ -490,7 +511,10 @@ describe('PRPitchService', () => {
       // Mock contact update (last_event_at)
       mockSupabase.eq.mockResolvedValueOnce({ error: null });
 
-      const contact = await service.queuePitchForContact(sampleContactId, sampleOrgId);
+      const contact = await service.queuePitchForContact(
+        sampleContactId,
+        sampleOrgId
+      );
 
       expect(contact.status).toBe('queued');
       expect(mockSupabase.from).toHaveBeenCalledWith('pr_pitch_events');

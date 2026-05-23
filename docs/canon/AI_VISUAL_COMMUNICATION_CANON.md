@@ -14,6 +14,7 @@
 Visual behavior in Pravado is not decoration. It is information.
 
 Every motion must answer at least one of these questions:
+
 - What is the AI doing?
 - How certain is it?
 - Is this action reversible?
@@ -25,6 +26,7 @@ If a motion answers none of these questions, it should not exist.
 ### 1.2 AI as Visible Partner
 
 Users must always know when AI is involved in an operation. The system must never:
+
 - Perform AI operations invisibly
 - Obscure the boundary between human and AI actions
 - Present AI outputs as if they appeared instantaneously without process
@@ -36,6 +38,7 @@ AI involvement must be perceptible through visual behavior alone, without requir
 When visual appeal conflicts with legibility of system state, legibility wins.
 
 A user glancing at the interface for one second should be able to determine:
+
 - Whether the system is idle or working
 - Whether attention is required
 - Whether an operation is progressing normally
@@ -48,14 +51,14 @@ The following semantic states must be visually distinguishable. These are not UI
 
 ### 2.1 State Definitions
 
-| State | Semantic Meaning | User Perception |
-|-------|------------------|-----------------|
-| **Idle** | No AI activity in progress | System is waiting for input |
-| **Evaluating** | AI is analyzing, but no output yet | System is working; outcome unknown |
-| **Ready** | AI has reached a conclusion with confidence | System has a recommendation |
-| **Executing** | AI is performing an approved action | Irreversible change in progress |
-| **Blocked** | AI cannot proceed without intervention | User action required |
-| **Escalating** | Urgency has increased; window is closing | Immediate attention warranted |
+| State          | Semantic Meaning                            | User Perception                    |
+| -------------- | ------------------------------------------- | ---------------------------------- |
+| **Idle**       | No AI activity in progress                  | System is waiting for input        |
+| **Evaluating** | AI is analyzing, but no output yet          | System is working; outcome unknown |
+| **Ready**      | AI has reached a conclusion with confidence | System has a recommendation        |
+| **Executing**  | AI is performing an approved action         | Irreversible change in progress    |
+| **Blocked**    | AI cannot proceed without intervention      | User action required               |
+| **Escalating** | Urgency has increased; window is closing    | Immediate attention warranted      |
 
 ### 2.2 State Transition Rules
 
@@ -80,19 +83,19 @@ Escalating > Blocked > Executing > Evaluating > Ready > Idle
 
 AI confidence must be communicated through visual behavior, not just numeric scores. The following confidence tiers must be visually distinguishable:
 
-| Level | Meaning | Visual Implication |
-|-------|---------|-------------------|
-| **High** | AI is certain; user can trust the recommendation | Stable, settled presentation |
-| **Moderate** | AI has a recommendation but acknowledges uncertainty | Indicates room for user judgment |
-| **Low** | AI is uncertain; user review is essential | Signals that human input is critical |
+| Level        | Meaning                                              | Visual Implication                   |
+| ------------ | ---------------------------------------------------- | ------------------------------------ |
+| **High**     | AI is certain; user can trust the recommendation     | Stable, settled presentation         |
+| **Moderate** | AI has a recommendation but acknowledges uncertainty | Indicates room for user judgment     |
+| **Low**      | AI is uncertain; user review is essential            | Signals that human input is critical |
 
 ### 3.2 Reversibility Signaling
 
 Users must be able to perceive whether an action is reversible before committing.
 
-| Action Type | Visual Behavior Principle |
-|-------------|--------------------------|
-| **Reversible** | Lower visual weight; can proceed quickly |
+| Action Type      | Visual Behavior Principle                          |
+| ---------------- | -------------------------------------------------- |
+| **Reversible**   | Lower visual weight; can proceed quickly           |
 | **Irreversible** | Higher visual weight; must pause before commitment |
 
 The system must never allow irreversible actions to feel casual.
@@ -113,10 +116,10 @@ Risk must be perceptible through visual intensity:
 
 Data and recommendations have a temporal validity. Visual behavior must communicate:
 
-| Freshness | Meaning |
-|-----------|---------|
-| **Current** | Data is recent and reliable |
-| **Stale** | Data may no longer reflect reality |
+| Freshness   | Meaning                                    |
+| ----------- | ------------------------------------------ |
+| **Current** | Data is recent and reliable                |
+| **Stale**   | Data may no longer reflect reality         |
 | **Expired** | Data should not be trusted without refresh |
 
 Stale and expired states must be visually distinct without requiring the user to check timestamps.
@@ -149,11 +152,11 @@ Users should be able to identify the active mode by observing how the interface 
 
 ### 5.2 Mode Characteristics
 
-| Mode | User Control | AI Involvement | Visual Character |
-|------|--------------|----------------|------------------|
-| **Manual** | Full | None | Direct, immediate response to user input |
-| **Copilot** | Approval required | Preparation and suggestion | AI activity visible; actions await user confirmation |
-| **Autopilot** | Exception-based | Autonomous execution | AI activity visible; user monitors rather than directs |
+| Mode          | User Control      | AI Involvement             | Visual Character                                       |
+| ------------- | ----------------- | -------------------------- | ------------------------------------------------------ |
+| **Manual**    | Full              | None                       | Direct, immediate response to user input               |
+| **Copilot**   | Approval required | Preparation and suggestion | AI activity visible; actions await user confirmation   |
+| **Autopilot** | Exception-based   | Autonomous execution       | AI activity visible; user monitors rather than directs |
 
 ### 5.3 Mode Invariants
 
@@ -164,6 +167,7 @@ Users should be able to identify the active mode by observing how the interface 
 ### 5.4 Mode Transition
 
 When mode changes:
+
 - The interface must visually acknowledge the transition
 - The new mode's visual character must apply immediately to subsequent actions
 - In-flight operations retain the visual character of the mode under which they started
@@ -176,12 +180,12 @@ When mode changes:
 
 The following principles must hold across all pillars (Content, PR, SEO, Command Center, CiteMind, Ads):
 
-| Principle | Requirement |
-|-----------|-------------|
-| **State legibility** | The six perceptual states must be recognizable in any context |
-| **Confidence signaling** | High/Moderate/Low confidence must use consistent visual language |
-| **Mode expression** | Manual/Copilot/Autopilot must feel consistent regardless of pillar |
-| **Urgency calibration** | Equivalent urgency levels must produce equivalent visual intensity |
+| Principle                   | Requirement                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| **State legibility**        | The six perceptual states must be recognizable in any context          |
+| **Confidence signaling**    | High/Moderate/Low confidence must use consistent visual language       |
+| **Mode expression**         | Manual/Copilot/Autopilot must feel consistent regardless of pillar     |
+| **Urgency calibration**     | Equivalent urgency levels must produce equivalent visual intensity     |
 | **Reversibility signaling** | Reversible and irreversible actions must be distinguishable everywhere |
 
 ### 6.2 Pillar-Specific Adaptation
@@ -258,11 +262,11 @@ Progress indicators that move but do not reflect actual progress.
 
 When evaluating UI/UX changes against this canon:
 
-| Level | Definition |
-|-------|------------|
-| **Compliant** | All applicable principles are satisfied |
+| Level                  | Definition                                                       |
+| ---------------------- | ---------------------------------------------------------------- |
+| **Compliant**          | All applicable principles are satisfied                          |
 | **Partial Compliance** | Some principles satisfied; violations are minor or in transition |
-| **Violation** | Core principles are contradicted |
+| **Violation**          | Core principles are contradicted                                 |
 
 ### 8.2 Evaluation Criteria
 
@@ -290,6 +294,7 @@ This document is authoritative for AI visual communication. When conflicts arise
 ### 9.2 Amendment Process
 
 To modify this canon:
+
 1. Create PR with proposed changes
 2. Tag as `canon-amendment`
 3. Require product and design review
@@ -298,6 +303,7 @@ To modify this canon:
 ### 9.3 Implementation Guidance
 
 This canon defines principles only. Implementation details (timing, easing, specific animations) are defined in:
+
 - `DS_v3_1_EXPRESSION.md` (motion tokens)
 - Pillar-specific work surface contracts (component behavior)
 
@@ -305,6 +311,6 @@ This canon defines principles only. Implementation details (timing, easing, spec
 
 ## 10. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-28 | 1.0 | Initial AI Visual Communication Canon |
+| Date       | Version | Change                                |
+| ---------- | ------- | ------------------------------------- |
+| 2026-01-28 | 1.0     | Initial AI Visual Communication Canon |

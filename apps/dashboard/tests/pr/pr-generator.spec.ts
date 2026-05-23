@@ -13,7 +13,9 @@ test.describe('PR Generator Page', () => {
 
   test.describe('Page Layout', () => {
     test('should display page header', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: /Press Release Generator/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /Press Release Generator/i })
+      ).toBeVisible();
     });
 
     test('should display sidebar with past releases', async ({ page }) => {
@@ -52,7 +54,9 @@ test.describe('PR Generator Page', () => {
     });
 
     test('should have announcement textarea', async ({ page }) => {
-      const announcementTextarea = page.getByPlaceholder(/Describe the announcement/i);
+      const announcementTextarea = page.getByPlaceholder(
+        /Describe the announcement/i
+      );
       await expect(announcementTextarea).toBeVisible();
     });
 
@@ -68,7 +72,9 @@ test.describe('PR Generator Page', () => {
 
       // Check that advanced fields are visible
       await expect(page.getByPlaceholder('Technology')).toBeVisible();
-      await expect(page.getByPlaceholder(/Enterprise customers/i)).toBeVisible();
+      await expect(
+        page.getByPlaceholder(/Enterprise customers/i)
+      ).toBeVisible();
     });
 
     test('should have tone dropdown in advanced options', async ({ page }) => {
@@ -86,39 +92,61 @@ test.describe('PR Generator Page', () => {
   });
 
   test.describe('Form Validation', () => {
-    test('should disable submit button when required fields are empty', async ({ page }) => {
-      const submitButton = page.getByRole('button', { name: /Generate Press Release/i });
+    test('should disable submit button when required fields are empty', async ({
+      page,
+    }) => {
+      const submitButton = page.getByRole('button', {
+        name: /Generate Press Release/i,
+      });
       await expect(submitButton).toBeDisabled();
     });
 
-    test('should enable submit button when required fields are filled', async ({ page }) => {
+    test('should enable submit button when required fields are filled', async ({
+      page,
+    }) => {
       // Fill required fields
       await page.getByPlaceholder('Acme Corporation').fill('TestCorp');
-      await page.getByPlaceholder(/Describe the announcement/i).fill('Our exciting new product launch');
+      await page
+        .getByPlaceholder(/Describe the announcement/i)
+        .fill('Our exciting new product launch');
 
-      const submitButton = page.getByRole('button', { name: /Generate Press Release/i });
+      const submitButton = page.getByRole('button', {
+        name: /Generate Press Release/i,
+      });
       await expect(submitButton).toBeEnabled();
     });
   });
 
   test.describe('Form Submission', () => {
-    test('should show generating state on form submission', async ({ page }) => {
+    test('should show generating state on form submission', async ({
+      page,
+    }) => {
       // Fill required fields
       await page.getByPlaceholder('Acme Corporation').fill('TestCorp');
-      await page.getByPlaceholder(/Describe the announcement/i).fill('New product launch');
+      await page
+        .getByPlaceholder(/Describe the announcement/i)
+        .fill('New product launch');
 
       // Submit form
-      await page.getByRole('button', { name: /Generate Press Release/i }).click();
+      await page
+        .getByRole('button', { name: /Generate Press Release/i })
+        .click();
 
       // Check for loading state
-      await expect(page.getByText('Generating...')).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText('Generating...')).toBeVisible({
+        timeout: 5000,
+      });
     });
 
     test('should display progress bar during generation', async ({ page }) => {
       // Fill and submit form
       await page.getByPlaceholder('Acme Corporation').fill('TestCorp');
-      await page.getByPlaceholder(/Describe the announcement/i).fill('Product announcement');
-      await page.getByRole('button', { name: /Generate Press Release/i }).click();
+      await page
+        .getByPlaceholder(/Describe the announcement/i)
+        .fill('Product announcement');
+      await page
+        .getByRole('button', { name: /Generate Press Release/i })
+        .click();
 
       // Check for progress indicator
       await expect(page.locator('.bg-blue-50')).toBeVisible({ timeout: 5000 });
@@ -159,7 +187,9 @@ test.describe('PR Detail Page', () => {
   test('should display tabs', async ({ page }) => {
     // Check for tab navigation
     await expect(page.getByRole('button', { name: 'Content' })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Headlines/i })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Headlines/i })
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: /Angles/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Similar/i })).toBeVisible();
   });
@@ -170,7 +200,9 @@ test.describe('PR Detail Page', () => {
 
     // Should show headlines content or empty state
     await expect(
-      page.getByText(/No headline variants available/i).or(page.locator('.space-y-3'))
+      page
+        .getByText(/No headline variants available/i)
+        .or(page.locator('.space-y-3'))
     ).toBeVisible();
   });
 });
@@ -221,7 +253,9 @@ test.describe('Responsive Design', () => {
 
     // Form should still be accessible
     await expect(page.getByPlaceholder('Acme Corporation')).toBeVisible();
-    await expect(page.getByRole('button', { name: /Generate Press Release/i })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Generate Press Release/i })
+    ).toBeVisible();
   });
 
   test('should display correctly on tablet', async ({ page }) => {
@@ -303,7 +337,9 @@ test.describe('Accessibility', () => {
     await page.keyboard.press('Tab');
 
     // Should be able to navigate with keyboard
-    const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
+    const focusedElement = await page.evaluate(
+      () => document.activeElement?.tagName
+    );
     expect(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']).toContain(focusedElement);
   });
 });

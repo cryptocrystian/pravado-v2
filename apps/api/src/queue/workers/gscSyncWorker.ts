@@ -44,7 +44,9 @@ export async function processGscSync(payload: GscSyncPayload): Promise<void> {
       }
     }
 
-    logger.info(`Scheduled GSC sync complete: ${synced}/${connections.length} orgs synced`);
+    logger.info(
+      `Scheduled GSC sync complete: ${synced}/${connections.length} orgs synced`
+    );
 
     // After sync, trigger SAGE signal scan for each synced org
     try {

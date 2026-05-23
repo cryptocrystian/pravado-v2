@@ -105,7 +105,8 @@ async function apiClient<T>(
 
   const headers = {
     'Content-Type': 'application/json',
-    'x-org-id': typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
+    'x-org-id':
+      typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
     ...options.headers,
   };
 
@@ -161,7 +162,9 @@ export async function listPacks(
 /**
  * Get a single investor pack with sections
  */
-export async function getPack(packId: string): Promise<InvestorPackWithSections> {
+export async function getPack(
+  packId: string
+): Promise<InvestorPackWithSections> {
   const result = await apiClient<InvestorPackWithSections>(`/${packId}`);
   return result.data!;
 }
@@ -169,7 +172,9 @@ export async function getPack(packId: string): Promise<InvestorPackWithSections>
 /**
  * Create a new investor pack
  */
-export async function createPack(input: CreateInvestorPack): Promise<InvestorPack> {
+export async function createPack(
+  input: CreateInvestorPack
+): Promise<InvestorPack> {
   const result = await apiClient<InvestorPack>('', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -231,10 +236,13 @@ export async function generatePack(
   packId: string,
   input: GenerateInvestorPack = {}
 ): Promise<GenerateInvestorPackResponse> {
-  const result = await apiClient<GenerateInvestorPackResponse>(`/${packId}/generate`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<GenerateInvestorPackResponse>(
+    `/${packId}/generate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -259,10 +267,13 @@ export async function publishPack(
   packId: string,
   input: Partial<PublishInvestorPack> = {}
 ): Promise<PublishInvestorPackResponse> {
-  const result = await apiClient<PublishInvestorPackResponse>(`/${packId}/publish`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<PublishInvestorPackResponse>(
+    `/${packId}/publish`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -278,10 +289,13 @@ export async function updateSection(
   sectionId: string,
   input: UpdateInvestorSection
 ): Promise<InvestorPackSection> {
-  const result = await apiClient<InvestorPackSection>(`/${packId}/sections/${sectionId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<InvestorPackSection>(
+    `/${packId}/sections/${sectionId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -310,10 +324,13 @@ export async function reorderSections(
   packId: string,
   input: ReorderInvestorSections
 ): Promise<InvestorPackSection[]> {
-  const result = await apiClient<InvestorPackSection[]>(`/${packId}/sections/reorder`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<InvestorPackSection[]>(
+    `/${packId}/sections/reorder`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -336,7 +353,9 @@ export async function listQnAs(
 /**
  * Create a Q&A entry manually
  */
-export async function createQnA(input: CreateInvestorQnA): Promise<InvestorQnA> {
+export async function createQnA(
+  input: CreateInvestorQnA
+): Promise<InvestorQnA> {
   const result = await apiClient<InvestorQnA>('/qna', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -464,14 +483,21 @@ export function getQnACategoryLabel(category: InvestorQnACategory): string {
 export function formatPeriodRange(start: string, end: string): string {
   const startDate = new Date(start);
   const endDate = new Date(end);
-  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  };
   return `${startDate.toLocaleDateString('en-US', options)} - ${endDate.toLocaleDateString('en-US', options)}`;
 }
 
 /**
  * Format fiscal quarter for display
  */
-export function formatFiscalQuarter(quarter?: string | null, year?: number | null): string {
+export function formatFiscalQuarter(
+  quarter?: string | null,
+  year?: number | null
+): string {
   if (!quarter) return '';
   if (!year) return quarter;
   return `${quarter} ${year}`;

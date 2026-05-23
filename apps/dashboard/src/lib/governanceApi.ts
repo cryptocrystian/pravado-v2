@@ -109,7 +109,10 @@ export type GovernanceScoreTrend = 'improving' | 'stable' | 'worsening';
 
 export type GovernanceEvaluationMode = 'on_event' | 'scheduled' | 'manual';
 
-export type GovernanceInsightGenerationMethod = 'rule_based' | 'llm_assisted' | 'hybrid';
+export type GovernanceInsightGenerationMethod =
+  | 'rule_based'
+  | 'llm_assisted'
+  | 'hybrid';
 
 // ========================================
 // Entity Interfaces
@@ -637,7 +640,9 @@ export async function listPolicies(
   return response.data;
 }
 
-export async function getPolicy(id: string): Promise<GovernancePolicyDetailResponse> {
+export async function getPolicy(
+  id: string
+): Promise<GovernancePolicyDetailResponse> {
   const response = await apiRequest<GovernancePolicyDetailResponse>(
     `/api/v1/governance/policies/${id}`
   );
@@ -652,10 +657,13 @@ export async function getPolicy(id: string): Promise<GovernancePolicyDetailRespo
 export async function createPolicy(
   input: CreateGovernancePolicyInput
 ): Promise<GovernancePolicy> {
-  const response = await apiRequest<GovernancePolicy>('/api/v1/governance/policies', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const response = await apiRequest<GovernancePolicy>(
+    '/api/v1/governance/policies',
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!response.success || !response.data) {
     throw new Error(response.error?.message || 'Failed to create policy');
@@ -739,10 +747,13 @@ export async function getRule(id: string): Promise<GovernanceRule> {
 export async function createRule(
   input: CreateGovernanceRuleInput
 ): Promise<GovernanceRule> {
-  const response = await apiRequest<GovernanceRule>('/api/v1/governance/rules', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const response = await apiRequest<GovernanceRule>(
+    '/api/v1/governance/rules',
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
 
   if (!response.success || !response.data) {
     throw new Error(response.error?.message || 'Failed to create rule');
@@ -797,7 +808,9 @@ export async function listFindings(
   return response.data;
 }
 
-export async function getFinding(id: string): Promise<GovernanceFindingDetailResponse> {
+export async function getFinding(
+  id: string
+): Promise<GovernanceFindingDetailResponse> {
   const response = await apiRequest<GovernanceFindingDetailResponse>(
     `/api/v1/governance/findings/${id}`
   );
@@ -935,7 +948,9 @@ export async function recalculateRiskScore(
   );
 
   if (!response.success || !response.data) {
-    throw new Error(response.error?.message || 'Failed to recalculate risk score');
+    throw new Error(
+      response.error?.message || 'Failed to recalculate risk score'
+    );
   }
 
   return response.data;
@@ -998,7 +1013,9 @@ export async function getDashboardSummary(): Promise<GovernanceDashboardSummary>
   );
 
   if (!response.success || !response.data) {
-    throw new Error(response.error?.message || 'Failed to get dashboard summary');
+    throw new Error(
+      response.error?.message || 'Failed to get dashboard summary'
+    );
   }
 
   return response.data;
@@ -1012,7 +1029,9 @@ export async function getComplianceMetrics(
   );
 
   if (!response.success || !response.data) {
-    throw new Error(response.error?.message || 'Failed to get compliance metrics');
+    throw new Error(
+      response.error?.message || 'Failed to get compliance metrics'
+    );
   }
 
   return response.data;

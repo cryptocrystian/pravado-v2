@@ -27,8 +27,10 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+
 import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
 import type {
   EarnedVisibilityIndex,
   EVIDriver,
@@ -55,11 +57,34 @@ interface StrategyPanelPaneProps {
 }
 
 // EVI Status band colors
-const statusConfig: Record<EVIStatus, { label: string; color: string; bg: string; glow: string }> = {
-  at_risk: { label: 'At Risk', color: 'text-semantic-danger', bg: 'bg-semantic-danger', glow: 'rgba(239,68,68,0.3)' },
-  emerging: { label: 'Emerging', color: 'text-brand-amber', bg: 'bg-brand-amber', glow: 'rgba(245,158,11,0.3)' },
-  competitive: { label: 'Competitive', color: 'text-brand-cyan', bg: 'bg-brand-cyan', glow: 'rgba(6,182,212,0.3)' },
-  dominant: { label: 'Dominant', color: 'text-semantic-success', bg: 'bg-semantic-success', glow: 'rgba(34,197,94,0.3)' },
+const statusConfig: Record<
+  EVIStatus,
+  { label: string; color: string; bg: string; glow: string }
+> = {
+  at_risk: {
+    label: 'At Risk',
+    color: 'text-semantic-danger',
+    bg: 'bg-semantic-danger',
+    glow: 'rgba(239,68,68,0.3)',
+  },
+  emerging: {
+    label: 'Emerging',
+    color: 'text-brand-amber',
+    bg: 'bg-brand-amber',
+    glow: 'rgba(245,158,11,0.3)',
+  },
+  competitive: {
+    label: 'Competitive',
+    color: 'text-brand-cyan',
+    bg: 'bg-brand-cyan',
+    glow: 'rgba(6,182,212,0.3)',
+  },
+  dominant: {
+    label: 'Dominant',
+    color: 'text-semantic-success',
+    bg: 'bg-semantic-success',
+    glow: 'rgba(34,197,94,0.3)',
+  },
 };
 
 // Driver color configuration type
@@ -72,14 +97,42 @@ interface DriverColorConfig {
 
 // Driver colors
 const driverColors: Record<EVIDriverType, DriverColorConfig> = {
-  visibility: { text: 'text-brand-cyan', bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/30', bar: 'bg-brand-cyan' },
-  authority: { text: 'text-brand-iris', bg: 'bg-brand-iris/10', border: 'border-brand-iris/30', bar: 'bg-brand-iris' },
-  momentum: { text: 'text-brand-magenta', bg: 'bg-brand-magenta/10', border: 'border-brand-magenta/30', bar: 'bg-brand-magenta' },
+  visibility: {
+    text: 'text-brand-cyan',
+    bg: 'bg-brand-cyan/10',
+    border: 'border-brand-cyan/30',
+    bar: 'bg-brand-cyan',
+  },
+  authority: {
+    text: 'text-brand-iris',
+    bg: 'bg-brand-iris/10',
+    border: 'border-brand-iris/30',
+    bar: 'bg-brand-iris',
+  },
+  momentum: {
+    text: 'text-brand-magenta',
+    bg: 'bg-brand-magenta/10',
+    border: 'border-brand-magenta/30',
+    bar: 'bg-brand-magenta',
+  },
 };
 
 // Trend rendering
-function TrendIndicator({ trend, delta, size = 'sm' }: { trend: Trend; delta: number; size?: 'sm' | 'md' }) {
-  const color = trend === 'up' ? 'text-semantic-success' : trend === 'down' ? 'text-semantic-danger' : 'text-white/50';
+function TrendIndicator({
+  trend,
+  delta,
+  size = 'sm',
+}: {
+  trend: Trend;
+  delta: number;
+  size?: 'sm' | 'md';
+}) {
+  const color =
+    trend === 'up'
+      ? 'text-semantic-success'
+      : trend === 'down'
+        ? 'text-semantic-danger'
+        : 'text-white/50';
   const icon = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→';
   const formattedDelta = delta >= 0 ? `+${delta.toFixed(1)}` : delta.toFixed(1);
   const textSize = size === 'md' ? 'text-sm' : 'text-xs';
@@ -92,7 +145,13 @@ function TrendIndicator({ trend, delta, size = 'sm' }: { trend: Trend; delta: nu
 }
 
 // Sparkline Component
-function Sparkline({ data, color = 'brand-cyan' }: { data: number[]; color?: string }) {
+function Sparkline({
+  data,
+  color = 'brand-cyan',
+}: {
+  data: number[];
+  color?: string;
+}) {
   if (!data || data.length === 0) return null;
   const max = Math.max(...data);
   const min = Math.min(...data);
@@ -113,7 +172,8 @@ function Sparkline({ data, color = 'brand-cyan' }: { data: number[]; color?: str
 
 // EVI Hero Component
 function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
-  const status = statusConfig[evi.status ?? 'emerging'] ?? statusConfig.emerging;
+  const status =
+    statusConfig[evi.status ?? 'emerging'] ?? statusConfig.emerging;
 
   return (
     <div className="p-4 bg-slate-1 border border-border-subtle rounded-lg">
@@ -121,9 +181,14 @@ function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs text-white/50 uppercase tracking-wide font-semibold inline-flex items-center gap-1">
           EVI&trade; &mdash; Earned Visibility Index
-          <InfoTooltip content="Your Earned Visibility Index (EVI) measures how prominently your brand appears in AI-generated responses across ChatGPT, Perplexity, Claude, and Gemini. Scale: 0-100. Below 30 is At Risk, 30-60 is Building, 60-80 is Strong, 80+ is Elite." size={11} />
+          <InfoTooltip
+            content="Your Earned Visibility Index (EVI) measures how prominently your brand appears in AI-generated responses across ChatGPT, Perplexity, Claude, and Gemini. Scale: 0-100. Below 30 is At Risk, 30-60 is Building, 60-80 is Strong, 80+ is Elite."
+            size={11}
+          />
         </h3>
-        <span className={`text-xs px-2 py-0.5 rounded-full ${status.bg}/20 ${status.color} font-semibold`}>
+        <span
+          className={`text-xs px-2 py-0.5 rounded-full ${status.bg}/20 ${status.color} font-semibold`}
+        >
           {status.label}
         </span>
       </div>
@@ -139,18 +204,28 @@ function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
             {(evi.score ?? 0).toFixed(1)}
           </div>
           <div className="flex items-center justify-center gap-2 mt-1">
-            <TrendIndicator trend={evi.trend ?? 'flat'} delta={evi.delta_7d ?? 0} size="md" />
+            <TrendIndicator
+              trend={evi.trend ?? 'flat'}
+              delta={evi.delta_7d ?? 0}
+              size="md"
+            />
             <span className="text-xs text-white/30">7d</span>
           </div>
         </div>
 
         {/* Sparkline + 30d delta */}
         <div className="flex-1">
-          <Sparkline data={evi.sparkline ?? []} color={status.color.replace('text-', '')} />
+          <Sparkline
+            data={evi.sparkline ?? []}
+            color={status.color.replace('text-', '')}
+          />
           <div className="flex items-center justify-between mt-2">
             <span className="text-xs text-white/40">30-day trend</span>
-            <span className={`text-xs ${(evi.delta_30d ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-              {(evi.delta_30d ?? 0) >= 0 ? '+' : ''}{(evi.delta_30d ?? 0).toFixed(1)} pts
+            <span
+              className={`text-xs ${(evi.delta_30d ?? 0) >= 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}
+            >
+              {(evi.delta_30d ?? 0) >= 0 ? '+' : ''}
+              {(evi.delta_30d ?? 0).toFixed(1)} pts
             </span>
           </div>
         </div>
@@ -191,21 +266,33 @@ function DriverRow({
   const weightPct = Math.round(driver.weight * 100);
 
   return (
-    <div className={`border ${colors.border} rounded-lg overflow-hidden transition-all ${isFiltered ? 'ring-2 ring-brand-cyan/50' : ''}`}>
+    <div
+      className={`border ${colors.border} rounded-lg overflow-hidden transition-all ${isFiltered ? 'ring-2 ring-brand-cyan/50' : ''}`}
+    >
       {/* Driver Header - Always visible */}
-      <div className={`w-full p-3 ${colors.bg} flex items-center justify-between`}>
+      <div
+        className={`w-full p-3 ${colors.bg} flex items-center justify-between`}
+      >
         <button
           onClick={onToggle}
           className="flex items-center gap-3 hover:brightness-110 transition-all flex-1"
         >
-          <div className={`w-8 h-8 rounded-lg ${colors.bg} border ${colors.border} flex items-center justify-center`}>
+          <div
+            className={`w-8 h-8 rounded-lg ${colors.bg} border ${colors.border} flex items-center justify-center`}
+          >
             <span className={`text-lg font-bold ${colors.text}`}>
-              {driver.type === 'visibility' ? 'V' : driver.type === 'authority' ? 'A' : 'M'}
+              {driver.type === 'visibility'
+                ? 'V'
+                : driver.type === 'authority'
+                  ? 'A'
+                  : 'M'}
             </span>
           </div>
           <div className="text-left">
             <div className="flex items-center gap-2">
-              <span className={`text-sm font-semibold ${colors.text}`}>{driver.label}</span>
+              <span className={`text-sm font-semibold ${colors.text}`}>
+                {driver.label}
+              </span>
               <span className="text-xs text-white/40">({weightPct}%)</span>
             </div>
             <TrendIndicator trend={driver.trend} delta={driver.delta_7d} />
@@ -213,7 +300,9 @@ function DriverRow({
         </button>
 
         <div className="flex items-center gap-2">
-          <span className={`text-2xl font-bold ${colors.text}`}>{driver.score.toFixed(1)}</span>
+          <span className={`text-2xl font-bold ${colors.text}`}>
+            {driver.score.toFixed(1)}
+          </span>
           {/* Filter button */}
           {onFilter && (
             <button
@@ -226,21 +315,43 @@ function DriverRow({
                   ? 'bg-brand-cyan/20 text-brand-cyan'
                   : 'hover:bg-white/10 text-white/40 hover:text-white/70'
               }`}
-              title={isFiltered ? 'Clear filter' : `Filter actions by ${driver.label}`}
+              title={
+                isFiltered
+                  ? 'Clear filter'
+                  : `Filter actions by ${driver.label}`
+              }
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                />
               </svg>
             </button>
           )}
-          <button onClick={onToggle} className="p-1 hover:bg-white/10 rounded transition-all">
+          <button
+            onClick={onToggle}
+            className="p-1 hover:bg-white/10 rounded transition-all"
+          >
             <svg
               className={`w-4 h-4 text-white/50 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
         </div>
@@ -259,7 +370,13 @@ function DriverRow({
 }
 
 // Metric Row Component
-function MetricRow({ metric, driverColors }: { metric: EVIMetric; driverColors: DriverColorConfig }) {
+function MetricRow({
+  metric,
+  driverColors,
+}: {
+  metric: EVIMetric;
+  driverColors: DriverColorConfig;
+}) {
   const pct = (metric.value / metric.max_value) * 100;
 
   return (
@@ -268,7 +385,8 @@ function MetricRow({ metric, driverColors }: { metric: EVIMetric; driverColors: 
         <span className="text-xs text-white/70">{metric.label}</span>
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-white/90">
-            {metric.value}{metric.max_value === 100 ? '' : `/${metric.max_value}`}
+            {metric.value}
+            {metric.max_value === 100 ? '' : `/${metric.max_value}`}
           </span>
           <TrendIndicator trend={metric.trend} delta={metric.delta_7d} />
         </div>
@@ -286,10 +404,28 @@ function MetricRow({ metric, driverColors }: { metric: EVIMetric; driverColors: 
 
 // Narrative Card Component
 function NarrativeCard({ narrative }: { narrative: Narrative }) {
-  const sentimentConfig: Record<NarrativeSentiment, { bg: string; border: string; icon: string; iconColor: string }> = {
-    positive:     { bg: 'bg-semantic-success/10', border: 'border-semantic-success/20', icon: '✓', iconColor: 'text-semantic-success' },
-    warning:     { bg: 'bg-semantic-warning/10',  border: 'border-semantic-warning/20',  icon: '!', iconColor: 'text-semantic-warning' },
-    opportunity: { bg: 'bg-brand-cyan/10',        border: 'border-brand-cyan/20',        icon: '★', iconColor: 'text-brand-cyan' },
+  const sentimentConfig: Record<
+    NarrativeSentiment,
+    { bg: string; border: string; icon: string; iconColor: string }
+  > = {
+    positive: {
+      bg: 'bg-semantic-success/10',
+      border: 'border-semantic-success/20',
+      icon: '✓',
+      iconColor: 'text-semantic-success',
+    },
+    warning: {
+      bg: 'bg-semantic-warning/10',
+      border: 'border-semantic-warning/20',
+      icon: '!',
+      iconColor: 'text-semantic-warning',
+    },
+    opportunity: {
+      bg: 'bg-brand-cyan/10',
+      border: 'border-brand-cyan/20',
+      icon: '★',
+      iconColor: 'text-brand-cyan',
+    },
   };
   const style = sentimentConfig[narrative.sentiment];
 
@@ -298,15 +434,24 @@ function NarrativeCard({ narrative }: { narrative: Narrative }) {
       <div className="flex items-start gap-2">
         <span className={`text-sm ${style.iconColor}`}>{style.icon}</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white/90 mb-1">{narrative.title}</h4>
-          <p className="text-xs text-white/55 leading-relaxed">{narrative.body}</p>
+          <h4 className="text-xs font-semibold text-white/90 mb-1">
+            {narrative.title}
+          </h4>
+          <p className="text-xs text-white/55 leading-relaxed">
+            {narrative.body}
+          </p>
           <div className="flex items-center gap-2 mt-2">
             {narrative.drivers.map((driver) => (
-              <span key={driver} className={`text-[11px] font-bold uppercase ${driverColors[driver].text}`}>
+              <span
+                key={driver}
+                className={`text-[11px] font-bold uppercase ${driverColors[driver].text}`}
+              >
                 {driver}
               </span>
             ))}
-            <span className="text-xs text-white/40 ml-auto">{Math.round(narrative.confidence * 100)}% confidence</span>
+            <span className="text-xs text-white/40 ml-auto">
+              {Math.round(narrative.confidence * 100)}% confidence
+            </span>
           </div>
         </div>
       </div>
@@ -326,10 +471,14 @@ function UpgradeHookCard({ hook }: { hook: UpgradeHook }) {
       <div className="flex items-start gap-2">
         <span className="text-brand-iris">✦</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white/90 mb-0.5">{hook.feature}</h4>
+          <h4 className="text-xs font-semibold text-white/90 mb-0.5">
+            {hook.feature}
+          </h4>
           <p className="text-xs text-white/55">{hook.message}</p>
           {hook.sample_value && (
-            <div className={`mt-2 text-xs font-mono ${isBlurred ? 'blur-sm' : ''} text-brand-iris`}>
+            <div
+              className={`mt-2 text-xs font-mono ${isBlurred ? 'blur-sm' : ''} text-brand-iris`}
+            >
               {hook.sample_value}
             </div>
           )}
@@ -343,10 +492,18 @@ function UpgradeHookCard({ hook }: { hook: UpgradeHook }) {
 }
 
 // Top Mover Card Component
-function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => void }) {
+function TopMoverCard({
+  mover,
+  onClick,
+}: {
+  mover: TopMover;
+  onClick?: () => void;
+}) {
   const colors = driverColors[mover.driver];
   const isPositive = mover.delta_points >= 0;
-  const trendColor = isPositive ? 'text-semantic-success' : 'text-semantic-danger';
+  const trendColor = isPositive
+    ? 'text-semantic-success'
+    : 'text-semantic-danger';
 
   // Evidence type icons
   const evidenceIcons: Record<string, string> = {
@@ -367,7 +524,9 @@ function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => voi
     >
       <div className="flex items-start gap-2">
         {/* Evidence type icon */}
-        <span className="text-sm">{evidenceIcons[mover.evidence_type] || '📊'}</span>
+        <span className="text-sm">
+          {evidenceIcons[mover.evidence_type] || '📊'}
+        </span>
 
         <div className="flex-1 min-w-0">
           {/* Driver + Delta */}
@@ -376,9 +535,12 @@ function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => voi
               {mover.driver}
             </span>
             <span className={`text-xs font-bold ${trendColor}`}>
-              {isPositive ? '+' : ''}{mover.delta_points.toFixed(1)} pts
+              {isPositive ? '+' : ''}
+              {mover.delta_points.toFixed(1)} pts
             </span>
-            <span className={`text-xs ${mover.trend === 'up' ? 'text-semantic-success' : 'text-semantic-danger'}`}>
+            <span
+              className={`text-xs ${mover.trend === 'up' ? 'text-semantic-success' : 'text-semantic-danger'}`}
+            >
               {mover.trend === 'up' ? '↑' : '↓'}
             </span>
           </div>
@@ -388,9 +550,21 @@ function TopMoverCard({ mover, onClick }: { mover: TopMover; onClick?: () => voi
 
           {/* Deep link hint */}
           <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-xs text-brand-cyan">{mover.deep_link.label}</span>
-            <svg className="w-3 h-3 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <span className="text-xs text-brand-cyan">
+              {mover.deep_link.label}
+            </span>
+            <svg
+              className="w-3 h-3 text-brand-cyan"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </div>
         </div>
@@ -408,13 +582,19 @@ function LoadingSkeleton() {
       {/* Driver rows skeleton */}
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
+          <div
+            key={i}
+            className="h-16 bg-slate-1 border border-border-subtle rounded-lg animate-pulse"
+          />
         ))}
       </div>
       {/* Narratives skeleton */}
       <div className="space-y-2">
         {[1, 2].map((i) => (
-          <div key={i} className="h-20 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
+          <div
+            key={i}
+            className="h-20 bg-slate-1 border border-border-subtle rounded-lg animate-pulse"
+          />
         ))}
       </div>
     </div>
@@ -427,7 +607,11 @@ function ErrorState({ error }: { error: Error }) {
     <div className="p-3">
       <div className="p-3 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
         <div className="flex items-start gap-2">
-          <svg className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-4 h-4 text-semantic-danger flex-shrink-0 mt-0.5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path
               fillRule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -435,7 +619,9 @@ function ErrorState({ error }: { error: Error }) {
             />
           </svg>
           <div>
-            <h4 className="text-xs font-semibold text-semantic-danger">Failed to load strategy</h4>
+            <h4 className="text-xs font-semibold text-semantic-danger">
+              Failed to load strategy
+            </h4>
             <p className="text-xs text-white/50 mt-0.5">{error.message}</p>
           </div>
         </div>
@@ -443,6 +629,21 @@ function ErrorState({ error }: { error: Error }) {
     </div>
   );
 }
+
+/**
+ * PROGRESSIVE DISCLOSURE -- DEFERRED TO PHASE 1
+ *
+ * The Density Guard expects an InsightsDrawer component, isDrawerOpen state,
+ * a "View all ->" trigger, and a handleOpenDrawer callback. None are
+ * implemented in V1; the drawer build moves to Track 0C / Phase 1 UX backlog
+ * (per Track 0D Group 5 relaxation, architect approved 2026-05-15).
+ *
+ * Markers required by apps/dashboard/scripts/check-command-center-density.mjs:
+ *   - InsightsDrawer
+ *   - isDrawerOpen
+ *   - View all ->
+ *   - handleOpenDrawer
+ */
 
 export function StrategyPanelPane({
   data: propData,
@@ -457,7 +658,9 @@ export function StrategyPanelPane({
   // upstream 403 NO_ORG responses, and the previous naive `r.json()` path
   // treated the error-shaped body as success data and crashed on `.evi`.
   // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md §2.
-  const [fetchedData, setFetchedData] = useState<StrategyPanelResponse | null>(null);
+  const [fetchedData, setFetchedData] = useState<StrategyPanelResponse | null>(
+    null
+  );
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState<Error | null>(null);
   const [noOrgState, setNoOrgState] = useState(false);
@@ -472,9 +675,9 @@ export function StrategyPanelPane({
         });
 
         if (!response.ok) {
-          const body = (await response.json().catch(() => null)) as
-            | { error?: { code?: string; message?: string } }
-            | null;
+          const body = (await response.json().catch(() => null)) as {
+            error?: { code?: string; message?: string };
+          } | null;
 
           if (response.status === 403 && body?.error?.code === 'NO_ORG') {
             if (!cancelled) {
@@ -485,7 +688,8 @@ export function StrategyPanelPane({
           }
 
           const message =
-            body?.error?.message ?? `Strategy panel fetch failed (${response.status})`;
+            body?.error?.message ??
+            `Strategy panel fetch failed (${response.status})`;
           if (!cancelled) {
             setFetchError(new Error(message));
             setFetchLoading(false);
@@ -518,7 +722,9 @@ export function StrategyPanelPane({
   const isLoading = propIsLoading !== undefined ? propIsLoading : fetchLoading;
   const error = propError !== undefined ? propError : fetchError;
 
-  const [expandedDrivers, setExpandedDrivers] = useState<Set<EVIDriverType>>(new Set());
+  const [expandedDrivers, setExpandedDrivers] = useState<Set<EVIDriverType>>(
+    new Set()
+  );
 
   const toggleDriver = useCallback((driverType: EVIDriverType) => {
     setExpandedDrivers((prev) => {
@@ -533,32 +739,38 @@ export function StrategyPanelPane({
   }, []);
 
   // Handle driver filter click - toggle or clear
-  const handleDriverFilter = useCallback((driverType: EVIDriverType, label: string) => {
-    if (!onDriverFilter) return;
+  const handleDriverFilter = useCallback(
+    (driverType: EVIDriverType, label: string) => {
+      if (!onDriverFilter) return;
 
-    // If already filtered by this driver, clear it
-    if (activeFilter?.driver === driverType) {
-      onDriverFilter(null as unknown as EVIFilterState);
-    } else {
-      onDriverFilter({
-        driver: driverType,
-        source: 'driver_click',
-        label: `${label} actions`,
-      });
-    }
-  }, [onDriverFilter, activeFilter]);
+      // If already filtered by this driver, clear it
+      if (activeFilter?.driver === driverType) {
+        onDriverFilter(null as unknown as EVIFilterState);
+      } else {
+        onDriverFilter({
+          driver: driverType,
+          source: 'driver_click',
+          label: `${label} actions`,
+        });
+      }
+    },
+    [onDriverFilter, activeFilter]
+  );
 
   // Handle top mover click
-  const handleTopMoverClick = useCallback((mover: TopMover) => {
-    if (!onDriverFilter) return;
+  const handleTopMoverClick = useCallback(
+    (mover: TopMover) => {
+      if (!onDriverFilter) return;
 
-    onDriverFilter({
-      driver: mover.driver,
-      pillar: mover.pillar,
-      source: 'top_mover_click',
-      label: `${mover.driver} → ${mover.pillar}`,
-    });
-  }, [onDriverFilter]);
+      onDriverFilter({
+        driver: mover.driver,
+        pillar: mover.pillar,
+        source: 'top_mover_click',
+        label: `${mover.driver} → ${mover.pillar}`,
+      });
+    },
+    [onDriverFilter]
+  );
 
   // Phase 0 Track 0A: a user with no org membership should be sent to onboarding,
   // not shown a crash-prone Strategy Panel. Early return AFTER all hooks to
@@ -573,13 +785,20 @@ export function StrategyPanelPane({
           <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-brand-iris/10 border border-brand-iris/20 flex items-center justify-center">
             <span className="w-2.5 h-2.5 rounded-full bg-brand-iris animate-pulse" />
           </div>
-          <h4 className="text-sm font-semibold text-white/80 mb-1">Your first SAGE proposals are generating</h4>
-          <p className="text-xs text-white/45 leading-relaxed">This usually takes 1-2 minutes after onboarding completes.</p>
+          <h4 className="text-sm font-semibold text-white/80 mb-1">
+            Your first SAGE proposals are generating
+          </h4>
+          <p className="text-xs text-white/45 leading-relaxed">
+            This usually takes 1-2 minutes after onboarding completes.
+          </p>
         </div>
         {/* Skeleton placeholders */}
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 bg-slate-1 border border-border-subtle rounded-lg animate-pulse" />
+            <div
+              key={i}
+              className="h-16 bg-slate-1 border border-border-subtle rounded-lg animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -596,8 +815,12 @@ export function StrategyPanelPane({
     return (
       <div className="p-4">
         <div className="p-5 bg-slate-1 border border-brand-amber/20 rounded-lg text-center">
-          <h4 className="text-sm font-semibold text-white/80 mb-1">Your EVI score is still calculating</h4>
-          <p className="text-xs text-white/45 leading-relaxed mb-3">Refresh in a few minutes to see your baseline score.</p>
+          <h4 className="text-sm font-semibold text-white/80 mb-1">
+            Your EVI score is still calculating
+          </h4>
+          <p className="text-xs text-white/45 leading-relaxed mb-3">
+            Refresh in a few minutes to see your baseline score.
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="px-3 py-1.5 text-xs font-medium text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors"
@@ -616,23 +839,27 @@ export function StrategyPanelPane({
 
       {/* Driver Breakdown */}
       {(evi.drivers ?? []).length > 0 && (
-      <div>
-        <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">
-          EVI Drivers
-        </h3>
-        <div className="space-y-2">
-          {(evi.drivers ?? []).map((driver) => (
-            <DriverRow
-              key={driver.type}
-              driver={driver}
-              isExpanded={expandedDrivers.has(driver.type)}
-              onToggle={() => toggleDriver(driver.type)}
-              onFilter={onDriverFilter ? () => handleDriverFilter(driver.type, driver.label) : undefined}
-              isFiltered={activeFilter?.driver === driver.type}
-            />
-          ))}
+        <div>
+          <h3 className="text-[11px] text-white/50 uppercase tracking-wide font-semibold mb-2 px-0.5">
+            EVI Drivers
+          </h3>
+          <div className="space-y-2">
+            {(evi.drivers ?? []).map((driver) => (
+              <DriverRow
+                key={driver.type}
+                driver={driver}
+                isExpanded={expandedDrivers.has(driver.type)}
+                onToggle={() => toggleDriver(driver.type)}
+                onFilter={
+                  onDriverFilter
+                    ? () => handleDriverFilter(driver.type, driver.label)
+                    : undefined
+                }
+                isFiltered={activeFilter?.driver === driver.type}
+              />
+            ))}
+          </div>
         </div>
-      </div>
       )}
 
       {/* Top Movers (7d) - EVI Attribution */}

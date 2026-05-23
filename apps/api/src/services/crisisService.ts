@@ -14,7 +14,6 @@
  * - S54: Media Briefings (briefing generation patterns)
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import {
   CrisisSignal,
   CrisisIncident,
@@ -63,6 +62,7 @@ import {
   MitigationLevel,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('crisis-service');
 
@@ -234,10 +234,19 @@ export class CrisisService {
         .eq('org_id', orgId);
     }
 
-    await this.logAuditEvent(orgId, userId, incident.id, 'create_incident', 'incident', incident.id, null, {
-      title: data.title,
-      severity: data.severity,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      incident.id,
+      'create_incident',
+      'incident',
+      incident.id,
+      null,
+      {
+        title: data.title,
+        severity: data.severity,
+      }
+    );
 
     return this.mapIncidentFromDb(incident);
   }
@@ -245,7 +254,10 @@ export class CrisisService {
   /**
    * Get single incident by ID
    */
-  async getIncident(orgId: string, incidentId: string): Promise<CrisisIncident> {
+  async getIncident(
+    orgId: string,
+    incidentId: string
+  ): Promise<CrisisIncident> {
     const { data: incident, error } = await this.supabase
       .from('crisis_incidents')
       .select('*')
@@ -306,7 +318,9 @@ export class CrisisService {
       query = query.lte('created_at', filters.dateTo.toISOString());
     }
     if (filters.searchQuery) {
-      query = query.or(`title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
+      query = query.or(
+        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
+      );
     }
 
     // Sorting
@@ -346,7 +360,8 @@ export class CrisisService {
     if (data.summary !== undefined) updates.summary = data.summary;
     if (data.severity !== undefined) updates.severity = data.severity;
     if (data.trajectory !== undefined) updates.trajectory = data.trajectory;
-    if (data.propagationLevel !== undefined) updates.propagation_level = data.propagationLevel;
+    if (data.propagationLevel !== undefined)
+      updates.propagation_level = data.propagationLevel;
     if (data.status !== undefined) {
       updates.status = data.status;
       if (data.status === IncidentStatus.CONTAINED && !original.containedAt) {
@@ -360,16 +375,24 @@ export class CrisisService {
       }
     }
     if (data.crisisType !== undefined) updates.crisis_type = data.crisisType;
-    if (data.affectedProducts !== undefined) updates.affected_products = data.affectedProducts;
-    if (data.affectedRegions !== undefined) updates.affected_regions = data.affectedRegions;
-    if (data.affectedStakeholders !== undefined) updates.affected_stakeholders = data.affectedStakeholders;
+    if (data.affectedProducts !== undefined)
+      updates.affected_products = data.affectedProducts;
+    if (data.affectedRegions !== undefined)
+      updates.affected_regions = data.affectedRegions;
+    if (data.affectedStakeholders !== undefined)
+      updates.affected_stakeholders = data.affectedStakeholders;
     if (data.keywords !== undefined) updates.keywords = data.keywords;
     if (data.topics !== undefined) updates.topics = data.topics;
-    if (data.linkedSignalIds !== undefined) updates.linked_signal_ids = data.linkedSignalIds;
-    if (data.linkedEventIds !== undefined) updates.linked_event_ids = data.linkedEventIds;
-    if (data.linkedMentionIds !== undefined) updates.linked_mention_ids = data.linkedMentionIds;
-    if (data.linkedAlertIds !== undefined) updates.linked_alert_ids = data.linkedAlertIds;
-    if (data.linkedCompetitorIds !== undefined) updates.linked_competitor_ids = data.linkedCompetitorIds;
+    if (data.linkedSignalIds !== undefined)
+      updates.linked_signal_ids = data.linkedSignalIds;
+    if (data.linkedEventIds !== undefined)
+      updates.linked_event_ids = data.linkedEventIds;
+    if (data.linkedMentionIds !== undefined)
+      updates.linked_mention_ids = data.linkedMentionIds;
+    if (data.linkedAlertIds !== undefined)
+      updates.linked_alert_ids = data.linkedAlertIds;
+    if (data.linkedCompetitorIds !== undefined)
+      updates.linked_competitor_ids = data.linkedCompetitorIds;
     if (data.ownerId !== undefined) updates.owner_id = data.ownerId;
     if (data.teamIds !== undefined) updates.team_ids = data.teamIds;
     if (data.escalationLevel !== undefined) {
@@ -427,9 +450,18 @@ export class CrisisService {
 
     if (error) throw new Error(`Failed to close incident: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, incidentId, 'close_incident', 'incident', incidentId, null, {
-      resolutionNotes,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      incidentId,
+      'close_incident',
+      'incident',
+      incidentId,
+      null,
+      {
+        resolutionNotes,
+      }
+    );
 
     return this.mapIncidentFromDb(incident);
   }
@@ -457,9 +489,18 @@ export class CrisisService {
 
     if (error) throw new Error(`Failed to escalate incident: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, incidentId, 'escalate_incident', 'incident', incidentId, null, {
-      level,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      incidentId,
+      'escalate_incident',
+      'incident',
+      incidentId,
+      null,
+      {
+        level,
+      }
+    );
 
     return this.mapIncidentFromDb(incident);
   }
@@ -493,19 +534,32 @@ export class CrisisService {
 
     // Detect signals from each source system
     for (const source of sourceSystems) {
-      const result = await this.detectSignalsFromSource(orgId, source, windowStart, options.keywords);
+      const result = await this.detectSignalsFromSource(
+        orgId,
+        source,
+        windowStart,
+        options.keywords
+      );
       eventsProcessed += result.eventsProcessed;
       newSignals.push(...result.signals);
     }
 
     // Evaluate escalation rules for new signals
     for (const signal of newSignals) {
-      const triggered = await this.evaluateEscalationRulesForSignal(orgId, userId, signal);
+      const triggered = await this.evaluateEscalationRulesForSignal(
+        orgId,
+        userId,
+        signal
+      );
       if (triggered) {
         escalationsTriggered++;
 
         // Auto-create incident for high-severity signals
-        if ((['high', 'critical', 'severe'] as CrisisSeverity[]).includes(signal.severity)) {
+        if (
+          (['high', 'critical', 'severe'] as CrisisSeverity[]).includes(
+            signal.severity
+          )
+        ) {
           const incident = await this.createIncident(orgId, userId, {
             title: signal.title,
             description: signal.description,
@@ -518,14 +572,23 @@ export class CrisisService {
       }
     }
 
-    await this.logAuditEvent(orgId, userId, null, 'run_detection', 'signal', null, null, {
-      timeWindow,
-      sourceSystems,
-      eventsProcessed,
-      signalsGenerated: newSignals.length,
-      incidentsCreated: newIncidents.length,
-      escalationsTriggered,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      null,
+      'run_detection',
+      'signal',
+      null,
+      null,
+      {
+        timeWindow,
+        sourceSystems,
+        eventsProcessed,
+        signalsGenerated: newSignals.length,
+        incidentsCreated: newIncidents.length,
+        escalationsTriggered,
+      }
+    );
 
     return {
       eventsProcessed,
@@ -563,19 +626,28 @@ export class CrisisService {
 
         if (mentions) {
           eventsProcessed = mentions.length;
-          const negativeMentions = mentions.filter((m) => (m.sentiment_score ?? 0) < -0.3);
+          const negativeMentions = mentions.filter(
+            (m) => (m.sentiment_score ?? 0) < -0.3
+          );
 
           if (negativeMentions.length >= 3) {
             const signal = await this.createSignal(orgId, {
               signalType: 'negative_sentiment_cluster',
               title: `Negative coverage detected (${negativeMentions.length} articles)`,
               description: `Cluster of negative mentions detected from media monitoring`,
-              severity: negativeMentions.length >= 10 ? CrisisSeverity.HIGH : CrisisSeverity.MEDIUM,
+              severity:
+                negativeMentions.length >= 10
+                  ? CrisisSeverity.HIGH
+                  : CrisisSeverity.MEDIUM,
               sourceSystem: source,
               sourceEvents: negativeMentions.map((m) => m.id),
               windowStart,
               windowEnd: new Date(),
-              sentimentScore: negativeMentions.reduce((sum, m) => sum + (m.sentiment_score ?? 0), 0) / negativeMentions.length,
+              sentimentScore:
+                negativeMentions.reduce(
+                  (sum, m) => sum + (m.sentiment_score ?? 0),
+                  0
+                ) / negativeMentions.length,
             });
             signals.push(signal);
           }
@@ -643,7 +715,10 @@ export class CrisisService {
               signalType: 'high_mention_velocity',
               title: `High mention velocity detected (${articles.length} articles)`,
               description: `Unusual spike in coverage volume`,
-              severity: articles.length >= 50 ? CrisisSeverity.HIGH : CrisisSeverity.MEDIUM,
+              severity:
+                articles.length >= 50
+                  ? CrisisSeverity.HIGH
+                  : CrisisSeverity.MEDIUM,
               sourceSystem: source,
               sourceEvents: articles.slice(0, 20).map((a) => a.id),
               windowStart,
@@ -753,7 +828,12 @@ export class CrisisService {
     }
 
     const sortBy = filters.sortBy || 'createdAt';
-    const sortColumn = sortBy === 'createdAt' ? 'created_at' : sortBy === 'priorityScore' ? 'priority_score' : 'severity';
+    const sortColumn =
+      sortBy === 'createdAt'
+        ? 'created_at'
+        : sortBy === 'priorityScore'
+          ? 'priority_score'
+          : 'severity';
     query = query.order(sortColumn, { ascending: filters.sortOrder === 'asc' });
 
     query = query.range(offset, offset + limit - 1);
@@ -801,11 +881,21 @@ export class CrisisService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to acknowledge signal: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to acknowledge signal: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, linkedIncidentId || null, 'acknowledge_signal', 'signal', signalId, null, {
-      linkedIncidentId,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      linkedIncidentId || null,
+      'acknowledge_signal',
+      'signal',
+      signalId,
+      null,
+      {
+        linkedIncidentId,
+      }
+    );
 
     return this.mapSignalFromDb(signal);
   }
@@ -848,9 +938,18 @@ export class CrisisService {
 
     if (error) throw new Error(`Failed to create action: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, data.incidentId, 'create_action', 'action', action.id, null, {
-      actionType: data.actionType,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      data.incidentId,
+      'create_action',
+      'action',
+      action.id,
+      null,
+      {
+        actionType: data.actionType,
+      }
+    );
 
     return this.mapActionFromDb(action);
   }
@@ -889,7 +988,12 @@ export class CrisisService {
     }
 
     const sortBy = filters.sortBy || 'createdAt';
-    const sortColumn = sortBy === 'createdAt' ? 'created_at' : sortBy === 'priorityScore' ? 'priority_score' : 'due_at';
+    const sortColumn =
+      sortBy === 'createdAt'
+        ? 'created_at'
+        : sortBy === 'priorityScore'
+          ? 'priority_score'
+          : 'due_at';
     query = query.order(sortColumn, { ascending: filters.sortOrder === 'asc' });
 
     query = query.range(offset, offset + limit - 1);
@@ -931,13 +1035,16 @@ export class CrisisService {
         updates.completed_at = new Date();
       }
     }
-    if (data.priorityScore !== undefined) updates.priority_score = data.priorityScore;
+    if (data.priorityScore !== undefined)
+      updates.priority_score = data.priorityScore;
     if (data.urgency !== undefined) updates.urgency = data.urgency;
     if (data.dueAt !== undefined) updates.due_at = data.dueAt;
     if (data.assignedTo !== undefined) updates.assigned_to = data.assignedTo;
-    if (data.completionNotes !== undefined) updates.completion_notes = data.completionNotes;
+    if (data.completionNotes !== undefined)
+      updates.completion_notes = data.completionNotes;
     if (data.outcome !== undefined) updates.outcome = data.outcome;
-    if (data.outcomeNotes !== undefined) updates.outcome_notes = data.outcomeNotes;
+    if (data.outcomeNotes !== undefined)
+      updates.outcome_notes = data.outcomeNotes;
 
     const { data: action, error } = await this.supabase
       .from('crisis_actions')
@@ -949,9 +1056,18 @@ export class CrisisService {
 
     if (error) throw new Error(`Failed to update action: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, action.incident_id, 'update_action', 'action', actionId, null, {
-      updates: Object.keys(updates),
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      action.incident_id,
+      'update_action',
+      'action',
+      actionId,
+      null,
+      {
+        updates: Object.keys(updates),
+      }
+    );
 
     return this.mapActionFromDb(action);
   }
@@ -969,7 +1085,12 @@ export class CrisisService {
 
     if (!this.llmRouter) {
       // Return default recommendations without LLM
-      return this.createDefaultRecommendations(orgId, userId, incidentId, incident);
+      return this.createDefaultRecommendations(
+        orgId,
+        userId,
+        incidentId,
+        incident
+      );
     }
 
     const prompt = this.buildRecommendationsPrompt(incident, context);
@@ -981,18 +1102,37 @@ export class CrisisService {
       systemPrompt: CRISIS_SYSTEM_PROMPT,
     });
 
-    const recommendations = this.parseRecommendationsResponse(llmResponse.completion);
+    const recommendations = this.parseRecommendationsResponse(
+      llmResponse.completion
+    );
     const createdActions: CrisisAction[] = [];
 
     for (const rec of recommendations) {
-      const action = await this.createAiGeneratedAction(orgId, userId, incidentId, rec, llmResponse.model);
+      const action = await this.createAiGeneratedAction(
+        orgId,
+        userId,
+        incidentId,
+        rec,
+        llmResponse.model
+      );
       createdActions.push(action);
     }
 
-    await this.logAuditEvent(orgId, userId, incidentId, 'generate_recommendations', 'action', null, null, {
-      count: createdActions.length,
-      tokensUsed: (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0),
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      incidentId,
+      'generate_recommendations',
+      'action',
+      null,
+      null,
+      {
+        count: createdActions.length,
+        tokensUsed:
+          (llmResponse.usage?.promptTokens || 0) +
+          (llmResponse.usage?.completionTokens || 0),
+      }
+    );
 
     return createdActions;
   }
@@ -1015,7 +1155,10 @@ export class CrisisService {
       urgency: rec.urgency,
       estimated_duration_mins: rec.estimatedDurationMins || null,
       is_ai_generated: true,
-      generation_context: { rationale: rec.rationale, expectedOutcome: rec.expectedOutcome },
+      generation_context: {
+        rationale: rec.rationale,
+        expectedOutcome: rec.expectedOutcome,
+      },
       llm_model: llmModel,
       confidence_score: 75,
       linked_content_ids: [],
@@ -1043,7 +1186,8 @@ export class CrisisService {
     const defaultRecs: Partial<CrisisAction>[] = [
       {
         title: 'Issue holding statement',
-        description: 'Prepare and release initial holding statement acknowledging the situation',
+        description:
+          'Prepare and release initial holding statement acknowledging the situation',
         actionType: CrisisActionType.STATEMENT_RELEASE,
         priorityScore: 90,
         urgency: CrisisUrgency.IMMEDIATE,
@@ -1100,9 +1244,12 @@ export class CrisisService {
     const context = await this.assembleIncidentContext(orgId, incident);
 
     const format = data.format || CrisisBriefFormat.FULL_BRIEF;
-    const sectionsToGenerate = data.includeSections || this.getDefaultSectionsForFormat(format);
+    const sectionsToGenerate =
+      data.includeSections || this.getDefaultSectionsForFormat(format);
     const sectionsToExclude = data.excludeSections || [];
-    const finalSections = sectionsToGenerate.filter((s) => !sectionsToExclude.includes(s));
+    const finalSections = sectionsToGenerate.filter(
+      (s) => !sectionsToExclude.includes(s)
+    );
 
     // Mark previous briefs as not current
     await this.supabase
@@ -1144,7 +1291,8 @@ export class CrisisService {
       .select()
       .single();
 
-    if (briefError) throw new Error(`Failed to create brief: ${briefError.message}`);
+    if (briefError)
+      throw new Error(`Failed to create brief: ${briefError.message}`);
 
     // Generate each section
     const generatedSections: CrisisBriefSection[] = [];
@@ -1165,7 +1313,11 @@ export class CrisisService {
     }
 
     // Generate executive summary
-    const summaryResult = await this.generateExecutiveSummary(orgId, incident, context);
+    const summaryResult = await this.generateExecutiveSummary(
+      orgId,
+      incident,
+      context
+    );
     totalTokens += summaryResult.tokensUsed;
 
     // Generate key takeaways
@@ -1192,13 +1344,23 @@ export class CrisisService {
       .select()
       .single();
 
-    if (updateError) throw new Error(`Failed to update brief: ${updateError.message}`);
+    if (updateError)
+      throw new Error(`Failed to update brief: ${updateError.message}`);
 
-    await this.logAuditEvent(orgId, userId, incidentId, 'generate_brief', 'brief', brief.id, null, {
-      format,
-      sectionsGenerated: generatedSections.length,
-      totalTokens,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      incidentId,
+      'generate_brief',
+      'brief',
+      brief.id,
+      null,
+      {
+        format,
+        sectionsGenerated: generatedSections.length,
+        totalTokens,
+      }
+    );
 
     return {
       brief: this.mapBriefFromDb(updatedBrief),
@@ -1256,7 +1418,10 @@ export class CrisisService {
   /**
    * Get current brief for incident
    */
-  async getCurrentBrief(orgId: string, incidentId: string): Promise<CrisisBrief | null> {
+  async getCurrentBrief(
+    orgId: string,
+    incidentId: string
+  ): Promise<CrisisBrief | null> {
     const { data: brief, error } = await this.supabase
       .from('crisis_briefs')
       .select('*')
@@ -1310,10 +1475,13 @@ export class CrisisService {
       .eq('brief_id', briefId)
       .single();
 
-    if (sectionError || !section) throw new Error(`Section not found: ${sectionId}`);
+    if (sectionError || !section)
+      throw new Error(`Section not found: ${sectionId}`);
 
     if (data.preserveManualEdits && section.is_manually_edited) {
-      throw new Error('Section has manual edits. Set preserveManualEdits=false to overwrite.');
+      throw new Error(
+        'Section has manual edits. Set preserveManualEdits=false to overwrite.'
+      );
     }
 
     const incident = await this.getIncident(orgId, brief.incident_id);
@@ -1331,10 +1499,19 @@ export class CrisisService {
       sectionId
     );
 
-    await this.logAuditEvent(orgId, userId, brief.incident_id, 'regenerate_section', 'brief', briefId, null, {
-      sectionId,
-      sectionType: section.section_type,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      brief.incident_id,
+      'regenerate_section',
+      'brief',
+      briefId,
+      null,
+      {
+        sectionId,
+        sectionType: section.section_type,
+      }
+    );
 
     return {
       section: result.section,
@@ -1362,7 +1539,8 @@ export class CrisisService {
     if (data.title !== undefined) updates.title = data.title;
     if (data.content !== undefined) updates.content = data.content;
     if (data.summary !== undefined) updates.summary = data.summary;
-    if (data.bulletPoints !== undefined) updates.bullet_points = data.bulletPoints;
+    if (data.bulletPoints !== undefined)
+      updates.bullet_points = data.bulletPoints;
 
     const { data: section, error } = await this.supabase
       .from('crisis_brief_sections')
@@ -1414,12 +1592,22 @@ export class CrisisService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to create escalation rule: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to create escalation rule: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, null, 'create_rule', 'rule', rule.id, null, {
-      name: data.name,
-      ruleType: data.ruleType,
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      null,
+      'create_rule',
+      'rule',
+      rule.id,
+      null,
+      {
+        name: data.name,
+        ruleType: data.ruleType,
+      }
+    );
 
     return this.mapRuleFromDb(rule);
   }
@@ -1442,7 +1630,9 @@ export class CrisisService {
       query = query.eq('is_active', isActive);
     }
 
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: rules, count, error } = await query;
 
@@ -1467,13 +1657,18 @@ export class CrisisService {
     if (data.name !== undefined) updates.name = data.name;
     if (data.description !== undefined) updates.description = data.description;
     if (data.conditions !== undefined) updates.conditions = data.conditions;
-    if (data.escalationActions !== undefined) updates.escalation_actions = data.escalationActions;
-    if (data.escalationLevel !== undefined) updates.escalation_level = data.escalationLevel;
-    if (data.notifyChannels !== undefined) updates.notify_channels = data.notifyChannels;
+    if (data.escalationActions !== undefined)
+      updates.escalation_actions = data.escalationActions;
+    if (data.escalationLevel !== undefined)
+      updates.escalation_level = data.escalationLevel;
+    if (data.notifyChannels !== undefined)
+      updates.notify_channels = data.notifyChannels;
     if (data.notifyRoles !== undefined) updates.notify_roles = data.notifyRoles;
-    if (data.notifyUserIds !== undefined) updates.notify_user_ids = data.notifyUserIds;
+    if (data.notifyUserIds !== undefined)
+      updates.notify_user_ids = data.notifyUserIds;
     if (data.isActive !== undefined) updates.is_active = data.isActive;
-    if (data.cooldownMinutes !== undefined) updates.cooldown_minutes = data.cooldownMinutes;
+    if (data.cooldownMinutes !== undefined)
+      updates.cooldown_minutes = data.cooldownMinutes;
 
     const { data: rule, error } = await this.supabase
       .from('crisis_escalation_rules')
@@ -1485,9 +1680,18 @@ export class CrisisService {
 
     if (error) throw new Error(`Failed to update rule: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, null, 'update_rule', 'rule', ruleId, null, {
-      updates: Object.keys(updates),
-    });
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      null,
+      'update_rule',
+      'rule',
+      ruleId,
+      null,
+      {
+        updates: Object.keys(updates),
+      }
+    );
 
     return this.mapRuleFromDb(rule);
   }
@@ -1495,7 +1699,11 @@ export class CrisisService {
   /**
    * Delete escalation rule
    */
-  async deleteEscalationRule(orgId: string, userId: string, ruleId: string): Promise<void> {
+  async deleteEscalationRule(
+    orgId: string,
+    userId: string,
+    ruleId: string
+  ): Promise<void> {
     const { error } = await this.supabase
       .from('crisis_escalation_rules')
       .delete()
@@ -1505,7 +1713,16 @@ export class CrisisService {
 
     if (error) throw new Error(`Failed to delete rule: ${error.message}`);
 
-    await this.logAuditEvent(orgId, userId, null, 'delete_rule', 'rule', ruleId, null, {});
+    await this.logAuditEvent(
+      orgId,
+      userId,
+      null,
+      'delete_rule',
+      'rule',
+      ruleId,
+      null,
+      {}
+    );
   }
 
   /**
@@ -1531,7 +1748,9 @@ export class CrisisService {
 
       // Check cooldown
       if (rule.last_triggered_at) {
-        const cooldownEnd = new Date(rule.last_triggered_at).getTime() + rule.cooldown_minutes * 60 * 1000;
+        const cooldownEnd =
+          new Date(rule.last_triggered_at).getTime() +
+          rule.cooldown_minutes * 60 * 1000;
         if (Date.now() < cooldownEnd) continue;
       }
 
@@ -1539,18 +1758,34 @@ export class CrisisService {
       let matches = true;
 
       if (conditions.severityGte) {
-        const severityOrder = [CrisisSeverity.LOW, CrisisSeverity.MEDIUM, CrisisSeverity.HIGH, CrisisSeverity.CRITICAL, CrisisSeverity.SEVERE];
+        const severityOrder = [
+          CrisisSeverity.LOW,
+          CrisisSeverity.MEDIUM,
+          CrisisSeverity.HIGH,
+          CrisisSeverity.CRITICAL,
+          CrisisSeverity.SEVERE,
+        ];
         const signalIndex = severityOrder.indexOf(signal.severity);
-        const conditionIndex = severityOrder.indexOf(conditions.severityGte as CrisisSeverity);
+        const conditionIndex = severityOrder.indexOf(
+          conditions.severityGte as CrisisSeverity
+        );
         if (signalIndex < conditionIndex) matches = false;
       }
 
-      if (conditions.sentimentLte !== undefined && signal.sentimentScore !== undefined) {
-        if (signal.sentimentScore > (conditions.sentimentLte as number)) matches = false;
+      if (
+        conditions.sentimentLte !== undefined &&
+        signal.sentimentScore !== undefined
+      ) {
+        if (signal.sentimentScore > (conditions.sentimentLte as number))
+          matches = false;
       }
 
-      if (conditions.mentionVelocityGte !== undefined && signal.mentionVelocity !== undefined) {
-        if (signal.mentionVelocity < (conditions.mentionVelocityGte as number)) matches = false;
+      if (
+        conditions.mentionVelocityGte !== undefined &&
+        signal.mentionVelocity !== undefined
+      ) {
+        if (signal.mentionVelocity < (conditions.mentionVelocityGte as number))
+          matches = false;
       }
 
       if (matches) {
@@ -1575,10 +1810,19 @@ export class CrisisService {
           })
           .eq('id', rule.id);
 
-        await this.logAuditEvent(orgId, userId, null, 'rule_triggered', 'rule', rule.id, null, {
-          signalId: signal.id,
-          ruleName: rule.name,
-        });
+        await this.logAuditEvent(
+          orgId,
+          userId,
+          null,
+          'rule_triggered',
+          'rule',
+          rule.id,
+          null,
+          {
+            signalId: signal.id,
+            ruleName: rule.name,
+          }
+        );
 
         break; // Only trigger first matching rule
       }
@@ -1614,7 +1858,10 @@ export class CrisisService {
       .from('crisis_actions')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId)
-      .in('status', [CrisisActionStatus.RECOMMENDED, CrisisActionStatus.APPROVED]);
+      .in('status', [
+        CrisisActionStatus.RECOMMENDED,
+        CrisisActionStatus.APPROVED,
+      ]);
 
     // Escalated count
     const { count: escalatedCount } = await this.supabase
@@ -1688,7 +1935,12 @@ export class CrisisService {
     customInstructions?: string,
     existingSectionId?: string
   ): Promise<{ section: CrisisBriefSection; tokensUsed: number }> {
-    const prompt = this.buildSectionPrompt(sectionType, incident, context, customInstructions);
+    const prompt = this.buildSectionPrompt(
+      sectionType,
+      incident,
+      context,
+      customInstructions
+    );
     const config = CRISIS_SECTION_CONFIGS[sectionType];
 
     if (!this.llmRouter) {
@@ -1709,10 +1961,17 @@ export class CrisisService {
       };
 
       if (existingSectionId) {
-        await this.supabase.from('crisis_brief_sections').update(row).eq('id', existingSectionId);
+        await this.supabase
+          .from('crisis_brief_sections')
+          .update(row)
+          .eq('id', existingSectionId);
         row.id = existingSectionId;
       } else {
-        const { data: section } = await this.supabase.from('crisis_brief_sections').insert(row).select().single();
+        const { data: section } = await this.supabase
+          .from('crisis_brief_sections')
+          .insert(row)
+          .select()
+          .single();
         Object.assign(row, section);
       }
 
@@ -1726,8 +1985,12 @@ export class CrisisService {
       systemPrompt: CRISIS_SYSTEM_PROMPT,
     });
 
-    const tokensUsed = (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0);
-    const { content, bulletPoints } = this.parseSectionResponse(llmResponse.completion);
+    const tokensUsed =
+      (llmResponse.usage?.promptTokens || 0) +
+      (llmResponse.usage?.completionTokens || 0);
+    const { content, bulletPoints } = this.parseSectionResponse(
+      llmResponse.completion
+    );
 
     const row = {
       org_id: orgId,
@@ -1751,10 +2014,19 @@ export class CrisisService {
 
     let section;
     if (existingSectionId) {
-      const { data } = await this.supabase.from('crisis_brief_sections').update(row).eq('id', existingSectionId).select().single();
+      const { data } = await this.supabase
+        .from('crisis_brief_sections')
+        .update(row)
+        .eq('id', existingSectionId)
+        .select()
+        .single();
       section = data;
     } else {
-      const { data } = await this.supabase.from('crisis_brief_sections').insert(row).select().single();
+      const { data } = await this.supabase
+        .from('crisis_brief_sections')
+        .insert(row)
+        .select()
+        .single();
       section = data;
     }
 
@@ -1767,7 +2039,10 @@ export class CrisisService {
     _context: Record<string, unknown>
   ): Promise<{ content: string; tokensUsed: number }> {
     if (!this.llmRouter) {
-      return { content: `Executive summary for: ${incident.title}`, tokensUsed: 0 };
+      return {
+        content: `Executive summary for: ${incident.title}`,
+        tokensUsed: 0,
+      };
     }
 
     const prompt = `Generate a concise executive summary (2-3 paragraphs) for this crisis:
@@ -1795,17 +2070,24 @@ Be direct and executive-friendly.`;
 
     return {
       content: llmResponse.completion,
-      tokensUsed: (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0),
+      tokensUsed:
+        (llmResponse.usage?.promptTokens || 0) +
+        (llmResponse.usage?.completionTokens || 0),
     };
   }
 
   private async generateKeyTakeaways(
     incident: CrisisIncident,
     _context: Record<string, unknown>
-  ): Promise<{ takeaways: { title: string; content: string; priority: number }[]; tokensUsed: number }> {
+  ): Promise<{
+    takeaways: { title: string; content: string; priority: number }[];
+    tokensUsed: number;
+  }> {
     if (!this.llmRouter) {
       return {
-        takeaways: [{ title: 'Key Point', content: incident.title, priority: 1 }],
+        takeaways: [
+          { title: 'Key Point', content: incident.title, priority: 1 },
+        ],
         tokensUsed: 0,
       };
     }
@@ -1827,12 +2109,16 @@ Description: ${incident.description || 'No description'}`;
     try {
       takeaways = JSON.parse(llmResponse.completion);
     } catch {
-      takeaways = [{ title: 'Key Point', content: incident.title, priority: 1 }];
+      takeaways = [
+        { title: 'Key Point', content: incident.title, priority: 1 },
+      ];
     }
 
     return {
       takeaways,
-      tokensUsed: (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0),
+      tokensUsed:
+        (llmResponse.usage?.promptTokens || 0) +
+        (llmResponse.usage?.completionTokens || 0),
     };
   }
 
@@ -1881,7 +2167,9 @@ Trajectory: ${incident.trajectory}`;
 
     return {
       assessment,
-      tokensUsed: (llmResponse.usage?.promptTokens || 0) + (llmResponse.usage?.completionTokens || 0),
+      tokensUsed:
+        (llmResponse.usage?.promptTokens || 0) +
+        (llmResponse.usage?.completionTokens || 0),
     };
   }
 
@@ -1927,7 +2215,8 @@ Trajectory: ${incident.trajectory}`;
     _context: Record<string, unknown>,
     customInstructions?: string
   ): string {
-    const basePrompt = SECTION_PROMPTS[sectionType] || `Generate content for: ${sectionType}`;
+    const basePrompt =
+      SECTION_PROMPTS[sectionType] || `Generate content for: ${sectionType}`;
 
     return `${basePrompt}
 
@@ -1964,12 +2253,15 @@ Return JSON array with 3-5 recommendations. Each should have:
 - expectedOutcome: what success looks like`;
   }
 
-  private parseRecommendationsResponse(response: string): ActionRecommendation[] {
+  private parseRecommendationsResponse(
+    response: string
+  ): ActionRecommendation[] {
     try {
       const parsed = JSON.parse(response);
       if (Array.isArray(parsed)) {
         return parsed.map((r: Record<string, unknown>) => ({
-          actionType: (r.actionType as CrisisActionType) || CrisisActionType.OTHER,
+          actionType:
+            (r.actionType as CrisisActionType) || CrisisActionType.OTHER,
           title: (r.title as string) || 'Action',
           description: (r.description as string) || '',
           priority: Math.min(100, Math.max(1, (r.priority as number) || 50)),
@@ -1984,14 +2276,21 @@ Return JSON array with 3-5 recommendations. Each should have:
     return [];
   }
 
-  private parseSectionResponse(response: string): { content: string; bulletPoints: BulletPoint[] } {
+  private parseSectionResponse(response: string): {
+    content: string;
+    bulletPoints: BulletPoint[];
+  } {
     const lines = response.split('\n').filter((l) => l.trim());
     const bulletPoints: BulletPoint[] = [];
     const contentLines: string[] = [];
 
     for (const line of lines) {
       const trimmed = line.trim();
-      if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.match(/^\d+\./)) {
+      if (
+        trimmed.startsWith('- ') ||
+        trimmed.startsWith('* ') ||
+        trimmed.match(/^\d+\./)
+      ) {
         bulletPoints.push({
           text: trimmed.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, ''),
         });
@@ -2006,7 +2305,9 @@ Return JSON array with 3-5 recommendations. Each should have:
     };
   }
 
-  private getDefaultSectionsForFormat(format: CrisisBriefFormat): CrisisBriefSectionType[] {
+  private getDefaultSectionsForFormat(
+    format: CrisisBriefFormat
+  ): CrisisBriefSectionType[] {
     switch (format) {
       case CrisisBriefFormat.FULL_BRIEF:
         return [
@@ -2184,15 +2485,23 @@ Return JSON array with 3-5 recommendations. Each should have:
       mediaValueImpact: row.media_value_impact as number | undefined,
       propagationScore: row.propagation_score as number | undefined,
       riskScore: row.risk_score as number | undefined,
-      sentimentHistory: (row.sentiment_history as { timestamp: Date; score: number }[]) || [],
-      mentionHistory: (row.mention_history as { timestamp: Date; count: number }[]) || [],
+      sentimentHistory:
+        (row.sentiment_history as { timestamp: Date; score: number }[]) || [],
+      mentionHistory:
+        (row.mention_history as { timestamp: Date; count: number }[]) || [],
       status: row.status as IncidentStatus,
       isEscalated: (row.is_escalated as boolean) || false,
       escalationLevel: (row.escalation_level as number) || 0,
       firstDetectedAt: new Date(row.first_detected_at as string),
-      escalatedAt: row.escalated_at ? new Date(row.escalated_at as string) : undefined,
-      containedAt: row.contained_at ? new Date(row.contained_at as string) : undefined,
-      resolvedAt: row.resolved_at ? new Date(row.resolved_at as string) : undefined,
+      escalatedAt: row.escalated_at
+        ? new Date(row.escalated_at as string)
+        : undefined,
+      containedAt: row.contained_at
+        ? new Date(row.contained_at as string)
+        : undefined,
+      resolvedAt: row.resolved_at
+        ? new Date(row.resolved_at as string)
+        : undefined,
       closedAt: row.closed_at ? new Date(row.closed_at as string) : undefined,
       ownerId: row.owner_id as string | undefined,
       teamIds: (row.team_ids as string[]) || [],
@@ -2200,7 +2509,9 @@ Return JSON array with 3-5 recommendations. Each should have:
       llmModel: row.llm_model as string | undefined,
       llmGeneratedSummary: row.llm_generated_summary as string | undefined,
       llmRiskAssessment: row.llm_risk_assessment as RiskAssessment | undefined,
-      llmRecommendations: row.llm_recommendations as ActionRecommendation[] | undefined,
+      llmRecommendations: row.llm_recommendations as
+        | ActionRecommendation[]
+        | undefined,
       createdAt: new Date(row.created_at as string),
       updatedAt: new Date(row.updated_at as string),
     };
@@ -2217,7 +2528,8 @@ Return JSON array with 3-5 recommendations. Each should have:
       confidenceScore: (row.confidence_score as number) || 0,
       priorityScore: (row.priority_score as number) || 0,
       detectionMethod: row.detection_method as string,
-      triggerConditions: (row.trigger_conditions as Record<string, unknown>) || {},
+      triggerConditions:
+        (row.trigger_conditions as Record<string, unknown>) || {},
       sourceEvents: (row.source_events as string[]) || [],
       sourceSystems: (row.source_systems as CrisisSourceSystem[]) || [],
       sentimentScore: row.sentiment_score as number | undefined,
@@ -2229,12 +2541,18 @@ Return JSON array with 3-5 recommendations. Each should have:
       windowEnd: new Date(row.window_end as string),
       isActive: (row.is_active as boolean) || false,
       isEscalated: (row.is_escalated as boolean) || false,
-      escalatedAt: row.escalated_at ? new Date(row.escalated_at as string) : undefined,
+      escalatedAt: row.escalated_at
+        ? new Date(row.escalated_at as string)
+        : undefined,
       escalatedBy: row.escalated_by as string | undefined,
       linkedIncidentId: row.linked_incident_id as string | undefined,
-      acknowledgedAt: row.acknowledged_at ? new Date(row.acknowledged_at as string) : undefined,
+      acknowledgedAt: row.acknowledged_at
+        ? new Date(row.acknowledged_at as string)
+        : undefined,
       acknowledgedBy: row.acknowledged_by as string | undefined,
-      resolvedAt: row.resolved_at ? new Date(row.resolved_at as string) : undefined,
+      resolvedAt: row.resolved_at
+        ? new Date(row.resolved_at as string)
+        : undefined,
       resolvedBy: row.resolved_by as string | undefined,
       resolutionNotes: row.resolution_notes as string | undefined,
       createdAt: new Date(row.created_at as string),
@@ -2256,20 +2574,36 @@ Return JSON array with 3-5 recommendations. Each should have:
       dueAt: row.due_at ? new Date(row.due_at as string) : undefined,
       estimatedDurationMins: row.estimated_duration_mins as number | undefined,
       isAiGenerated: (row.is_ai_generated as boolean) || false,
-      generationContext: row.generation_context as Record<string, unknown> | undefined,
+      generationContext: row.generation_context as
+        | Record<string, unknown>
+        | undefined,
       llmModel: row.llm_model as string | undefined,
       confidenceScore: row.confidence_score as number | undefined,
       assignedTo: row.assigned_to as string | undefined,
       approvedBy: row.approved_by as string | undefined,
-      approvedAt: row.approved_at ? new Date(row.approved_at as string) : undefined,
-      startedAt: row.started_at ? new Date(row.started_at as string) : undefined,
-      completedAt: row.completed_at ? new Date(row.completed_at as string) : undefined,
+      approvedAt: row.approved_at
+        ? new Date(row.approved_at as string)
+        : undefined,
+      startedAt: row.started_at
+        ? new Date(row.started_at as string)
+        : undefined,
+      completedAt: row.completed_at
+        ? new Date(row.completed_at as string)
+        : undefined,
       completionNotes: row.completion_notes as string | undefined,
       outcome: row.outcome as 'success' | 'partial' | 'failed' | undefined,
       outcomeNotes: row.outcome_notes as string | undefined,
-      impactAssessment: row.impact_assessment as Record<string, unknown> | undefined,
+      impactAssessment: row.impact_assessment as
+        | Record<string, unknown>
+        | undefined,
       linkedContentIds: (row.linked_content_ids as string[]) || [],
-      attachments: (row.attachments as { id: string; name: string; url: string; type: string }[]) || [],
+      attachments:
+        (row.attachments as {
+          id: string;
+          name: string;
+          url: string;
+          type: string;
+        }[]) || [],
       createdAt: new Date(row.created_at as string),
       updatedAt: new Date(row.updated_at as string),
       createdBy: row.created_by as string,
@@ -2286,21 +2620,34 @@ Return JSON array with 3-5 recommendations. Each should have:
       format: row.format as CrisisBriefFormat,
       version: (row.version as number) || 1,
       executiveSummary: row.executive_summary as string | undefined,
-      keyTakeaways: (row.key_takeaways as { title: string; content: string; priority: number }[]) || [],
+      keyTakeaways:
+        (row.key_takeaways as {
+          title: string;
+          content: string;
+          priority: number;
+        }[]) || [],
       riskAssessment: row.risk_assessment as RiskAssessment | undefined,
       recommendations: (row.recommendations as ActionRecommendation[]) || [],
       status: row.status as 'draft' | 'generated' | 'reviewed' | 'approved',
       isCurrent: (row.is_current as boolean) || false,
-      generatedAt: row.generated_at ? new Date(row.generated_at as string) : undefined,
-      reviewedAt: row.reviewed_at ? new Date(row.reviewed_at as string) : undefined,
+      generatedAt: row.generated_at
+        ? new Date(row.generated_at as string)
+        : undefined,
+      reviewedAt: row.reviewed_at
+        ? new Date(row.reviewed_at as string)
+        : undefined,
       reviewedBy: row.reviewed_by as string | undefined,
-      approvedAt: row.approved_at ? new Date(row.approved_at as string) : undefined,
+      approvedAt: row.approved_at
+        ? new Date(row.approved_at as string)
+        : undefined,
       approvedBy: row.approved_by as string | undefined,
       llmModel: row.llm_model as string | undefined,
       llmTemperature: row.llm_temperature as number | undefined,
       totalTokensUsed: (row.total_tokens_used as number) || 0,
       generationDurationMs: row.generation_duration_ms as number | undefined,
-      generationContext: row.generation_context as Record<string, unknown> | undefined,
+      generationContext: row.generation_context as
+        | Record<string, unknown>
+        | undefined,
       sharedWith: (row.shared_with as string[]) || [],
       sharedAt: row.shared_at ? new Date(row.shared_at as string) : undefined,
       distributionChannels: (row.distribution_channels as string[]) || [],
@@ -2322,14 +2669,21 @@ Return JSON array with 3-5 recommendations. Each should have:
       summary: row.summary as string | undefined,
       bulletPoints: (row.bullet_points as BulletPoint[]) || [],
       supportingData: (row.supporting_data as Record<string, unknown>) || {},
-      sourceReferences: (row.source_references as { type: string; id?: string; title: string }[]) || [],
+      sourceReferences:
+        (row.source_references as {
+          type: string;
+          id?: string;
+          title: string;
+        }[]) || [],
       isGenerated: (row.is_generated as boolean) || false,
       isManuallyEdited: (row.is_manually_edited as boolean) || false,
       generationPrompt: row.generation_prompt as string | undefined,
       llmModel: row.llm_model as string | undefined,
       tokensUsed: row.tokens_used as number | undefined,
       generationDurationMs: row.generation_duration_ms as number | undefined,
-      generatedAt: row.generated_at ? new Date(row.generated_at as string) : undefined,
+      generatedAt: row.generated_at
+        ? new Date(row.generated_at as string)
+        : undefined,
       editedAt: row.edited_at ? new Date(row.edited_at as string) : undefined,
       editedBy: row.edited_by as string | undefined,
       createdAt: new Date(row.created_at as string),
@@ -2352,7 +2706,9 @@ Return JSON array with 3-5 recommendations. Each should have:
       notifyUserIds: (row.notify_user_ids as string[]) || [],
       isActive: (row.is_active as boolean) || false,
       isSystem: (row.is_system as boolean) || false,
-      lastTriggeredAt: row.last_triggered_at ? new Date(row.last_triggered_at as string) : undefined,
+      lastTriggeredAt: row.last_triggered_at
+        ? new Date(row.last_triggered_at as string)
+        : undefined,
       triggerCount: (row.trigger_count as number) || 0,
       cooldownMinutes: (row.cooldown_minutes as number) || 60,
       createdAt: new Date(row.created_at as string),

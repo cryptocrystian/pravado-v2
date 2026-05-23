@@ -8,9 +8,9 @@
  * @see https://supabase.com/docs/guides/auth/server-side/nextjs
  */
 
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -52,10 +52,14 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+  const { error: exchangeError } =
+    await supabase.auth.exchangeCodeForSession(code);
 
   if (exchangeError) {
-    console.error('[Auth Callback] Code exchange failed:', exchangeError.message);
+    console.error(
+      '[Auth Callback] Code exchange failed:',
+      exchangeError.message
+    );
     return NextResponse.redirect(
       `${origin}/callback?error=exchange_failed&error_description=${encodeURIComponent(exchangeError.message)}`
     );

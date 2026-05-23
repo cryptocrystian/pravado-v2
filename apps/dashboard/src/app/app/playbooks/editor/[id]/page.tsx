@@ -5,11 +5,19 @@
 
 'use client';
 
-import type { PlaybookBranchWithCommit, PlaybookGraph, MergeConflict } from '@pravado/types';
+import type {
+  PlaybookBranchWithCommit,
+  PlaybookGraph,
+  MergeConflict,
+} from '@pravado/types';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 
-import { useEditorStream, type GraphNode, type GraphEdge } from '@/hooks/useEditorStream';
+import {
+  useEditorStream,
+  type GraphNode,
+  type GraphEdge,
+} from '@/hooks/useEditorStream';
 import * as playbookApi from '@/lib/playbookApi';
 
 import { CommitModal } from '../components/CommitModal';
@@ -31,7 +39,9 @@ export default function PlaybookEditorPage() {
   // S23: Branch state
   const [branches, setBranches] = useState<PlaybookBranchWithCommit[]>([]);
   const [currentBranchId, setCurrentBranchId] = useState<string | undefined>();
-  const [currentBranch, setCurrentBranch] = useState<PlaybookBranchWithCommit | undefined>();
+  const [currentBranch, setCurrentBranch] = useState<
+    PlaybookBranchWithCommit | undefined
+  >();
 
   // S23: Modal state
   const [showCreateBranch, setShowCreateBranch] = useState(false);
@@ -40,27 +50,35 @@ export default function PlaybookEditorPage() {
   const [showVersionGraph, setShowVersionGraph] = useState(false);
   const [isCommitting, setIsCommitting] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
-  const [mergeConflicts, setMergeConflicts] = useState<MergeConflict[] | undefined>();
+  const [mergeConflicts, setMergeConflicts] = useState<
+    MergeConflict[] | undefined
+  >();
 
   // Editor stream (for future collaboration features)
   const { connected } = useEditorStream(playbookId, { enabled: true });
 
   // Load graph from branch's latest commit
-  const loadGraphFromBranch = useCallback(async (branchId: string) => {
-    try {
-      const branch = branches.find((b) => b.id === branchId) ||
-        (await playbookApi.listBranches(playbookId)).find((b) => b.id === branchId);
+  const loadGraphFromBranch = useCallback(
+    async (branchId: string) => {
+      try {
+        const branch =
+          branches.find((b) => b.id === branchId) ||
+          (await playbookApi.listBranches(playbookId)).find(
+            (b) => b.id === branchId
+          );
 
-      if (branch?.latestCommit?.graph) {
-        const graph = branch.latestCommit.graph as PlaybookGraph;
-        setNodes(graph.nodes as GraphNode[] || []);
-        setEdges(graph.edges as GraphEdge[] || []);
-        setIsDirty(false);
+        if (branch?.latestCommit?.graph) {
+          const graph = branch.latestCommit.graph as PlaybookGraph;
+          setNodes((graph.nodes as GraphNode[]) || []);
+          setEdges((graph.edges as GraphEdge[]) || []);
+          setIsDirty(false);
+        }
+      } catch (error) {
+        console.error('Failed to load graph from branch:', error);
       }
-    } catch (error) {
-      console.error('Failed to load graph from branch:', error);
-    }
-  }, [branches, playbookId]);
+    },
+    [branches, playbookId]
+  );
 
   // Load branches on mount
   useEffect(() => {
@@ -70,7 +88,8 @@ export default function PlaybookEditorPage() {
         setBranches(branchList);
 
         // Find main branch or first branch as default
-        const mainBranch = branchList.find((b) => b.name === 'main') || branchList[0];
+        const mainBranch =
+          branchList.find((b) => b.name === 'main') || branchList[0];
         if (mainBranch) {
           setCurrentBranchId(mainBranch.id);
           setCurrentBranch(mainBranch);
@@ -152,7 +171,11 @@ export default function PlaybookEditorPage() {
     sourceBranchId: string,
     targetBranchId: string,
     message?: string,
-    resolutions?: Array<{ nodeId?: string; edgeId?: string; resolution: 'ours' | 'theirs' }>
+    resolutions?: Array<{
+      nodeId?: string;
+      edgeId?: string;
+      resolution: 'ours' | 'theirs';
+    }>
   ) => {
     try {
       setIsMerging(true);
@@ -262,7 +285,10 @@ export default function PlaybookEditorPage() {
             Playbook Editor
           </h2>
           <p className="text-gray-600 mb-6">
-            Branch: <span className="font-semibold">{currentBranch?.name || 'Loading...'}</span>
+            Branch:{' '}
+            <span className="font-semibold">
+              {currentBranch?.name || 'Loading...'}
+            </span>
           </p>
           <p className="text-gray-500 mb-4">
             {nodes.length} nodes, {edges.length} edges
@@ -331,7 +357,12 @@ export default function PlaybookEditorPage() {
                 onClick={() => setShowVersionGraph(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

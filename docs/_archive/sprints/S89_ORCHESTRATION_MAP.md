@@ -20,26 +20,28 @@ Reputation Insights ──────┘         Executive Digests ←── Bo
 
 ### Flow Components
 
-| Step | Source | Destination | API Routes | UI Pages | Status |
-|------|--------|-------------|------------|----------|--------|
-| 1 | Media Monitoring | Exec Command Center | `/media-monitoring` | `/app/pr` | **Partially Wired** |
-| 2 | PR Intelligence | Exec Command Center | `/pr`, `/press-releases` | `/app/pr` | **Partially Wired** |
-| 3 | Crisis Detection | Exec Command Center | `/crisis` | `/app/scenarios` | **Partially Wired** |
-| 4 | Reputation Insights | Exec Command Center | `/brand-reputation` | None visible | **Not Wired** |
-| 5 | All Sources | Unified Narratives | `/unified-narratives` | `/app/exec` (embedded) | **Partially Wired** |
-| 6 | Unified Narratives | Executive Digests | `/executive-digests` | `/app/exec/digests` | **API Only** |
-| 7 | Unified Narratives | Board Reports | `/executive-board-reports` | `/app/exec/board-reports` | **API Only** |
+| Step | Source              | Destination         | API Routes                 | UI Pages                  | Status              |
+| ---- | ------------------- | ------------------- | -------------------------- | ------------------------- | ------------------- |
+| 1    | Media Monitoring    | Exec Command Center | `/media-monitoring`        | `/app/pr`                 | **Partially Wired** |
+| 2    | PR Intelligence     | Exec Command Center | `/pr`, `/press-releases`   | `/app/pr`                 | **Partially Wired** |
+| 3    | Crisis Detection    | Exec Command Center | `/crisis`                  | `/app/scenarios`          | **Partially Wired** |
+| 4    | Reputation Insights | Exec Command Center | `/brand-reputation`        | None visible              | **Not Wired**       |
+| 5    | All Sources         | Unified Narratives  | `/unified-narratives`      | `/app/exec` (embedded)    | **Partially Wired** |
+| 6    | Unified Narratives  | Executive Digests   | `/executive-digests`       | `/app/exec/digests`       | **API Only**        |
+| 7    | Unified Narratives  | Board Reports       | `/executive-board-reports` | `/app/exec/board-reports` | **API Only**        |
 
 ### Detailed Analysis
 
 #### Step 1-2: Media & PR to Exec Command Center
 
 **Intended Behavior:**
+
 - Media mentions flow into executive KPIs
 - PR coverage metrics aggregate to dashboard
 - AI generates insights from media patterns
 
 **Current Status: Partially Wired**
+
 - API: `executiveCommandCenterRoutes` exists (Sprint S61)
 - Service: Aggregates from multiple sources via `refreshDashboard()`
 - UI: `/app/exec/page.tsx` shows KPIs, insights, narratives
@@ -49,11 +51,13 @@ Reputation Insights ──────┘         Executive Digests ←── Bo
 #### Step 5: Unified Narratives
 
 **Intended Behavior:**
+
 - AI synthesizes cross-domain intelligence into executive narratives
 - Sections show source system attribution
 - Multiple format options (comprehensive, executive, crisis)
 
 **Current Status: Partially Wired**
+
 - API: Full CRUD + generation endpoints
 - Feature Flag: `ENABLE_UNIFIED_NARRATIVE_V2`
 - UI: Narrative panel exists in Exec dashboard
@@ -64,11 +68,13 @@ Reputation Insights ──────┘         Executive Digests ←── Bo
 #### Step 6-7: Digests & Board Reports
 
 **Intended Behavior:**
+
 - Weekly/daily digests auto-generated
 - Board reports compiled from narratives
 - Scheduled delivery and historical archive
 
 **Current Status: API Only**
+
 - API: Both routes exist
 - UI: Pages exist at `/app/exec/digests` and `/app/exec/board-reports`
 - **Gap**: Need to verify UI functionality against API
@@ -89,24 +95,26 @@ Crisis Detection ──> Scenario Simulations ──> Orchestration Suites
 
 ### Flow Components
 
-| Step | Source | Destination | API Routes | UI Pages | Status |
-|------|--------|-------------|------------|----------|--------|
-| 1 | Crisis Detection | Scenario Simulations | `/crisis` → `/ai-scenario-simulations` | `/app/scenarios` | **Partially Wired** |
-| 2 | Scenarios | Orchestration Suites | `/scenario-orchestrations` | `/app/scenarios/orchestrations` | **Partially Wired** |
-| 3 | Scenarios | Reality Maps | `/ai-scenario-simulations` → `/reality-maps` | None | **Not Wired** |
-| 4 | Reality Maps | Insight Conflicts | `/reality-maps` → `/insight-conflicts` | None | **Not Wired** |
-| 5 | Conflicts | Exec Dashboard | `/insight-conflicts` → `/exec-dashboards` | `/app/exec` | **Not Wired** |
+| Step | Source           | Destination          | API Routes                                   | UI Pages                        | Status              |
+| ---- | ---------------- | -------------------- | -------------------------------------------- | ------------------------------- | ------------------- |
+| 1    | Crisis Detection | Scenario Simulations | `/crisis` → `/ai-scenario-simulations`       | `/app/scenarios`                | **Partially Wired** |
+| 2    | Scenarios        | Orchestration Suites | `/scenario-orchestrations`                   | `/app/scenarios/orchestrations` | **Partially Wired** |
+| 3    | Scenarios        | Reality Maps         | `/ai-scenario-simulations` → `/reality-maps` | None                            | **Not Wired**       |
+| 4    | Reality Maps     | Insight Conflicts    | `/reality-maps` → `/insight-conflicts`       | None                            | **Not Wired**       |
+| 5    | Conflicts        | Exec Dashboard       | `/insight-conflicts` → `/exec-dashboards`    | `/app/exec`                     | **Not Wired**       |
 
 ### Detailed Analysis
 
 #### Step 1: Crisis to Scenarios
 
 **Intended Behavior:**
+
 - Active crisis triggers scenario recommendations
 - Crisis type informs simulation parameters
 - "What if" analysis for response options
 
 **Current Status: Partially Wired**
+
 - API: Both routes exist independently
 - Service: `aiScenarioSimulationRoutes` can reference scenarios
 - UI: `/app/scenarios` shows crisis-type scenarios
@@ -117,11 +125,13 @@ Crisis Detection ──> Scenario Simulations ──> Orchestration Suites
 #### Step 3: Scenarios to Reality Maps
 
 **Intended Behavior:**
+
 - Completed scenarios generate probability trees
 - Outcome branches visualized with confidence scores
 - Multiple paths analyzed simultaneously
 
 **Current Status: Not Wired**
+
 - API: Reality Maps routes exist (Sprint S73)
 - Feature Flag: `ENABLE_REALITY_MAPS`
 - **Critical Gap**: No UI page for Reality Maps
@@ -131,11 +141,13 @@ Crisis Detection ──> Scenario Simulations ──> Orchestration Suites
 #### Step 4: Reality Maps to Insight Conflicts
 
 **Intended Behavior:**
+
 - Conflicting outcome predictions detected
 - Cross-system contradictions surfaced
 - AI-assisted resolution recommendations
 
 **Current Status: Not Wired**
+
 - API: `insightConflictsRoutes` exists
 - Service: Conflict detection logic implemented
 - **Critical Gap**: No UI for conflict management
@@ -149,50 +161,53 @@ Crisis Detection ──> Scenario Simulations ──> Orchestration Suites
 ### PR to Content Flow
 
 **Intended Behavior:**
+
 - PR coverage success → content optimization suggestions
 - Journalist interests → content topic recommendations
 - Media gaps → content brief generation
 
 **Current Status: Not Wired**
 
-| Component | API | UI | Wired |
-|-----------|-----|-----|-------|
-| PR Metrics | `/pr`, `/media-monitoring` | `/app/pr` | Yes |
-| Content Library | `/content` | `/app/content` | Yes |
-| PR → Content Suggestions | None | None | **No** |
-| "Create brief for this coverage" | None | None | **No** |
+| Component                        | API                        | UI             | Wired  |
+| -------------------------------- | -------------------------- | -------------- | ------ |
+| PR Metrics                       | `/pr`, `/media-monitoring` | `/app/pr`      | Yes    |
+| Content Library                  | `/content`                 | `/app/content` | Yes    |
+| PR → Content Suggestions         | None                       | None           | **No** |
+| "Create brief for this coverage" | None                       | None           | **No** |
 
 ### Content to SEO Flow
 
 **Intended Behavior:**
+
 - Content published → keyword tracking
 - SEO opportunities → content brief suggestions
 - Content gaps identified from keyword analysis
 
 **Current Status: Partially Wired**
 
-| Component | API | UI | Wired |
-|-----------|-----|-----|-------|
-| Content Quality | `/content-quality` | `/app/content` | Yes |
-| SEO Keywords | `/seo` | `/app/seo` | Yes |
-| Content Gaps | `/content` | `/app/content` (panel) | Yes |
-| SEO → Brief Action | None | None | **No** |
+| Component          | API                | UI                     | Wired  |
+| ------------------ | ------------------ | ---------------------- | ------ |
+| Content Quality    | `/content-quality` | `/app/content`         | Yes    |
+| SEO Keywords       | `/seo`             | `/app/seo`             | Yes    |
+| Content Gaps       | `/content`         | `/app/content` (panel) | Yes    |
+| SEO → Brief Action | None               | None                   | **No** |
 
 ### SEO to PR Flow
 
 **Intended Behavior:**
+
 - High-value keywords → PR targeting suggestions
 - Backlink opportunities → journalist outreach
 - Search visibility → media strategy
 
 **Current Status: Not Wired**
 
-| Component | API | UI | Wired |
-|-----------|-----|-----|-------|
-| Keyword Analytics | `/seo` | `/app/seo` | Yes |
-| Journalist Database | `/pr`, `/media-lists` | `/app/pr` | Yes |
-| SEO → PR Suggestions | None | None | **No** |
-| Backlink → Outreach | None | None | **No** |
+| Component            | API                   | UI         | Wired  |
+| -------------------- | --------------------- | ---------- | ------ |
+| Keyword Analytics    | `/seo`                | `/app/seo` | Yes    |
+| Journalist Database  | `/pr`, `/media-lists` | `/app/pr`  | Yes    |
+| SEO → PR Suggestions | None                  | None       | **No** |
+| Backlink → Outreach  | None                  | None       | **No** |
 
 ---
 
@@ -215,30 +230,33 @@ Playbook Step 4: Update exec narrative (Executive Pillar)
 ### Current Status: Partially Wired
 
 **API Level:**
+
 - Playbook Execution Engine (S7, S9, S10, S11) exists
 - Step types: AGENT, DATA, BRANCH, API
 - Collaboration coordinator supports multi-agent
 - Memory system integration for context
 
 **Service Integration:**
+
 - Services exist independently
 - Playbook can call services via API steps
 - No native cross-service orchestration
 
 **UI Level:**
+
 - `/app/playbooks` shows playbook list and runs
 - No visual flow showing cross-pillar execution
 - No "which pillars are involved" indicator
 
 ### Wiring Status Table
 
-| Capability | API | Service | UI | Status |
-|------------|-----|---------|-----|--------|
-| Define cross-pillar playbook | Yes | Yes | Partial | **Functional** |
-| Execute across services | Yes | Via API calls | N/A | **Functional** |
-| Visualize pillar involvement | No | No | No | **Not Implemented** |
-| Show execution streaming | Partial | Yes | No | **API Only** |
-| Cross-pillar output aggregation | Yes | Yes | No | **API Only** |
+| Capability                      | API     | Service       | UI      | Status              |
+| ------------------------------- | ------- | ------------- | ------- | ------------------- |
+| Define cross-pillar playbook    | Yes     | Yes           | Partial | **Functional**      |
+| Execute across services         | Yes     | Via API calls | N/A     | **Functional**      |
+| Visualize pillar involvement    | No      | No            | No      | **Not Implemented** |
+| Show execution streaming        | Partial | Yes           | No      | **API Only**        |
+| Cross-pillar output aggregation | Yes     | Yes           | No      | **API Only**        |
 
 ---
 
@@ -268,19 +286,19 @@ Playbook Step 4: Update exec narrative (Executive Pillar)
 
 ## Flow Wiring Matrix
 
-| From Pillar | To Pillar | Data Flows | AI Suggests | UI Shows | Overall |
-|-------------|-----------|------------|-------------|----------|---------|
-| PR | Exec | Partial | No | Partial | **Weak** |
-| PR | Content | No | No | No | **None** |
-| Content | Exec | Partial | No | Partial | **Weak** |
-| Content | SEO | Yes | No | Partial | **Partial** |
-| SEO | Content | Partial | No | Partial | **Partial** |
-| SEO | PR | No | No | No | **None** |
-| Crisis | Scenarios | Partial | No | Yes | **Partial** |
-| Scenarios | Reality Maps | No | No | No | **None** |
-| Reality Maps | Conflicts | No | No | No | **None** |
-| Conflicts | Exec | No | No | No | **None** |
-| Playbooks | All Pillars | Yes (API) | No | No | **API Only** |
+| From Pillar  | To Pillar    | Data Flows | AI Suggests | UI Shows | Overall      |
+| ------------ | ------------ | ---------- | ----------- | -------- | ------------ |
+| PR           | Exec         | Partial    | No          | Partial  | **Weak**     |
+| PR           | Content      | No         | No          | No       | **None**     |
+| Content      | Exec         | Partial    | No          | Partial  | **Weak**     |
+| Content      | SEO          | Yes        | No          | Partial  | **Partial**  |
+| SEO          | Content      | Partial    | No          | Partial  | **Partial**  |
+| SEO          | PR           | No         | No          | No       | **None**     |
+| Crisis       | Scenarios    | Partial    | No          | Yes      | **Partial**  |
+| Scenarios    | Reality Maps | No         | No          | No       | **None**     |
+| Reality Maps | Conflicts    | No         | No          | No       | **None**     |
+| Conflicts    | Exec         | No         | No          | No       | **None**     |
+| Playbooks    | All Pillars  | Yes (API)  | No          | No       | **API Only** |
 
 ---
 

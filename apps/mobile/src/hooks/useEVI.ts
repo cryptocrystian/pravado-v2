@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+
 import { apiFetch } from '../lib/api';
 
 interface EVIData {
@@ -44,7 +45,9 @@ export function useEVI(period = '30d') {
     }
   }, [period]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return { data, history, loading, error, refresh };
 }

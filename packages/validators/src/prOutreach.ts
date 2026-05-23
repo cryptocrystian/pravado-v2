@@ -8,7 +8,12 @@ import { z } from 'zod';
 /**
  * Enums
  */
-export const outreachRunStatusSchema = z.enum(['running', 'completed', 'failed', 'stopped']);
+export const outreachRunStatusSchema = z.enum([
+  'running',
+  'completed',
+  'failed',
+  'stopped',
+]);
 
 export const outreachEventTypeSchema = z.enum([
   'sent',
@@ -392,29 +397,53 @@ export const outreachWebhookPayloadSchema = z.object({
  * Type inference
  */
 export type OutreachSequenceInput = z.infer<typeof outreachSequenceSchema>;
-export type CreateOutreachSequenceInput = z.infer<typeof createOutreachSequenceInputSchema>;
-export type UpdateOutreachSequenceInput = z.infer<typeof updateOutreachSequenceInputSchema>;
+export type CreateOutreachSequenceInput = z.infer<
+  typeof createOutreachSequenceInputSchema
+>;
+export type UpdateOutreachSequenceInput = z.infer<
+  typeof updateOutreachSequenceInputSchema
+>;
 
-export type OutreachSequenceStepInput = z.infer<typeof outreachSequenceStepSchema>;
-export type CreateOutreachStepInput = z.infer<typeof createOutreachStepInputSchema>;
-export type UpdateOutreachStepInput = z.infer<typeof updateOutreachStepInputSchema>;
+export type OutreachSequenceStepInput = z.infer<
+  typeof outreachSequenceStepSchema
+>;
+export type CreateOutreachStepInput = z.infer<
+  typeof createOutreachStepInputSchema
+>;
+export type UpdateOutreachStepInput = z.infer<
+  typeof updateOutreachStepInputSchema
+>;
 
 export type OutreachRunInput = z.infer<typeof outreachRunSchema>;
-export type CreateOutreachRunInput = z.infer<typeof createOutreachRunInputSchema>;
-export type UpdateOutreachRunInput = z.infer<typeof updateOutreachRunInputSchema>;
+export type CreateOutreachRunInput = z.infer<
+  typeof createOutreachRunInputSchema
+>;
+export type UpdateOutreachRunInput = z.infer<
+  typeof updateOutreachRunInputSchema
+>;
 
 export type OutreachEventInput = z.infer<typeof outreachEventSchema>;
-export type CreateOutreachEventInput = z.infer<typeof createOutreachEventInputSchema>;
+export type CreateOutreachEventInput = z.infer<
+  typeof createOutreachEventInputSchema
+>;
 
-export type ListOutreachSequencesQuery = z.infer<typeof listOutreachSequencesQuerySchema>;
+export type ListOutreachSequencesQuery = z.infer<
+  typeof listOutreachSequencesQuerySchema
+>;
 export type ListOutreachRunsQuery = z.infer<typeof listOutreachRunsQuerySchema>;
-export type ListOutreachEventsQuery = z.infer<typeof listOutreachEventsQuerySchema>;
+export type ListOutreachEventsQuery = z.infer<
+  typeof listOutreachEventsQuerySchema
+>;
 
-export type StartSequenceRunsInput = z.infer<typeof startSequenceRunsInputSchema>;
+export type StartSequenceRunsInput = z.infer<
+  typeof startSequenceRunsInputSchema
+>;
 export type StopRunInput = z.infer<typeof stopRunInputSchema>;
 export type AdvanceRunInput = z.infer<typeof advanceRunInputSchema>;
 
 export type SendPitchInput = z.infer<typeof sendPitchInputSchema>;
 export type SendPitchResponse = z.infer<typeof sendPitchResponseSchema>;
 
-export type OutreachWebhookPayload = z.infer<typeof outreachWebhookPayloadSchema>;
+export type OutreachWebhookPayload = z.infer<
+  typeof outreachWebhookPayloadSchema
+>;

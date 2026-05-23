@@ -78,10 +78,7 @@ class ExecutionEventBus {
         sub.handler(event);
       } catch (error) {
         // Log errors but don't let one handler failure affect others
-        console.error(
-          `Error in event handler for run ${event.runId}:`,
-          error
-        );
+        console.error(`Error in event handler for run ${event.runId}:`, error);
       }
     }
   }

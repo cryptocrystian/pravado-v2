@@ -43,7 +43,8 @@ export async function agentsRoutes(server: FastifyInstance) {
         {
           id: 'pitch-writer',
           name: 'Pitch Email Writer',
-          description: 'Generates personalized pitch emails for journalist outreach',
+          description:
+            'Generates personalized pitch emails for journalist outreach',
           category: 'pr',
           capabilities: ['writing', 'personalization', 'email-generation'],
           requiredInputs: ['journalists', 'pitchTopic', 'companyInfo'],
@@ -65,7 +66,11 @@ export async function agentsRoutes(server: FastifyInstance) {
           description:
             'Analyzes keywords for search volume, difficulty, and opportunity based on seed keywords and competitor analysis',
           category: 'seo',
-          capabilities: ['keyword-research', 'serp-analysis', 'opportunity-scoring'],
+          capabilities: [
+            'keyword-research',
+            'serp-analysis',
+            'opportunity-scoring',
+          ],
           requiredInputs: ['seedKeywords'],
           outputSchema: {
             keywords: {
@@ -86,7 +91,11 @@ export async function agentsRoutes(server: FastifyInstance) {
           description:
             'Audits web pages for SEO health, content quality, and optimization opportunities',
           category: 'seo',
-          capabilities: ['analysis', 'content-scoring', 'recommendation-generation'],
+          capabilities: [
+            'analysis',
+            'content-scoring',
+            'recommendation-generation',
+          ],
           requiredInputs: ['url'],
           outputSchema: {
             analysis: {
@@ -104,7 +113,8 @@ export async function agentsRoutes(server: FastifyInstance) {
         {
           id: 'seo-strategist',
           name: 'SEO Strategist',
-          description: 'Generates comprehensive SEO optimization plans based on audits and research',
+          description:
+            'Generates comprehensive SEO optimization plans based on audits and research',
           category: 'seo',
           capabilities: ['strategy', 'planning', 'prioritization'],
           requiredInputs: ['keywords', 'auditResults'],
@@ -123,7 +133,8 @@ export async function agentsRoutes(server: FastifyInstance) {
         {
           id: 'topic-generator',
           name: 'Topic Generator',
-          description: 'Generates content topic ideas based on industry, audience, and trends',
+          description:
+            'Generates content topic ideas based on industry, audience, and trends',
           category: 'content',
           capabilities: ['ideation', 'trend-analysis', 'audience-research'],
           requiredInputs: ['industry', 'targetAudience'],
@@ -143,9 +154,14 @@ export async function agentsRoutes(server: FastifyInstance) {
         {
           id: 'brief-creator',
           name: 'Content Brief Creator',
-          description: 'Creates detailed content briefs with structure, keywords, and guidelines',
+          description:
+            'Creates detailed content briefs with structure, keywords, and guidelines',
           category: 'content',
-          capabilities: ['brief-generation', 'structure-planning', 'keyword-integration'],
+          capabilities: [
+            'brief-generation',
+            'structure-planning',
+            'keyword-integration',
+          ],
           requiredInputs: ['topics'],
           outputSchema: {
             briefs: {
@@ -167,7 +183,11 @@ export async function agentsRoutes(server: FastifyInstance) {
           description:
             'Schedules content across a calendar with optimal timing and distribution',
           category: 'content',
-          capabilities: ['scheduling', 'timing-optimization', 'calendar-management'],
+          capabilities: [
+            'scheduling',
+            'timing-optimization',
+            'calendar-management',
+          ],
           requiredInputs: ['briefs'],
           outputSchema: {
             calendar: {
@@ -184,9 +204,14 @@ export async function agentsRoutes(server: FastifyInstance) {
         {
           id: 'data-analyzer',
           name: 'Data Analyzer',
-          description: 'Analyzes structured data and generates insights and visualizations',
+          description:
+            'Analyzes structured data and generates insights and visualizations',
           category: 'general',
-          capabilities: ['data-analysis', 'insights-generation', 'visualization'],
+          capabilities: [
+            'data-analysis',
+            'insights-generation',
+            'visualization',
+          ],
           requiredInputs: ['data'],
           outputSchema: {
             insights: {
@@ -203,7 +228,8 @@ export async function agentsRoutes(server: FastifyInstance) {
         {
           id: 'report-generator',
           name: 'Report Generator',
-          description: 'Generates comprehensive reports from data and analysis results',
+          description:
+            'Generates comprehensive reports from data and analysis results',
           category: 'general',
           capabilities: ['report-generation', 'formatting', 'summarization'],
           requiredInputs: ['data', 'reportType'],

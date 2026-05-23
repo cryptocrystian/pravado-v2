@@ -9,10 +9,11 @@
 
 export const dynamic = 'force-dynamic';
 
-import { use } from 'react';
 import Link from 'next/link';
-import { TemplateIntakeForm } from '@/components/content/TemplateIntakeForm';
+import { use } from 'react';
+
 import { mockTemplates } from '@/components/content/content-mock-data';
+import { TemplateIntakeForm } from '@/components/content/TemplateIntakeForm';
 
 interface PageProps {
   params: Promise<{ id: string }>;

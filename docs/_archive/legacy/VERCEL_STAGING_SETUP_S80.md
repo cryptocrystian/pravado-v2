@@ -56,12 +56,12 @@ The path should now show: `apps/dashboard`
 
 Vercel should auto-detect:
 
-| Setting | Expected Value |
-|---------|----------------|
-| Framework Preset | Next.js |
-| Build Command | `next build` (auto) |
-| Output Directory | `.next` (auto) |
-| Install Command | `pnpm install` (auto) |
+| Setting          | Expected Value        |
+| ---------------- | --------------------- |
+| Framework Preset | Next.js               |
+| Build Command    | `next build` (auto)   |
+| Output Directory | `.next` (auto)        |
+| Install Command  | `pnpm install` (auto) |
 
 If these aren't auto-detected, set them manually.
 
@@ -77,6 +77,7 @@ Because this is a monorepo, override the build command:
    ```
 
 **Alternative (shorter):** If Vercel times out with the above, use:
+
 ```
 cd ../.. && pnpm install && pnpm build
 ```
@@ -94,12 +95,12 @@ cd ../.. && pnpm install && pnpm build
 
 In the "Environment Variables" section, add each variable:
 
-| Variable Name | Value | Environments |
-|---------------|-------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://xxxxx.supabase.co` | All |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJ...` | All |
-| `NEXT_PUBLIC_API_URL` | `https://api-staging.pravado.com` | Preview |
-| `NEXT_PUBLIC_DASHBOARD_URL` | (leave blank for now) | Preview |
+| Variable Name                   | Value                             | Environments |
+| ------------------------------- | --------------------------------- | ------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | `https://xxxxx.supabase.co`       | All          |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJ...`                  | All          |
+| `NEXT_PUBLIC_API_URL`           | `https://api-staging.pravado.com` | Preview      |
+| `NEXT_PUBLIC_DASHBOARD_URL`     | (leave blank for now)             | Preview      |
 
 **How to add each variable:**
 
@@ -142,6 +143,7 @@ Once complete:
 ### Step 4.3: Note Your Deployment URL
 
 Copy the deployment URL. You'll need it for:
+
 - `NEXT_PUBLIC_DASHBOARD_URL` environment variable
 - API CORS configuration
 
@@ -183,10 +185,10 @@ To use a custom domain like `staging.pravado.com`:
 
 Visit these pages on your deployment:
 
-| URL Path | Expected |
-|----------|----------|
-| `/` | Landing page loads |
-| `/login` | Login page with Supabase auth |
+| URL Path      | Expected                         |
+| ------------- | -------------------------------- |
+| `/`           | Landing page loads               |
+| `/login`      | Login page with Supabase auth    |
 | `/onboarding` | Redirects to login if not authed |
 
 ### Step 6.2: Check Browser Console
@@ -198,11 +200,11 @@ Visit these pages on your deployment:
 
 **Common issues:**
 
-| Error | Solution |
-|-------|----------|
-| "Invalid Supabase URL" | Check `NEXT_PUBLIC_SUPABASE_URL` is correct |
-| CORS errors | API needs `CORS_ORIGIN` set to your dashboard URL |
-| 500 errors | Check build logs, verify env vars |
+| Error                  | Solution                                          |
+| ---------------------- | ------------------------------------------------- |
+| "Invalid Supabase URL" | Check `NEXT_PUBLIC_SUPABASE_URL` is correct       |
+| CORS errors            | API needs `CORS_ORIGIN` set to your dashboard URL |
+| 500 errors             | Check build logs, verify env vars                 |
 
 ### Step 6.3: Test Authentication Flow
 
@@ -244,15 +246,15 @@ To enable automated deployments via GitHub Actions:
 2. Click **Settings** → **Secrets and variables** → **Actions**
 3. Click **"New repository secret"** for each:
 
-| Secret Name | Value |
-|-------------|-------|
-| `VERCEL_TOKEN` | The token from step 7.1 |
-| `VERCEL_ORG_ID` | The organization ID |
-| `VERCEL_PROJECT_ID` | The project ID |
-| `NEXT_PUBLIC_SUPABASE_URL_STAGING` | Your Supabase URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY_STAGING` | Your Supabase anon key |
-| `NEXT_PUBLIC_API_URL_STAGING` | Your staging API URL |
-| `NEXT_PUBLIC_DASHBOARD_URL_STAGING` | Your Vercel deployment URL |
+| Secret Name                             | Value                      |
+| --------------------------------------- | -------------------------- |
+| `VERCEL_TOKEN`                          | The token from step 7.1    |
+| `VERCEL_ORG_ID`                         | The organization ID        |
+| `VERCEL_PROJECT_ID`                     | The project ID             |
+| `NEXT_PUBLIC_SUPABASE_URL_STAGING`      | Your Supabase URL          |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY_STAGING` | Your Supabase anon key     |
+| `NEXT_PUBLIC_API_URL_STAGING`           | Your staging API URL       |
+| `NEXT_PUBLIC_DASHBOARD_URL_STAGING`     | Your Vercel deployment URL |
 
 ### Step 7.3: Test GitHub Actions Deployment
 
@@ -271,6 +273,7 @@ To enable automated deployments via GitHub Actions:
 **Cause:** Shared packages not built before dashboard.
 
 **Fix:** Update build command to:
+
 ```
 cd ../.. && pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/validators build && pnpm --filter @pravado/utils build && pnpm --filter @pravado/feature-flags build && pnpm --filter @pravado/dashboard build
 ```
@@ -280,6 +283,7 @@ cd ../.. && pnpm install && pnpm --filter @pravado/types build && pnpm --filter 
 **Cause:** Vercel not detecting pnpm.
 
 **Fix:**
+
 1. Ensure `pnpm-lock.yaml` exists in repo root
 2. Or add build command: `corepack enable && pnpm install && ...`
 
@@ -288,6 +292,7 @@ cd ../.. && pnpm install && pnpm --filter @pravado/types build && pnpm --filter 
 **Cause:** Missing required environment variables.
 
 **Fix:** Verify these are set in Vercel:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
@@ -296,6 +301,7 @@ cd ../.. && pnpm install && pnpm --filter @pravado/types build && pnpm --filter 
 **Cause:** Supabase redirect URL not configured.
 
 **Fix:**
+
 1. Go to Supabase Dashboard → Authentication → URL Configuration
 2. Add your Vercel URL to **Redirect URLs**:
    - `https://your-project.vercel.app/**`
@@ -306,6 +312,7 @@ cd ../.. && pnpm install && pnpm --filter @pravado/types build && pnpm --filter 
 **Cause:** API not allowing requests from dashboard domain.
 
 **Fix:** Set `CORS_ORIGIN` on your API to include your Vercel URL:
+
 ```
 CORS_ORIGIN=https://your-project.vercel.app
 ```
@@ -316,27 +323,27 @@ CORS_ORIGIN=https://your-project.vercel.app
 
 ### Vercel Project Settings
 
-| Setting | Value |
-|---------|-------|
-| Root Directory | `apps/dashboard` |
-| Framework | Next.js |
-| Node Version | 20.x |
-| Build Command | `cd ../.. && pnpm install && pnpm build` |
+| Setting        | Value                                    |
+| -------------- | ---------------------------------------- |
+| Root Directory | `apps/dashboard`                         |
+| Framework      | Next.js                                  |
+| Node Version   | 20.x                                     |
+| Build Command  | `cd ../.. && pnpm install && pnpm build` |
 
 ### Minimum Environment Variables
 
-| Variable | Where to Get |
-|----------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard → Settings → API |
+| Variable                        | Where to Get                        |
+| ------------------------------- | ----------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase Dashboard → Settings → API |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API |
-| `NEXT_PUBLIC_API_URL` | Your API deployment URL |
+| `NEXT_PUBLIC_API_URL`           | Your API deployment URL             |
 
 ### GitHub Secrets (for CI/CD)
 
-| Secret | Where to Get |
-|--------|--------------|
-| `VERCEL_TOKEN` | Vercel → Account → Tokens |
-| `VERCEL_ORG_ID` | Vercel → Account → General |
+| Secret              | Where to Get                          |
+| ------------------- | ------------------------------------- |
+| `VERCEL_TOKEN`      | Vercel → Account → Tokens             |
+| `VERCEL_ORG_ID`     | Vercel → Account → General            |
 | `VERCEL_PROJECT_ID` | Vercel → Project → Settings → General |
 
 ---

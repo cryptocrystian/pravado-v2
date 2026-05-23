@@ -6,6 +6,7 @@
 'use client';
 
 import type { MediaListGenerationResult } from '@pravado/types';
+
 import { FitScoreBadge } from './FitScoreBadge';
 import { TierBadge } from './TierBadge';
 
@@ -15,7 +16,11 @@ interface MediaListResultPreviewProps {
   onCancel?: () => void;
 }
 
-export function MediaListResultPreview({ result, onSave, onCancel }: MediaListResultPreviewProps) {
+export function MediaListResultPreview({
+  result,
+  onSave,
+  onCancel,
+}: MediaListResultPreviewProps) {
   const { matches, metadata } = result;
 
   return (
@@ -28,31 +33,45 @@ export function MediaListResultPreview({ result, onSave, onCancel }: MediaListRe
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{metadata.totalMatches}</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {metadata.totalMatches}
+            </div>
             <div className="text-xs text-gray-500">Matches</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{metadata.tierDistribution.A}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {metadata.tierDistribution.A}
+            </div>
             <div className="text-xs text-gray-500">A-Tier</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{metadata.tierDistribution.B}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {metadata.tierDistribution.B}
+            </div>
             <div className="text-xs text-gray-500">B-Tier</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">{metadata.tierDistribution.C}</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {metadata.tierDistribution.C}
+            </div>
             <div className="text-xs text-gray-500">C-Tier</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-600">{metadata.tierDistribution.D}</div>
+            <div className="text-2xl font-bold text-gray-600">
+              {metadata.tierDistribution.D}
+            </div>
             <div className="text-xs text-gray-500">D-Tier</div>
           </div>
         </div>
 
         <div className="mt-4 text-sm text-gray-600">
-          Avg Fit Score: <span className="font-semibold">{Math.round(metadata.avgFitScore * 100)}%</span>
+          Avg Fit Score:{' '}
+          <span className="font-semibold">
+            {Math.round(metadata.avgFitScore * 100)}%
+          </span>
           <span className="mx-2">•</span>
-          Total Candidates Evaluated: <span className="font-semibold">{metadata.totalCandidates}</span>
+          Total Candidates Evaluated:{' '}
+          <span className="font-semibold">{metadata.totalCandidates}</span>
         </div>
       </div>
 
@@ -61,29 +80,50 @@ export function MediaListResultPreview({ result, onSave, onCancel }: MediaListRe
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Journalist
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Outlet
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Beat
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Tier
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Fit Score
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Reason
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {matches.map((match, index) => (
-              <tr key={match.journalistId} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+              <tr
+                key={match.journalistId}
+                className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+              >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex flex-col">
                     <div className="text-sm font-medium text-gray-900">

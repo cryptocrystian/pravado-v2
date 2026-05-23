@@ -15,7 +15,9 @@ test.describe('Journalist Relationship Timeline', () => {
   });
 
   test('should display timeline page with header', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('Journalist Relationship Timeline');
+    await expect(page.locator('h1')).toContainText(
+      'Journalist Relationship Timeline'
+    );
     await expect(page.locator('text=Comprehensive view')).toBeVisible();
   });
 
@@ -39,8 +41,12 @@ test.describe('Journalist Relationship Timeline', () => {
     await page.waitForSelector('[class*="timeline"]', { timeout: 5000 });
 
     // Check if events are displayed or empty state
-    const hasEvents = await page.locator('text=/Pitch Sent|Coverage Published|Manual Note/').count();
-    const hasEmptyState = await page.locator('text=No timeline events yet').count();
+    const hasEvents = await page
+      .locator('text=/Pitch Sent|Coverage Published|Manual Note/')
+      .count();
+    const hasEmptyState = await page
+      .locator('text=No timeline events yet')
+      .count();
 
     expect(hasEvents > 0 || hasEmptyState > 0).toBeTruthy();
   });
@@ -50,8 +56,12 @@ test.describe('Journalist Relationship Timeline', () => {
     await addNoteButton.click();
 
     await expect(page.locator('text=Add Manual Note')).toBeVisible();
-    await expect(page.locator('input[placeholder*="E.g., Phone call"]')).toBeVisible();
-    await expect(page.locator('textarea[placeholder*="Detailed notes"]')).toBeVisible();
+    await expect(
+      page.locator('input[placeholder*="E.g., Phone call"]')
+    ).toBeVisible();
+    await expect(
+      page.locator('textarea[placeholder*="Detailed notes"]')
+    ).toBeVisible();
   });
 
   test('should create a manual note', async ({ page }) => {
@@ -60,7 +70,10 @@ test.describe('Journalist Relationship Timeline', () => {
 
     // Fill in note details
     await page.fill('input[id="note-title"]', 'Test follow-up call');
-    await page.fill('textarea[id="note-description"]', 'Discussed Q4 coverage opportunities. Very interested in our story angle.');
+    await page.fill(
+      'textarea[id="note-description"]',
+      'Discussed Q4 coverage opportunities. Very interested in our story angle.'
+    );
 
     // Select positive sentiment
     await page.locator('button:has-text("Positive")').click();
@@ -86,7 +99,10 @@ test.describe('Journalist Relationship Timeline', () => {
     }
 
     // Check positive sentiment filter
-    await page.locator('input[type="checkbox"]').filter({ hasText: 'Positive' }).check();
+    await page
+      .locator('input[type="checkbox"]')
+      .filter({ hasText: 'Positive' })
+      .check();
 
     // Apply filters
     await page.locator('button:has-text("Apply Filters")').click();
@@ -127,7 +143,9 @@ test.describe('Journalist Relationship Timeline', () => {
     await page.waitForSelector('[class*="timeline"]', { timeout: 5000 });
 
     // Click first event (if exists)
-    const firstEvent = page.locator('[class*="rounded-lg"][class*="cursor-pointer"]').first();
+    const firstEvent = page
+      .locator('[class*="rounded-lg"][class*="cursor-pointer"]')
+      .first();
     if (await firstEvent.isVisible()) {
       await firstEvent.click();
 
@@ -138,7 +156,9 @@ test.describe('Journalist Relationship Timeline', () => {
 
   test('should display event details in drawer', async ({ page }) => {
     // Click an event
-    const firstEvent = page.locator('[class*="rounded-lg"][class*="cursor-pointer"]').first();
+    const firstEvent = page
+      .locator('[class*="rounded-lg"][class*="cursor-pointer"]')
+      .first();
     if (await firstEvent.isVisible()) {
       await firstEvent.click();
 
@@ -152,7 +172,9 @@ test.describe('Journalist Relationship Timeline', () => {
 
   test('should generate narrative', async ({ page }) => {
     // Click quick action to generate narrative
-    const narrativeButton = page.locator('button:has-text("Generate 30-day narrative")').first();
+    const narrativeButton = page
+      .locator('button:has-text("Generate 30-day narrative")')
+      .first();
 
     if (await narrativeButton.isVisible()) {
       await narrativeButton.click();
@@ -185,7 +207,9 @@ test.describe('Journalist Relationship Timeline', () => {
   });
 
   test('should auto-cluster events', async ({ page }) => {
-    const clusterButton = page.locator('button:has-text("Auto-cluster events")');
+    const clusterButton = page.locator(
+      'button:has-text("Auto-cluster events")'
+    );
 
     if (await clusterButton.isVisible()) {
       await clusterButton.click();
@@ -201,7 +225,7 @@ test.describe('Journalist Relationship Timeline', () => {
     // Wait for pagination controls
     const nextButton = page.locator('button:has-text("Next")');
 
-    if (await nextButton.isVisible() && !await nextButton.isDisabled()) {
+    if ((await nextButton.isVisible()) && !(await nextButton.isDisabled())) {
       await nextButton.click();
 
       // Wait for new events to load
@@ -237,8 +261,12 @@ test.describe('Journalist Relationship Timeline', () => {
 
     if (await emptyState.isVisible()) {
       await expect(emptyState).toBeVisible();
-      await expect(page.locator('text=Start tracking interactions')).toBeVisible();
-      await expect(page.locator('button:has-text("Add First Note")')).toBeVisible();
+      await expect(
+        page.locator('text=Start tracking interactions')
+      ).toBeVisible();
+      await expect(
+        page.locator('button:has-text("Add First Note")')
+      ).toBeVisible();
     }
   });
 
@@ -257,12 +285,16 @@ test.describe('Journalist Relationship Timeline', () => {
 
   test('should close event drawer', async ({ page }) => {
     // Open drawer
-    const firstEvent = page.locator('[class*="rounded-lg"][class*="cursor-pointer"]').first();
+    const firstEvent = page
+      .locator('[class*="rounded-lg"][class*="cursor-pointer"]')
+      .first();
     if (await firstEvent.isVisible()) {
       await firstEvent.click();
 
       // Close drawer
-      const closeButton = page.locator('button[aria-label="Close"]').or(page.locator('svg').filter({ hasText: '×' }).first());
+      const closeButton = page
+        .locator('button[aria-label="Close"]')
+        .or(page.locator('svg').filter({ hasText: '×' }).first());
       await closeButton.click();
 
       // Verify drawer closed
@@ -325,7 +357,7 @@ test.describe('Timeline Performance', () => {
     // Scroll through multiple pages
     for (let i = 0; i < 3; i++) {
       const nextButton = page.locator('button:has-text("Next")');
-      if (await nextButton.isVisible() && !await nextButton.isDisabled()) {
+      if ((await nextButton.isVisible()) && !(await nextButton.isDisabled())) {
         await nextButton.click();
         await page.waitForTimeout(300);
       }

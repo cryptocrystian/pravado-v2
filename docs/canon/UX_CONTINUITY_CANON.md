@@ -12,6 +12,7 @@
 This document defines **experience-level invariants** that ensure Pravado feels like a single integrated orchestration platform, not a collection of siloed tools.
 
 These invariants govern:
+
 - How users perceive and navigate the platform
 - How AI systems (SAGE, CRAFT, CiteMind) manifest in the experience
 - How pillars relate to each other visually and behaviorally
@@ -40,12 +41,14 @@ Partial compliance is **explicitly allowed**. Surfaces evolve incrementally towa
 **The user operates a unified orchestration system, not separate tools.**
 
 Requirements:
+
 - At any point in the platform, the user must be able to answer: "What is Pravado doing for me right now?"
 - Navigation between pillars must feel like moving within a single workspace, not switching applications
 - The platform's AI presence (SAGE) must be perceivable as a consistent entity across all surfaces
 - Cross-pillar effects of actions must be visible or discoverable without leaving the current context
 
 Violation indicators:
+
 - User must "start over" mentally when switching pillars
 - AI behavior feels inconsistent or disconnected between surfaces
 - Actions in one pillar have invisible effects on another
@@ -57,12 +60,14 @@ Violation indicators:
 **Every session begins with clarity about what needs attention.**
 
 Requirements:
+
 - The platform must surface prioritized actions within the first interaction
 - Entry points must communicate: (1) what's urgent, (2) what's progressing, (3) what's blocked
 - Users must not be required to navigate to discover what needs their attention
 - SAGE proposals and CRAFT suggestions must be immediately visible on entry
 
 Violation indicators:
+
 - User lands on an empty or static dashboard
 - Urgent items are buried in navigation
 - User must click through multiple levels to find actionable work
@@ -74,6 +79,7 @@ Violation indicators:
 **The automation mode (Manual, Copilot, Autopilot) visibly shapes the experience.**
 
 Requirements:
+
 - The current automation mode must be visible and comprehensible at all times
 - UI behavior must change perceptibly based on mode:
   - **Manual**: All actions require explicit user initiation
@@ -83,6 +89,7 @@ Requirements:
 - Mode ceiling per surface/action must be discoverable (some actions may not support Autopilot)
 
 Violation indicators:
+
 - User is unaware of current mode
 - Mode has no visible effect on the interface
 - Autopilot actions occur without any monitoring mechanism
@@ -94,6 +101,7 @@ Violation indicators:
 **Every AI action, proposal, or recommendation must be explainable on demand.**
 
 Requirements:
+
 - SAGE proposals must include: (1) what it proposes, (2) why, (3) expected impact
 - Executed actions must be auditable: what happened, when, why it was triggered
 - CiteMind assessments must show reasoning, not just scores
@@ -101,6 +109,7 @@ Requirements:
 - Causal chains linking actions to outcomes must be traceable
 
 Violation indicators:
+
 - AI produces outputs without justification
 - User cannot understand why something was recommended
 - Audit trail is incomplete or inaccessible
@@ -112,6 +121,7 @@ Violation indicators:
 **Actions in one pillar visibly affect related pillars.**
 
 Requirements:
+
 - When an action impacts another pillar, that impact must be surfaced:
   - At minimum: an indicator or badge
   - Ideally: a preview or summary of the cross-pillar effect
@@ -120,6 +130,7 @@ Requirements:
 - CRAFT orchestration across pillars must be visible (e.g., content feeding PR pitches)
 
 Violation indicators:
+
 - User is surprised by changes in another pillar
 - Cross-pillar relationships are only visible in reports, not real-time
 - Actions appear isolated when they have dependencies
@@ -131,6 +142,7 @@ Violation indicators:
 **The user always knows whether something is happening, completed, or blocked.**
 
 Requirements:
+
 - Long-running operations must show progress indicators
 - Completed actions must confirm success and summarize outcomes
 - Blocked or failed actions must explain why and offer remediation paths
@@ -138,6 +150,7 @@ Requirements:
 - State changes must be acknowledged visually within 200ms
 
 Violation indicators:
+
 - User clicks and nothing visibly happens
 - Completion is silent or ambiguous
 - Errors disappear without explanation
@@ -149,6 +162,7 @@ Violation indicators:
 **Information density adapts to context; focus is preserved during execution.**
 
 Requirements:
+
 - Surfaces must adapt density based on content volume and user intent
 - During action execution (reviewing proposals, editing content), distractions must be minimized
 - Overview surfaces may be denser; execution surfaces must be focused
@@ -156,6 +170,7 @@ Requirements:
 - Visual hierarchy must ensure the most important element is immediately apparent
 
 Violation indicators:
+
 - Critical information competes with secondary details
 - User loses context during multi-step flows
 - Density is fixed regardless of content volume
@@ -167,6 +182,7 @@ Violation indicators:
 **Pillars may have unique workflows, but must share platform-level patterns.**
 
 Requirements:
+
 - Each pillar may define specialized views, actions, and workflows
 - Shared patterns must be consistent across pillars:
   - Navigation behavior
@@ -178,6 +194,7 @@ Requirements:
 - A user proficient in one pillar should recognize patterns in another
 
 Violation indicators:
+
 - Same action behaves differently across pillars without justification
 - Visual language diverges in ways that confuse users
 - Pillar feels like a different product
@@ -188,17 +205,18 @@ Violation indicators:
 
 This canon operates in relationship with other canonical documents:
 
-| Document | Relationship |
-|----------|-------------|
-| `DS_v3_PRINCIPLES.md` | Design tokens, color system, typography. UX Continuity Canon governs behavior; DS_v3 governs appearance. |
-| `DS_v3_1_EXPRESSION.md` | Visual expression guidelines. UX Continuity Canon is agnostic to specific visual treatments. |
-| `AUTOMATION_MODES_UX.md` | Detailed mode behavior. UX Continuity Canon defines the invariant; AUTOMATION_MODES_UX defines implementation. |
-| `CRAFT_EXECUTION_MODEL.md` | Technical execution model. UX Continuity Canon governs how execution is surfaced to users. |
-| `CONTENT_WORK_SURFACE_CONTRACT.md` | Content pillar contract. Must comply with UX Continuity Canon invariants. |
-| `PR_WORK_SURFACE_CONTRACT.md` | PR pillar contract. Must comply with UX Continuity Canon invariants. |
-| `COMMAND-CENTER-UI.md` | Command Center contract. Must comply with UX Continuity Canon invariants. |
+| Document                           | Relationship                                                                                                   |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `DS_v3_PRINCIPLES.md`              | Design tokens, color system, typography. UX Continuity Canon governs behavior; DS_v3 governs appearance.       |
+| `DS_v3_1_EXPRESSION.md`            | Visual expression guidelines. UX Continuity Canon is agnostic to specific visual treatments.                   |
+| `AUTOMATION_MODES_UX.md`           | Detailed mode behavior. UX Continuity Canon defines the invariant; AUTOMATION_MODES_UX defines implementation. |
+| `CRAFT_EXECUTION_MODEL.md`         | Technical execution model. UX Continuity Canon governs how execution is surfaced to users.                     |
+| `CONTENT_WORK_SURFACE_CONTRACT.md` | Content pillar contract. Must comply with UX Continuity Canon invariants.                                      |
+| `PR_WORK_SURFACE_CONTRACT.md`      | PR pillar contract. Must comply with UX Continuity Canon invariants.                                           |
+| `COMMAND-CENTER-UI.md`             | Command Center contract. Must comply with UX Continuity Canon invariants.                                      |
 
 **Conflict Resolution**:
+
 - If there is conflict between a pillar implementation and this canon, **the canon wins**
 - However, remediation is **discretionary and planned**, not automatic
 - Violations should be **flagged**, not auto-fixed
@@ -211,6 +229,7 @@ This canon operates in relationship with other canonical documents:
 ### Flagging Violations
 
 When reviewing or generating UX work:
+
 1. Identify which invariant applies
 2. Assess compliance: **Compliant**, **Partial**, or **Violation**
 3. If Partial or Violation: flag explicitly with invariant reference
@@ -232,11 +251,12 @@ When reviewing or generating UX work:
 
 ## 13. Versioning
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 0.1 | 2026-01-27 | Initial canon creation |
+| Version | Date       | Changes                |
+| ------- | ---------- | ---------------------- |
+| 0.1     | 2026-01-27 | Initial canon creation |
 
 This canon is **v0.1** and will evolve based on:
+
 - Pillar implementation learnings
 - User research findings
 - Platform expansion (SEO/AEO, Ads, CiteMind surfaces)
@@ -247,13 +267,13 @@ Changes to invariants require explicit versioning and stakeholder review.
 
 ## Appendix: Invariant Quick Reference
 
-| # | Invariant | Core Requirement |
-|---|-----------|------------------|
-| 3 | Core Mental Model | User operates unified orchestration, not separate tools |
-| 4 | Entry Point | Session begins with clarity about what needs attention |
-| 5 | Mode-Driven | Automation mode visibly shapes the experience |
-| 6 | Explainability | Every AI action explainable on demand |
-| 7 | Cross-Pillar Awareness | Actions in one pillar visibly affect related pillars |
-| 8 | Progress Feedback | User always knows if something is happening, done, or blocked |
-| 9 | Density & Focus | Information density adapts; focus preserved during execution |
-| 10 | Pillar Autonomy + Unity | Unique workflows, shared platform patterns |
+| #   | Invariant               | Core Requirement                                              |
+| --- | ----------------------- | ------------------------------------------------------------- |
+| 3   | Core Mental Model       | User operates unified orchestration, not separate tools       |
+| 4   | Entry Point             | Session begins with clarity about what needs attention        |
+| 5   | Mode-Driven             | Automation mode visibly shapes the experience                 |
+| 6   | Explainability          | Every AI action explainable on demand                         |
+| 7   | Cross-Pillar Awareness  | Actions in one pillar visibly affect related pillars          |
+| 8   | Progress Feedback       | User always knows if something is happening, done, or blocked |
+| 9   | Density & Focus         | Information density adapts; focus preserved during execution  |
+| 10  | Pillar Autonomy + Unity | Unique workflows, shared platform patterns                    |

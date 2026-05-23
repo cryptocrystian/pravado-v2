@@ -93,7 +93,10 @@ interface ListSystemPersonalitiesResponse {
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -106,7 +109,10 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function personalitiesRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // Services
   const personalityStore = new PersonalityStore(supabase, { debugMode: false });
@@ -149,8 +155,12 @@ export async function personalitiesRoutes(server: FastifyInstance) {
 
       // Parse query params
       const validation = listPersonalitiesQuerySchema.safeParse({
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       if (!validation.success) {
@@ -254,7 +264,10 @@ export async function personalitiesRoutes(server: FastifyInstance) {
       }
 
       try {
-        const personality = await personalityStore.getPersonality(orgId, request.params.id);
+        const personality = await personalityStore.getPersonality(
+          orgId,
+          request.params.id
+        );
 
         if (!personality) {
           return reply.code(404).send({
@@ -325,7 +338,8 @@ export async function personalitiesRoutes(server: FastifyInstance) {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid request body',
+            message:
+              validation.error.errors[0]?.message || 'Invalid request body',
           },
         });
       }
@@ -596,7 +610,10 @@ export async function personalitiesRoutes(server: FastifyInstance) {
       }
 
       try {
-        await personalityStore.removePersonalityFromAgent(orgId, request.params.agentId);
+        await personalityStore.removePersonalityFromAgent(
+          orgId,
+          request.params.agentId
+        );
 
         return {
           success: true,

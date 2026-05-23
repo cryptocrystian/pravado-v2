@@ -70,7 +70,8 @@ export function ValidationIssuesModal({
             )}
             {warningIssues.length > 0 && (
               <span className="text-yellow-600 font-medium">
-                {warningIssues.length} warning{warningIssues.length !== 1 ? 's' : ''}
+                {warningIssues.length} warning
+                {warningIssues.length !== 1 ? 's' : ''}
               </span>
             )}
           </div>

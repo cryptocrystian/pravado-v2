@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowUp, ArrowDown, Minus, Sparkle } from '@phosphor-icons/react';
+
 import type { CitationSignal } from '../editor-mock-data';
 
 const trendConfig = {

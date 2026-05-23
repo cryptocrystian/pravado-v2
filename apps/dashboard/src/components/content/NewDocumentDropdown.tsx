@@ -1,8 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import {
+  Lightning,
+  Layout,
+  PencilSimple,
+  CaretDown,
+} from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
-import { Lightning, Layout, PencilSimple, CaretDown } from '@phosphor-icons/react';
+import { useState, useRef, useEffect } from 'react';
+
 import { mockBriefs } from './content-mock-data';
 
 export function NewDocumentDropdown() {
@@ -12,7 +18,8 @@ export function NewDocumentDropdown() {
 
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -23,21 +30,32 @@ export function NewDocumentDropdown() {
       icon: <Lightning size={18} weight="regular" className="text-cc-cyan" />,
       label: 'From SAGE\u2122 Brief',
       sublabel: `${mockBriefs.length} ready`,
-      onClick: () => { setOpen(false); router.push('/app/content/new?view=briefs'); },
+      onClick: () => {
+        setOpen(false);
+        router.push('/app/content/new?view=briefs');
+      },
       highlight: true,
     },
     {
       icon: <Layout size={18} weight="regular" className="text-white/70" />,
       label: 'From Template',
       sublabel: '8 content types',
-      onClick: () => { setOpen(false); router.push('/app/content/new?view=templates'); },
+      onClick: () => {
+        setOpen(false);
+        router.push('/app/content/new?view=templates');
+      },
       highlight: false,
     },
     {
-      icon: <PencilSimple size={18} weight="regular" className="text-white/70" />,
+      icon: (
+        <PencilSimple size={18} weight="regular" className="text-white/70" />
+      ),
       label: 'Blank Document',
       sublabel: 'Open editor directly',
-      onClick: () => { setOpen(false); router.push('/app/content/doc-new'); },
+      onClick: () => {
+        setOpen(false);
+        router.push('/app/content/doc-new');
+      },
       highlight: false,
     },
   ];
@@ -50,7 +68,11 @@ export function NewDocumentDropdown() {
         className="flex items-center gap-1.5 bg-cc-cyan text-cc-page rounded-xl px-4 py-2 text-sm font-medium hover:bg-cc-cyan/90 transition-colors"
       >
         + New
-        <CaretDown size={14} weight="bold" className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        <CaretDown
+          size={14}
+          weight="bold"
+          className={`transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {open && (
@@ -64,13 +86,17 @@ export function NewDocumentDropdown() {
                 i < options.length - 1 ? 'border-b border-white/8' : ''
               }`}
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                opt.highlight ? 'bg-cc-cyan/10' : 'bg-white/5'
-              }`}>
+              <div
+                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  opt.highlight ? 'bg-cc-cyan/10' : 'bg-white/5'
+                }`}
+              >
                 {opt.icon}
               </div>
               <div>
-                <p className={`text-sm font-medium ${opt.highlight ? 'text-white' : 'text-white/90'}`}>
+                <p
+                  className={`text-sm font-medium ${opt.highlight ? 'text-white' : 'text-white/90'}`}
+                >
                   {opt.label}
                 </p>
                 <p className="text-xs text-white/45">{opt.sublabel}</p>

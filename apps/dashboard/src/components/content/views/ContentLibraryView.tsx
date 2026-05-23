@@ -11,11 +11,17 @@
  */
 
 import { useState, useMemo } from 'react';
-import type { ContentAsset, DensityLevel, ContentStatus, ContentType } from '../types';
+
 import { ContentAssetCard } from '../components/ContentAssetCard';
-import { ContentFiltersPanel } from '../components/ContentFiltersPanel';
 import { ContentEmptyState } from '../components/ContentEmptyState';
+import { ContentFiltersPanel } from '../components/ContentFiltersPanel';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
+import type {
+  ContentAsset,
+  DensityLevel,
+  ContentStatus,
+  ContentType,
+} from '../types';
 
 interface ContentLibraryViewProps {
   /** Content assets to display */
@@ -74,7 +80,8 @@ export function ContentLibraryView({
       // Type filter
       if (typeFilter && asset.contentType !== typeFilter) return false;
       // Entity filter
-      if (entityFilter && !asset.entityAssociations?.includes(entityFilter)) return false;
+      if (entityFilter && !asset.entityAssociations?.includes(entityFilter))
+        return false;
       // Search query
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
@@ -100,10 +107,12 @@ export function ContentLibraryView({
   const density = calculateDensity(paginatedAssets.length);
 
   // Reset page when filters change
-  const handleFilterChange = <T,>(setter: (val: T) => void) => (val: T) => {
-    setter(val);
-    setPage(1);
-  };
+  const handleFilterChange =
+    <T,>(setter: (val: T) => void) =>
+    (val: T) => {
+      setter(val);
+      setPage(1);
+    };
 
   if (isLoading) {
     return (
@@ -127,7 +136,9 @@ export function ContentLibraryView({
     return (
       <div className="p-4">
         <div className="p-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg">
-          <h4 className="text-sm font-semibold text-semantic-danger">Failed to load library</h4>
+          <h4 className="text-sm font-semibold text-semantic-danger">
+            Failed to load library
+          </h4>
           <p className="text-xs text-white/55 mt-1">{error.message}</p>
         </div>
       </div>
@@ -162,8 +173,10 @@ export function ContentLibraryView({
       {/* Results count */}
       <div className="px-4 py-2 flex items-center justify-between border-b border-slate-4">
         <span className="text-xs text-white/40">
-          {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'}
-          {(statusFilter || typeFilter || entityFilter || searchQuery) && ' (filtered)'}
+          {filteredAssets.length}{' '}
+          {filteredAssets.length === 1 ? 'asset' : 'assets'}
+          {(statusFilter || typeFilter || entityFilter || searchQuery) &&
+            ' (filtered)'}
         </span>
         <span className="text-xs text-white/30 uppercase tracking-wider">
           {density} density
@@ -174,7 +187,9 @@ export function ContentLibraryView({
       <div className="flex-1 overflow-y-auto p-4">
         {paginatedAssets.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-sm text-white/50">No assets match your filters</p>
+            <p className="text-sm text-white/50">
+              No assets match your filters
+            </p>
             <button
               onClick={() => {
                 setStatusFilter('');
@@ -193,8 +208,8 @@ export function ContentLibraryView({
               density === 'comfortable'
                 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                 : density === 'standard'
-                ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
-                : 'grid-cols-1'
+                  ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+                  : 'grid-cols-1'
             }`}
           >
             {paginatedAssets.map((asset) => (
@@ -246,20 +261,36 @@ interface AssetDetailPreviewProps {
   onClose?: () => void;
 }
 
-export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPreviewProps) {
+export function AssetDetailPreview({
+  asset,
+  onEdit,
+  onClose,
+}: AssetDetailPreviewProps) {
   return (
     <div className="h-full flex flex-col bg-slate-0">
       {/* Header */}
       <div className="p-4 border-b border-slate-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold text-white line-clamp-2">{asset.title}</h3>
+          <h3 className="text-sm font-semibold text-white line-clamp-2">
+            {asset.title}
+          </h3>
           {onClose && (
             <button
               onClick={onClose}
               className="p-1 text-white/40 hover:text-white transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
@@ -270,27 +301,47 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Status */}
         <div>
-          <span className="text-xs text-white/40 uppercase tracking-wider">Status</span>
+          <span className="text-xs text-white/40 uppercase tracking-wider">
+            Status
+          </span>
           <p className="text-sm text-white capitalize mt-1">{asset.status}</p>
         </div>
 
         {/* Authority Intent */}
         {asset.authorityIntent && (
           <div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Authority Intent</span>
-            <p className="text-sm text-white/70 mt-1">{asset.authorityIntent}</p>
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Authority Intent
+            </span>
+            <p className="text-sm text-white/70 mt-1">
+              {asset.authorityIntent}
+            </p>
           </div>
         )}
 
         {/* Metrics */}
         {asset.authoritySignals && (
           <div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Authority Metrics</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Authority Metrics
+            </span>
             <div className="mt-2 grid grid-cols-2 gap-2">
-              <MetricItem label="Authority" value={asset.authoritySignals.authorityContributionScore} />
-              <MetricItem label="Citation" value={asset.authoritySignals.citationEligibilityScore} />
-              <MetricItem label="AI Ready" value={asset.authoritySignals.aiIngestionLikelihood} />
-              <MetricItem label="Cross-Pillar" value={asset.authoritySignals.crossPillarImpact} />
+              <MetricItem
+                label="Authority"
+                value={asset.authoritySignals.authorityContributionScore}
+              />
+              <MetricItem
+                label="Citation"
+                value={asset.authoritySignals.citationEligibilityScore}
+              />
+              <MetricItem
+                label="AI Ready"
+                value={asset.authoritySignals.aiIngestionLikelihood}
+              />
+              <MetricItem
+                label="Cross-Pillar"
+                value={asset.authoritySignals.crossPillarImpact}
+              />
             </div>
           </div>
         )}
@@ -298,7 +349,9 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
         {/* Entity Associations */}
         {asset.entityAssociations && asset.entityAssociations.length > 0 && (
           <div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Entities</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Entities
+            </span>
             <div className="flex flex-wrap gap-1 mt-2">
               {asset.entityAssociations.map((entity, i) => (
                 <span
@@ -315,8 +368,12 @@ export function AssetDetailPreview({ asset, onEdit, onClose }: AssetDetailPrevie
         {/* Word Count */}
         {asset.wordCount && (
           <div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Word Count</span>
-            <p className="text-sm text-white mt-1">{asset.wordCount.toLocaleString()}</p>
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Word Count
+            </span>
+            <p className="text-sm text-white mt-1">
+              {asset.wordCount.toLocaleString()}
+            </p>
           </div>
         )}
 

@@ -33,7 +33,13 @@ export const sourceSystemSchema = z.enum([
 
 export const sentimentSchema = z.enum(['positive', 'neutral', 'negative']);
 
-export const graphNodeTypeSchema = z.enum(['journalist', 'outlet', 'topic', 'coverage', 'outreach']);
+export const graphNodeTypeSchema = z.enum([
+  'journalist',
+  'outlet',
+  'topic',
+  'coverage',
+  'outreach',
+]);
 
 export const graphEdgeTypeSchema = z.enum([
   'works_for',
@@ -147,7 +153,15 @@ export const listJournalistProfilesQuerySchema = z.object({
   beat: z.string().max(255).optional(),
   minEngagementScore: z.coerce.number().min(0).max(1).optional(),
   minRelevanceScore: z.coerce.number().min(0).max(1).optional(),
-  sortBy: z.enum(['engagement_score', 'relevance_score', 'last_activity_at', 'full_name']).optional().default('engagement_score'),
+  sortBy: z
+    .enum([
+      'engagement_score',
+      'relevance_score',
+      'last_activity_at',
+      'full_name',
+    ])
+    .optional()
+    .default('engagement_score'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -155,8 +169,12 @@ export const listJournalistProfilesQuerySchema = z.object({
 
 export const listActivitiesQuerySchema = z.object({
   journalistId: z.string().uuid().optional(),
-  activityType: z.union([activityTypeSchema, z.array(activityTypeSchema)]).optional(),
-  sourceSystem: z.union([sourceSystemSchema, z.array(sourceSystemSchema)]).optional(),
+  activityType: z
+    .union([activityTypeSchema, z.array(activityTypeSchema)])
+    .optional(),
+  sourceSystem: z
+    .union([sourceSystemSchema, z.array(sourceSystemSchema)])
+    .optional(),
   sentiment: sentimentSchema.optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
@@ -178,13 +196,25 @@ export const graphQuerySchema = z.object({
 // Type Exports
 // ===================================
 
-export type CreateJournalistProfileInput = z.infer<typeof createJournalistProfileInputSchema>;
-export type UpdateJournalistProfileInput = z.infer<typeof updateJournalistProfileInputSchema>;
+export type CreateJournalistProfileInput = z.infer<
+  typeof createJournalistProfileInputSchema
+>;
+export type UpdateJournalistProfileInput = z.infer<
+  typeof updateJournalistProfileInputSchema
+>;
 export type CreateActivityInput = z.infer<typeof createActivityInputSchema>;
-export type BatchCreateActivitiesInput = z.infer<typeof batchCreateActivitiesInputSchema>;
-export type IdentityResolutionInput = z.infer<typeof identityResolutionInputSchema>;
+export type BatchCreateActivitiesInput = z.infer<
+  typeof batchCreateActivitiesInputSchema
+>;
+export type IdentityResolutionInput = z.infer<
+  typeof identityResolutionInputSchema
+>;
 export type MergeProfilesInput = z.infer<typeof mergeProfilesInputSchema>;
-export type BatchUpdateScoresInput = z.infer<typeof batchUpdateScoresInputSchema>;
-export type ListJournalistProfilesQuery = z.infer<typeof listJournalistProfilesQuerySchema>;
+export type BatchUpdateScoresInput = z.infer<
+  typeof batchUpdateScoresInputSchema
+>;
+export type ListJournalistProfilesQuery = z.infer<
+  typeof listJournalistProfilesQuerySchema
+>;
 export type ListActivitiesQuery = z.infer<typeof listActivitiesQuerySchema>;
 export type GraphQuery = z.infer<typeof graphQuerySchema>;

@@ -5,13 +5,26 @@
 
 'use client';
 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Archive,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SeverityBadge } from './SeverityBadge';
-import { CategoryBadge } from './CategoryBadge';
-import type { GovernancePolicy, GovernancePoliciesQuery } from '@/lib/governanceApi';
+import type {
+  GovernancePolicy,
+  GovernancePoliciesQuery,
+} from '@/lib/governanceApi';
 import { getScopeLabel, formatRelativeTime } from '@/lib/governanceApi';
-import { Plus, Edit, Trash2, Archive, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { CategoryBadge } from './CategoryBadge';
+import { SeverityBadge } from './SeverityBadge';
 
 interface PolicyListProps {
   policies: GovernancePolicy[];
@@ -71,7 +84,9 @@ export function PolicyList({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-semibold">Governance Policies</CardTitle>
+        <CardTitle className="text-lg font-semibold">
+          Governance Policies
+        </CardTitle>
         {onCreateClick && (
           <Button onClick={onCreateClick} size="sm">
             <Plus className="h-4 w-4 mr-1" />
@@ -84,7 +99,9 @@ export function PolicyList({
         {policies.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-gray-500">No policies found</p>
-            <p className="text-sm text-gray-400 mt-1">Create your first policy to get started</p>
+            <p className="text-sm text-gray-400 mt-1">
+              Create your first policy to get started
+            </p>
           </div>
         ) : (
           <>
@@ -124,8 +141,12 @@ export function PolicyList({
                     >
                       <td className="px-4 py-3">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{policy.name}</div>
-                          <div className="text-xs text-gray-500 font-mono">{policy.key}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {policy.name}
+                          </div>
+                          <div className="text-xs text-gray-500 font-mono">
+                            {policy.key}
+                          </div>
                         </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
@@ -213,7 +234,8 @@ export function PolicyList({
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
               <div className="text-sm text-gray-500">
-                Showing {offset + 1} - {Math.min(offset + policies.length, total)} of {total}
+                Showing {offset + 1} -{' '}
+                {Math.min(offset + policies.length, total)} of {total}
               </div>
               <div className="flex items-center gap-2">
                 <Button

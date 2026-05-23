@@ -206,14 +206,29 @@ export const mockJournalists: Journalist[] = [
     recentArticles: [
       { title: 'How AI Is Reshaping Brand Visibility in 2026', date: 'Feb 14' },
       { title: 'The Rise of Answer Engine Optimization', date: 'Feb 3' },
-      { title: 'Enterprise AI Tools: A Buyer\'s Guide', date: 'Jan 22' },
-      { title: 'Why Citation Authority Matters More Than Backlinks', date: 'Jan 10' },
+      { title: "Enterprise AI Tools: A Buyer's Guide", date: 'Jan 22' },
+      {
+        title: 'Why Citation Authority Matters More Than Backlinks',
+        date: 'Jan 10',
+      },
       { title: 'The AI Marketing Stack: 2026 Edition', date: 'Dec 18' },
     ],
     activityTimeline: [
-      { date: 'Feb 10', description: 'You sent pitch: "AI Visibility Guide"', type: 'sent' },
-      { date: 'Jan 28', description: 'Sarah replied: "Interesting, send more data"', type: 'replied' },
-      { date: 'Jan 15', description: 'You: Initial outreach', type: 'outreach' },
+      {
+        date: 'Feb 10',
+        description: 'You sent pitch: "AI Visibility Guide"',
+        type: 'sent',
+      },
+      {
+        date: 'Jan 28',
+        description: 'Sarah replied: "Interesting, send more data"',
+        type: 'replied',
+      },
+      {
+        date: 'Jan 15',
+        description: 'You: Initial outreach',
+        type: 'outreach',
+      },
     ],
     notes:
       'Prefers concise pitches. No Friday sends. Best response window: Tue\u2013Thu morning.',
@@ -319,7 +334,7 @@ export const mockSageJournalists: Journalist[] = [
     relationship: 'new',
     verified: true,
     sageReason:
-      'Ana published 4 articles about enterprise AI tooling this quarter. Her Protocol coverage reaches key CTO and VP Engineering audiences. She hasn\'t covered any direct competitors.',
+      "Ana published 4 articles about enterprise AI tooling this quarter. Her Protocol coverage reaches key CTO and VP Engineering audiences. She hasn't covered any direct competitors.",
   },
   {
     id: 'sj-2',
@@ -347,7 +362,7 @@ export const mockSageJournalists: Journalist[] = [
     relationship: 'new',
     verified: true,
     sageReason:
-      'Priya covers AI product launches and recently wrote about the shift from SEO to AEO. She has strong social amplification (48K followers) but hasn\'t covered visibility platforms yet.',
+      "Priya covers AI product launches and recently wrote about the shift from SEO to AEO. She has strong social amplification (48K followers) but hasn't covered visibility platforms yet.",
   },
   {
     id: 'sj-4',
@@ -375,32 +390,164 @@ export const mockSageJournalists: Journalist[] = [
     relationship: 'new',
     verified: true,
     sageReason:
-      'Elena\'s WSJ enterprise tech column has the highest citation authority in your sector. Her articles appear in 22% of ChatGPT responses about enterprise AI. Previously covered competitor tools.',
+      "Elena's WSJ enterprise tech column has the highest citation authority in your sector. Her articles appear in 22% of ChatGPT responses about enterprise AI. Previously covered competitor tools.",
   },
 ];
 
 /* ── Pitches ──────────────────────────────────────────── */
 
 export const mockPitches: PitchItem[] = [
-  { id: 'p-1', title: 'AI Visibility Best Practices', journalistName: 'Sarah Chen', publication: 'TechCrunch', priority: 'high', aeoTarget: '+8 pts est.', created: 'Feb 18', stage: 'drafts', beats: ['AI/ML'] },
-  { id: 'p-2', title: "Why Your Brand Isn't Cited by ChatGPT", journalistName: 'Marcus Webb', publication: 'Forbes', priority: 'medium', aeoTarget: '+5 pts est.', created: 'Feb 16', stage: 'drafts', beats: ['Future of Work'] },
-  { id: 'p-3', title: 'Enterprise AEO Guide Launch', journalistName: 'Jennifer Park', publication: 'Wired', priority: 'high', aeoTarget: '+12 pts est.', created: 'Feb 15', stage: 'drafts', beats: ['AI'] },
-  { id: 'p-4', title: 'The AEO Measurement Problem', journalistName: 'David Kim', publication: 'VentureBeat', priority: 'high', aeoTarget: '+9 pts est.', created: 'Feb 14', stage: 'awaiting_send', beats: ['Enterprise AI'] },
-  { id: 'p-5', title: "PR's New ROI: AI Citation Rate", journalistName: 'Rachel Torres', publication: 'The Information', priority: 'medium', aeoTarget: '+6 pts est.', created: 'Feb 13', stage: 'awaiting_send', beats: ['SaaS'] },
-  { id: 'p-6', title: 'The Future of AI-Driven PR', journalistName: 'James Liu', publication: 'MIT Tech Review', priority: 'high', aeoTarget: '+11 pts est.', created: 'Feb 12', stage: 'sent' },
-  { id: 'p-7', title: 'How Enterprise Brands Build Citation Authority', journalistName: 'Amara Osei', publication: 'Fast Company', priority: 'medium', aeoTarget: '+7 pts est.', created: 'Feb 8', stage: 'sent' },
-  { id: 'p-8', title: 'AI Visibility: The New Marketing Imperative', journalistName: 'Chris Nakamura', publication: 'Axios', priority: 'medium', aeoTarget: '+4 pts est.', created: 'Feb 5', stage: 'sent' },
-  { id: 'p-9', title: 'Share of Model: What Every CMO Needs to Know', journalistName: 'Jennifer Park', publication: 'Wired', priority: 'high', aeoTarget: '+10 pts est.', created: 'Jan 28', stage: 'sent' },
+  {
+    id: 'p-1',
+    title: 'AI Visibility Best Practices',
+    journalistName: 'Sarah Chen',
+    publication: 'TechCrunch',
+    priority: 'high',
+    aeoTarget: '+8 pts est.',
+    created: 'Feb 18',
+    stage: 'drafts',
+    beats: ['AI/ML'],
+  },
+  {
+    id: 'p-2',
+    title: "Why Your Brand Isn't Cited by ChatGPT",
+    journalistName: 'Marcus Webb',
+    publication: 'Forbes',
+    priority: 'medium',
+    aeoTarget: '+5 pts est.',
+    created: 'Feb 16',
+    stage: 'drafts',
+    beats: ['Future of Work'],
+  },
+  {
+    id: 'p-3',
+    title: 'Enterprise AEO Guide Launch',
+    journalistName: 'Jennifer Park',
+    publication: 'Wired',
+    priority: 'high',
+    aeoTarget: '+12 pts est.',
+    created: 'Feb 15',
+    stage: 'drafts',
+    beats: ['AI'],
+  },
+  {
+    id: 'p-4',
+    title: 'The AEO Measurement Problem',
+    journalistName: 'David Kim',
+    publication: 'VentureBeat',
+    priority: 'high',
+    aeoTarget: '+9 pts est.',
+    created: 'Feb 14',
+    stage: 'awaiting_send',
+    beats: ['Enterprise AI'],
+  },
+  {
+    id: 'p-5',
+    title: "PR's New ROI: AI Citation Rate",
+    journalistName: 'Rachel Torres',
+    publication: 'The Information',
+    priority: 'medium',
+    aeoTarget: '+6 pts est.',
+    created: 'Feb 13',
+    stage: 'awaiting_send',
+    beats: ['SaaS'],
+  },
+  {
+    id: 'p-6',
+    title: 'The Future of AI-Driven PR',
+    journalistName: 'James Liu',
+    publication: 'MIT Tech Review',
+    priority: 'high',
+    aeoTarget: '+11 pts est.',
+    created: 'Feb 12',
+    stage: 'sent',
+  },
+  {
+    id: 'p-7',
+    title: 'How Enterprise Brands Build Citation Authority',
+    journalistName: 'Amara Osei',
+    publication: 'Fast Company',
+    priority: 'medium',
+    aeoTarget: '+7 pts est.',
+    created: 'Feb 8',
+    stage: 'sent',
+  },
+  {
+    id: 'p-8',
+    title: 'AI Visibility: The New Marketing Imperative',
+    journalistName: 'Chris Nakamura',
+    publication: 'Axios',
+    priority: 'medium',
+    aeoTarget: '+4 pts est.',
+    created: 'Feb 5',
+    stage: 'sent',
+  },
+  {
+    id: 'p-9',
+    title: 'Share of Model: What Every CMO Needs to Know',
+    journalistName: 'Jennifer Park',
+    publication: 'Wired',
+    priority: 'high',
+    aeoTarget: '+10 pts est.',
+    created: 'Jan 28',
+    stage: 'sent',
+  },
 ];
 
 /* ── Coverage ─────────────────────────────────────────── */
 
 export const mockCoverage: CoverageRow[] = [
-  { id: 'cov-1', headline: 'Why AI Is Reshaping the PR Industry', publication: 'TechCrunch', reporter: 'Sarah Chen', date: 'Feb 14', reach: '2.4M', sentiment: 'positive', eviImpact: '+4.1 pts' },
-  { id: 'cov-2', headline: 'The AEO Opportunity for Enterprise Brands', publication: 'Forbes', reporter: 'Marcus Webb', date: 'Feb 10', reach: '3.1M', sentiment: 'positive', eviImpact: '+0.8 pts' },
-  { id: 'cov-3', headline: 'AI Tools for Communications Teams', publication: 'VentureBeat', reporter: 'David Kim', date: 'Feb 6', reach: '0.9M', sentiment: 'neutral', eviImpact: '+0.3 pts' },
-  { id: 'cov-4', headline: 'Meet the Platforms Tracking AI Citations', publication: 'Wired', reporter: 'Jennifer Park', date: 'Jan 30', reach: '4.2M', sentiment: 'positive', eviImpact: 'Pending (24hr)', isPending: true },
-  { id: 'cov-5', headline: 'PR Technology in 2026: A Landscape Review', publication: 'MIT Tech Review', reporter: 'James Liu', date: 'Jan 22', reach: '1.1M', sentiment: 'positive', eviImpact: '+1.4 pts' },
+  {
+    id: 'cov-1',
+    headline: 'Why AI Is Reshaping the PR Industry',
+    publication: 'TechCrunch',
+    reporter: 'Sarah Chen',
+    date: 'Feb 14',
+    reach: '2.4M',
+    sentiment: 'positive',
+    eviImpact: '+4.1 pts',
+  },
+  {
+    id: 'cov-2',
+    headline: 'The AEO Opportunity for Enterprise Brands',
+    publication: 'Forbes',
+    reporter: 'Marcus Webb',
+    date: 'Feb 10',
+    reach: '3.1M',
+    sentiment: 'positive',
+    eviImpact: '+0.8 pts',
+  },
+  {
+    id: 'cov-3',
+    headline: 'AI Tools for Communications Teams',
+    publication: 'VentureBeat',
+    reporter: 'David Kim',
+    date: 'Feb 6',
+    reach: '0.9M',
+    sentiment: 'neutral',
+    eviImpact: '+0.3 pts',
+  },
+  {
+    id: 'cov-4',
+    headline: 'Meet the Platforms Tracking AI Citations',
+    publication: 'Wired',
+    reporter: 'Jennifer Park',
+    date: 'Jan 30',
+    reach: '4.2M',
+    sentiment: 'positive',
+    eviImpact: 'Pending (24hr)',
+    isPending: true,
+  },
+  {
+    id: 'cov-5',
+    headline: 'PR Technology in 2026: A Landscape Review',
+    publication: 'MIT Tech Review',
+    reporter: 'James Liu',
+    date: 'Jan 22',
+    reach: '1.1M',
+    sentiment: 'positive',
+    eviImpact: '+1.4 pts',
+  },
 ];
 
 /* ── Conversation Thread (Sarah Chen) ─────────────────── */
@@ -439,12 +586,48 @@ export const mockConversation: ConversationMessage[] = [
 /* ── Content Pieces (for Pitch Wizard) ────────────────── */
 
 export const mockContentPieces: ContentPiece[] = [
-  { id: 'cp-1', title: 'Enterprise AEO Strategy Guide', citeMindScore: 72, sageMatchScore: 94, type: 'article' },
-  { id: 'cp-2', title: 'AI Citation Authority Report', citeMindScore: 85, sageMatchScore: 88, type: 'article' },
-  { id: 'cp-3', title: 'Q1 Visibility Benchmarks', citeMindScore: 91, sageMatchScore: 76, type: 'article' },
-  { id: 'cp-4', title: 'Content Optimization Playbook', citeMindScore: 58, sageMatchScore: 62, type: 'article' },
-  { id: 'cp-5', title: 'Share of Model Analysis', citeMindScore: 94, sageMatchScore: 91, type: 'article' },
-  { id: 'cp-6', title: 'The Complete AEO Implementation Guide', citeMindScore: 82, sageMatchScore: 85, type: 'article' },
+  {
+    id: 'cp-1',
+    title: 'Enterprise AEO Strategy Guide',
+    citeMindScore: 72,
+    sageMatchScore: 94,
+    type: 'article',
+  },
+  {
+    id: 'cp-2',
+    title: 'AI Citation Authority Report',
+    citeMindScore: 85,
+    sageMatchScore: 88,
+    type: 'article',
+  },
+  {
+    id: 'cp-3',
+    title: 'Q1 Visibility Benchmarks',
+    citeMindScore: 91,
+    sageMatchScore: 76,
+    type: 'article',
+  },
+  {
+    id: 'cp-4',
+    title: 'Content Optimization Playbook',
+    citeMindScore: 58,
+    sageMatchScore: 62,
+    type: 'article',
+  },
+  {
+    id: 'cp-5',
+    title: 'Share of Model Analysis',
+    citeMindScore: 94,
+    sageMatchScore: 91,
+    type: 'article',
+  },
+  {
+    id: 'cp-6',
+    title: 'The Complete AEO Implementation Guide',
+    citeMindScore: 82,
+    sageMatchScore: 85,
+    type: 'article',
+  },
 ];
 
 /* ── Pitch Wizard Helpers ─────────────────────────────── */
@@ -464,9 +647,18 @@ export const mockPitchSubject =
   'Data: How enterprise brands are winning AI citations (73% cite <5 sources)';
 
 export const sageReasoningPoints = [
-  { type: 'success' as const, text: 'Sarah wrote about AI marketing tools 3x this quarter' },
-  { type: 'success' as const, text: 'Her published work appears in 12% of ChatGPT responses for your topic cluster' },
-  { type: 'warning' as const, text: 'She covered CompetitorX last month \u2014 differentiate clearly' },
+  {
+    type: 'success' as const,
+    text: 'Sarah wrote about AI marketing tools 3x this quarter',
+  },
+  {
+    type: 'success' as const,
+    text: 'Her published work appears in 12% of ChatGPT responses for your topic cluster',
+  },
+  {
+    type: 'warning' as const,
+    text: 'She covered CompetitorX last month \u2014 differentiate clearly',
+  },
 ];
 
 export const wizardLoadingMessages = [
@@ -479,20 +671,36 @@ export const wizardLoadingMessages = [
 /* ── Topic Activity (Intelligence stub) ───────────────── */
 
 export const mockTopicActivity = [
-  { topic: 'AI marketing technology', articles: 8, delta: '+4 vs last week', trending: false },
-  { topic: 'Generative Engine Optimization', articles: 12, delta: null, trending: true },
+  {
+    topic: 'AI marketing technology',
+    articles: 8,
+    delta: '+4 vs last week',
+    trending: false,
+  },
+  {
+    topic: 'Generative Engine Optimization',
+    articles: 12,
+    delta: null,
+    trending: true,
+  },
 ];
 
 /* ── Priority + Citation Configs ──────────────────────── */
 
-export const priorityConfig: Record<ActionPriority, { bg: string; text: string }> = {
+export const priorityConfig: Record<
+  ActionPriority,
+  { bg: string; text: string }
+> = {
   critical: { bg: 'bg-red-500/10', text: 'text-red-500' },
   high: { bg: 'bg-amber-500/10', text: 'text-amber-500' },
   medium: { bg: 'bg-white/5', text: 'text-white/45' },
   low: { bg: 'bg-white/5', text: 'text-white/30' },
 };
 
-export const citationBadgeConfig: Record<AICitationLevel, { bg: string; text: string }> = {
+export const citationBadgeConfig: Record<
+  AICitationLevel,
+  { bg: string; text: string }
+> = {
   high: { bg: 'bg-brand-teal/10', text: 'text-brand-teal' },
   medium: { bg: 'bg-amber-500/10', text: 'text-amber-500' },
   low: { bg: 'bg-white/5', text: 'text-white/45' },

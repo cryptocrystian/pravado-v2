@@ -24,7 +24,13 @@ import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { editorEventBus } from '../../events/editor/editorEventBus';
-import type { EditorEvent, GraphPatch, CursorPosition, NodeSelection, UserPresence } from '../../events/editor/editorEventTypes';
+import type {
+  EditorEvent,
+  GraphPatch,
+  CursorPosition,
+  NodeSelection,
+  UserPresence,
+} from '../../events/editor/editorEventTypes';
 import { editorSessionManager } from '../../events/editor/editorSessionManager';
 import { requireUser } from '../../middleware/requireUser';
 import { BillingService } from '../../services/billingService';
@@ -32,7 +38,12 @@ import * as branchService from '../../services/playbookBranchService';
 import * as commitService from '../../services/playbookCommitService';
 import { PlaybookExecutionEngine } from '../../services/playbookExecutionEngine';
 import { PlaybookExecutionEngineV2 } from '../../services/playbookExecutionEngineV2';
-import { playbookToGraph, validateGraph, graphToPlaybook, type PlaybookGraph } from '../../services/playbookGraphService';
+import {
+  playbookToGraph,
+  validateGraph,
+  graphToPlaybook,
+  type PlaybookGraph,
+} from '../../services/playbookGraphService';
 import * as mergeService from '../../services/playbookMergeService';
 import { PlaybookService } from '../../services/playbookService';
 import * as versioningService from '../../services/playbookVersioningService';
@@ -42,7 +53,10 @@ import * as versioningService from '../../services/playbookVersioningService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -55,10 +69,16 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function playbooksRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // S28+S29: Initialize billing service
-  const billingService = new BillingService(supabase, env.BILLING_DEFAULT_PLAN_SLUG);
+  const billingService = new BillingService(
+    supabase,
+    env.BILLING_DEFAULT_PLAN_SLUG
+  );
 
   // S16+S29: Initialize LLM router with billing enforcer
   const llmRouter = new LlmRouter({
@@ -80,11 +100,15 @@ export async function playbooksRoutes(server: FastifyInstance) {
   const executionEngine = new PlaybookExecutionEngine(supabase, llmRouter);
 
   // S18+S29: Initialize V2 execution engine with billing service
-  const executionEngineV2 = new PlaybookExecutionEngineV2(supabase, billingService, {
-    maxConcurrency: parseInt(process.env.QUEUE_MAX_CONCURRENCY || '5', 10),
-    enableWebhooks: true,
-    enableLogging: true,
-  });
+  const executionEngineV2 = new PlaybookExecutionEngineV2(
+    supabase,
+    billingService,
+    {
+      maxConcurrency: parseInt(process.env.QUEUE_MAX_CONCURRENCY || '5', 10),
+      enableWebhooks: true,
+      enableLogging: true,
+    }
+  );
 
   // Start the V2 execution engine
   executionEngineV2.start();
@@ -130,8 +154,12 @@ export async function playbooksRoutes(server: FastifyInstance) {
       // Parse query params
       const validation = listPlaybooksQuerySchema.safeParse({
         status: request.query.status,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
         tags: request.query.tags ? request.query.tags.split(',') : undefined,
       });
 
@@ -146,7 +174,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
       }
 
       try {
-        const playbooks = await playbookService.listPlaybooks(orgId, validation.data);
+        const playbooks = await playbookService.listPlaybooks(
+          orgId,
+          validation.data
+        );
 
         return {
           success: true,
@@ -200,7 +231,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
       }
 
       try {
-        const playbook = await playbookService.getPlaybookById(orgId, request.params.id);
+        const playbook = await playbookService.getPlaybookById(
+          orgId,
+          request.params.id
+        );
 
         if (!playbook) {
           return reply.code(404).send({
@@ -570,7 +604,9 @@ export async function playbooksRoutes(server: FastifyInstance) {
     },
     async (_request, reply) => {
       try {
-        const { listPlaybookTemplates } = await import('../../services/playbookTemplates');
+        const { listPlaybookTemplates } = await import(
+          '../../services/playbookTemplates'
+        );
         const templates = listPlaybookTemplates();
 
         return {
@@ -684,7 +720,9 @@ export async function playbooksRoutes(server: FastifyInstance) {
       }
 
       // Validate request body
-      const { updatePlaybookStatusSchema } = await import('@pravado/validators');
+      const { updatePlaybookStatusSchema } = await import(
+        '@pravado/validators'
+      );
       const validation = updatePlaybookStatusSchema.safeParse(request.body);
 
       if (!validation.success) {
@@ -814,10 +852,14 @@ export async function playbooksRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const { executePlaybookCollaborationSchema } = await import('@pravado/validators');
+        const { executePlaybookCollaborationSchema } = await import(
+          '@pravado/validators'
+        );
 
         // Validate request body
-        const validation = executePlaybookCollaborationSchema.safeParse(request.body);
+        const validation = executePlaybookCollaborationSchema.safeParse(
+          request.body
+        );
         if (!validation.success) {
           return reply.code(400).send({
             success: false,
@@ -859,7 +901,8 @@ export async function playbooksRoutes(server: FastifyInstance) {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to execute collaboration simulation',
+            message:
+              error.message || 'Failed to execute collaboration simulation',
           },
         });
       }
@@ -882,80 +925,91 @@ export async function playbooksRoutes(server: FastifyInstance) {
       minRelevance?: number;
       memoryType?: string;
     };
-  }>(
-    '/memory/search',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const { memorySearchQuerySchema } = await import('@pravado/validators');
+  }>('/memory/search', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const { memorySearchQuerySchema } = await import('@pravado/validators');
 
-        // Parse embedding if provided as JSON string
-        const queryParams = {
-          ...request.query,
-          embedding: request.query.embedding ? JSON.parse(request.query.embedding) : undefined,
-        };
+      // Parse embedding if provided as JSON string
+      const queryParams = {
+        ...request.query,
+        embedding: request.query.embedding
+          ? JSON.parse(request.query.embedding)
+          : undefined,
+      };
 
-        const validation = memorySearchQuerySchema.safeParse(queryParams);
-        if (!validation.success) {
-          return reply.code(400).send({
-            success: false,
-            error: { code: 'INVALID_INPUT', message: validation.error.message },
-          });
-        }
+      const validation = memorySearchQuerySchema.safeParse(queryParams);
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: { code: 'INVALID_INPUT', message: validation.error.message },
+        });
+      }
 
-        const orgId = await getUserOrgId(request.user!.id!, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG_ACCESS',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Import memory services
-        const { MemoryRetrievalService } = await import('../../services/memory/memoryRetrieval');
-        const memoryRetrieval = new MemoryRetrievalService(supabase);
-
-        // If text query, use text search; if embedding, use vector search
-        let result;
-        if (validation.data.embedding) {
-          result = await memoryRetrieval.retrieveSemanticMemory(orgId, validation.data.embedding, {
-            limit: validation.data.limit,
-            minRelevance: validation.data.minRelevance,
-            memoryType: validation.data.memoryType as any,
-          });
-        } else if (validation.data.q) {
-          result = await memoryRetrieval.searchMemoriesByText(orgId, validation.data.q, {
-            limit: validation.data.limit,
-            memoryType: validation.data.memoryType as any,
-          });
-        } else {
-          return reply.code(400).send({
-            success: false,
-            error: { code: 'INVALID_INPUT', message: 'Either q or embedding must be provided' },
-          });
-        }
-
-        return {
-          success: true,
-          data: {
-            memories: result.items,
-            relevance: result.relevance,
-          },
-        };
-      } catch (error: any) {
-        return reply.code(500).send({
+      const orgId = await getUserOrgId(request.user!.id!, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to search memories',
+            code: 'NO_ORG_ACCESS',
+            message: 'User is not a member of any organization',
           },
         });
       }
+
+      // Import memory services
+      const { MemoryRetrievalService } = await import(
+        '../../services/memory/memoryRetrieval'
+      );
+      const memoryRetrieval = new MemoryRetrievalService(supabase);
+
+      // If text query, use text search; if embedding, use vector search
+      let result;
+      if (validation.data.embedding) {
+        result = await memoryRetrieval.retrieveSemanticMemory(
+          orgId,
+          validation.data.embedding,
+          {
+            limit: validation.data.limit,
+            minRelevance: validation.data.minRelevance,
+            memoryType: validation.data.memoryType as any,
+          }
+        );
+      } else if (validation.data.q) {
+        result = await memoryRetrieval.searchMemoriesByText(
+          orgId,
+          validation.data.q,
+          {
+            limit: validation.data.limit,
+            memoryType: validation.data.memoryType as any,
+          }
+        );
+      } else {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'INVALID_INPUT',
+            message: 'Either q or embedding must be provided',
+          },
+        });
+      }
+
+      return {
+        success: true,
+        data: {
+          memories: result.items,
+          relevance: result.relevance,
+        },
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to search memories',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/playbook-runs/:id/memory
@@ -980,11 +1034,16 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Import memory services
-        const { MemoryStore } = await import('../../services/memory/memoryStore');
+        const { MemoryStore } = await import(
+          '../../services/memory/memoryStore'
+        );
         const memoryStore = new MemoryStore(supabase);
 
         // Fetch episodic traces for the run
-        const episodicTraces = await memoryStore.getEpisodicTracesForRun(orgId, request.params.id);
+        const episodicTraces = await memoryStore.getEpisodicTracesForRun(
+          orgId,
+          request.params.id
+        );
 
         return {
           success: true,
@@ -1010,59 +1069,58 @@ export async function playbooksRoutes(server: FastifyInstance) {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/:id/graph',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const orgId = await getUserOrgId(request.user!.id!, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG_ACCESS',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Get playbook
-        const playbook = await playbookService.getPlaybookById(orgId, request.params.id);
-
-        if (!playbook) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook not found',
-            },
-          });
-        }
-
-        // Convert to graph
-        const graph = playbookToGraph(playbook);
-
-        // Validate graph
-        const validation = validateGraph(graph);
-
-        return {
-          success: true,
-          data: {
-            graph,
-            validation,
-          },
-        };
-      } catch (error: any) {
-        return reply.code(500).send({
+  }>('/:id/graph', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const orgId = await getUserOrgId(request.user!.id!, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to generate graph',
+            code: 'NO_ORG_ACCESS',
+            message: 'User is not a member of any organization',
           },
         });
       }
+
+      // Get playbook
+      const playbook = await playbookService.getPlaybookById(
+        orgId,
+        request.params.id
+      );
+
+      if (!playbook) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook not found',
+          },
+        });
+      }
+
+      // Convert to graph
+      const graph = playbookToGraph(playbook);
+
+      // Validate graph
+      const validation = validateGraph(graph);
+
+      return {
+        success: true,
+        data: {
+          graph,
+          validation,
+        },
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to generate graph',
+        },
+      });
     }
-  );
+  });
 
   // ========================================
   // SPRINT S18: ASYNC EXECUTION ENDPOINTS
@@ -1095,7 +1153,11 @@ export async function playbooksRoutes(server: FastifyInstance) {
           });
         }
 
-        const { input = {}, webhookUrl, priority = 'medium' } = request.body || {};
+        const {
+          input = {},
+          webhookUrl,
+          priority = 'medium',
+        } = request.body || {};
 
         // Start async execution
         const runId = await executionEngineV2.executePlaybook(
@@ -1134,60 +1196,58 @@ export async function playbooksRoutes(server: FastifyInstance) {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/runs/:id/state',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const orgId = await getUserOrgId(request.user!.id!, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG_ACCESS',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        const status = await executionEngineV2.getExecutionStatus(request.params.id);
-
-        if (!status) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook run not found',
-            },
-          });
-        }
-
-        // Verify org access
-        if (status.run.orgId !== orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'FORBIDDEN',
-              message: 'Access denied to this playbook run',
-            },
-          });
-        }
-
-        return {
-          success: true,
-          data: status,
-        };
-      } catch (error: any) {
-        return reply.code(500).send({
+  }>('/runs/:id/state', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const orgId = await getUserOrgId(request.user!.id!, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to fetch execution state',
+            code: 'NO_ORG_ACCESS',
+            message: 'User is not a member of any organization',
           },
         });
       }
+
+      const status = await executionEngineV2.getExecutionStatus(
+        request.params.id
+      );
+
+      if (!status) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook run not found',
+          },
+        });
+      }
+
+      // Verify org access
+      if (status.run.orgId !== orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            message: 'Access denied to this playbook run',
+          },
+        });
+      }
+
+      return {
+        success: true,
+        data: status,
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to fetch execution state',
+        },
+      });
     }
-  );
+  });
 
   /**
    * POST /api/v1/playbooks/runs/:id/cancel
@@ -1564,69 +1624,68 @@ export async function playbooksRoutes(server: FastifyInstance) {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/:id/versions',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        if (!request.user) {
-          return reply.code(401).send({
-            success: false,
-            error: {
-              code: 'UNAUTHORIZED',
-              message: 'Authentication required',
-            },
-          });
-        }
-
-        const orgId = await getUserOrgId(request.user.id, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Verify playbook belongs to user's org
-        const { data: playbook } = await supabase
-          .from('playbooks')
-          .select('org_id')
-          .eq('id', request.params.id)
-          .single();
-
-        if (!playbook || playbook.org_id !== orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook not found',
-            },
-          });
-        }
-
-        // Fetch versions
-        const versions = await versioningService.getVersions(supabase, request.params.id);
-
-        return {
-          success: true,
-          data: {
-            versions,
-          },
-        };
-      } catch (error: any) {
-        return reply.code(500).send({
+  }>('/:id/versions', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to fetch versions',
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
           },
         });
       }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Verify playbook belongs to user's org
+      const { data: playbook } = await supabase
+        .from('playbooks')
+        .select('org_id')
+        .eq('id', request.params.id)
+        .single();
+
+      if (!playbook || playbook.org_id !== orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook not found',
+          },
+        });
+      }
+
+      // Fetch versions
+      const versions = await versioningService.getVersions(
+        supabase,
+        request.params.id
+      );
+
+      return {
+        success: true,
+        data: {
+          versions,
+        },
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to fetch versions',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/playbooks/:id/versions/:versionId
@@ -1712,111 +1771,107 @@ export async function playbooksRoutes(server: FastifyInstance) {
     Body: {
       currentGraph: PlaybookGraph;
     };
-  }>(
-    '/:id/diff',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        if (!request.user) {
-          return reply.code(401).send({
-            success: false,
-            error: {
-              code: 'UNAUTHORIZED',
-              message: 'Authentication required',
-            },
-          });
-        }
-
-        const orgId = await getUserOrgId(request.user.id, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Verify playbook belongs to user's org
-        const { data: playbook } = await supabase
-          .from('playbooks')
-          .select('org_id')
-          .eq('id', request.params.id)
-          .single();
-
-        if (!playbook || playbook.org_id !== orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook not found',
-            },
-          });
-        }
-
-        // Get latest version
-        const latestVersion = await versioningService.getLatestVersion(
-          supabase,
-          request.params.id
-        );
-
-        if (!latestVersion) {
-          // No saved version yet, everything is new
-          const validation = validateGraph(request.body.currentGraph);
-          return {
-            success: true,
-            data: {
-              diff: {
-                addedNodes: request.body.currentGraph.nodes.map((n) => ({
-                  id: n.id,
-                  label: n.data.label,
-                  type: n.type,
-                })),
-                removedNodes: [],
-                modifiedNodes: [],
-                addedEdges: request.body.currentGraph.edges,
-                removedEdges: [],
-                hasChanges: request.body.currentGraph.nodes.length > 0,
-              },
-              validation,
-            },
-          };
-        }
-
-        // Compute diff
-        const diff = versioningService.diffGraphs(
-          latestVersion.graph,
-          request.body.currentGraph
-        );
-
-        // Validate current graph
-        const validation = validateGraph(request.body.currentGraph);
-
-        return {
-          success: true,
-          data: {
-            diff,
-            validation,
-            latestVersion: {
-              id: latestVersion.id,
-              version: latestVersion.version,
-              createdAt: latestVersion.createdAt,
-              commitMessage: latestVersion.commitMessage,
-            },
-          },
-        };
-      } catch (error: any) {
-        return reply.code(500).send({
+  }>('/:id/diff', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to compute diff',
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
           },
         });
       }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Verify playbook belongs to user's org
+      const { data: playbook } = await supabase
+        .from('playbooks')
+        .select('org_id')
+        .eq('id', request.params.id)
+        .single();
+
+      if (!playbook || playbook.org_id !== orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook not found',
+          },
+        });
+      }
+
+      // Get latest version
+      const latestVersion = await versioningService.getLatestVersion(
+        supabase,
+        request.params.id
+      );
+
+      if (!latestVersion) {
+        // No saved version yet, everything is new
+        const validation = validateGraph(request.body.currentGraph);
+        return {
+          success: true,
+          data: {
+            diff: {
+              addedNodes: request.body.currentGraph.nodes.map((n) => ({
+                id: n.id,
+                label: n.data.label,
+                type: n.type,
+              })),
+              removedNodes: [],
+              modifiedNodes: [],
+              addedEdges: request.body.currentGraph.edges,
+              removedEdges: [],
+              hasChanges: request.body.currentGraph.nodes.length > 0,
+            },
+            validation,
+          },
+        };
+      }
+
+      // Compute diff
+      const diff = versioningService.diffGraphs(
+        latestVersion.graph,
+        request.body.currentGraph
+      );
+
+      // Validate current graph
+      const validation = validateGraph(request.body.currentGraph);
+
+      return {
+        success: true,
+        data: {
+          diff,
+          validation,
+          latestVersion: {
+            id: latestVersion.id,
+            version: latestVersion.version,
+            createdAt: latestVersion.createdAt,
+            commitMessage: latestVersion.commitMessage,
+          },
+        },
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to compute diff',
+        },
+      });
     }
-  );
+  });
 
   // ============================================================================
   // EDITOR COLLABORATION ENDPOINTS (S22)
@@ -1839,7 +1894,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         if (!orgId) {
           return reply.code(403).send({
             success: false,
-            error: { code: 'FORBIDDEN', message: 'User not in any organization' },
+            error: {
+              code: 'FORBIDDEN',
+              message: 'User not in any organization',
+            },
           });
         }
 
@@ -1880,7 +1938,9 @@ export async function playbooksRoutes(server: FastifyInstance) {
         });
 
         // Generate user color (simple hash-based color)
-        const colorHash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const colorHash = userId
+          .split('')
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const hue = colorHash % 360;
         const color = `hsl(${hue}, 70%, 50%)`;
 
@@ -1921,15 +1981,18 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }, 20000);
 
         // Subscribe to editor events
-        const unsubscribe = editorEventBus.subscribe(playbookId, (event: EditorEvent) => {
-          // Don't echo events back to sender
-          if (event.userId === userId) {
-            return;
-          }
+        const unsubscribe = editorEventBus.subscribe(
+          playbookId,
+          (event: EditorEvent) => {
+            // Don't echo events back to sender
+            if (event.userId === userId) {
+              return;
+            }
 
-          reply.raw.write(`event: ${event.type}\n`);
-          reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
-        });
+            reply.raw.write(`event: ${event.type}\n`);
+            reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
+          }
+        );
 
         // Cleanup on disconnect
         request.raw.on('close', () => {
@@ -1987,7 +2050,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         if (!orgId) {
           return reply.code(403).send({
             success: false,
-            error: { code: 'FORBIDDEN', message: 'User not in any organization' },
+            error: {
+              code: 'FORBIDDEN',
+              message: 'User not in any organization',
+            },
           });
         }
 
@@ -2051,7 +2117,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         if (!orgId) {
           return reply.code(403).send({
             success: false,
-            error: { code: 'FORBIDDEN', message: 'User not in any organization' },
+            error: {
+              code: 'FORBIDDEN',
+              message: 'User not in any organization',
+            },
           });
         }
 
@@ -2070,7 +2139,12 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Update selection in session manager
-        editorSessionManager.updateSelection(playbookId, userId, selection, lock);
+        editorSessionManager.updateSelection(
+          playbookId,
+          userId,
+          selection,
+          lock
+        );
 
         // Broadcast selection update
         editorEventBus.publish({
@@ -2115,7 +2189,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         if (!orgId) {
           return reply.code(403).send({
             success: false,
-            error: { code: 'FORBIDDEN', message: 'User not in any organization' },
+            error: {
+              code: 'FORBIDDEN',
+              message: 'User not in any organization',
+            },
           });
         }
 
@@ -2176,7 +2253,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         if (!orgId) {
           return reply.code(403).send({
             success: false,
-            error: { code: 'FORBIDDEN', message: 'User not in any organization' },
+            error: {
+              code: 'FORBIDDEN',
+              message: 'User not in any organization',
+            },
           });
         }
 
@@ -2226,69 +2306,68 @@ export async function playbooksRoutes(server: FastifyInstance) {
    */
   server.get<{
     Params: { id: string };
-  }>(
-    '/:id/branches',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        if (!request.user) {
-          return reply.code(401).send({
-            success: false,
-            error: {
-              code: 'UNAUTHORIZED',
-              message: 'Authentication required',
-            },
-          });
-        }
-
-        const orgId = await getUserOrgId(request.user.id, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Verify playbook exists and belongs to user's org
-        const { data: playbook } = await supabase
-          .from('playbooks')
-          .select('org_id')
-          .eq('id', request.params.id)
-          .single();
-
-        if (!playbook || playbook.org_id !== orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook not found',
-            },
-          });
-        }
-
-        // List branches
-        const branches = await branchService.listBranches(supabase, request.params.id);
-
-        return {
-          success: true,
-          data: {
-            branches,
-          },
-        };
-      } catch (error: any) {
-        return reply.code(500).send({
+  }>('/:id/branches', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to list branches',
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
           },
         });
       }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Verify playbook exists and belongs to user's org
+      const { data: playbook } = await supabase
+        .from('playbooks')
+        .select('org_id')
+        .eq('id', request.params.id)
+        .single();
+
+      if (!playbook || playbook.org_id !== orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook not found',
+          },
+        });
+      }
+
+      // List branches
+      const branches = await branchService.listBranches(
+        supabase,
+        request.params.id
+      );
+
+      return {
+        success: true,
+        data: {
+          branches,
+        },
+      };
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to list branches',
+        },
+      });
     }
-  );
+  });
 
   /**
    * POST /api/v1/playbooks/:id/branches
@@ -2297,90 +2376,86 @@ export async function playbooksRoutes(server: FastifyInstance) {
   server.post<{
     Params: { id: string };
     Body: unknown;
-  }>(
-    '/:id/branches',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        if (!request.user) {
-          return reply.code(401).send({
-            success: false,
-            error: {
-              code: 'UNAUTHORIZED',
-              message: 'Authentication required',
-            },
-          });
-        }
-
-        const orgId = await getUserOrgId(request.user.id, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Verify playbook exists and belongs to user's org
-        const { data: playbook } = await supabase
-          .from('playbooks')
-          .select('org_id')
-          .eq('id', request.params.id)
-          .single();
-
-        if (!playbook || playbook.org_id !== orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook not found',
-            },
-          });
-        }
-
-        // Validate request body
-        const { createBranchSchema } = await import('@pravado/validators');
-        const validation = createBranchSchema.safeParse(request.body);
-
-        if (!validation.success) {
-          return reply.code(400).send({
-            success: false,
-            error: {
-              code: 'VALIDATION_ERROR',
-              message: 'Invalid request body',
-              details: validation.error.errors,
-            },
-          });
-        }
-
-        // Create branch
-        const branch = await branchService.createBranch(
-          supabase,
-          request.params.id,
-          validation.data.name,
-          request.user.id,
-          validation.data.parentBranchId
-        );
-
-        return reply.code(201).send({
-          success: true,
-          data: {
-            branch,
-          },
-        });
-      } catch (error: any) {
-        return reply.code(500).send({
+  }>('/:id/branches', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to create branch',
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
           },
         });
       }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Verify playbook exists and belongs to user's org
+      const { data: playbook } = await supabase
+        .from('playbooks')
+        .select('org_id')
+        .eq('id', request.params.id)
+        .single();
+
+      if (!playbook || playbook.org_id !== orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook not found',
+          },
+        });
+      }
+
+      // Validate request body
+      const { createBranchSchema } = await import('@pravado/validators');
+      const validation = createBranchSchema.safeParse(request.body);
+
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request body',
+            details: validation.error.errors,
+          },
+        });
+      }
+
+      // Create branch
+      const branch = await branchService.createBranch(
+        supabase,
+        request.params.id,
+        validation.data.name,
+        request.user.id,
+        validation.data.parentBranchId
+      );
+
+      return reply.code(201).send({
+        success: true,
+        data: {
+          branch,
+        },
+      });
+    } catch (error: any) {
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to create branch',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/playbooks/:id/branches/:branchId
@@ -2415,7 +2490,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get branch
-        const branch = await branchService.getBranch(supabase, request.params.branchId);
+        const branch = await branchService.getBranch(
+          supabase,
+          request.params.branchId
+        );
 
         if (!branch) {
           return reply.code(404).send({
@@ -2506,7 +2584,11 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Switch branch
-        await branchService.switchBranch(supabase, request.params.id, request.params.branchId);
+        await branchService.switchBranch(
+          supabase,
+          request.params.id,
+          request.params.branchId
+        );
 
         return {
           success: true,
@@ -2559,7 +2641,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get branch to verify ownership
-        const branch = await branchService.getBranch(supabase, request.params.branchId);
+        const branch = await branchService.getBranch(
+          supabase,
+          request.params.branchId
+        );
 
         if (!branch) {
           return reply.code(404).send({
@@ -2657,7 +2742,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get branch to verify ownership
-        const branch = await branchService.getBranch(supabase, request.params.branchId);
+        const branch = await branchService.getBranch(
+          supabase,
+          request.params.branchId
+        );
 
         if (!branch) {
           return reply.code(404).send({
@@ -2771,7 +2859,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get branch to verify ownership
-        const branch = await branchService.getBranch(supabase, request.params.branchId);
+        const branch = await branchService.getBranch(
+          supabase,
+          request.params.branchId
+        );
 
         if (!branch) {
           return reply.code(404).send({
@@ -2795,11 +2886,20 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Parse query params
-        const limit = request.query.limit ? parseInt(request.query.limit, 10) : 20;
-        const offset = request.query.offset ? parseInt(request.query.offset, 10) : 0;
+        const limit = request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : 20;
+        const offset = request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : 0;
 
         // List commits
-        const commits = await commitService.listCommits(supabase, request.params.branchId, limit, offset);
+        const commits = await commitService.listCommits(
+          supabase,
+          request.params.branchId,
+          limit,
+          offset
+        );
 
         return {
           success: true,
@@ -2852,7 +2952,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get commit
-        const commit = await commitService.getCommit(supabase, request.params.commitId);
+        const commit = await commitService.getCommit(
+          supabase,
+          request.params.commitId
+        );
 
         if (!commit) {
           return reply.code(404).send({
@@ -2876,7 +2979,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get diff
-        const diff = await commitService.getCommitDiff(supabase, request.params.commitId);
+        const diff = await commitService.getCommitDiff(
+          supabase,
+          request.params.commitId
+        );
 
         return {
           success: true,
@@ -2953,7 +3059,10 @@ export async function playbooksRoutes(server: FastifyInstance) {
         }
 
         // Get commit DAG
-        const dag = await commitService.getCommitDAG(supabase, request.params.id);
+        const dag = await commitService.getCommitDAG(
+          supabase,
+          request.params.id
+        );
 
         return {
           success: true,
@@ -2980,149 +3089,152 @@ export async function playbooksRoutes(server: FastifyInstance) {
   server.post<{
     Params: { id: string };
     Body: unknown;
-  }>(
-    '/:id/merge',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        if (!request.user) {
-          return reply.code(401).send({
-            success: false,
-            error: {
-              code: 'UNAUTHORIZED',
-              message: 'Authentication required',
-            },
-          });
-        }
-
-        const orgId = await getUserOrgId(request.user.id, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        // Verify playbook exists and belongs to user's org
-        const { data: playbook } = await supabase
-          .from('playbooks')
-          .select('org_id')
-          .eq('id', request.params.id)
-          .single();
-
-        if (!playbook || playbook.org_id !== orgId) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Playbook not found',
-            },
-          });
-        }
-
-        // Validate request body
-        const { mergeBranchesSchema } = await import('@pravado/validators');
-        const validation = mergeBranchesSchema.safeParse(request.body);
-
-        if (!validation.success) {
-          return reply.code(400).send({
-            success: false,
-            error: {
-              code: 'VALIDATION_ERROR',
-              message: 'Invalid request body',
-              details: validation.error.errors,
-            },
-          });
-        }
-
-        // Verify both branches exist and belong to the playbook
-        const sourceBranch = await branchService.getBranch(supabase, validation.data.sourceBranchId);
-        const targetBranch = await branchService.getBranch(supabase, validation.data.targetBranchId);
-
-        if (!sourceBranch || sourceBranch.playbookId !== request.params.id) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Source branch not found',
-            },
-          });
-        }
-
-        if (!targetBranch || targetBranch.playbookId !== request.params.id) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'Target branch not found',
-            },
-          });
-        }
-
-        // Perform merge
-        const mergeResult = await mergeService.mergeBranches(
-          supabase,
-          validation.data.sourceBranchId,
-          validation.data.targetBranchId,
-          request.user.id,
-          validation.data.message,
-          validation.data.resolveConflicts
-        );
-
-        // If merge has conflicts, return 409 Conflict
-        if (!mergeResult.success) {
-          return reply.code(409).send({
-            success: false,
-            error: {
-              code: 'MERGE_CONFLICT',
-              message: 'Merge conflicts detected. Please resolve conflicts and retry.',
-            },
-            data: {
-              conflicts: mergeResult.conflicts,
-            },
-          });
-        }
-
-        return {
-          success: true,
-          data: {
-            message: 'Branches merged successfully',
-            mergeCommitId: mergeResult.mergeCommitId,
-            mergedGraph: mergeResult.mergedGraph,
-          },
-        };
-      } catch (error: any) {
-        // Handle specific error cases
-        if (error.message.includes('unrelated branches')) {
-          return reply.code(400).send({
-            success: false,
-            error: {
-              code: 'UNRELATED_BRANCHES',
-              message: error.message,
-            },
-          });
-        }
-        if (error.message.includes('missing commits')) {
-          return reply.code(404).send({
-            success: false,
-            error: {
-              code: 'MISSING_COMMITS',
-              message: error.message,
-            },
-          });
-        }
-
-        return reply.code(500).send({
+  }>('/:id/merge', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to merge branches',
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
           },
         });
       }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      // Verify playbook exists and belongs to user's org
+      const { data: playbook } = await supabase
+        .from('playbooks')
+        .select('org_id')
+        .eq('id', request.params.id)
+        .single();
+
+      if (!playbook || playbook.org_id !== orgId) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Playbook not found',
+          },
+        });
+      }
+
+      // Validate request body
+      const { mergeBranchesSchema } = await import('@pravado/validators');
+      const validation = mergeBranchesSchema.safeParse(request.body);
+
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid request body',
+            details: validation.error.errors,
+          },
+        });
+      }
+
+      // Verify both branches exist and belong to the playbook
+      const sourceBranch = await branchService.getBranch(
+        supabase,
+        validation.data.sourceBranchId
+      );
+      const targetBranch = await branchService.getBranch(
+        supabase,
+        validation.data.targetBranchId
+      );
+
+      if (!sourceBranch || sourceBranch.playbookId !== request.params.id) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Source branch not found',
+          },
+        });
+      }
+
+      if (!targetBranch || targetBranch.playbookId !== request.params.id) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Target branch not found',
+          },
+        });
+      }
+
+      // Perform merge
+      const mergeResult = await mergeService.mergeBranches(
+        supabase,
+        validation.data.sourceBranchId,
+        validation.data.targetBranchId,
+        request.user.id,
+        validation.data.message,
+        validation.data.resolveConflicts
+      );
+
+      // If merge has conflicts, return 409 Conflict
+      if (!mergeResult.success) {
+        return reply.code(409).send({
+          success: false,
+          error: {
+            code: 'MERGE_CONFLICT',
+            message:
+              'Merge conflicts detected. Please resolve conflicts and retry.',
+          },
+          data: {
+            conflicts: mergeResult.conflicts,
+          },
+        });
+      }
+
+      return {
+        success: true,
+        data: {
+          message: 'Branches merged successfully',
+          mergeCommitId: mergeResult.mergeCommitId,
+          mergedGraph: mergeResult.mergedGraph,
+        },
+      };
+    } catch (error: any) {
+      // Handle specific error cases
+      if (error.message.includes('unrelated branches')) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'UNRELATED_BRANCHES',
+            message: error.message,
+          },
+        });
+      }
+      if (error.message.includes('missing commits')) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'MISSING_COMMITS',
+            message: error.message,
+          },
+        });
+      }
+
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to merge branches',
+        },
+      });
     }
-  );
+  });
 }

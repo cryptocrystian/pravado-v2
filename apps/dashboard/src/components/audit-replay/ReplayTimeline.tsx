@@ -76,7 +76,8 @@ export function ReplayTimeline({
                   </span>
                   {event.changeCount > 0 && (
                     <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-                      {event.changeCount} change{event.changeCount !== 1 ? 's' : ''}
+                      {event.changeCount} change
+                      {event.changeCount !== 1 ? 's' : ''}
                     </span>
                   )}
                 </div>
@@ -94,7 +95,9 @@ export function ReplayTimeline({
                       {formatEntityType(event.entityType)}
                     </span>
                   )}
-                  <span className="text-xs text-gray-400">{event.eventType}</span>
+                  <span className="text-xs text-gray-400">
+                    {event.eventType}
+                  </span>
                 </div>
               </div>
 

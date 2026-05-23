@@ -59,7 +59,10 @@ export const baseTriggerConditionSchema = z.object({
 export const riskThresholdConditionSchema = baseTriggerConditionSchema.extend({
   type: z.literal('risk_threshold'),
   minRiskLevel: aiScenarioRiskLevelSchema,
-  comparison: z.enum(['gte', 'gt', 'eq', 'lte', 'lt']).optional().default('gte'),
+  comparison: z
+    .enum(['gte', 'gt', 'eq', 'lte', 'lt'])
+    .optional()
+    .default('gte'),
 });
 
 export const sentimentShiftConditionSchema = baseTriggerConditionSchema.extend({
@@ -88,11 +91,12 @@ export const outcomeMatchConditionSchema = baseTriggerConditionSchema.extend({
   minSeverity: aiScenarioRiskLevelSchema.optional(),
 });
 
-export const customExpressionConditionSchema = baseTriggerConditionSchema.extend({
-  type: z.literal('custom_expression'),
-  expression: z.string().min(1).max(500),
-  variables: z.record(z.unknown()).optional(),
-});
+export const customExpressionConditionSchema =
+  baseTriggerConditionSchema.extend({
+    type: z.literal('custom_expression'),
+    expression: z.string().min(1).max(500),
+    variables: z.record(z.unknown()).optional(),
+  });
 
 export const alwaysConditionSchema = z.object({
   type: z.literal('always'),
@@ -130,7 +134,13 @@ export const suiteNotificationSettingsSchema = z.object({
 });
 
 export const scenarioSuiteConfigSchema = z.object({
-  maxConcurrentSimulations: z.number().int().min(1).max(5).optional().default(1),
+  maxConcurrentSimulations: z
+    .number()
+    .int()
+    .min(1)
+    .max(5)
+    .optional()
+    .default(1),
   stopOnFailure: z.boolean().optional().default(true),
   narrativeEnabled: z.boolean().optional().default(true),
   riskMapEnabled: z.boolean().optional().default(true),
@@ -155,7 +165,9 @@ export const createSuiteItemSchema = z.object({
   orderIndex: z.number().int().min(0).optional().default(0),
   dependsOnItemId: z.string().uuid().nullable().optional(),
   triggerConditionType: triggerConditionTypeSchema.optional().default('always'),
-  triggerCondition: flexibleTriggerConditionSchema.optional().default({ type: 'always' }),
+  triggerCondition: flexibleTriggerConditionSchema
+    .optional()
+    .default({ type: 'always' }),
   executionConfig: suiteItemExecutionConfigSchema.optional(),
   label: z.string().max(100).nullable().optional(),
   notes: z.string().max(2000).nullable().optional(),
@@ -200,7 +212,10 @@ export const listScenarioSuitesSchema = z.object({
   search: z.string().max(200).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
-  sortBy: z.enum(['created_at', 'updated_at', 'name']).optional().default('created_at'),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'name'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   includeArchived: z.coerce.boolean().optional().default(false),
 });
@@ -252,7 +267,10 @@ export const abortSuiteRunSchema = z.object({
 
 export const generateSuiteNarrativeSchema = z.object({
   runId: z.string().uuid(),
-  format: z.enum(['summary', 'detailed', 'executive']).optional().default('summary'),
+  format: z
+    .enum(['summary', 'detailed', 'executive'])
+    .optional()
+    .default('summary'),
   includeRecommendations: z.boolean().optional().default(true),
 });
 
@@ -280,22 +298,29 @@ export const suiteRunMetricsSchema = z.object({
   totalDurationMs: z.number().int().min(0),
   averageItemDurationMs: z.number().min(0),
   aggregateRiskLevel: aiScenarioRiskLevelSchema,
-  riskLevelDistribution: z.record(aiScenarioRiskLevelSchema, z.number().int().min(0)),
-  conditionEvaluations: z.array(z.object({
-    type: triggerConditionTypeSchema,
-    evaluations: z.number().int().min(0),
-    metCount: z.number().int().min(0),
-    unmetCount: z.number().int().min(0),
-  })),
-  itemMetrics: z.array(z.object({
-    itemId: z.string().uuid(),
-    simulationName: z.string(),
-    status: scenarioSuiteItemStatusSchema,
-    tokensUsed: z.number().int().min(0),
-    stepsExecuted: z.number().int().min(0),
-    durationMs: z.number().int().min(0),
-    riskLevel: aiScenarioRiskLevelSchema.optional(),
-  })),
+  riskLevelDistribution: z.record(
+    aiScenarioRiskLevelSchema,
+    z.number().int().min(0)
+  ),
+  conditionEvaluations: z.array(
+    z.object({
+      type: triggerConditionTypeSchema,
+      evaluations: z.number().int().min(0),
+      metCount: z.number().int().min(0),
+      unmetCount: z.number().int().min(0),
+    })
+  ),
+  itemMetrics: z.array(
+    z.object({
+      itemId: z.string().uuid(),
+      simulationName: z.string(),
+      status: scenarioSuiteItemStatusSchema,
+      tokensUsed: z.number().int().min(0),
+      stepsExecuted: z.number().int().min(0),
+      durationMs: z.number().int().min(0),
+      riskLevel: aiScenarioRiskLevelSchema.optional(),
+    })
+  ),
 });
 
 export const scenarioSuiteStatsSchema = z.object({
@@ -306,7 +331,10 @@ export const scenarioSuiteStatsSchema = z.object({
   averageItemsPerSuite: z.number().min(0),
   averageRunDurationMs: z.number().min(0),
   mostUsedConditionType: triggerConditionTypeSchema,
-  riskDistribution: z.record(aiScenarioRiskLevelSchema, z.number().int().min(0)),
+  riskDistribution: z.record(
+    aiScenarioRiskLevelSchema,
+    z.number().int().min(0)
+  ),
 });
 
 // ============================================================================
@@ -335,17 +363,21 @@ export const suiteRiskMapSchema = z.object({
   nodes: z.array(riskMapNodeSchema),
   edges: z.array(riskMapEdgeSchema),
   aggregateRiskLevel: aiScenarioRiskLevelSchema,
-  riskFactors: z.array(z.object({
-    factor: z.string(),
-    severity: aiScenarioRiskLevelSchema,
-    source: z.string(),
-    mitigations: z.array(z.string()).optional(),
-  })),
-  opportunities: z.array(z.object({
-    opportunity: z.string(),
-    impact: z.enum(['low', 'medium', 'high']),
-    source: z.string(),
-  })),
+  riskFactors: z.array(
+    z.object({
+      factor: z.string(),
+      severity: aiScenarioRiskLevelSchema,
+      source: z.string(),
+      mitigations: z.array(z.string()).optional(),
+    })
+  ),
+  opportunities: z.array(
+    z.object({
+      opportunity: z.string(),
+      impact: z.enum(['low', 'medium', 'high']),
+      source: z.string(),
+    })
+  ),
   generatedAt: z.string(),
 });
 
@@ -369,22 +401,36 @@ export const suiteItemIdParamSchema = z.object({
 // TYPE EXPORTS
 // ============================================================================
 
-export type CreateScenarioSuiteInput = z.infer<typeof createScenarioSuiteSchema>;
-export type UpdateScenarioSuiteInput = z.infer<typeof updateScenarioSuiteSchema>;
+export type CreateScenarioSuiteInput = z.infer<
+  typeof createScenarioSuiteSchema
+>;
+export type UpdateScenarioSuiteInput = z.infer<
+  typeof updateScenarioSuiteSchema
+>;
 export type CreateSuiteItemInput = z.infer<typeof createSuiteItemSchema>;
 export type UpdateSuiteItemInput = z.infer<typeof updateSuiteItemSchema>;
 export type AddSuiteItemInput = z.infer<typeof addSuiteItemSchema>;
 export type ListScenarioSuitesQuery = z.infer<typeof listScenarioSuitesSchema>;
 export type ListSuiteRunsQuery = z.infer<typeof listSuiteRunsSchema>;
 export type ListSuiteRunItemsQuery = z.infer<typeof listSuiteRunItemsSchema>;
-export type ListSuiteAuditEventsQuery = z.infer<typeof listSuiteAuditEventsSchema>;
-export type StartScenarioSuiteRunInput = z.infer<typeof startScenarioSuiteRunSchema>;
+export type ListSuiteAuditEventsQuery = z.infer<
+  typeof listSuiteAuditEventsSchema
+>;
+export type StartScenarioSuiteRunInput = z.infer<
+  typeof startScenarioSuiteRunSchema
+>;
 export type AdvanceSuiteRunInput = z.infer<typeof advanceSuiteRunSchema>;
 export type AbortSuiteRunInput = z.infer<typeof abortSuiteRunSchema>;
-export type GenerateSuiteNarrativeInput = z.infer<typeof generateSuiteNarrativeSchema>;
-export type GenerateSuiteRiskMapInput = z.infer<typeof generateSuiteRiskMapSchema>;
+export type GenerateSuiteNarrativeInput = z.infer<
+  typeof generateSuiteNarrativeSchema
+>;
+export type GenerateSuiteRiskMapInput = z.infer<
+  typeof generateSuiteRiskMapSchema
+>;
 export type ScenarioSuiteConfig = z.infer<typeof scenarioSuiteConfigSchema>;
-export type SuiteItemExecutionConfig = z.infer<typeof suiteItemExecutionConfigSchema>;
+export type SuiteItemExecutionConfig = z.infer<
+  typeof suiteItemExecutionConfigSchema
+>;
 export type TriggerCondition = z.infer<typeof triggerConditionSchema>;
 export type SuiteRunMetrics = z.infer<typeof suiteRunMetricsSchema>;
 export type ScenarioSuiteStats = z.infer<typeof scenarioSuiteStatsSchema>;

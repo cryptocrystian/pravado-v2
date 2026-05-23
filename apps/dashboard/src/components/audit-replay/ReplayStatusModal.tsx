@@ -21,9 +21,9 @@ export function ReplayStatusModal({
   onClose,
   onComplete,
 }: ReplayStatusModalProps) {
-  const [status, setStatus] = useState<'connecting' | 'running' | 'completed' | 'failed'>(
-    'connecting'
-  );
+  const [status, setStatus] = useState<
+    'connecting' | 'running' | 'completed' | 'failed'
+  >('connecting');
   const [progress, setProgress] = useState(0);
   const [currentEvent, setCurrentEvent] = useState(0);
   const [totalEvents, setTotalEvents] = useState(0);
@@ -67,13 +67,20 @@ export function ReplayStatusModal({
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Replay Progress</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Replay Progress
+            </h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
               disabled={status === 'running'}
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -94,19 +101,19 @@ export function ReplayStatusModal({
                 status === 'completed'
                   ? 'bg-green-100 text-green-800'
                   : status === 'failed'
-                  ? 'bg-red-100 text-red-800'
-                  : status === 'running'
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-gray-100 text-gray-800'
+                    ? 'bg-red-100 text-red-800'
+                    : status === 'running'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-gray-100 text-gray-800'
               }`}
             >
               {status === 'connecting'
                 ? 'Connecting...'
                 : status === 'running'
-                ? 'Running'
-                : status === 'completed'
-                ? 'Completed'
-                : 'Failed'}
+                  ? 'Running'
+                  : status === 'completed'
+                    ? 'Completed'
+                    : 'Failed'}
             </span>
           </div>
 

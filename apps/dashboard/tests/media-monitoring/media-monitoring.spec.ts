@@ -21,12 +21,18 @@ test.describe('Media Monitoring Page', () => {
     });
 
     test('should display view mode toggle', async ({ page }) => {
-      await expect(page.getByRole('button', { name: 'Articles' })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Mentions' })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Articles' })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Mentions' })
+      ).toBeVisible();
     });
 
     test('should display ingest article button', async ({ page }) => {
-      await expect(page.getByRole('button', { name: /Ingest Article/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Ingest Article/i })
+      ).toBeVisible();
     });
 
     test('should display statistics sidebar', async ({ page }) => {
@@ -40,7 +46,9 @@ test.describe('Media Monitoring Page', () => {
 
       await expect(page.getByText('Source Name')).toBeVisible();
       await expect(page.getByPlaceholder('TechCrunch')).toBeVisible();
-      await expect(page.getByPlaceholder('https://techcrunch.com')).toBeVisible();
+      await expect(
+        page.getByPlaceholder('https://techcrunch.com')
+      ).toBeVisible();
     });
 
     test('should validate source URL', async ({ page }) => {
@@ -63,7 +71,9 @@ test.describe('Media Monitoring Page', () => {
   });
 
   test.describe('Article Ingestion', () => {
-    test('should show ingest form when clicking Ingest Article', async ({ page }) => {
+    test('should show ingest form when clicking Ingest Article', async ({
+      page,
+    }) => {
       await page.getByRole('button', { name: /Ingest Article/i }).click();
 
       await expect(page.getByText('Article URL')).toBeVisible();
@@ -123,9 +133,15 @@ test.describe('Media Monitoring Page', () => {
 
     test('should display sentiment filter buttons', async ({ page }) => {
       await expect(page.getByRole('button', { name: /All/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Positive/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Neutral/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Negative/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Positive/i })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Neutral/i })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Negative/i })
+      ).toBeVisible();
     });
 
     test('should filter by sentiment', async ({ page }) => {
@@ -203,14 +219,18 @@ test.describe('Media Monitoring Page', () => {
   test.describe('Accessibility', () => {
     test('should have proper button labels', async ({ page }) => {
       await expect(page.getByRole('button', { name: /Add/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Ingest Article/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Ingest Article/i })
+      ).toBeVisible();
     });
 
     test('should be keyboard navigable', async ({ page }) => {
       await page.keyboard.press('Tab');
       await page.keyboard.press('Tab');
 
-      const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
+      const focusedElement = await page.evaluate(
+        () => document.activeElement?.tagName
+      );
       expect(['BUTTON', 'INPUT', 'A']).toContain(focusedElement);
     });
   });

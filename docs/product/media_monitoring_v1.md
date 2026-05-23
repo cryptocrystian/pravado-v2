@@ -7,6 +7,7 @@
 ## Overview
 
 The Media Monitoring Engine transforms Pravado into a comprehensive PR intelligence platform by enabling:
+
 - Real-time media monitoring across configured publication sources
 - Article ingestion with content extraction and embedding generation
 - Earned mention detection using LLM-powered analysis
@@ -102,6 +103,7 @@ MediaMonitoringService
 ### Content Extraction
 
 Currently implemented as a stub scraper. In production, would use:
+
 - Puppeteer for JavaScript-rendered pages
 - Cheerio for static HTML parsing
 - Custom extractors for major publication formats
@@ -121,6 +123,7 @@ Fallback: First 200 characters of content.
 ### Embedding Generation
 
 Uses OpenAI's `text-embedding-3-small` model:
+
 - 1536 dimensions
 - Enables semantic similarity search
 - Used for finding related articles
@@ -140,6 +143,7 @@ Fallback: TF-IDF style frequency analysis with stop word removal.
 ### Relevance Scoring
 
 Composite score based on:
+
 - Content length (0-0.3)
 - Keyword count (0-0.3)
 - Title quality (0-0.2)
@@ -148,6 +152,7 @@ Composite score based on:
 ### Domain Authority
 
 Stub implementation with tier-based scoring:
+
 - Tier 1 (NYT, WSJ, BBC, etc.): 90
 - Tier 2 (TechCrunch, Wired, etc.): 70
 - .gov/.edu domains: 75
@@ -178,6 +183,7 @@ Return JSON array.
 ### Fallback Detection
 
 Simple string matching when LLM unavailable:
+
 - Case-insensitive search
 - Extracts 100 char context around mention
 - Default neutral sentiment
@@ -186,6 +192,7 @@ Simple string matching when LLM unavailable:
 ### Sentiment Analysis
 
 Three-tier classification:
+
 - **Positive**: Favorable coverage, praise, success stories
 - **Neutral**: Factual reporting, industry news
 - **Negative**: Criticism, problems, controversies
@@ -205,25 +212,26 @@ Three-tier classification:
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/media-monitoring/sources` | Create source |
-| GET | `/api/v1/media-monitoring/sources` | List sources |
-| GET | `/api/v1/media-monitoring/sources/:id` | Get source |
-| PUT | `/api/v1/media-monitoring/sources/:id` | Update source |
-| DELETE | `/api/v1/media-monitoring/sources/:id` | Deactivate source |
-| POST | `/api/v1/media-monitoring/ingest` | Ingest article |
-| GET | `/api/v1/media-monitoring/articles` | List articles |
-| GET | `/api/v1/media-monitoring/articles/:id` | Get article with mentions |
-| POST | `/api/v1/media-monitoring/detect-mentions` | Detect mentions |
-| GET | `/api/v1/media-monitoring/mentions` | List mentions |
-| GET | `/api/v1/media-monitoring/stats` | Get statistics |
+| Method | Endpoint                                   | Description               |
+| ------ | ------------------------------------------ | ------------------------- |
+| POST   | `/api/v1/media-monitoring/sources`         | Create source             |
+| GET    | `/api/v1/media-monitoring/sources`         | List sources              |
+| GET    | `/api/v1/media-monitoring/sources/:id`     | Get source                |
+| PUT    | `/api/v1/media-monitoring/sources/:id`     | Update source             |
+| DELETE | `/api/v1/media-monitoring/sources/:id`     | Deactivate source         |
+| POST   | `/api/v1/media-monitoring/ingest`          | Ingest article            |
+| GET    | `/api/v1/media-monitoring/articles`        | List articles             |
+| GET    | `/api/v1/media-monitoring/articles/:id`    | Get article with mentions |
+| POST   | `/api/v1/media-monitoring/detect-mentions` | Detect mentions           |
+| GET    | `/api/v1/media-monitoring/mentions`        | List mentions             |
+| GET    | `/api/v1/media-monitoring/stats`           | Get statistics            |
 
 ## Dashboard UI
 
 ### Media Monitoring Page
 
 Three-column layout:
+
 1. **Left Sidebar**: Source list with add/manage
 2. **Main Panel**: Articles table or mentions list (toggle)
 3. **Right Sidebar**: Statistics dashboard
@@ -231,6 +239,7 @@ Three-column layout:
 ### Article Drawer
 
 Slide-out panel showing:
+
 - Full article details
 - Highlighted mentions with colors
 - Keyword tags
@@ -239,14 +248,14 @@ Slide-out panel showing:
 
 ### Components
 
-| Component | Description |
-|-----------|-------------|
-| SourceList | Source management sidebar |
-| ArticleTable | Paginated article list |
-| MentionList | Filterable mentions with sentiment badges |
-| ArticleDrawer | Article detail view with mention highlights |
-| RelevanceBadge | Score visualization |
-| SentimentBadge | Sentiment indicator |
+| Component      | Description                                 |
+| -------------- | ------------------------------------------- |
+| SourceList     | Source management sidebar                   |
+| ArticleTable   | Paginated article list                      |
+| MentionList    | Filterable mentions with sentiment badges   |
+| ArticleDrawer  | Article detail view with mention highlights |
+| RelevanceBadge | Score visualization                         |
+| SentimentBadge | Sentiment indicator                         |
 
 ## Security
 

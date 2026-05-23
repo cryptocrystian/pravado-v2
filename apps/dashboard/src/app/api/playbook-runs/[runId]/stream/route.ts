@@ -20,11 +20,20 @@ export async function GET(
   const { runId } = await params;
 
   try {
-    const streamUrl = await getStreamUrl(`/api/v1/playbook-runs/${runId}/stream`);
+    const streamUrl = await getStreamUrl(
+      `/api/v1/playbook-runs/${runId}/stream`
+    );
     return NextResponse.json({ success: true, data: { streamUrl } });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/playbook-runs/[runId]/stream] GET Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    console.error('[API /api/playbook-runs/[runId]/stream] GET Error:', {
+      status,
+      message,
+      code,
+    });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

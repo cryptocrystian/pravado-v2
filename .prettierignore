@@ -8,3 +8,6 @@ pnpm-lock.yaml
 *.log
 .env*
 !.env.example
+
+# Archived docs - historical, not maintained
+docs/_archive/

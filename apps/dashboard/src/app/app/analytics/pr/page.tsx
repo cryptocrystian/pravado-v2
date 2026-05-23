@@ -6,20 +6,30 @@
  */
 
 import { useCallback } from 'react';
-import { PlacementsTable } from '@/components/analytics/PlacementsTable';
-import { CoverageTimeline } from '@/components/analytics/CoverageTimeline';
-import { PitchFunnel } from '@/components/analytics/PitchFunnel';
-import { EviWaterfall } from '@/components/analytics/EviWaterfall';
-import { EviContributionCard } from '@/components/analytics/EviContributionCard';
-import { mockPlacements, mockNarratives } from '@/components/analytics/analytics-mock-data';
+
 import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
+import {
+  mockPlacements,
+  mockNarratives,
+} from '@/components/analytics/analytics-mock-data';
+import { CoverageTimeline } from '@/components/analytics/CoverageTimeline';
+import { EviContributionCard } from '@/components/analytics/EviContributionCard';
+import { EviWaterfall } from '@/components/analytics/EviWaterfall';
+import { PitchFunnel } from '@/components/analytics/PitchFunnel';
+import { PlacementsTable } from '@/components/analytics/PlacementsTable';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 export default function PRAnalyticsPage() {
   const handleExport = useCallback(() => {
     const csv = arrayToCsv(
       ['Publication', 'Headline', 'Date', 'Reach', 'EVI Lift'],
-      mockPlacements.map(p => [p.publication, p.headline, p.date, p.reach, p.eviLift])
+      mockPlacements.map((p) => [
+        p.publication,
+        p.headline,
+        p.date,
+        p.reach,
+        p.eviLift,
+      ])
     );
     downloadCsv('pravado-analytics-pr.csv', csv);
   }, []);

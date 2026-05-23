@@ -12,12 +12,14 @@
 The **Contact Ledger** (also called Relationship Timeline) is the complete, chronological record of all interactions with a media contact. It is a core differentiator that transforms Pravado from a media database into a relationship intelligence system.
 
 The Contact Ledger is NOT:
+
 - A simple activity feed
 - A CRM note field
 - A pitch history list
 - An email thread viewer
 
 The Contact Ledger IS:
+
 - A **comprehensive timeline** of all relationship events with context
 - A **relationship state machine** with explicit stages and transitions
 - An **explainable intelligence layer** showing why scores change
@@ -91,25 +93,25 @@ interface LedgerEvent {
 
 ### 2.2 Event Type Specifications
 
-| Event Type | Icon | Actor | Triggers |
-|------------|------|-------|----------|
-| `pitch_drafted` | Draft icon | User/System | Pitch creation |
-| `pitch_sent` | Send icon | User | Manual send |
-| `pitch_opened` | Eye icon | System | Email tracking |
-| `reply_received` | Reply icon | Contact | Email integration |
-| `coverage_won` | Trophy icon | System | Coverage attribution |
-| `coverage_lost` | X icon | User | Manual marking |
-| `note_added` | Note icon | User | Manual note |
-| `task_created` | Task icon | User/System | Task creation |
-| `task_completed` | Check icon | User | Task completion |
-| `relationship_stage_changed` | Arrow icon | System | Stage transition |
-| `topic_currency_changed` | Trend icon | System | Currency decay/refresh |
-| `enrichment_suggested` | Sparkle icon | System | CiteMind suggestion |
-| `enrichment_approved` | Check icon | User | User approval |
-| `enrichment_rejected` | X icon | User | User rejection |
-| `meeting_logged` | Calendar icon | User | Manual entry |
-| `social_interaction` | Social icon | System | Integration |
-| `citation_detected` | Quote icon | System | CiteMind Engine 3 |
+| Event Type                   | Icon          | Actor       | Triggers               |
+| ---------------------------- | ------------- | ----------- | ---------------------- |
+| `pitch_drafted`              | Draft icon    | User/System | Pitch creation         |
+| `pitch_sent`                 | Send icon     | User        | Manual send            |
+| `pitch_opened`               | Eye icon      | System      | Email tracking         |
+| `reply_received`             | Reply icon    | Contact     | Email integration      |
+| `coverage_won`               | Trophy icon   | System      | Coverage attribution   |
+| `coverage_lost`              | X icon        | User        | Manual marking         |
+| `note_added`                 | Note icon     | User        | Manual note            |
+| `task_created`               | Task icon     | User/System | Task creation          |
+| `task_completed`             | Check icon    | User        | Task completion        |
+| `relationship_stage_changed` | Arrow icon    | System      | Stage transition       |
+| `topic_currency_changed`     | Trend icon    | System      | Currency decay/refresh |
+| `enrichment_suggested`       | Sparkle icon  | System      | CiteMind suggestion    |
+| `enrichment_approved`        | Check icon    | User        | User approval          |
+| `enrichment_rejected`        | X icon        | User        | User rejection         |
+| `meeting_logged`             | Calendar icon | User        | Manual entry           |
+| `social_interaction`         | Social icon   | System      | Integration            |
+| `citation_detected`          | Quote icon    | System      | CiteMind Engine 3      |
 
 ---
 
@@ -117,12 +119,12 @@ interface LedgerEvent {
 
 ### 3.1 Stage Definitions
 
-| Stage | Definition | Entry Criteria | Exit Criteria |
-|-------|------------|----------------|---------------|
-| **Cold** | No prior relationship | Default for new contacts | Any positive interaction |
-| **Warm** | Initial contact established | Response to pitch OR manual outreach | Sustained engagement |
-| **Engaged** | Active relationship | Multiple interactions + positive response rate | Coverage OR decay |
-| **Advocate** | Strong relationship | Coverage obtained + continued engagement | Significant decay |
+| Stage        | Definition                  | Entry Criteria                                 | Exit Criteria            |
+| ------------ | --------------------------- | ---------------------------------------------- | ------------------------ |
+| **Cold**     | No prior relationship       | Default for new contacts                       | Any positive interaction |
+| **Warm**     | Initial contact established | Response to pitch OR manual outreach           | Sustained engagement     |
+| **Engaged**  | Active relationship         | Multiple interactions + positive response rate | Coverage OR decay        |
+| **Advocate** | Strong relationship         | Coverage obtained + continued engagement       | Significant decay        |
 
 ### 3.2 Stage Transition Rules
 
@@ -151,6 +153,7 @@ Advocate → Engaged (Decay):
 ### 3.3 Stage Display Requirements
 
 Each stage change event MUST display:
+
 - Previous stage
 - New stage
 - Reason for change (human-readable)
@@ -172,14 +175,14 @@ When any score changes (relationship score, topic currency, pitch eligibility), 
 
 **Example Reasons:**
 
-| Score | Change | Example Reason |
-|-------|--------|----------------|
-| Relationship Score | +5 | "Journalist responded to pitch within 24 hours" |
-| Relationship Score | -10 | "No interaction in 60 days (decay)" |
-| Topic Currency | +15 | "Recent article on relevant beat published" |
-| Topic Currency | -8 | "Topic hasn't been covered in 30 days" |
-| Pitch Eligibility | +10 | "Response rate improved to 40%" |
-| Pitch Eligibility | -20 | "2 consecutive pitches without response" |
+| Score              | Change | Example Reason                                  |
+| ------------------ | ------ | ----------------------------------------------- |
+| Relationship Score | +5     | "Journalist responded to pitch within 24 hours" |
+| Relationship Score | -10    | "No interaction in 60 days (decay)"             |
+| Topic Currency     | +15    | "Recent article on relevant beat published"     |
+| Topic Currency     | -8     | "Topic hasn't been covered in 30 days"          |
+| Pitch Eligibility  | +10    | "Response rate improved to 40%"                 |
+| Pitch Eligibility  | -20    | "2 consecutive pitches without response"        |
 
 ### 4.2 Explainability UI Pattern
 
@@ -208,13 +211,13 @@ The Next Best Action (NBA) module sits at the top of the Contact Ledger and prov
 
 ### 5.2 NBA Rules
 
-| Relationship State | Signal | NBA Recommendation | Mode Ceiling |
-|--------------------|---------|--------------------|--------------|
-| Cold + Recent pitch | No response 72h | "Send follow-up with new angle" | Manual |
-| Warm + Trending topic | Topic match | "Pitch on [topic] - journalist active" | Manual |
-| Engaged + Coverage gap | 30+ days | "Re-engage with exclusive offer" | Manual |
-| Advocate + Milestone | Anniversary | "Send relationship maintenance note" | Manual |
-| Any + Decay warning | Score dropping | "Take action to prevent decay" | Manual |
+| Relationship State     | Signal          | NBA Recommendation                     | Mode Ceiling |
+| ---------------------- | --------------- | -------------------------------------- | ------------ |
+| Cold + Recent pitch    | No response 72h | "Send follow-up with new angle"        | Manual       |
+| Warm + Trending topic  | Topic match     | "Pitch on [topic] - journalist active" | Manual       |
+| Engaged + Coverage gap | 30+ days        | "Re-engage with exclusive offer"       | Manual       |
+| Advocate + Milestone   | Anniversary     | "Send relationship maintenance note"   | Manual       |
+| Any + Decay warning    | Score dropping  | "Take action to prevent decay"         | Manual       |
 
 ### 5.3 NBA Display
 
@@ -240,6 +243,7 @@ The Next Best Action (NBA) module sits at the top of the Contact Ledger and prov
 ### 5.4 Mode Ceiling Enforcement
 
 **All NBA CTAs for external actions MUST be Manual mode.** This includes:
+
 - Sending pitches
 - Sending follow-ups
 - Any external communication
@@ -300,13 +304,14 @@ The ContactDetailDrawer enhanced with Ledger MUST contain:
 
 ### 7.1 Required Component
 
-| Component | Location | Purpose |
-|-----------|----------|---------|
+| Component                       | Location                                 | Purpose          |
+| ------------------------------- | ---------------------------------------- | ---------------- |
 | `ContactRelationshipLedger.tsx` | `components/pr-work-surface/components/` | Timeline display |
 
 ### 7.2 Integration
 
 The ledger component MUST be integrated into:
+
 - `ContactDetailDrawer.tsx` as a primary section
 - PR Database view (inline preview on hover)
 - Pitch Composer (context panel)
@@ -339,6 +344,7 @@ This document is the authoritative specification for Contact Ledger behavior. An
 ### 9.2 Change Control
 
 Modifications require:
+
 1. Product review sign-off
 2. Update to PR_WORK_SURFACE_CONTRACT.md
 3. Update to CI guardrails
@@ -347,6 +353,6 @@ Modifications require:
 
 ## 10. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-01-14 | 1.0 | Initial Contact Ledger Contract specification |
+| Date       | Version | Change                                        |
+| ---------- | ------- | --------------------------------------------- |
+| 2026-01-14 | 1.0     | Initial Contact Ledger Contract specification |

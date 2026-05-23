@@ -37,7 +37,10 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
 
   // Create Supabase client (S100.3 fix)
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const pitchService = createPRPitchService(supabase);
 
   /**
@@ -58,150 +61,178 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   // ============================================================================
   server.post<{
     Body: CreatePRPitchSequenceInput;
-  }>('/api/v1/pr/pitches/sequences', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/pr/pitches/sequences',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        // Validate input
+        const validation = createPRPitchSequenceSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const sequence = await pitchService.createSequence(
+          orgId,
+          userId,
+          validation.data
+        );
+
+        return reply.status(201).send({
+          success: true,
+          data: { sequence },
+        });
+      } catch (error) {
+        console.error('Failed to create pitch sequence:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to create sequence',
           },
         });
       }
-
-      // Validate input
-      const validation = createPRPitchSequenceSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const sequence = await pitchService.createSequence(orgId, userId, validation.data);
-
-      return reply.status(201).send({
-        success: true,
-        data: { sequence },
-      });
-    } catch (error) {
-      console.error('Failed to create pitch sequence:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to create sequence',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // GET /api/v1/pr/pitches/sequences - List pitch sequences
   // ============================================================================
   server.get<{
     Querystring: Record<string, string | undefined>;
-  }>('/api/v1/pr/pitches/sequences', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/pr/pitches/sequences',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        // Parse and validate query params
+        const validation = listPRPitchSequencesSchema.safeParse(request.query);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
+            },
+          });
+        }
+
+        const result = await pitchService.listSequences(orgId, validation.data);
+
+        return reply.send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to list sequences:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list sequences',
           },
         });
       }
-
-      // Parse and validate query params
-      const validation = listPRPitchSequencesSchema.safeParse(request.query);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid query parameters',
-          },
-        });
-      }
-
-      const result = await pitchService.listSequences(orgId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to list sequences:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to list sequences',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // GET /api/v1/pr/pitches/sequences/:id - Get sequence with steps
   // ============================================================================
   server.get<{
     Params: { id: string };
-  }>('/api/v1/pr/pitches/sequences/:id', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
-      const sequenceId = request.params.id;
+  }>(
+    '/api/v1/pr/pitches/sequences/:id',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
+        const sequenceId = request.params.id;
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const sequence = await pitchService.getSequenceWithSteps(
+          sequenceId,
+          orgId
+        );
+
+        if (!sequence) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Sequence not found',
+            },
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: { sequence },
+        });
+      } catch (error) {
+        console.error('Failed to get sequence:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error ? error.message : 'Failed to get sequence',
           },
         });
       }
-
-      const sequence = await pitchService.getSequenceWithSteps(sequenceId, orgId);
-
-      if (!sequence) {
-        return reply.status(404).send({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Sequence not found',
-          },
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: { sequence },
-      });
-    } catch (error) {
-      console.error('Failed to get sequence:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to get sequence',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // PUT /api/v1/pr/pitches/sequences/:id - Update sequence
@@ -209,91 +240,109 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   server.put<{
     Params: { id: string };
     Body: UpdatePRPitchSequenceInput;
-  }>('/api/v1/pr/pitches/sequences/:id', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
-      const sequenceId = request.params.id;
+  }>(
+    '/api/v1/pr/pitches/sequences/:id',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
+        const sequenceId = request.params.id;
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        // Validate input
+        const validation = updatePRPitchSequenceSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const sequence = await pitchService.updateSequence(
+          sequenceId,
+          orgId,
+          validation.data
+        );
+
+        return reply.send({
+          success: true,
+          data: { sequence },
+        });
+      } catch (error) {
+        console.error('Failed to update sequence:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to update sequence',
           },
         });
       }
-
-      // Validate input
-      const validation = updatePRPitchSequenceSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const sequence = await pitchService.updateSequence(sequenceId, orgId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: { sequence },
-      });
-    } catch (error) {
-      console.error('Failed to update sequence:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to update sequence',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // DELETE /api/v1/pr/pitches/sequences/:id - Archive sequence
   // ============================================================================
   server.delete<{
     Params: { id: string };
-  }>('/api/v1/pr/pitches/sequences/:id', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
-      const sequenceId = request.params.id;
+  }>(
+    '/api/v1/pr/pitches/sequences/:id',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
+        const sequenceId = request.params.id;
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        await pitchService.deleteSequence(sequenceId, orgId);
+
+        return reply.send({
+          success: true,
+          data: { message: 'Sequence archived successfully' },
+        });
+      } catch (error) {
+        console.error('Failed to delete sequence:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to delete sequence',
           },
         });
       }
-
-      await pitchService.deleteSequence(sequenceId, orgId);
-
-      return reply.send({
-        success: true,
-        data: { message: 'Sequence archived successfully' },
-      });
-    } catch (error) {
-      console.error('Failed to delete sequence:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to delete sequence',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // POST /api/v1/pr/pitches/sequences/:id/contacts - Attach contacts
@@ -349,7 +398,10 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to attach contacts',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to attach contacts',
           },
         });
       }
@@ -388,12 +440,18 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
             success: false,
             error: {
               code: 'VALIDATION_ERROR',
-              message: validation.error.errors[0]?.message || 'Invalid query parameters',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
             },
           });
         }
 
-        const result = await pitchService.listContacts(sequenceId, orgId, validation.data);
+        const result = await pitchService.listContacts(
+          sequenceId,
+          orgId,
+          validation.data
+        );
 
         return reply.send({
           success: true,
@@ -405,7 +463,10 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to list contacts',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list contacts',
           },
         });
       }
@@ -417,51 +478,62 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
   // ============================================================================
   server.post<{
     Body: GeneratePitchPreviewInput;
-  }>('/api/v1/pr/pitches/preview', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/pr/pitches/preview',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        // Validate input
+        const validation = generatePitchPreviewSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const preview = await pitchService.generatePitchPreview(
+          orgId,
+          userId,
+          validation.data
+        );
+
+        return reply.send({
+          success: true,
+          data: { preview },
+        });
+      } catch (error) {
+        console.error('Failed to generate pitch preview:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to generate preview',
           },
         });
       }
-
-      // Validate input
-      const validation = generatePitchPreviewSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const preview = await pitchService.generatePitchPreview(orgId, userId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: { preview },
-      });
-    } catch (error) {
-      console.error('Failed to generate pitch preview:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to generate preview',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // POST /api/v1/pr/pitches/contacts/:id/queue - Queue pitch for contact
@@ -487,7 +559,10 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const contact = await pitchService.queuePitchForContact(contactId, orgId);
+        const contact = await pitchService.queuePitchForContact(
+          contactId,
+          orgId
+        );
 
         return reply.send({
           success: true,
@@ -499,7 +574,8 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to queue pitch',
+            message:
+              error instanceof Error ? error.message : 'Failed to queue pitch',
           },
         });
       }
@@ -530,7 +606,10 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const contact = await pitchService.getContactWithEvents(contactId, orgId);
+        const contact = await pitchService.getContactWithEvents(
+          contactId,
+          orgId
+        );
 
         if (!contact) {
           return reply.status(404).send({
@@ -552,7 +631,8 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to get contact',
+            message:
+              error instanceof Error ? error.message : 'Failed to get contact',
           },
         });
       }

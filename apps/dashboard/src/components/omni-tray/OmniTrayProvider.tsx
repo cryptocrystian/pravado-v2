@@ -12,9 +12,10 @@
  */
 
 import { useEffect } from 'react';
-import { useOmniTray } from './useOmniTray';
-import { OmniTrayTab } from './OmniTrayTab';
+
 import { OmniTray } from './OmniTray';
+import { OmniTrayTab } from './OmniTrayTab';
+import { useOmniTray } from './useOmniTray';
 
 export function OmniTrayProvider({ children }: { children: React.ReactNode }) {
   const { isOpen, close } = useOmniTray();

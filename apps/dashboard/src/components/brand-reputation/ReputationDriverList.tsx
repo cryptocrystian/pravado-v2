@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ReputationDriver } from '@pravado/types';
+import { TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getDriverTypeColor,
   getDriverTypeBgColor,
@@ -15,8 +18,6 @@ import {
   formatRelativeTime,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ReputationDriver } from '@pravado/types';
-import { TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface ReputationDriverListProps {
   positiveDrivers: ReputationDriver[];
@@ -44,14 +45,19 @@ export function ReputationDriverList({
             <CardTitle className="text-sm font-medium text-gray-600">
               Positive Drivers
             </CardTitle>
-            <Badge variant="outline" className="bg-green-50 text-green-700 text-xs ml-auto">
+            <Badge
+              variant="outline"
+              className="bg-green-50 text-green-700 text-xs ml-auto"
+            >
               {positiveDrivers.length} total
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           {limitedPositive.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No positive drivers in this period</p>
+            <p className="text-sm text-gray-500 italic">
+              No positive drivers in this period
+            </p>
           ) : (
             limitedPositive.map((driver) => (
               <DriverItem key={driver.id} driver={driver} />
@@ -68,14 +74,19 @@ export function ReputationDriverList({
             <CardTitle className="text-sm font-medium text-gray-600">
               Negative Drivers
             </CardTitle>
-            <Badge variant="outline" className="bg-red-50 text-red-700 text-xs ml-auto">
+            <Badge
+              variant="outline"
+              className="bg-red-50 text-red-700 text-xs ml-auto"
+            >
               {negativeDrivers.length} total
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           {limitedNegative.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No negative drivers in this period</p>
+            <p className="text-sm text-gray-500 italic">
+              No negative drivers in this period
+            </p>
           ) : (
             limitedNegative.map((driver) => (
               <DriverItem key={driver.id} driver={driver} />
@@ -110,7 +121,12 @@ function DriverItem({ driver }: DriverItemProps) {
           </p>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <div className={cn('flex items-center gap-0.5 font-bold text-sm', colorClass)}>
+          <div
+            className={cn(
+              'flex items-center gap-0.5 font-bold text-sm',
+              colorClass
+            )}
+          >
             {isPositive ? (
               <ArrowUp className="h-3 w-3" />
             ) : (

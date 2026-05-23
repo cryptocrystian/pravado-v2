@@ -16,8 +16,8 @@ import {
 } from '@pravado/validators';
 import type { FastifyInstance } from 'fastify';
 
-import { createExecutiveCommandCenterService } from '../../services/executiveCommandCenterService';
 import { requireUser } from '../../middleware/requireUser';
+import { createExecutiveCommandCenterService } from '../../services/executiveCommandCenterService';
 
 // ============================================================================
 // Route Registration
@@ -59,8 +59,12 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
       const query = listExecDashboardsSchema.parse({
         includeArchived: request.query.includeArchived === 'true',
         primaryFocus: request.query.primaryFocus,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       const result = await service.listDashboards(orgId, query);
@@ -100,7 +104,11 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
 
       const input = createExecDashboardSchema.parse(request.body);
 
-      const dashboard = await service.createDashboard(orgId, userId, input as any);
+      const dashboard = await service.createDashboard(
+        orgId,
+        userId,
+        input as any
+      );
 
       return reply.status(201).send({
         success: true,
@@ -183,7 +191,12 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
       const params = execDashboardIdParamSchema.parse(request.params);
       const input = updateExecDashboardSchema.parse(request.body);
 
-      const dashboard = await service.updateDashboard(orgId, params.id, userId, input as any);
+      const dashboard = await service.updateDashboard(
+        orgId,
+        params.id,
+        userId,
+        input as any
+      );
 
       if (!dashboard) {
         return reply.status(404).send({
@@ -225,7 +238,12 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
       const params = execDashboardIdParamSchema.parse(request.params);
       const hardDelete = request.query.hardDelete === 'true';
 
-      const success = await service.deleteDashboard(orgId, params.id, userId, hardDelete);
+      const success = await service.deleteDashboard(
+        orgId,
+        params.id,
+        userId,
+        hardDelete
+      );
 
       if (!success) {
         return reply.status(404).send({
@@ -276,7 +294,12 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
       const params = execDashboardIdParamSchema.parse(request.params);
       const input = refreshExecDashboardSchema.parse(request.body || {});
 
-      const result = await service.refreshDashboard(orgId, params.id, userId, input);
+      const result = await service.refreshDashboard(
+        orgId,
+        params.id,
+        userId,
+        input
+      );
 
       return reply.send({
         success: true,
@@ -322,11 +345,30 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
         dashboardId: params.id,
         sourceSystem: request.query.sourceSystem,
         category: request.query.category,
-        isTopInsight: request.query.isTopInsight === 'true' ? true : request.query.isTopInsight === 'false' ? false : undefined,
-        isRisk: request.query.isRisk === 'true' ? true : request.query.isRisk === 'false' ? false : undefined,
-        isOpportunity: request.query.isOpportunity === 'true' ? true : request.query.isOpportunity === 'false' ? false : undefined,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        isTopInsight:
+          request.query.isTopInsight === 'true'
+            ? true
+            : request.query.isTopInsight === 'false'
+              ? false
+              : undefined,
+        isRisk:
+          request.query.isRisk === 'true'
+            ? true
+            : request.query.isRisk === 'false'
+              ? false
+              : undefined,
+        isOpportunity:
+          request.query.isOpportunity === 'true'
+            ? true
+            : request.query.isOpportunity === 'false'
+              ? false
+              : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       const result = await service.listInsights(orgId, query);
@@ -372,8 +414,12 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
         dashboardId: params.id,
         category: request.query.category,
         sourceSystem: request.query.sourceSystem,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       const result = await service.listKpis(orgId, query);
@@ -415,8 +461,12 @@ export async function executiveCommandCenterRoutes(server: FastifyInstance) {
       const params = execDashboardIdParamSchema.parse(request.params);
       const query = listExecNarrativesSchema.parse({
         dashboardId: params.id,
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
       });
 
       const result = await service.listNarratives(orgId, query);

@@ -5,8 +5,9 @@
  * Display narrative, risk map, and outcomes for a suite run
  */
 
-import { useState } from 'react';
 import type { ScenarioSuiteRun } from '@pravado/types';
+import { useState } from 'react';
+
 import {
   generateSuiteNarrative,
   generateSuiteRiskMap,
@@ -26,8 +27,11 @@ export function SuiteOutcomePanel({
   onNarrativeGenerated,
   onRiskMapGenerated,
 }: SuiteOutcomePanelProps) {
-  const [activeTab, setActiveTab] = useState<'narrative' | 'riskmap' | 'outcomes'>('narrative');
-  const [narrativeFormat, setNarrativeFormat] = useState<NarrativeFormat>('summary');
+  const [activeTab, setActiveTab] = useState<
+    'narrative' | 'riskmap' | 'outcomes'
+  >('narrative');
+  const [narrativeFormat, setNarrativeFormat] =
+    useState<NarrativeFormat>('summary');
   const [narrative, setNarrative] = useState<string>(run.suiteNarrative || '');
   const [riskMap, setRiskMap] = useState<Record<string, unknown> | null>(
     run.riskMap as Record<string, unknown> | null
@@ -49,7 +53,9 @@ export function SuiteOutcomePanel({
       setNarrative(result.narrative);
       onNarrativeGenerated?.(result.narrative);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate narrative');
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate narrative'
+      );
     } finally {
       setLoading(false);
     }
@@ -67,7 +73,9 @@ export function SuiteOutcomePanel({
       setRiskMap(result.riskMap as unknown as Record<string, unknown>);
       onRiskMapGenerated?.(result.riskMap);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate risk map');
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate risk map'
+      );
     } finally {
       setLoading(false);
     }
@@ -125,9 +133,7 @@ export function SuiteOutcomePanel({
           />
         )}
 
-        {activeTab === 'outcomes' && (
-          <OutcomesTab run={run} />
-        )}
+        {activeTab === 'outcomes' && <OutcomesTab run={run} />}
       </div>
     </div>
   );
@@ -191,7 +197,11 @@ function NarrativeTab({
           disabled={loading || !canGenerate}
           className="px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Generating...' : narrative ? 'Regenerate' : 'Generate Narrative'}
+          {loading
+            ? 'Generating...'
+            : narrative
+              ? 'Regenerate'
+              : 'Generate Narrative'}
         </button>
       </div>
 
@@ -201,12 +211,25 @@ function NarrativeTab({
         </div>
       ) : (
         <div className="text-center py-8 text-gray-500">
-          <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            className="w-12 h-12 mx-auto mb-3 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           <p>No narrative generated yet.</p>
           {canGenerate && (
-            <p className="text-sm mt-1">Click &quot;Generate Narrative&quot; to create an AI-powered summary.</p>
+            <p className="text-sm mt-1">
+              Click &quot;Generate Narrative&quot; to create an AI-powered
+              summary.
+            </p>
           )}
         </div>
       )}
@@ -228,8 +251,18 @@ function RiskMapTab({
   if (!riskMap) {
     return (
       <div className="text-center py-8">
-        <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        <svg
+          className="w-12 h-12 mx-auto mb-3 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+          />
         </svg>
         <p className="text-gray-500 mb-4">No risk map generated yet.</p>
         <button
@@ -243,8 +276,19 @@ function RiskMapTab({
     );
   }
 
-  const risks = (riskMap.risks as Array<{ category: string; level: string; description: string; mitigation?: string }>) || [];
-  const opportunities = (riskMap.opportunities as Array<{ category: string; description: string; potential?: string }>) || [];
+  const risks =
+    (riskMap.risks as Array<{
+      category: string;
+      level: string;
+      description: string;
+      mitigation?: string;
+    }>) || [];
+  const opportunities =
+    (riskMap.opportunities as Array<{
+      category: string;
+      description: string;
+      potential?: string;
+    }>) || [];
 
   return (
     <div className="space-y-6">
@@ -264,16 +308,22 @@ function RiskMapTab({
           Identified Risks ({risks.length})
         </h4>
         {risks.length === 0 ? (
-          <p className="text-sm text-gray-500">No significant risks identified.</p>
+          <p className="text-sm text-gray-500">
+            No significant risks identified.
+          </p>
         ) : (
           <div className="space-y-3">
             {risks.map((risk, i) => (
               <div key={i} className="p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${getRiskBadgeClass(risk.level)}`}>
+                  <span
+                    className={`px-2 py-0.5 rounded text-xs font-medium ${getRiskBadgeClass(risk.level)}`}
+                  >
                     {risk.level}
                   </span>
-                  <span className="text-sm font-medium text-gray-900">{risk.category}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {risk.category}
+                  </span>
                 </div>
                 <p className="text-sm text-gray-600">{risk.description}</p>
                 {risk.mitigation && (
@@ -300,7 +350,9 @@ function RiskMapTab({
                   <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                     opportunity
                   </span>
-                  <span className="text-sm font-medium text-gray-900">{opp.category}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {opp.category}
+                  </span>
                 </div>
                 <p className="text-sm text-gray-600">{opp.description}</p>
                 {opp.potential && (
@@ -318,21 +370,34 @@ function RiskMapTab({
 }
 
 function OutcomesTab({ run }: { run: ScenarioSuiteRun }) {
-  const outcomes = (run.aggregatedOutcomes as unknown as Array<{
-    simulationName?: string;
-    outcomeType?: string;
-    summary?: string;
-    riskLevel?: string;
-  }>) || [];
+  const outcomes =
+    (run.aggregatedOutcomes as unknown as Array<{
+      simulationName?: string;
+      outcomeType?: string;
+      summary?: string;
+      riskLevel?: string;
+    }>) || [];
 
   if (outcomes.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
-        <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg
+          className="w-12 h-12 mx-auto mb-3 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          />
         </svg>
         <p>No outcomes recorded yet.</p>
-        <p className="text-sm mt-1">Outcomes are aggregated as simulations complete.</p>
+        <p className="text-sm mt-1">
+          Outcomes are aggregated as simulations complete.
+        </p>
       </div>
     );
   }
@@ -351,7 +416,9 @@ function OutcomesTab({ run }: { run: ScenarioSuiteRun }) {
               </span>
             )}
             {outcome.riskLevel && (
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${getRiskBadgeClass(outcome.riskLevel)}`}>
+              <span
+                className={`px-2 py-0.5 rounded text-xs font-medium ${getRiskBadgeClass(outcome.riskLevel)}`}
+              >
                 {outcome.riskLevel}
               </span>
             )}

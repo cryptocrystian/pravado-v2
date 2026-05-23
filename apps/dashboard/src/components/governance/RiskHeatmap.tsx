@@ -5,15 +5,16 @@
 
 'use client';
 
+import { TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import type {
   GovernanceRiskHeatmapResponse,
   GovernanceRiskHeatmapCell,
   GovernanceScoreTrend,
 } from '@/lib/governanceApi';
 import { getEntityTypeLabel } from '@/lib/governanceApi';
-import { TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RiskHeatmapProps {
   data: GovernanceRiskHeatmapResponse;
@@ -57,7 +58,12 @@ function formatDimensionLabel(dimension: string): string {
     .join(' ');
 }
 
-export function RiskHeatmap({ data, loading, onCellClick, className }: RiskHeatmapProps) {
+export function RiskHeatmap({
+  data,
+  loading,
+  onCellClick,
+  className,
+}: RiskHeatmapProps) {
   if (loading) {
     return (
       <Card className={className}>
@@ -80,7 +86,9 @@ export function RiskHeatmap({ data, loading, onCellClick, className }: RiskHeatm
         </CardHeader>
         <CardContent className="p-8 text-center">
           <p className="text-gray-500">No risk data available</p>
-          <p className="text-sm text-gray-400 mt-1">Risk scores will appear here once calculated</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Risk scores will appear here once calculated
+          </p>
         </CardContent>
       </Card>
     );
@@ -172,11 +180,15 @@ export function RiskHeatmap({ data, loading, onCellClick, className }: RiskHeatm
                         onClick={() => onCellClick?.(cell)}
                         title={`${getEntityTypeLabel(entityType)} - ${formatDimensionLabel(dimension)}: ${cell.score.toFixed(0)} (${cell.findingsCount} findings)`}
                       >
-                        <span className="text-sm font-bold">{cell.score.toFixed(0)}</span>
+                        <span className="text-sm font-bold">
+                          {cell.score.toFixed(0)}
+                        </span>
                         <div className="flex items-center gap-0.5">
                           {getTrendIcon(cell.trend)}
                           {cell.findingsCount > 0 && (
-                            <span className="text-[11px] tabular-nums opacity-75">{cell.findingsCount}</span>
+                            <span className="text-[11px] tabular-nums opacity-75">
+                              {cell.findingsCount}
+                            </span>
                           )}
                         </div>
                       </div>

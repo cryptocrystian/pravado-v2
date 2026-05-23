@@ -289,7 +289,14 @@
   ],
   "filters": {
     "pillars": ["pr", "content", "seo"],
-    "statuses": ["planned", "drafting", "awaiting_approval", "scheduled", "published", "failed"],
+    "statuses": [
+      "planned",
+      "drafting",
+      "awaiting_approval",
+      "scheduled",
+      "published",
+      "failed"
+    ],
     "modes": ["manual", "copilot", "autopilot"],
     "owners": ["AI", "User"]
   },

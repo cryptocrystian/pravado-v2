@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+
 import { apiFetch } from '../lib/api';
 
 interface ContentItem {
@@ -23,7 +24,9 @@ export function useContent(statusFilter?: string) {
       setLoading(true);
       setError(null);
       const params = statusFilter ? `?status=${statusFilter}` : '';
-      const data = await apiFetch<ContentItem[]>(`/content/items${params}`).catch(() => []);
+      const data = await apiFetch<ContentItem[]>(
+        `/content/items${params}`
+      ).catch(() => []);
       setItems(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load content');
@@ -32,7 +35,9 @@ export function useContent(statusFilter?: string) {
     }
   }, [statusFilter]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return { items, loading, error, refresh };
 }

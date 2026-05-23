@@ -27,7 +27,8 @@ export async function withOperationLogging<T>(
   operation: () => Promise<T>
 ): Promise<T> {
   const startTime = Date.now();
-  const operationId = context.operationId || Math.random().toString(36).slice(2, 10);
+  const operationId =
+    context.operationId || Math.random().toString(36).slice(2, 10);
 
   logger.info(`Starting: ${operationName}`, {
     operationId,

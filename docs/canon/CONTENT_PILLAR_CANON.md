@@ -46,12 +46,14 @@ Users already have:
 > The Content Pillar is an enterprise-grade content intelligence, planning, production, and optimization work surface that transforms content from isolated assets into compounding authority signals across PR, AEO, and AI discovery.
 
 It is:
+
 - A best-in-class content execution environment
 - Governed by CiteMind trust constraints
 - Orchestrated by CRAFT
 - Strategically guided by SAGE
 
 It is not:
+
 - A blog editor
 - A social posting scheduler only
 - A generic AI writing tool
@@ -86,12 +88,15 @@ This is where the pillar becomes best-in-class, not just competitive.
 ### 4.1 Content Is Treated as Authority Infrastructure
 
 Other tools ask:
+
 > "Is this content optimized?"
 
 Pravado asks:
+
 > "Does this content increase AI-readable authority?"
 
 Every piece of content is evaluated as:
+
 - An entity reinforcement
 - A citation opportunity
 - An AI ingestion signal
@@ -103,6 +108,7 @@ Every piece of content is evaluated as:
 The Content Pillar operates inside CiteMind constraints.
 
 That means:
+
 - Claims must be verifiable
 - Assertions must be entity-grounded
 - Sources must be citation-worthy
@@ -112,6 +118,7 @@ That means:
 > CiteMind qualifies content.
 
 This prevents:
+
 - AI hallucination risk
 - Over-optimization
 - Trust dilution
@@ -121,6 +128,7 @@ This prevents:
 Content is never "just a blog post."
 
 Each asset has:
+
 - **Primary format** (e.g., long-form article)
 - **Secondary derivatives:**
   - PR pitch excerpts
@@ -139,15 +147,16 @@ Each asset has:
 
 Content follows the same philosophy as PR:
 
-| Mode | What It Means |
-|------|---------------|
-| Manual | Human creates and approves |
-| Copilot | AI assists, human decides |
+| Mode       | What It Means                  |
+| ---------- | ------------------------------ |
+| Manual     | Human creates and approves     |
+| Copilot    | AI assists, human decides      |
 | Automation | AI executes within constraints |
 
 > 🚫 **There is no "set it and forget it" content publishing.**
 
 Why?
+
 - Content directly affects brand trust
 - Content feeds AI systems
 - Mistakes compound negatively
@@ -155,6 +164,7 @@ Why?
 ### 5.2 What AI Is Allowed to Do
 
 AI may:
+
 - Draft within structured outlines
 - Suggest improvements
 - Generate variants
@@ -162,6 +172,7 @@ AI may:
 - Optimize for clarity and consistency
 
 AI may not:
+
 - Invent facts
 - Publish without approval
 - Override CiteMind constraints
@@ -183,24 +194,29 @@ AI may not:
 ### 6.2 Core Views (Required)
 
 **Content Overview**
+
 - Authority impact
 - Active themes
 - AI ingestion readiness
 
 **Content Calendar**
+
 - Multi-format
 - Cross-pillar visibility
 
 **Content Editor**
+
 - Long-form
 - Structured sections
 - CiteMind feedback inline
 
 **Content Library**
+
 - All assets
 - Filters by entity, topic, pillar
 
 **Optimization & Insights**
+
 - Authority deltas
 - Citation readiness
 - Competitive gaps
@@ -271,6 +287,7 @@ Content is not judged by word count or posting frequency.
 ## 10. Explicit Non-Goals (Lock This)
 
 The Content Pillar will **not** become:
+
 - A social media scheduler clone
 - A keyword stuffing tool
 - A viral content generator

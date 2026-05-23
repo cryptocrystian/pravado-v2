@@ -9,9 +9,9 @@
  */
 
 import { useState } from 'react';
-import { EditorCanvas } from '@/components/editor/EditorCanvas';
-import { DocumentRail } from '@/components/editor/DocumentRail';
+
 import { CiteMindRail } from '@/components/editor/CiteMindRail';
+import { DocumentRail } from '@/components/editor/DocumentRail';
 import {
   mockDocuments,
   mockBriefContext,
@@ -22,6 +22,7 @@ import {
   mockCrossPillarHooks,
   mockEditorContent,
 } from '@/components/editor/editor-mock-data';
+import { EditorCanvas } from '@/components/editor/EditorCanvas';
 
 interface PageProps {
   params: { documentId: string };

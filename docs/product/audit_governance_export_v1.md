@@ -90,12 +90,12 @@ CREATE TABLE audit_exports (
 └─────────────────────────┘
 ```
 
-| Status | Description |
-|--------|-------------|
-| `queued` | Job created, waiting to be processed |
-| `processing` | Job is actively generating CSV |
-| `success` | Export complete, file available for download |
-| `failed` | Export failed, error message available |
+| Status       | Description                                  |
+| ------------ | -------------------------------------------- |
+| `queued`     | Job created, waiting to be processed         |
+| `processing` | Job is actively generating CSV               |
+| `success`    | Export complete, file available for download |
+| `failed`     | Export failed, error message available       |
 
 ### TypeScript Types
 
@@ -121,15 +121,15 @@ interface AuditExportJob {
 
 ### Role-Based Access Control
 
-| Action | Owner | Admin | Member | Viewer |
-|--------|-------|-------|--------|--------|
-| View audit logs | Yes | Yes | Yes | Yes |
-| Filter audit logs | Yes | Yes | Yes | Yes |
-| View entry details | Yes | Yes | Yes | Yes |
-| Create export job | Yes | Yes | No | No |
-| View export status | Yes | Yes | No | No |
-| Download export file | Yes | Yes | No | No |
-| List export jobs | Yes | Yes | No | No |
+| Action               | Owner | Admin | Member | Viewer |
+| -------------------- | ----- | ----- | ------ | ------ |
+| View audit logs      | Yes   | Yes   | Yes    | Yes    |
+| Filter audit logs    | Yes   | Yes   | Yes    | Yes    |
+| View entry details   | Yes   | Yes   | Yes    | Yes    |
+| Create export job    | Yes   | Yes   | No     | No     |
+| View export status   | Yes   | Yes   | No     | No     |
+| Download export file | Yes   | Yes   | No     | No     |
+| List export jobs     | Yes   | Yes   | No     | No     |
 
 ### Implementation
 
@@ -142,7 +142,7 @@ function isUserAdmin(role: string): boolean {
 if (!isUserAdmin(membership.role)) {
   return reply.status(403).send({
     success: false,
-    error: { code: 'FORBIDDEN', message: 'Admin role required' }
+    error: { code: 'FORBIDDEN', message: 'Admin role required' },
   });
 }
 ```
@@ -151,16 +151,16 @@ if (!isUserAdmin(membership.role)) {
 
 ### Query Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `severity` | string | Filter by severity level |
-| `actorType` | string | Filter by actor type |
-| `eventType` | string | Filter by event type |
-| `startDate` | string (ISO 8601) | Filter events after this date |
-| `endDate` | string (ISO 8601) | Filter events before this date |
-| `search` | string | Full-text search in context |
-| `limit` | number | Results per page (default: 50) |
-| `offset` | number | Pagination offset |
+| Parameter   | Type              | Description                    |
+| ----------- | ----------------- | ------------------------------ |
+| `severity`  | string            | Filter by severity level       |
+| `actorType` | string            | Filter by actor type           |
+| `eventType` | string            | Filter by event type           |
+| `startDate` | string (ISO 8601) | Filter events after this date  |
+| `endDate`   | string (ISO 8601) | Filter events before this date |
+| `search`    | string            | Full-text search in context    |
+| `limit`     | number            | Results per page (default: 50) |
+| `offset`    | number            | Pagination offset              |
 
 ### Severity Levels
 
@@ -178,13 +178,25 @@ type ActorType = 'user' | 'system' | 'api' | 'webhook';
 
 ```typescript
 type AuditEventType =
-  | 'auth.login' | 'auth.logout' | 'auth.failed'
-  | 'user.created' | 'user.updated' | 'user.deleted'
-  | 'org.created' | 'org.updated' | 'org.deleted'
-  | 'billing.subscription_created' | 'billing.subscription_updated'
-  | 'playbook.created' | 'playbook.executed' | 'playbook.deleted'
-  | 'content.created' | 'content.updated' | 'content.published'
-  | 'system.error' | 'system.maintenance';
+  | 'auth.login'
+  | 'auth.logout'
+  | 'auth.failed'
+  | 'user.created'
+  | 'user.updated'
+  | 'user.deleted'
+  | 'org.created'
+  | 'org.updated'
+  | 'org.deleted'
+  | 'billing.subscription_created'
+  | 'billing.subscription_updated'
+  | 'playbook.created'
+  | 'playbook.executed'
+  | 'playbook.deleted'
+  | 'content.created'
+  | 'content.updated'
+  | 'content.published'
+  | 'system.error'
+  | 'system.maintenance';
 ```
 
 ### Example Query
@@ -263,6 +275,7 @@ entry-124,2024-01-15T11:00:00Z,system.error,error,system,,,,"{""message"":""Conn
 ### AuditFilters
 
 Filter panel with dropdowns and date pickers:
+
 - Severity selector
 - Actor type selector
 - Date range picker
@@ -271,6 +284,7 @@ Filter panel with dropdowns and date pickers:
 ### AuditTable
 
 Paginated table displaying:
+
 - Timestamp
 - Event type badge
 - Severity badge
@@ -281,6 +295,7 @@ Paginated table displaying:
 ### AuditExportButton
 
 Admin-only button that:
+
 - Triggers export creation
 - Opens status modal
 - Shows loading state
@@ -288,6 +303,7 @@ Admin-only button that:
 ### AuditExportStatusModal
 
 Modal displaying:
+
 - Job status with progress indicator
 - Row count (when available)
 - File size (when complete)
@@ -306,7 +322,7 @@ AUDIT_EXPORT_STORAGE_DIR=/tmp/audit_exports
 
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_AUDIT_EXPORTS: true
+ENABLE_AUDIT_EXPORTS: true;
 ```
 
 ## Security Considerations

@@ -306,7 +306,9 @@ function mapAuditLogRecord(record: AuditLogRecord): ExecBoardReportAuditLog {
 // Service Factory
 // ============================================================================
 
-export function createExecutiveBoardReportService(config: ExecBoardReportServiceConfig) {
+export function createExecutiveBoardReportService(
+  config: ExecBoardReportServiceConfig
+) {
   const db = config.supabase as SupabaseClient;
   const openaiApiKey = config.openaiApiKey;
   // Storage and debug settings reserved for future use
@@ -348,7 +350,8 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
     userId: string | null,
     input: CreateExecBoardReportInput
   ): Promise<ExecBoardReport> {
-    const sectionTypes = input.sectionTypes || EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER;
+    const sectionTypes =
+      input.sectionTypes || EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER;
 
     const { data, error } = await db
       .from('exec_board_reports')
@@ -392,7 +395,10 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
       .insert(sectionsToInsert);
 
     if (sectionsError) {
-      logger.warn('Failed to create initial sections', { error: sectionsError, reportId: data.id });
+      logger.warn('Failed to create initial sections', {
+        error: sectionsError,
+        reportId: data.id,
+      });
     }
 
     await logReportAction(orgId, data.id, userId, 'created', { input });
@@ -455,18 +461,25 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
     const updateData: Record<string, unknown> = {};
 
     if (input.title !== undefined) updateData.title = input.title;
-    if (input.description !== undefined) updateData.description = input.description;
+    if (input.description !== undefined)
+      updateData.description = input.description;
     if (input.format !== undefined) updateData.format = input.format;
     if (input.status !== undefined) updateData.status = input.status;
-    if (input.periodStart !== undefined) updateData.period_start = input.periodStart;
+    if (input.periodStart !== undefined)
+      updateData.period_start = input.periodStart;
     if (input.periodEnd !== undefined) updateData.period_end = input.periodEnd;
-    if (input.fiscalQuarter !== undefined) updateData.fiscal_quarter = input.fiscalQuarter;
-    if (input.fiscalYear !== undefined) updateData.fiscal_year = input.fiscalYear;
-    if (input.sectionTypes !== undefined) updateData.section_types = input.sectionTypes;
-    if (input.templateConfig !== undefined) updateData.template_config = input.templateConfig;
+    if (input.fiscalQuarter !== undefined)
+      updateData.fiscal_quarter = input.fiscalQuarter;
+    if (input.fiscalYear !== undefined)
+      updateData.fiscal_year = input.fiscalYear;
+    if (input.sectionTypes !== undefined)
+      updateData.section_types = input.sectionTypes;
+    if (input.templateConfig !== undefined)
+      updateData.template_config = input.templateConfig;
     if (input.llmModel !== undefined) updateData.llm_model = input.llmModel;
     if (input.tone !== undefined) updateData.tone = input.tone;
-    if (input.targetLength !== undefined) updateData.target_length = input.targetLength;
+    if (input.targetLength !== undefined)
+      updateData.target_length = input.targetLength;
     if (input.isArchived !== undefined) {
       updateData.is_archived = input.isArchived;
       if (input.isArchived) {
@@ -549,10 +562,16 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
     }
 
     // Sorting
-    const sortColumn = query.sortBy === 'createdAt' ? 'created_at' :
-      query.sortBy === 'updatedAt' ? 'updated_at' :
-      query.sortBy === 'periodStart' ? 'period_start' :
-      query.sortBy === 'title' ? 'title' : 'created_at';
+    const sortColumn =
+      query.sortBy === 'createdAt'
+        ? 'created_at'
+        : query.sortBy === 'updatedAt'
+          ? 'updated_at'
+          : query.sortBy === 'periodStart'
+            ? 'period_start'
+            : query.sortBy === 'title'
+              ? 'title'
+              : 'created_at';
     const sortOrder = query.sortOrder === 'asc';
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder });
 
@@ -655,7 +674,8 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
     // Content changes trigger edit tracking
     if (input.content !== undefined || input.contentHtml !== undefined) {
       if (input.content !== undefined) updateData.content = input.content;
-      if (input.contentHtml !== undefined) updateData.content_html = input.contentHtml;
+      if (input.contentHtml !== undefined)
+        updateData.content_html = input.contentHtml;
 
       // Track original content if first edit
       if (!currentSection.original_content && currentSection.content) {
@@ -680,7 +700,14 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
       return null;
     }
 
-    await logReportAction(orgId, reportId, userId, 'section_updated', { sectionId, input }, sectionId);
+    await logReportAction(
+      orgId,
+      reportId,
+      userId,
+      'section_updated',
+      { sectionId, input },
+      sectionId
+    );
 
     return mapSectionRecord(data);
   }
@@ -703,7 +730,9 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
       )
     );
 
-    await logReportAction(orgId, reportId, userId, 'sections_reordered', { updates });
+    await logReportAction(orgId, reportId, userId, 'sections_reordered', {
+      updates,
+    });
 
     return listSections(orgId, reportId);
   }
@@ -737,7 +766,9 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
       throw new Error(`Failed to add audience member: ${error.message}`);
     }
 
-    await logReportAction(orgId, reportId, userId, 'audience_added', { email: input.email });
+    await logReportAction(orgId, reportId, userId, 'audience_added', {
+      email: input.email,
+    });
 
     return mapAudienceRecord(data);
   }
@@ -753,7 +784,8 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
 
     if (input.name !== undefined) updateData.name = input.name;
     if (input.role !== undefined) updateData.role = input.role;
-    if (input.accessLevel !== undefined) updateData.access_level = input.accessLevel;
+    if (input.accessLevel !== undefined)
+      updateData.access_level = input.accessLevel;
     if (input.isActive !== undefined) updateData.is_active = input.isActive;
 
     const { data, error } = await db
@@ -769,7 +801,10 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
       return null;
     }
 
-    await logReportAction(orgId, reportId, userId, 'audience_updated', { audienceId, input });
+    await logReportAction(orgId, reportId, userId, 'audience_updated', {
+      audienceId,
+      input,
+    });
 
     return mapAudienceRecord(data);
   }
@@ -791,7 +826,9 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
       throw new Error(`Failed to remove audience member: ${error.message}`);
     }
 
-    await logReportAction(orgId, reportId, userId, 'audience_removed', { audienceId });
+    await logReportAction(orgId, reportId, userId, 'audience_removed', {
+      audienceId,
+    });
   }
 
   async function listAudienceMembers(
@@ -899,8 +936,12 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
 
       if (crisisIncidents) {
         aggregatedData.crisisEngine = {
-          activeIncidents: crisisIncidents.filter((i: { status: string }) => i.status === 'active'),
-          resolvedIncidents: crisisIncidents.filter((i: { status: string }) => i.status === 'resolved'),
+          activeIncidents: crisisIncidents.filter(
+            (i: { status: string }) => i.status === 'active'
+          ),
+          resolvedIncidents: crisisIncidents.filter(
+            (i: { status: string }) => i.status === 'resolved'
+          ),
           crisisScore: 0,
         };
       }
@@ -964,7 +1005,9 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
         };
       }
     } catch (e) {
-      logger.debug('Could not fetch competitive intelligence data', { error: e });
+      logger.debug('Could not fetch competitive intelligence data', {
+        error: e,
+      });
     }
 
     try {
@@ -1000,32 +1043,47 @@ export function createExecutiveBoardReportService(config: ExecBoardReportService
     // Build prompt based on section type
     const sectionPrompts: Record<ExecBoardReportSectionType, string> = {
       executive_summary: `Write a concise executive summary covering the period from ${aggregatedData.periodStart} to ${aggregatedData.periodEnd}. Summarize key achievements, challenges, and strategic priorities.`,
-      strategic_highlights: 'Highlight the key strategic achievements and milestones from this reporting period.',
-      kpi_dashboard: 'Create a narrative summary of the key performance indicators for this period, highlighting trends and notable changes.',
-      financial_overview: 'Provide a high-level financial overview focusing on revenue, expenses, and key financial metrics.',
-      market_analysis: 'Analyze the market conditions, trends, and positioning during this reporting period.',
-      risk_assessment: 'Assess the key risks identified during this period and outline mitigation strategies.',
-      brand_health: 'Summarize the brand health metrics including reputation, sentiment, and key brand initiatives.',
-      media_coverage: 'Provide an overview of media coverage, reach, and notable mentions during this period.',
-      operational_updates: 'Highlight key operational developments, improvements, and challenges.',
-      talent_updates: 'Summarize key talent and team developments including hiring, departures, and organizational changes.',
-      technology_updates: 'Outline technology and product developments, releases, and technical milestones.',
-      sustainability: 'Report on ESG initiatives, sustainability metrics, and environmental/social impact.',
-      forward_outlook: 'Provide forward-looking statements on expected trends, opportunities, and challenges.',
-      action_items: 'List key action items and recommendations for executive attention.',
+      strategic_highlights:
+        'Highlight the key strategic achievements and milestones from this reporting period.',
+      kpi_dashboard:
+        'Create a narrative summary of the key performance indicators for this period, highlighting trends and notable changes.',
+      financial_overview:
+        'Provide a high-level financial overview focusing on revenue, expenses, and key financial metrics.',
+      market_analysis:
+        'Analyze the market conditions, trends, and positioning during this reporting period.',
+      risk_assessment:
+        'Assess the key risks identified during this period and outline mitigation strategies.',
+      brand_health:
+        'Summarize the brand health metrics including reputation, sentiment, and key brand initiatives.',
+      media_coverage:
+        'Provide an overview of media coverage, reach, and notable mentions during this period.',
+      operational_updates:
+        'Highlight key operational developments, improvements, and challenges.',
+      talent_updates:
+        'Summarize key talent and team developments including hiring, departures, and organizational changes.',
+      technology_updates:
+        'Outline technology and product developments, releases, and technical milestones.',
+      sustainability:
+        'Report on ESG initiatives, sustainability metrics, and environmental/social impact.',
+      forward_outlook:
+        'Provide forward-looking statements on expected trends, opportunities, and challenges.',
+      action_items:
+        'List key action items and recommendations for executive attention.',
       appendix: 'Compile supporting materials and additional data references.',
     };
 
     const toneInstructions: Record<ExecBoardReportTone, string> = {
       professional: 'Use a professional, business-appropriate tone.',
       formal: 'Use a formal, board-ready tone suitable for regulatory filings.',
-      executive: 'Use a concise, executive-focused tone emphasizing key insights and decisions.',
+      executive:
+        'Use a concise, executive-focused tone emphasizing key insights and decisions.',
     };
 
     const lengthInstructions: Record<ExecBoardReportTargetLength, string> = {
       brief: 'Keep the content brief and focused, around 100-200 words.',
       standard: 'Provide a standard-length section of around 300-500 words.',
-      comprehensive: 'Provide a comprehensive section with detailed analysis, around 500-800 words.',
+      comprehensive:
+        'Provide a comprehensive section with detailed analysis, around 500-800 words.',
     };
 
     const prompt = `${sectionPrompts[sectionType]}
@@ -1038,28 +1096,32 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
 
     // Call OpenAI API
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${openaiApiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert executive communications specialist who writes clear, insightful board reports and executive summaries.',
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 2000,
-        }),
-      });
+      const response = await fetch(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${openaiApiKey}`,
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'You are an expert executive communications specialist who writes clear, insightful board reports and executive summaries.',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            temperature: 0.7,
+            max_tokens: 2000,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`OpenAI API error: ${response.statusText}`);
@@ -1078,7 +1140,10 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
         durationMs: Date.now() - startTime,
       };
     } catch (error) {
-      logger.error('Failed to generate section content', { error, sectionType });
+      logger.error('Failed to generate section content', {
+        error,
+        sectionType,
+      });
       return {
         content: `[Content generation failed for ${EXEC_BOARD_REPORT_SECTION_TYPE_LABELS[sectionType]}. Please generate manually.]`,
         tokensUsed: 0,
@@ -1123,10 +1188,15 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
 
     // Determine which sections to generate
     const sectionsToGenerate = input.sectionTypes
-      ? sections.filter((s: ExecBoardReportSection) => input.sectionTypes!.includes(s.sectionType))
+      ? sections.filter((s: ExecBoardReportSection) =>
+          input.sectionTypes!.includes(s.sectionType)
+        )
       : input.forceRegenerate
-      ? sections
-      : sections.filter((s: ExecBoardReportSection) => s.status === 'pending' || s.status === 'error');
+        ? sections
+        : sections.filter(
+            (s: ExecBoardReportSection) =>
+              s.status === 'pending' || s.status === 'error'
+          );
 
     let totalTokensUsed = 0;
     const updatedSections: ExecBoardReportSection[] = [];
@@ -1140,12 +1210,13 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
         .eq('id', section.id);
 
       try {
-        const { content, tokensUsed, durationMs } = await generateSectionContent(
-          section.sectionType,
-          aggregatedData,
-          report.tone,
-          report.targetLength
-        );
+        const { content, tokensUsed, durationMs } =
+          await generateSectionContent(
+            section.sectionType,
+            aggregatedData,
+            report.tone,
+            report.targetLength
+          );
 
         // Update section with generated content
         const { data: updatedSection } = await db
@@ -1169,7 +1240,8 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
 
         totalTokensUsed += tokensUsed;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         await db
           .from('exec_board_report_sections')
           .update({
@@ -1178,7 +1250,10 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
           })
           .eq('id', section.id);
 
-        logger.error('Failed to generate section', { error, sectionId: section.id });
+        logger.error('Failed to generate section', {
+          error,
+          sectionId: section.id,
+        });
       }
     }
 
@@ -1202,7 +1277,12 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
         generation_completed_at: new Date().toISOString(),
         generation_duration_ms: generationDurationMs,
         total_tokens_used: totalTokensUsed,
-        data_sources_used: { systems: Object.keys(aggregatedData).filter((k) => k !== 'aggregatedAt' && k !== 'periodStart' && k !== 'periodEnd') },
+        data_sources_used: {
+          systems: Object.keys(aggregatedData).filter(
+            (k) =>
+              k !== 'aggregatedAt' && k !== 'periodStart' && k !== 'periodEnd'
+          ),
+        },
       })
       .eq('id', reportId)
       .eq('org_id', orgId)
@@ -1272,7 +1352,9 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
       return null;
     }
 
-    await logReportAction(orgId, reportId, userId, 'approved', { comments: input.comments });
+    await logReportAction(orgId, reportId, userId, 'approved', {
+      comments: input.comments,
+    });
 
     return mapReportRecord(data);
   }
@@ -1329,7 +1411,9 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
 
     // Notify audience if requested
     if (input.notifyAudience) {
-      const activeAudience = audience.filter((a: ExecBoardReportAudience) => a.isActive);
+      const activeAudience = audience.filter(
+        (a: ExecBoardReportAudience) => a.isActive
+      );
       // Placeholder for email notification
       // In production, integrate with email service
       for (const member of activeAudience) {
@@ -1341,12 +1425,17 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
             .eq('id', member.id);
           notificationsSent++;
         } catch (e) {
-          logger.warn('Failed to notify audience member', { email: member.email, error: e });
+          logger.warn('Failed to notify audience member', {
+            email: member.email,
+            error: e,
+          });
         }
       }
     }
 
-    await logReportAction(orgId, reportId, userId, 'published', { notificationsSent });
+    await logReportAction(orgId, reportId, userId, 'published', {
+      notificationsSent,
+    });
 
     return {
       report: publishedReport ? mapReportRecord(publishedReport) : report,
@@ -1436,7 +1525,9 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
       custom: 0,
     };
 
-    for (const format of Object.keys(reportsByFormat) as ExecBoardReportFormat[]) {
+    for (const format of Object.keys(
+      reportsByFormat
+    ) as ExecBoardReportFormat[]) {
       const { count } = await db
         .from('exec_board_reports')
         .select('*', { count: 'exact', head: true })
@@ -1455,7 +1546,9 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
       archived: 0,
     };
 
-    for (const status of Object.keys(reportsByStatus) as ExecBoardReportStatus[]) {
+    for (const status of Object.keys(
+      reportsByStatus
+    ) as ExecBoardReportStatus[]) {
       const { count } = await db
         .from('exec_board_reports')
         .select('*', { count: 'exact', head: true })
@@ -1484,9 +1577,13 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
       .eq('org_id', orgId)
       .not('generation_duration_ms', 'is', null);
 
-    const avgGenTime = genTimes && genTimes.length > 0
-      ? genTimes.reduce((sum, r) => sum + (r.generation_duration_ms || 0), 0) / genTimes.length
-      : 0;
+    const avgGenTime =
+      genTimes && genTimes.length > 0
+        ? genTimes.reduce(
+            (sum, r) => sum + (r.generation_duration_ms || 0),
+            0
+          ) / genTimes.length
+        : 0;
 
     // Total tokens used
     const { data: tokenData } = await db
@@ -1500,7 +1597,11 @@ ${JSON.stringify(aggregatedData, null, 2)}`;
 
     // Reports this quarter
     const now = new Date();
-    const quarterStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+    const quarterStart = new Date(
+      now.getFullYear(),
+      Math.floor(now.getMonth() / 3) * 3,
+      1
+    );
     const { count: reportsThisQuarter } = await db
       .from('exec_board_reports')
       .select('*', { count: 'exact', head: true })

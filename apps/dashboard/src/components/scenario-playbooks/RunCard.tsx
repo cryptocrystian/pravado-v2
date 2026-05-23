@@ -16,9 +16,18 @@ interface RunCardProps {
   onCancel?: (run: ScenarioRun) => void;
 }
 
-export function RunCard({ run, onView, onPause, onResume, onCancel }: RunCardProps) {
-  const statusLabel = SCENARIO_RUN_STATUS_LABELS[run.status as ScenarioRunStatus] || run.status;
-  const statusColor = RUN_STATUS_COLORS[run.status as ScenarioRunStatus] || 'bg-gray-100 text-gray-800';
+export function RunCard({
+  run,
+  onView,
+  onPause,
+  onResume,
+  onCancel,
+}: RunCardProps) {
+  const statusLabel =
+    SCENARIO_RUN_STATUS_LABELS[run.status as ScenarioRunStatus] || run.status;
+  const statusColor =
+    RUN_STATUS_COLORS[run.status as ScenarioRunStatus] ||
+    'bg-gray-100 text-gray-800';
 
   const isRunning = run.status === 'running';
   const isPaused = run.status === 'paused';
@@ -40,7 +49,9 @@ export function RunCard({ run, onView, onPause, onResume, onCancel }: RunCardPro
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`}>
+            <span
+              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColor}`}
+            >
               {isRunning && (
                 <span className="w-2 h-2 bg-current rounded-full mr-1.5 animate-pulse" />
               )}
@@ -71,8 +82,18 @@ export function RunCard({ run, onView, onPause, onResume, onCancel }: RunCardPro
           <div className="text-sm text-gray-600 space-y-1">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 {formatDuration(run.startedAt, run.completedAt)}
               </span>
@@ -100,9 +121,7 @@ export function RunCard({ run, onView, onPause, onResume, onCancel }: RunCardPro
       </div>
 
       <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-        <div className="text-xs text-gray-400">
-          ID: {run.id.slice(0, 8)}...
-        </div>
+        <div className="text-xs text-gray-400">ID: {run.id.slice(0, 8)}...</div>
 
         <div className="flex items-center gap-2">
           {isRunning && (

@@ -9,8 +9,8 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 // Types
 interface IntelligenceStream {
@@ -39,7 +39,11 @@ interface OrchestrationState {
 }
 
 // AI Dot
-function AIDot({ status = 'idle' }: { status?: 'idle' | 'active' | 'processing' }) {
+function AIDot({
+  status = 'idle',
+}: {
+  status?: 'idle' | 'active' | 'processing';
+}) {
   const baseClasses = 'w-2 h-2 rounded-full';
   if (status === 'processing') {
     return <span className={`${baseClasses} bg-brand-iris animate-pulse`} />;
@@ -51,12 +55,35 @@ function AIDot({ status = 'idle' }: { status?: 'idle' | 'active' | 'processing' 
 }
 
 // Pillar badge colors
-const pillarColors: Record<string, { bg: string; text: string; border: string }> = {
-  pr: { bg: 'bg-brand-iris/10', text: 'text-brand-iris', border: 'border-brand-iris/20' },
-  content: { bg: 'bg-brand-cyan/10', text: 'text-brand-cyan', border: 'border-brand-cyan/20' },
-  seo: { bg: 'bg-brand-magenta/10', text: 'text-brand-magenta', border: 'border-brand-magenta/20' },
-  exec: { bg: 'bg-brand-amber/10', text: 'text-brand-amber', border: 'border-brand-amber/20' },
-  crisis: { bg: 'bg-semantic-danger/10', text: 'text-semantic-danger', border: 'border-semantic-danger/20' },
+const pillarColors: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  pr: {
+    bg: 'bg-brand-iris/10',
+    text: 'text-brand-iris',
+    border: 'border-brand-iris/20',
+  },
+  content: {
+    bg: 'bg-brand-cyan/10',
+    text: 'text-brand-cyan',
+    border: 'border-brand-cyan/20',
+  },
+  seo: {
+    bg: 'bg-brand-magenta/10',
+    text: 'text-brand-magenta',
+    border: 'border-brand-magenta/20',
+  },
+  exec: {
+    bg: 'bg-brand-amber/10',
+    text: 'text-brand-amber',
+    border: 'border-brand-amber/20',
+  },
+  crisis: {
+    bg: 'bg-semantic-danger/10',
+    text: 'text-semantic-danger',
+    border: 'border-semantic-danger/20',
+  },
 };
 
 // Stream Item
@@ -64,9 +91,13 @@ function StreamItem({ stream }: { stream: IntelligenceStream }) {
   const colors = pillarColors[stream.pillar] || pillarColors.pr;
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${colors.bg} ${colors.border}`}>
+    <div
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${colors.bg} ${colors.border}`}
+    >
       <AIDot status={stream.status} />
-      <span className={`text-xs font-medium ${colors.text}`}>{stream.name}</span>
+      <span className={`text-xs font-medium ${colors.text}`}>
+        {stream.name}
+      </span>
     </div>
   );
 }
@@ -78,16 +109,30 @@ function DependencyFlow({ dependency }: { dependency: CrossPillarDependency }) {
 
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className={`px-2 py-0.5 rounded ${sourceColors.bg} ${sourceColors.text}`}>
+      <span
+        className={`px-2 py-0.5 rounded ${sourceColors.bg} ${sourceColors.text}`}
+      >
         {dependency.source}
       </span>
       <span className="text-white/55 flex items-center gap-1">
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        <svg
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
         </svg>
         {dependency.influence}
       </span>
-      <span className={`px-2 py-0.5 rounded ${targetColors.bg} ${targetColors.text}`}>
+      <span
+        className={`px-2 py-0.5 rounded ${targetColors.bg} ${targetColors.text}`}
+      >
         {dependency.target}
       </span>
     </div>
@@ -106,7 +151,9 @@ export function AIOrchestrationBar() {
   // Fetch orchestration state
   useEffect(() => {
     // Load from localStorage for user preferences context
-    const onboardingContext = localStorage.getItem('pravado_onboarding_context');
+    const onboardingContext = localStorage.getItem(
+      'pravado_onboarding_context'
+    );
     let goals: string[] = [];
 
     if (onboardingContext) {
@@ -223,7 +270,9 @@ export function AIOrchestrationBar() {
   }, []);
 
   // Calculate active stream count
-  const activeCount = orchestration.streams.filter((s) => s.status === 'active').length;
+  const activeCount = orchestration.streams.filter(
+    (s) => s.status === 'active'
+  ).length;
 
   return (
     <div className="bg-slate-2/80 backdrop-blur-sm border-b border-border-subtle">
@@ -236,9 +285,13 @@ export function AIOrchestrationBar() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-lg bg-brand-cyan/10 flex items-center justify-center">
-                <AIDot status={orchestration.isProcessing ? 'processing' : 'active'} />
+                <AIDot
+                  status={orchestration.isProcessing ? 'processing' : 'active'}
+                />
               </div>
-              <span className="text-xs font-medium text-brand-cyan">AI Orchestration</span>
+              <span className="text-xs font-medium text-brand-cyan">
+                AI Orchestration
+              </span>
             </div>
 
             {!expanded && (
@@ -251,7 +304,8 @@ export function AIOrchestrationBar() {
                   <>
                     <span className="text-xs text-white/55">|</span>
                     <span className="text-xs text-white/55">
-                      {orchestration.dependencies.length} cross-pillar connections
+                      {orchestration.dependencies.length} cross-pillar
+                      connections
                     </span>
                   </>
                 )}
@@ -260,16 +314,24 @@ export function AIOrchestrationBar() {
           </div>
 
           <div className="flex items-center gap-2">
-            {!expanded && orchestration.streams.slice(0, 3).map((stream) => (
-              <StreamItem key={stream.id} stream={stream} />
-            ))}
+            {!expanded &&
+              orchestration.streams
+                .slice(0, 3)
+                .map((stream) => (
+                  <StreamItem key={stream.id} stream={stream} />
+                ))}
             <svg
               className={`w-4 h-4 text-white/55 transition-transform ${expanded ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </button>
@@ -300,7 +362,9 @@ export function AIOrchestrationBar() {
                 {orchestration.dependencies.map((dep) => (
                   <div key={dep.id}>
                     <DependencyFlow dependency={dep} />
-                    <p className="text-xs text-white/55 mt-1 ml-2">{dep.description}</p>
+                    <p className="text-xs text-white/55 mt-1 ml-2">
+                      {dep.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -312,7 +376,9 @@ export function AIOrchestrationBar() {
             <div className="mt-4 pt-4 border-t border-border-subtle">
               <div className="flex items-center gap-2">
                 <AIDot status="active" />
-                <span className="text-xs text-white/55">{orchestration.currentActivity}</span>
+                <span className="text-xs text-white/55">
+                  {orchestration.currentActivity}
+                </span>
               </div>
             </div>
           )}

@@ -6,8 +6,12 @@
 
 'use client';
 
+import type {
+  BrandReputationAlertEvent,
+  ReputationAlertStatus,
+} from '@pravado/types';
 import { useState, useEffect, useCallback } from 'react';
-import type { BrandReputationAlertEvent, ReputationAlertStatus } from '@pravado/types';
+
 import {
   listAlertEvents,
   acknowledgeAlertEvent,
@@ -32,12 +36,17 @@ export function AlertEventsTable({
   refreshTrigger = 0,
 }: AlertEventsTableProps) {
   const [events, setEvents] = useState<BrandReputationAlertEvent[]>([]);
-  const [counts, setCounts] = useState({ new: 0, acknowledged: 0, muted: 0, resolved: 0 });
+  const [counts, setCounts] = useState({
+    new: 0,
+    acknowledged: 0,
+    muted: 0,
+    resolved: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<ReputationAlertStatus | undefined>(
-    filterStatus
-  );
+  const [selectedStatus, setSelectedStatus] = useState<
+    ReputationAlertStatus | undefined
+  >(filterStatus);
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -52,7 +61,9 @@ export function AlertEventsTable({
       setEvents(response.events);
       setCounts(response.counts);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load alert events');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load alert events'
+      );
     } finally {
       setLoading(false);
     }
@@ -72,7 +83,9 @@ export function AlertEventsTable({
         acknowledged: prev.acknowledged + 1,
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to acknowledge event');
+      setError(
+        err instanceof Error ? err.message : 'Failed to acknowledge event'
+      );
     }
   };
 
@@ -106,10 +119,18 @@ export function AlertEventsTable({
     }
   };
 
-  const statusFilters: { value: ReputationAlertStatus | undefined; label: string; count: number }[] = [
+  const statusFilters: {
+    value: ReputationAlertStatus | undefined;
+    label: string;
+    count: number;
+  }[] = [
     { value: undefined, label: 'All', count: events.length },
     { value: 'new', label: 'New', count: counts.new },
-    { value: 'acknowledged', label: 'Acknowledged', count: counts.acknowledged },
+    {
+      value: 'acknowledged',
+      label: 'Acknowledged',
+      count: counts.acknowledged,
+    },
     { value: 'muted', label: 'Muted', count: counts.muted },
     { value: 'resolved', label: 'Resolved', count: counts.resolved },
   ];
@@ -187,10 +208,13 @@ export function AlertEventsTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {events.map((event) => {
-                const scoreDelta = event.overallScoreBefore !== undefined && event.overallScoreAfter !== undefined
-                  ? event.overallScoreAfter - event.overallScoreBefore
-                  : null;
-                const { text: deltaText, colorClass: deltaColor } = formatDelta(scoreDelta);
+                const scoreDelta =
+                  event.overallScoreBefore !== undefined &&
+                  event.overallScoreAfter !== undefined
+                    ? event.overallScoreAfter - event.overallScoreBefore
+                    : null;
+                const { text: deltaText, colorClass: deltaColor } =
+                  formatDelta(scoreDelta);
 
                 return (
                   <tr
@@ -206,15 +230,24 @@ export function AlertEventsTable({
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm text-gray-900 line-clamp-2">{event.triggerReason || 'No reason provided'}</p>
+                      <p className="text-sm text-gray-900 line-clamp-2">
+                        {event.triggerReason || 'No reason provided'}
+                      </p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {event.overallScoreBefore !== undefined && event.overallScoreAfter !== undefined ? (
+                      {event.overallScoreBefore !== undefined &&
+                      event.overallScoreAfter !== undefined ? (
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-500">{event.overallScoreBefore?.toFixed(1)}</span>
+                          <span className="text-sm text-gray-500">
+                            {event.overallScoreBefore?.toFixed(1)}
+                          </span>
                           <span className="text-gray-400">→</span>
-                          <span className="text-sm font-medium">{event.overallScoreAfter?.toFixed(1)}</span>
-                          <span className={`text-sm ${deltaColor}`}>({deltaText})</span>
+                          <span className="text-sm font-medium">
+                            {event.overallScoreAfter?.toFixed(1)}
+                          </span>
+                          <span className={`text-sm ${deltaColor}`}>
+                            ({deltaText})
+                          </span>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400">N/A</span>
@@ -224,7 +257,10 @@ export function AlertEventsTable({
                       {formatDateTime(event.triggeredAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
+                      <div
+                        className="flex justify-end space-x-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {event.status === 'new' && (
                           <button
                             onClick={() => handleAcknowledge(event)}
@@ -234,7 +270,8 @@ export function AlertEventsTable({
                             Ack
                           </button>
                         )}
-                        {(event.status === 'new' || event.status === 'acknowledged') && (
+                        {(event.status === 'new' ||
+                          event.status === 'acknowledged') && (
                           <>
                             <button
                               onClick={() => handleResolve(event)}

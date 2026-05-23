@@ -51,11 +51,7 @@ export const conflictItemRoleSchema = z.enum([
   'context',
 ]);
 
-export const conflictActorTypeSchema = z.enum([
-  'user',
-  'system',
-  'ai',
-]);
+export const conflictActorTypeSchema = z.enum(['user', 'system', 'ai']);
 
 // ============================================================================
 // NESTED SCHEMAS
@@ -127,7 +123,10 @@ export const conflictAnalysisResultSchema = z.object({
   relatedConflicts: z.array(relatedConflictSchema).optional().default([]),
   suggestedResolutionType: conflictResolutionTypeSchema,
   estimatedResolutionDifficulty: z.enum(['easy', 'moderate', 'difficult']),
-  affectedSystemsAnalysis: z.array(affectedSystemAnalysisSchema).optional().default([]),
+  affectedSystemsAnalysis: z
+    .array(affectedSystemAnalysisSchema)
+    .optional()
+    .default([]),
   vectorSimilarities: z.array(vectorSimilaritySchema).optional().default([]),
 });
 
@@ -157,10 +156,12 @@ export const conflictGraphNodeSchema = z.object({
   type: z.enum(['conflict', 'item', 'source', 'resolution']),
   label: z.string().max(255),
   data: conflictGraphNodeDataSchema,
-  position: z.object({
-    x: z.number(),
-    y: z.number(),
-  }).optional(),
+  position: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
   size: z.number().min(1).optional(),
   color: z.string().max(50).optional(),
 });
@@ -379,7 +380,10 @@ export const listConflictsSchema = z.object({
   hasResolution: z.boolean().optional().nullable(),
   fromDate: z.string().datetime().optional().nullable(),
   toDate: z.string().datetime().optional().nullable(),
-  sortBy: z.enum(['created_at', 'updated_at', 'severity', 'status']).optional().nullable(),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'severity', 'status'])
+    .optional()
+    .nullable(),
   sortOrder: z.enum(['asc', 'desc']).optional().nullable(),
   limit: z.number().int().min(1).max(100).optional().nullable(),
   offset: z.number().int().min(0).optional().nullable(),
@@ -445,10 +449,13 @@ export const detectionConfigSchema = z.object({
 export const runDetectionSchema = z.object({
   config: detectionConfigSchema.optional().nullable(),
   targetSystems: z.array(z.string().max(100)).optional().nullable(),
-  timeRange: z.object({
-    from: z.string().datetime(),
-    to: z.string().datetime(),
-  }).optional().nullable(),
+  timeRange: z
+    .object({
+      from: z.string().datetime(),
+      to: z.string().datetime(),
+    })
+    .optional()
+    .nullable(),
 });
 
 // ============================================================================
@@ -463,12 +470,15 @@ export const batchAnalyzeSchema = z.object({
 export const batchResolveSchema = z.object({
   conflictIds: z.array(z.string().uuid()).min(1).max(50),
   resolutionType: conflictResolutionTypeSchema,
-  options: z.object({
-    sourceWeights: z.array(sourceWeightSchema).optional().nullable(),
-    priorityOrder: z.array(z.string().max(100)).optional().nullable(),
-    customPrompt: z.string().max(2000).optional().nullable(),
-    autoAccept: z.boolean().optional().nullable(),
-  }).optional().nullable(),
+  options: z
+    .object({
+      sourceWeights: z.array(sourceWeightSchema).optional().nullable(),
+      priorityOrder: z.array(z.string().max(100)).optional().nullable(),
+      customPrompt: z.string().max(2000).optional().nullable(),
+      autoAccept: z.boolean().optional().nullable(),
+    })
+    .optional()
+    .nullable(),
 });
 
 export const batchDismissSchema = z.object({
@@ -487,10 +497,13 @@ export const conflictExportConfigSchema = z.object({
   includeItems: z.boolean().optional().nullable(),
   includeResolutions: z.boolean().optional().nullable(),
   includeAuditLog: z.boolean().optional().nullable(),
-  dateRange: z.object({
-    from: z.string().datetime(),
-    to: z.string().datetime(),
-  }).optional().nullable(),
+  dateRange: z
+    .object({
+      from: z.string().datetime(),
+      to: z.string().datetime(),
+    })
+    .optional()
+    .nullable(),
 });
 
 // ============================================================================

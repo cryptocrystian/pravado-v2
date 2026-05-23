@@ -138,7 +138,10 @@ export const STRATEGIC_STATUS_LABELS: Record<StrategicReportStatus, string> = {
   archived: 'Archived',
 };
 
-export const STRATEGIC_SECTION_TYPE_LABELS: Record<StrategicSectionType, string> = {
+export const STRATEGIC_SECTION_TYPE_LABELS: Record<
+  StrategicSectionType,
+  string
+> = {
   executive_summary: 'Executive Summary',
   strategic_outlook: 'Strategic Outlook',
   market_dynamics: 'Market Dynamics',
@@ -583,7 +586,11 @@ export interface AggregatedStrategicInsights {
   crisisStatus?: {
     readinessScore: number;
     activeCrises: number;
-    recentCrises: Array<{ title: string; severity: string; resolvedAt?: string }>;
+    recentCrises: Array<{
+      title: string;
+      severity: string;
+      resolvedAt?: string;
+    }>;
     riskFactors: string[];
   };
 

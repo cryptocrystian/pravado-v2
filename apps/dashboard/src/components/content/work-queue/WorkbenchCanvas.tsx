@@ -20,12 +20,11 @@
  */
 
 import { useState, useCallback } from 'react';
+
+import { type AIPerceptualState, AI_PERCEPTUAL_SIGNALS } from '@/components/ai';
+
 import type { QueueItem } from './QueueRow';
 import type { AutomationMode } from '../types';
-import {
-  type AIPerceptualState,
-  AI_PERCEPTUAL_SIGNALS,
-} from '@/components/ai';
 
 // ============================================
 // TYPES
@@ -55,8 +54,18 @@ const TYPE_CONFIG = {
   execution: {
     label: 'Content',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M13 10V3L4 14h7v7l9-11h-7z"
+        />
       </svg>
     ),
     color: 'text-brand-iris',
@@ -65,8 +74,18 @@ const TYPE_CONFIG = {
   issue: {
     label: 'Issue',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
       </svg>
     ),
     color: 'text-semantic-warning',
@@ -75,8 +94,18 @@ const TYPE_CONFIG = {
   opportunity: {
     label: 'Gap',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 4v16m8-8H4"
+        />
       </svg>
     ),
     color: 'text-brand-cyan',
@@ -85,8 +114,18 @@ const TYPE_CONFIG = {
   scheduled: {
     label: 'Deadline',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
     color: 'text-semantic-danger',
@@ -95,8 +134,18 @@ const TYPE_CONFIG = {
   sage_proposal: {
     label: 'SAGE',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+        />
       </svg>
     ),
     color: 'text-white/60',
@@ -108,7 +157,10 @@ const TYPE_CONFIG = {
 // CTA LABELS BY MODE
 // ============================================
 
-function getCtaLabel(itemType: QueueItem['type'], mode: AutomationMode): string {
+function getCtaLabel(
+  itemType: QueueItem['type'],
+  mode: AutomationMode
+): string {
   if (mode === 'copilot') {
     if (itemType === 'execution') return 'Review & Approve';
     return 'Review';
@@ -137,9 +189,21 @@ function getCtaStyle(isIssue: boolean): string {
 
 // Default plan reasons for demo
 const DEFAULT_PLAN_REASONS = [
-  { id: 'r1', factor: 'Deadline Proximity', explanation: 'Content has a deadline within 48 hours' },
-  { id: 'r2', factor: 'Authority Impact', explanation: 'Contributes +15 to authority score' },
-  { id: 'r3', factor: 'Cross-Pillar Synergy', explanation: 'Aligns with pending PR pitch' },
+  {
+    id: 'r1',
+    factor: 'Deadline Proximity',
+    explanation: 'Content has a deadline within 48 hours',
+  },
+  {
+    id: 'r2',
+    factor: 'Authority Impact',
+    explanation: 'Contributes +15 to authority score',
+  },
+  {
+    id: 'r3',
+    factor: 'Cross-Pillar Synergy',
+    explanation: 'Aligns with pending PR pitch',
+  },
 ];
 
 export function WorkbenchCanvas({
@@ -170,8 +234,18 @@ export function WorkbenchCanvas({
     return (
       <div className="flex flex-col h-full items-center justify-center p-4 text-center">
         <div className="w-10 h-10 mb-2 rounded-lg bg-slate-3 border border-slate-4 flex items-center justify-center">
-          <svg className="w-5 h-5 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          <svg
+            className="w-5 h-5 text-white/20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+            />
           </svg>
         </div>
         <h3 className="text-sm font-semibold text-white/60 mb-0.5">
@@ -202,7 +276,9 @@ export function WorkbenchCanvas({
         {/* Row 1: Type badge + Priority + AI State */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-bold uppercase rounded ${typeConf.color} ${typeConf.bg}`}>
+            <span
+              className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-bold uppercase rounded ${typeConf.color} ${typeConf.bg}`}
+            >
               {typeConf.icon}
               {typeConf.label}
             </span>
@@ -213,9 +289,15 @@ export function WorkbenchCanvas({
             )}
           </div>
           {/* AI State indicator - compact */}
-          <div className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs ${AI_PERCEPTUAL_SIGNALS[aiState].bg} ${AI_PERCEPTUAL_SIGNALS[aiState].border}`}>
-            <span className={`w-2 h-2 rounded-full ${AI_PERCEPTUAL_SIGNALS[aiState].indicator} ${AI_PERCEPTUAL_SIGNALS[aiState].motion}`} />
-            <span className={`font-medium ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}>
+          <div
+            className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs ${AI_PERCEPTUAL_SIGNALS[aiState].bg} ${AI_PERCEPTUAL_SIGNALS[aiState].border}`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${AI_PERCEPTUAL_SIGNALS[aiState].indicator} ${AI_PERCEPTUAL_SIGNALS[aiState].motion}`}
+            />
+            <span
+              className={`font-medium ${AI_PERCEPTUAL_SIGNALS[aiState].text}`}
+            >
               {aiState === 'idle' && 'Idle'}
               {aiState === 'evaluating' && 'Analyzing'}
               {aiState === 'ready' && 'Ready'}
@@ -233,24 +315,38 @@ export function WorkbenchCanvas({
 
         {/* Row 3 (Copilot only): Inline AI Plan Bar - compact, no inline expand */}
         {mode === 'copilot' && (
-          <div className={`mt-2 flex items-center gap-2 px-2 py-1.5 rounded-lg ${
-            isPlanApproved
-              ? 'bg-semantic-success/5 border border-semantic-success/30'
-              : 'bg-brand-cyan/5 border border-brand-cyan/20'
-          }`}>
+          <div
+            className={`mt-2 flex items-center gap-2 px-2 py-1.5 rounded-lg ${
+              isPlanApproved
+                ? 'bg-semantic-success/5 border border-semantic-success/30'
+                : 'bg-brand-cyan/5 border border-brand-cyan/20'
+            }`}
+          >
             {/* AI indicator */}
-            <div className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 ${
-              aiState === 'evaluating'
-                ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
-                : isPlanApproved
-                ? 'bg-semantic-success/20 text-semantic-success'
-                : 'bg-brand-cyan/20 text-brand-cyan'
-            }`}>
+            <div
+              className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 ${
+                aiState === 'evaluating'
+                  ? 'bg-brand-cyan/20 text-brand-cyan animate-pulse'
+                  : isPlanApproved
+                    ? 'bg-semantic-success/20 text-semantic-success'
+                    : 'bg-brand-cyan/20 text-brand-cyan'
+              }`}
+            >
               {aiState === 'evaluating' ? (
                 <span className="w-1.5 h-1.5 rounded-full bg-current" />
               ) : isPlanApproved ? (
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               ) : (
                 <span className="text-xs font-bold">AI</span>
@@ -259,11 +355,18 @@ export function WorkbenchCanvas({
 
             {/* Label + factor chips */}
             <span className="text-xs font-semibold text-white shrink-0">
-              {aiState === 'evaluating' ? 'Analyzing...' : isPlanApproved ? 'Approved' : 'Plan'}
+              {aiState === 'evaluating'
+                ? 'Analyzing...'
+                : isPlanApproved
+                  ? 'Approved'
+                  : 'Plan'}
             </span>
             {!isPlanApproved && aiState !== 'evaluating' && (
               <span className="text-xs text-white/40 truncate flex-1 min-w-0">
-                {planReasons.slice(0, 3).map(r => r.factor).join(' · ')}
+                {planReasons
+                  .slice(0, 3)
+                  .map((r) => r.factor)
+                  .join(' · ')}
               </span>
             )}
 
@@ -281,8 +384,18 @@ export function WorkbenchCanvas({
                     onClick={onApprovePlan}
                     className="flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-white bg-brand-cyan hover:bg-brand-cyan/90 rounded transition-colors"
                   >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     Approve
                   </button>
@@ -317,20 +430,28 @@ export function WorkbenchCanvas({
               </span>
             )}
             {item.risk && (
-              <span className={`px-2 py-0.5 text-xs font-medium rounded ${
-                item.risk === 'low' ? 'text-semantic-success bg-semantic-success/10' :
-                item.risk === 'medium' ? 'text-semantic-warning bg-semantic-warning/10' :
-                'text-semantic-danger bg-semantic-danger/10'
-              }`}>
+              <span
+                className={`px-2 py-0.5 text-xs font-medium rounded ${
+                  item.risk === 'low'
+                    ? 'text-semantic-success bg-semantic-success/10'
+                    : item.risk === 'medium'
+                      ? 'text-semantic-warning bg-semantic-warning/10'
+                      : 'text-semantic-danger bg-semantic-danger/10'
+                }`}
+              >
                 {item.risk} risk
               </span>
             )}
             {item.confidence !== undefined && (
-              <span className={`px-2 py-0.5 text-xs font-medium rounded ${
-                item.confidence >= 80 ? 'text-semantic-success bg-semantic-success/10' :
-                item.confidence >= 50 ? 'text-semantic-warning bg-semantic-warning/10' :
-                'text-white/50 bg-white/5'
-              }`}>
+              <span
+                className={`px-2 py-0.5 text-xs font-medium rounded ${
+                  item.confidence >= 80
+                    ? 'text-semantic-success bg-semantic-success/10'
+                    : item.confidence >= 50
+                      ? 'text-semantic-warning bg-semantic-warning/10'
+                      : 'text-white/50 bg-white/5'
+                }`}
+              >
                 {item.confidence}%
               </span>
             )}
@@ -340,11 +461,17 @@ export function WorkbenchCanvas({
           {mode === 'manual' && item.type === 'execution' && (
             <div className="p-2.5 bg-slate-3/50 border border-slate-4 rounded-lg">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-medium text-white/50">Preview</span>
-                <span className="text-xs text-white/30">Full editor in detail view</span>
+                <span className="text-xs font-medium text-white/50">
+                  Preview
+                </span>
+                <span className="text-xs text-white/30">
+                  Full editor in detail view
+                </span>
               </div>
               <div className="h-12 bg-slate-2 rounded border border-dashed border-slate-4 flex items-center justify-center">
-                <span className="text-sm text-white/30">Content preview...</span>
+                <span className="text-sm text-white/30">
+                  Content preview...
+                </span>
               </div>
             </div>
           )}
@@ -361,11 +488,23 @@ export function WorkbenchCanvas({
         {requiresManualGate ? (
           <div className="flex-1 flex items-center justify-between gap-2">
             <button
-              onClick={() => setShowConfidenceExplainer(!showConfidenceExplainer)}
+              onClick={() =>
+                setShowConfidenceExplainer(!showConfidenceExplainer)
+              }
               className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-white/50 bg-slate-4/50 border border-slate-5 rounded hover:bg-slate-4 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
               Manual required
             </button>

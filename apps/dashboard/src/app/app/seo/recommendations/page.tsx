@@ -7,10 +7,14 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import { RecommendationCard } from '@/components/seo/RecommendationCard';
-import { mockRecommendations, mockMediumCount } from '@/components/seo/seo-mock-data';
+import {
+  mockRecommendations,
+  mockMediumCount,
+} from '@/components/seo/seo-mock-data';
 
 export default function RecommendationsPage() {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
@@ -20,10 +24,12 @@ export default function RecommendationsPage() {
     setDismissed((prev) => new Set(prev).add(id));
   };
 
-  const critical = mockRecommendations
-    .filter((r) => r.urgency === 'critical' && !dismissed.has(r.id));
-  const high = mockRecommendations
-    .filter((r) => r.urgency === 'high' && !dismissed.has(r.id));
+  const critical = mockRecommendations.filter(
+    (r) => r.urgency === 'critical' && !dismissed.has(r.id)
+  );
+  const high = mockRecommendations.filter(
+    (r) => r.urgency === 'high' && !dismissed.has(r.id)
+  );
 
   return (
     <div className="pt-6 pb-16 px-8">
@@ -34,9 +40,7 @@ export default function RecommendationsPage() {
             <h1 className="text-2xl font-bold text-white">
               SAGE Recommendations
             </h1>
-            <span className="text-xs text-white/45">
-              Last updated: Now
-            </span>
+            <span className="text-xs text-white/45">Last updated: Now</span>
           </div>
           <p className="text-sm text-white/70">
             12 actions identified &middot; Estimated total EVI impact: +18

@@ -1,4 +1,5 @@
 # SESSION PRIMER — Pravado v2
+
 > Single source of truth for cross-session continuity.
 > Last Updated: 2026-05-05 — Migration 94 applied to deployed Supabase (D027 audit_sessions persistence fix)
 
@@ -19,11 +20,12 @@
 }
 ```
 
-**Root cause:** Migration `94_audit_sessions_three_pillar.sql` (committed with Phase 1A at `f66a1ca`) was never applied to the deployed Supabase. The API code that depends on its columns (`ai_band`, `pr_band`, `entry_path`, etc.) shipped to production at the same time the migration file landed in the repo, violating the documented hard rule in `docs/RUNBOOK.md:72`: *"Always apply migrations BEFORE deploying API code that depends on them. Never the reverse."* This invalidates the Phase 1A anomaly #4 hypothesis (FK pointing at `organizations` instead of `orgs`) — that's a separate latent issue but isn't what blocked the inserts. PostgREST rejected the writes at the column-cache layer before FK validation.
+**Root cause:** Migration `94_audit_sessions_three_pillar.sql` (committed with Phase 1A at `f66a1ca`) was never applied to the deployed Supabase. The API code that depends on its columns (`ai_band`, `pr_band`, `entry_path`, etc.) shipped to production at the same time the migration file landed in the repo, violating the documented hard rule in `docs/RUNBOOK.md:72`: _"Always apply migrations BEFORE deploying API code that depends on them. Never the reverse."_ This invalidates the Phase 1A anomaly #4 hypothesis (FK pointing at `organizations` instead of `orgs`) — that's a separate latent issue but isn't what blocked the inserts. PostgREST rejected the writes at the column-cache layer before FK validation.
 
 **Fix:** Applied migration 94 directly via psql against the Supabase pooler (`aws-0-us-west-2.pooler.supabase.com:6543`) using the full file contents. All 8 `ALTER TABLE` statements + the `CREATE INDEX` succeeded; the single `NOTICE` was the IF-EXISTS pattern doing its job on a fresh apply. Followed with `NOTIFY pgrst, 'reload schema'` to refresh PostgREST's schema cache.
 
 **Verification:**
+
 - Pre-apply: 0 of 15 expected migration-94 columns present, 7 legacy Silo Tax rows in `audit_sessions`
 - Post-apply: all 15 columns present, CHECK constraint installed, schema cache reloaded
 - Live test scan returned `audit_id: 1c8d7cbe-8651-45d2-976b-c86779b39b5d` (non-null), full three-pillar payload persisted to DB (pr=92, content=88, ai=85, entry_path=pr, stage=account_created)
@@ -44,6 +46,7 @@ Flagged as P1 in OUTSTANDING ISSUES below. Convention fix is out of scope for th
 **Phase 1A** (commit f66a1ca) and **Phase 1A.1** (commit 1d40535) shipped the backend three-pillar EVI scoring API + schema migration per `docs/sprints/D027-AUDIT-REBUILD/WORK_ORDER.md`. Architect checkpoint per work order Phase Sequencing section completed 2026-04-29.
 
 **Validation outcome:**
+
 - Architect-review harness ran 7 brand scans (B2B SaaS, D2C, agency, niche)
 - 7/7 valid LLM output, 0 retries needed, 0 forbidden-pattern violations (no dollar figures, no "Silo Tax" leakage, no scareware framing)
 - EVI calibration spans the full band range: Dominant (Stripe 88, HubSpot 83), Competitive (Figma 78, Notion 73, Allbirds 68, Muck Rack 68), Emerging (Wellstead 45)
@@ -77,11 +80,11 @@ git history. SHAs prior to `0805e75` no longer exist in this repo.
 
 ### Commits landed since 2026-04-21 primer
 
-| SHA | Subject | Notes |
-|-----|---------|-------|
-| `0805e75` | security(secrets): untrack .env.production, sanitize docs, fix hardcoded key | Post-purge HEAD anchor. Untracks `.env.production`, removes mobile hardcoded JWT, sanitizes docs. Pre-purge SHA was `9144f05`. |
-| `e929dc2` | feat(billing): Starter tier calibration — 2.5M tokens, 10 CRAFT/mo | CRAFT pieces 25→10 (code aligned DOWN to Stripe-advertised copy). LLM tokens 500K→2.5M (5x increase). Stripe bootstrap copy: "individuals" → "small teams getting started". Pre-beta calibration window. |
-| `4cb9fdc` | docs(claude): add mandatory boot sequence to CLAUDE.md | New "Required Boot Sequence" section in `CLAUDE.md` requiring future sessions to read `/ARCHITECT_BRIEFING.md` and `/SESSION_PRIMER.md` (this file) before `/docs/canon/README.md`. Structural fix for cross-session orientation drift. |
+| SHA       | Subject                                                                      | Notes                                                                                                                                                                                                                                   |
+| --------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0805e75` | security(secrets): untrack .env.production, sanitize docs, fix hardcoded key | Post-purge HEAD anchor. Untracks `.env.production`, removes mobile hardcoded JWT, sanitizes docs. Pre-purge SHA was `9144f05`.                                                                                                          |
+| `e929dc2` | feat(billing): Starter tier calibration — 2.5M tokens, 10 CRAFT/mo           | CRAFT pieces 25→10 (code aligned DOWN to Stripe-advertised copy). LLM tokens 500K→2.5M (5x increase). Stripe bootstrap copy: "individuals" → "small teams getting started". Pre-beta calibration window.                                |
+| `4cb9fdc` | docs(claude): add mandatory boot sequence to CLAUDE.md                       | New "Required Boot Sequence" section in `CLAUDE.md` requiring future sessions to read `/ARCHITECT_BRIEFING.md` and `/SESSION_PRIMER.md` (this file) before `/docs/canon/README.md`. Structural fix for cross-session orientation drift. |
 
 ### Credential rotations completed (Christian)
 
@@ -117,32 +120,34 @@ fix is documented below and must be first action in next session.
 
 ## INFRASTRUCTURE — CONFIRMED WORKING
 
-| Service | URL | Status |
-|---------|-----|--------|
-| Marketing site | https://pravado.io | ✅ Live |
-| Dashboard | https://app.pravado.io | ✅ Live |
-| API | https://pravado-api.onrender.com | ✅ Live (b85e9ff) |
-| Supabase | kroexsdyyqmlxfpbwajv | ✅ Live |
-| Email | Resend / hello@pravado.io | ✅ Live |
-| Vercel | pravado-dashboard project | ✅ Both domains |
+| Service        | URL                              | Status            |
+| -------------- | -------------------------------- | ----------------- |
+| Marketing site | https://pravado.io               | ✅ Live           |
+| Dashboard      | https://app.pravado.io           | ✅ Live           |
+| API            | https://pravado-api.onrender.com | ✅ Live (b85e9ff) |
+| Supabase       | kroexsdyyqmlxfpbwajv             | ✅ Live           |
+| Email          | Resend / hello@pravado.io        | ✅ Live           |
+| Vercel         | pravado-dashboard project        | ✅ Both domains   |
 
 **Render:** Pro plan. Pipeline minutes are METERED ($5/1K) — not hard-capped.
 Heavy sprint burned significant minutes. Builds are working.
 
 **DNS (Namecheap — NOT Cloudflare):**
+
 - A record @ → 216.150.1.1 (Vercel)
 - CNAME www → 9f1f38c7c596ca86.vercel-dns-017.com (Vercel specific)
-- Resend DKIM TXT: resend._domainkey → [key]
+- Resend DKIM TXT: resend.\_domainkey → [key]
 - Resend SPF TXT: send → v=spf1 include:amazonses.com ~all
 - Resend MX: send → feedback-smtp.us-east-1.amazonses.com (priority 10)
 
 **Render Environment Variables (confirmed set):**
+
 - ANTHROPIC_API_KEY — Claude Haiku for audit scans
 - RESEND_API_KEY — Resend email delivery
 - RESEND_FROM_EMAIL — hello@pravado.io
 - SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 - STRIPE_SECRET_KEY
-- MAILGUN_* — legacy, can be removed (ignored by mailer)
+- MAILGUN\_\* — legacy, can be removed (ignored by mailer)
 
 ---
 
@@ -153,6 +158,7 @@ Heavy sprint burned significant minutes. Builds are working.
 **Pages:** `/` `/platform` `/models` `/pricing` `/about`
 
 **Design rules (MUST maintain):**
+
 - 100% inline styles — NO Tailwind color utilities
 - Technical grid background: #0A0A0F with 1px rgba(255,255,255,0.025) lines
 - ALL sections have explicit solid backgrounds (alternating #0A0A0F / #0D0D14)
@@ -165,6 +171,7 @@ Heavy sprint burned significant minutes. Builds are working.
 ### 2. Layered Architecture Diagram (homepage + platform)
 
 SVG, 600×520 viewBox. Three orbital ellipses at different altitudes showing:
+
 - Left side: STRATEGY / EXECUTION / INTELLIGENCE / OUTPUT layer labels
 - SAGE™ (iris #A855F7) on STRATEGY orbital
 - CRAFT™ (cyan #00D9FF) on EXECUTION orbital
@@ -177,6 +184,7 @@ SVG, 600×520 viewBox. Three orbital ellipses at different altitudes showing:
 ### 3. Models Page (/models)
 
 Three anchored sections (#sage #craft #citemind) with per-engine process diagrams:
+
 - SAGE™: Radial input SVG — 7 signal sources flowing inward, output arrow → CRAFT™
 - CRAFT™: Horizontal 5-stage pipeline SVG with feedback loop + 3 execution type cards
 - CiteMind™: Circular scanning SVG — 4 AI engine nodes, citation type legend, mock feed
@@ -184,12 +192,12 @@ Three anchored sections (#sage #craft #citemind) with per-engine process diagram
 
 ### 4. Pricing (Canonical — all files updated)
 
-| Plan | Monthly | Annual | Key limits |
-|------|---------|--------|-----------|
-| Starter | $199 | $159 | 3 seats, 300 SAGE/mo, 100 CiteMind scans |
-| Pro ★ | $599 | $479 | 5 seats, 1500 SAGE/mo, 1000 CiteMind scans |
-| Growth | $1,199 | $959 | 15 seats, 10K SAGE/mo, 5000 CiteMind scans |
-| Enterprise | Custom | Custom | Unlimited |
+| Plan       | Monthly | Annual | Key limits                                 |
+| ---------- | ------- | ------ | ------------------------------------------ |
+| Starter    | $199    | $159   | 3 seats, 300 SAGE/mo, 100 CiteMind scans   |
+| Pro ★      | $599    | $479   | 5 seats, 1500 SAGE/mo, 1000 CiteMind scans |
+| Growth     | $1,199  | $959   | 15 seats, 10K SAGE/mo, 5000 CiteMind scans |
+| Enterprise | Custom  | Custom | Unlimited                                  |
 
 Annual/monthly toggle with "Save 20%" badge. Pro has "Most Popular" badge.
 "Replaces" comparison: Muck Rack + Profound + Semrush = $1,632/mo
@@ -209,6 +217,7 @@ proposals, 500K tokens, 1 CRAFT execution.
 **4-step state machine:** input → scanning → teaser (gated) → results
 
 **Silo Tax Formula:**
+
 ```
 Authority Leakage    = unlinked_mentions × $18 CPM
 PPC Replacement      = citation_gap_queries × $2.40 × 120
@@ -219,6 +228,7 @@ Silo Tax Total       = All three combined
 ```
 
 **Files:**
+
 - Frontend: `apps/dashboard/src/app/(marketing)/audit/page.tsx`
 - API scan: `apps/api/src/routes/siloTaxAudit/index.ts`
 - Proxy scan: `apps/dashboard/src/app/api/audit/scan/route.ts`
@@ -226,6 +236,7 @@ Silo Tax Total       = All three combined
 - Supabase table: `audit_sessions` (live, RLS, references `orgs` not `organizations`)
 
 **Claim route flow:**
+
 1. `listUsers({ perPage: 1000 })` to check existing user
 2. Creates Supabase auth user + org
 3. Links audit_session to org, sets `trial_expires_at = now() + 72 hours`
@@ -233,6 +244,7 @@ Silo Tax Total       = All three combined
 5. Sends Resend email with EVI card + Silo Tax + CTA button
 
 **Key bugs fixed:**
+
 - `listUsers({ perPage: 1 })` → `perPage: 1000` (user lookup was always failing)
 - `organizations` → `orgs` (correct Supabase table name)
 - `brand_url`/`competitors` → `brandUrl`/`competitorUrls` (field name mismatch)
@@ -250,6 +262,7 @@ Silo Tax Total       = All three combined
 - Email template: EVI score card + Silo Tax + magic link CTA + CiteMind 72H notice
 
 **Email strategy decision:**
+
 - Transactional: Resend (confirmed working)
 - Business inboxes: Zoho Mail recommended ($1/user/mo, unlimited domains) — NOT YET SET UP
 - Decision: Don't use single provider for both — keep them separate
@@ -267,6 +280,7 @@ Silo Tax Total       = All three combined
 ### 🔴 P0 — Do First (blocks magic link / funnel conversion)
 
 **1. Supabase Site URL is wrong**
+
 - Current: Site URL = `https://agency.sapientdigital.io` (set during agency-os work)
 - This causes magic links to redirect to agency domain (no DNS → broken link)
 - Fix (30 seconds, manual in Supabase dashboard):
@@ -281,12 +295,13 @@ Silo Tax Total       = All three combined
 **2. Audit funnel UX restructure**
 
 Current flow problems identified by Christian:
-  a) Email captured AFTER scan — no bot protection, competitors can abuse
-  b) Results shown immediately on screen after account creation — email CTA redundant
-  c) Visual design unreviewed — "on the border between good and gimmicky"
-  d) No email validation (format not checked server-side)
+a) Email captured AFTER scan — no bot protection, competitors can abuse
+b) Results shown immediately on screen after account creation — email CTA redundant
+c) Visual design unreviewed — "on the border between good and gimmicky"
+d) No email validation (format not checked server-side)
 
 Agreed redesign:
+
 ```
 NEW FLOW:
 Step 1: URL input + email REQUIRED upfront
@@ -301,6 +316,7 @@ Step 4: "Save to dashboard" CTA → name + company → creates full account
 Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
 
 **3. Visual design assessment of audit flow**
+
 - Haven't done full eyes-on review of complete flow
 - Christian says "pretty good but on the border between good and gimmicky"
 - Need to screenshot/record each step and assess:
@@ -312,6 +328,7 @@ Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
   - Whether Silo Tax numbers feel credible or inflated
 
 **4. Email template branding**
+
 - Email delivered successfully ✅
 - Christian says branding "needs work"
 - Template in `buildAuditClaimEmailHtml()` in `siloTaxAudit/index.ts`
@@ -320,12 +337,14 @@ Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
 ### 🟡 P1 — Important
 
 **5. Dashboard first-session UX for audit users**
+
 - Users who click magic link land in Command Center cold
 - No connection between their audit data and what they see
 - `audit_sessions.org_id` is set — data exists, just not surfaced
 - Need: "Welcome" state that shows their EVI score and top gaps from audit
 
 **6. Pre-existing Render API errors (non-blocking)**
+
 - Redis SSL error: `ssl3_get_record:wrong version number`
   → BullMQ queues disabled, jobs run on-demand. Pre-existing, low priority.
 - Scheduler tick error every 60s: EVI scheduler skipped due to no Redis
@@ -335,10 +354,12 @@ Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
 - Sentry DSN not configured → just a warning, doesn't affect operation
 
 **7. Wellstead external dependencies**
+
 - Stripe, RevenueCat, Google Maps API, FusionPBX — blocking App Store submission
 - Separate dedicated sprint required
 
 **8. Migration-apply convention has no enforcement**
+
 - Surfaced 2026-05-05 by the migration-94 miss (full incident log in the dated UPDATE block at the top of this file)
 - `docs/RUNBOOK.md:62-77` documents the rule clearly: migrations are manual via `supabase db push`, must apply BEFORE deploying API code that depends on them. The rule is correct. What's missing is enforcement.
 - The miss happened because Phase 1A merged the migration file + the API code that depends on it in the same commit, and only the API code path is automated (Render auto-deploys on push to main; migrations require a human to remember to run `supabase db push`).
@@ -351,14 +372,17 @@ Benefits: Captures lead before spending $0.002, stops bot abuse, less gimmicky.
 ### 🟢 P2 — Future Sprints
 
 **8. Annual billing in Stripe**
+
 - Annual price IDs not yet created (only monthly exists in bootstrapStripeBilling.ts)
 - Toggle UI exists on pricing page, but Stripe doesn't have annual prices yet
 
 **9. 80% usage warning emails**
+
 - `isApproachingLimit()` utility added to planLimitsService
 - Cron job to send warning emails not built yet
 
 **10. Agency OS (DO NOT COMMIT without planning)**
+
 - `apps/agency-os/**` — entire app, untracked
 - `apps/api/src/routes/agency/**` — routes, untracked
 - server.ts import is COMMENTED OUT — safe
@@ -384,6 +408,7 @@ EVI™ tells you if it's working.`
 **TM rules:** Use ™ (unregistered claim). File USPTO Class 42+35 before ®.
 
 **Telemetry panel (canonical):**
+
 ```
 ● SAGE™      Active — 3 recommendations queued
 ● CRAFT™     Running — 2 campaigns in flight
@@ -395,6 +420,7 @@ EVI™ tells you if it's working.`
 ## COMPETITIVE CONTEXT (for audit copy)
 
 **Pravado replaces:**
+
 - Muck Rack: ~$833/mo (mid-market avg $12,874/yr)
 - Profound (AEO): $399/mo Growth
 - Semrush: $400/mo
@@ -408,6 +434,7 @@ EVI™ tells you if it's working.`
 ## GIT STATE
 
 **Latest commits (main branch):**
+
 ```
 b85e9ff fix(api): rewrite mailerPlugin — reads process.env directly
 bd91d70 fix: listUsers perPage 1→1000
@@ -423,6 +450,7 @@ e01b58b fix(marketing): solid backgrounds on all sections
 ```
 
 **Untracked — DO NOT COMMIT without planning:**
+
 ```
 apps/agency-os/**           ← Agency OS (separate venture sprint)
 apps/api/src/routes/agency/ ← Agency OS API routes
@@ -496,6 +524,7 @@ packages/
 ## MCP STABILITY NOTES
 
 Chrome MCP (`Claude in Chrome`) drops frequently in long sessions.
+
 - Start new session if MCP drops more than 2-3 times
 - Use Claude Code for all file edits — more reliable
 - Use MCP only for visual verification / browser automation
@@ -503,4 +532,5 @@ Chrome MCP (`Claude in Chrome`) drops frequently in long sessions.
 - When MCP is down, use Render Web Shell for server-side fixes
 
 ---
-*Update this file at the end of every session before closing.*
+
+_Update this file at the end of every session before closing._

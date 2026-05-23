@@ -15,7 +15,12 @@
  * - Usage ledger tracking (Sprint S27)
  */
 
-import type { LlmProvider, LlmRequest, LlmResponse, CreateLlmUsageLedgerEntry } from '@pravado/types';
+import type {
+  LlmProvider,
+  LlmRequest,
+  LlmResponse,
+  CreateLlmUsageLedgerEntry,
+} from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { createLogger } from './logger';
@@ -150,7 +155,9 @@ interface CallLlmResponse {
  * Simple OpenAI-style callLLM function
  * Uses stub fallback if no API key is available
  */
-export async function callLLM(request: CallLlmRequest): Promise<CallLlmResponse> {
+export async function callLLM(
+  request: CallLlmRequest
+): Promise<CallLlmResponse> {
   const systemMessage = request.messages.find((m) => m.role === 'system');
   const userMessage = request.messages.find((m) => m.role === 'user');
 
@@ -163,19 +170,22 @@ export async function callLLM(request: CallLlmRequest): Promise<CallLlmResponse>
 
   if (apiKey) {
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: request.model || 'gpt-4o-mini',
-          messages: request.messages,
-          temperature: request.temperature ?? 0.7,
-          max_tokens: request.max_tokens ?? 2048,
-        }),
-      });
+      const response = await fetch(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: request.model || 'gpt-4o-mini',
+            messages: request.messages,
+            temperature: request.temperature ?? 0.7,
+            max_tokens: request.max_tokens ?? 2048,
+          }),
+        }
+      );
 
       if (response.ok) {
         return (await response.json()) as CallLlmResponse;
@@ -211,10 +221,15 @@ export async function callLLM(request: CallLlmRequest): Promise<CallLlmResponse>
  * LLM Router class
  */
 export class LlmRouter {
-  private readonly config: Required<Omit<LlmRouterConfig, 'supabase' | 'enableLedger' | 'billingEnforcer'>>;
+  private readonly config: Required<
+    Omit<LlmRouterConfig, 'supabase' | 'enableLedger' | 'billingEnforcer'>
+  >;
   private readonly supabase?: SupabaseClient<any>;
   private readonly enableLedger: boolean;
-  private readonly billingEnforcer?: (orgId: string, tokensToConsume: number) => Promise<void>;
+  private readonly billingEnforcer?: (
+    orgId: string,
+    tokensToConsume: number
+  ) => Promise<void>;
 
   constructor(config: LlmRouterConfig = {}) {
     this.config = {
@@ -270,7 +285,10 @@ export class LlmRouter {
         await this.billingEnforcer(request.orgId, estimatedTokens);
       } catch (err) {
         // Re-throw billing errors (don't fall back to stub for quota issues)
-        logger.warn('Billing quota enforcement failed', { error: err, orgId: request.orgId });
+        logger.warn('Billing quota enforcement failed', {
+          error: err,
+          orgId: request.orgId,
+        });
         throw err;
       }
     }
@@ -289,7 +307,10 @@ export class LlmRouter {
       }
     } catch (err) {
       error = err;
-      logger.error('LLM generation failed, falling back to stub', { error: err, provider });
+      logger.error('LLM generation failed, falling back to stub', {
+        error: err,
+        provider,
+      });
       response = this.generateStub(request);
     }
 
@@ -313,9 +334,11 @@ export class LlmRouter {
 
     // Update billing usage counters (S28 - best effort, non-blocking)
     if (request.orgId && response.usage?.totalTokens) {
-      this.updateBillingUsage(request.orgId, response.usage.totalTokens).catch(() => {
-        // Swallow errors from billing updates
-      });
+      this.updateBillingUsage(request.orgId, response.usage.totalTokens).catch(
+        () => {
+          // Swallow errors from billing updates
+        }
+      );
     }
 
     return response;
@@ -333,7 +356,8 @@ export class LlmRouter {
 
     const model = request.model || this.config.openaiModel;
     const maxTokens = request.maxTokens || this.config.maxTokens;
-    const temperature = request.temperature !== undefined ? request.temperature : 0.7;
+    const temperature =
+      request.temperature !== undefined ? request.temperature : 0.7;
 
     // Build messages array
     const messages: OpenAIChatRequest['messages'] = [];
@@ -363,18 +387,24 @@ export class LlmRouter {
 
     // Make API call with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      this.config.timeoutMs
+    );
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.config.openaiApiKey}`,
-        },
-        body: JSON.stringify(requestBody),
-        signal: controller.signal,
-      });
+      const response = await fetch(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.config.openaiApiKey}`,
+          },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal,
+        }
+      );
 
       clearTimeout(timeoutId);
 
@@ -415,7 +445,9 @@ export class LlmRouter {
   /**
    * Generate completion using Anthropic
    */
-  private async generateWithAnthropic(request: LlmRequest): Promise<LlmResponse> {
+  private async generateWithAnthropic(
+    request: LlmRequest
+  ): Promise<LlmResponse> {
     // Check for API key
     if (!this.config.anthropicApiKey) {
       logger.warn('Anthropic API key not configured, falling back to stub');
@@ -424,7 +456,8 @@ export class LlmRouter {
 
     const model = request.model || this.config.anthropicModel;
     const maxTokens = request.maxTokens || this.config.maxTokens;
-    const temperature = request.temperature !== undefined ? request.temperature : 0.7;
+    const temperature =
+      request.temperature !== undefined ? request.temperature : 0.7;
 
     const requestBody: AnthropicMessagesRequest = {
       model,
@@ -448,7 +481,10 @@ export class LlmRouter {
 
     // Make API call with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      this.config.timeoutMs
+    );
 
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -502,7 +538,9 @@ export class LlmRouter {
   /**
    * Write LLM usage to ledger (best effort)
    */
-  private async writeLedgerEntry(entry: CreateLlmUsageLedgerEntry): Promise<void> {
+  private async writeLedgerEntry(
+    entry: CreateLlmUsageLedgerEntry
+  ): Promise<void> {
     if (!this.enableLedger || !this.supabase) {
       return;
     }
@@ -534,7 +572,10 @@ export class LlmRouter {
   /**
    * Update billing usage counters (S28 - best effort)
    */
-  private async updateBillingUsage(orgId: string, tokensDelta: number): Promise<void> {
+  private async updateBillingUsage(
+    orgId: string,
+    tokensDelta: number
+  ): Promise<void> {
     if (!this.supabase) {
       return;
     }
@@ -542,8 +583,12 @@ export class LlmRouter {
     try {
       // Calculate current billing period (first day of month to first day of next month)
       const now = new Date();
-      const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-      const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+      const periodStart = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
+      );
+      const periodEnd = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)
+      );
 
       // Fetch existing usage record for current period
       const { data: existingUsage } = await this.supabase
@@ -569,18 +614,23 @@ export class LlmRouter {
         }
       } else {
         // Create new usage record
-        const { error } = await this.supabase.from('org_billing_usage_monthly').insert({
-          org_id: orgId,
-          period_start: periodStart.toISOString(),
-          period_end: periodEnd.toISOString(),
-          tokens_used: tokensDelta,
-          playbook_runs: 0,
-          seats: 0,
-          last_calculated_at: new Date().toISOString(),
-        });
+        const { error } = await this.supabase
+          .from('org_billing_usage_monthly')
+          .insert({
+            org_id: orgId,
+            period_start: periodStart.toISOString(),
+            period_end: periodEnd.toISOString(),
+            tokens_used: tokensDelta,
+            playbook_runs: 0,
+            seats: 0,
+            last_calculated_at: new Date().toISOString(),
+          });
 
         if (error) {
-          logger.warn('Failed to create billing usage record', { error, orgId });
+          logger.warn('Failed to create billing usage record', {
+            error,
+            orgId,
+          });
         }
       }
     } catch (error) {
@@ -629,7 +679,9 @@ export class LlmRouter {
     // If rewriting content
     else if (userPrompt.includes('rewrite') || userPrompt.includes('improve')) {
       // Extract content to rewrite (simple heuristic)
-      const lines = request.userPrompt.split('\n').filter((l) => l.trim().length > 0);
+      const lines = request.userPrompt
+        .split('\n')
+        .filter((l) => l.trim().length > 0);
       const contentLines = lines.slice(1); // Skip first line (usually instructions)
 
       if (contentLines.length > 0) {
@@ -643,9 +695,11 @@ export class LlmRouter {
           .join('. ');
 
         // Add transition
-        completion += '. Furthermore, this content provides additional value and clarity.';
+        completion +=
+          '. Furthermore, this content provides additional value and clarity.';
       } else {
-        completion = 'This is improved content with better clarity and structure.';
+        completion =
+          'This is improved content with better clarity and structure.';
       }
     }
     // Default completion
@@ -697,7 +751,9 @@ export interface RouteLLMResponse {
  * Convenience function for simple LLM routing without instantiating a full router
  * Uses environment variables for configuration and falls back to stub for development
  */
-export async function routeLLM(request: RouteLLMRequest): Promise<RouteLLMResponse> {
+export async function routeLLM(
+  request: RouteLLMRequest
+): Promise<RouteLLMResponse> {
   const router = new LlmRouter({
     openaiApiKey: process.env.OPENAI_API_KEY,
     openaiModel: request.model || 'gpt-4o-mini',

@@ -5,7 +5,6 @@
  * DS v3.1 tokens. Appears on text selection.
  */
 
-import { useState } from 'react';
 import {
   ArrowsClockwise,
   ArrowsOut,
@@ -13,8 +12,14 @@ import {
   Sparkle,
   CaretDown,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
 
-const toneOptions = ['Professional', 'Conversational', 'Technical', 'Authoritative'];
+const toneOptions = [
+  'Professional',
+  'Conversational',
+  'Technical',
+  'Authoritative',
+];
 
 interface BubbleToolbarProps {
   onAction: (action: string, value?: string) => void;

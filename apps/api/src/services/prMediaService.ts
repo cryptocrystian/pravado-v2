@@ -59,7 +59,9 @@ export class PRMediaService {
     // Apply filters
     if (q) {
       // Search in full_name, email, bio
-      query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,bio.ilike.%${q}%`);
+      query = query.or(
+        `full_name.ilike.%${q}%,email.ilike.%${q}%,bio.ilike.%${q}%`
+      );
     }
 
     if (outletId) {
@@ -76,7 +78,9 @@ export class PRMediaService {
     const { data: journalists, error: journalistsError, count } = await query;
 
     if (journalistsError) {
-      throw new Error(`Failed to search journalists: ${journalistsError.message}`);
+      throw new Error(
+        `Failed to search journalists: ${journalistsError.message}`
+      );
     }
 
     if (!journalists || journalists.length === 0) {
@@ -237,7 +241,10 @@ export class PRMediaService {
   /**
    * Get a PR list with all its members
    */
-  async getPRListWithMembers(orgId: string, listId: string): Promise<PRListWithMembers | null> {
+  async getPRListWithMembers(
+    orgId: string,
+    listId: string
+  ): Promise<PRListWithMembers | null> {
     // Fetch the list
     const { data: list, error: listError } = await this.supabase
       .from('pr_lists')
@@ -338,24 +345,26 @@ export class PRMediaService {
     }
 
     // Assemble journalist context
-    const journalistWithContext: JournalistWithContext[] = journalists.map((journalist) => {
-      const outlet = journalist.primary_outlet_id
-        ? outletMap.get(journalist.primary_outlet_id) || null
-        : null;
+    const journalistWithContext: JournalistWithContext[] = journalists.map(
+      (journalist) => {
+        const outlet = journalist.primary_outlet_id
+          ? outletMap.get(journalist.primary_outlet_id) || null
+          : null;
 
-      const beatIds = journalistBeatsMap.get(journalist.id) || [];
-      const journalistBeats = beatIds
-        .map((id) => beatMap.get(id))
-        .filter((b): b is any => b !== undefined)
-        .map(this.mapBeatFromDb);
+        const beatIds = journalistBeatsMap.get(journalist.id) || [];
+        const journalistBeats = beatIds
+          .map((id) => beatMap.get(id))
+          .filter((b): b is any => b !== undefined)
+          .map(this.mapBeatFromDb);
 
-      return {
-        journalist: this.mapJournalistFromDb(journalist),
-        outlet: outlet ? this.mapOutletFromDb(outlet) : null,
-        beats: journalistBeats,
-        topics: [], // TODO: Fetch topics if needed
-      };
-    });
+        return {
+          journalist: this.mapJournalistFromDb(journalist),
+          outlet: outlet ? this.mapOutletFromDb(outlet) : null,
+          beats: journalistBeats,
+          topics: [], // TODO: Fetch topics if needed
+        };
+      }
+    );
 
     return {
       list: this.mapListFromDb(list),

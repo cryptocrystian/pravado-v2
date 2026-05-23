@@ -18,7 +18,11 @@ export interface BullMQConfig {
 }
 
 interface QueueInstance {
-  add: (name: string, data: unknown, opts?: Record<string, unknown>) => Promise<unknown>;
+  add: (
+    name: string,
+    data: unknown,
+    opts?: Record<string, unknown>
+  ) => Promise<unknown>;
   close: () => Promise<void>;
 }
 
@@ -59,7 +63,9 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
   if (initialized) return;
 
   if (!config.redisUrl) {
-    logger.warn('REDIS_URL not configured — BullMQ queues disabled. EVI recalculation will only run on-demand.');
+    logger.warn(
+      'REDIS_URL not configured — BullMQ queues disabled. EVI recalculation will only run on-demand.'
+    );
     initialized = true;
     return;
   }
@@ -67,7 +73,9 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
   try {
     // Dynamic import so the app doesn't crash if bullmq isn't installed
     const { Queue, Worker } = await import('bullmq');
-    const { processEVIRecalculate } = await import('./workers/eviRecalculateWorker');
+    const { processEVIRecalculate } = await import(
+      './workers/eviRecalculateWorker'
+    );
 
     // Parse Redis URL for BullMQ connection
     const connection = parseRedisUrl(config.redisUrl);
@@ -87,7 +95,9 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       logger.info('Redis connection verified');
     } catch (pingErr) {
       const msg = pingErr instanceof Error ? pingErr.message : String(pingErr);
-      logger.warn(`Redis not reachable (${msg}) — BullMQ queues disabled. Jobs will run on-demand only.`);
+      logger.warn(
+        `Redis not reachable (${msg}) — BullMQ queues disabled. Jobs will run on-demand only.`
+      );
       initialized = true;
       return;
     }
@@ -111,14 +121,18 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
     // Create the SAGE signal scan queue (S-INT-02)
     const { FLAGS } = await import('@pravado/feature-flags');
     if (FLAGS.ENABLE_SAGE_SIGNALS) {
-      const { processSageSignalScan } = await import('./workers/sageSignalScanWorker');
+      const { processSageSignalScan } = await import(
+        './workers/sageSignalScanWorker'
+      );
 
       sageQueue = new Queue('sage-signal-scan', { connection });
 
       sageWorker = new Worker(
         'sage-signal-scan',
         async (job) => {
-          logger.info(`Processing SAGE scan job ${job.id} for org ${job.data.orgId}`);
+          logger.info(
+            `Processing SAGE scan job ${job.id} for org ${job.data.orgId}`
+          );
           await processSageSignalScan(job.data);
         },
         {
@@ -132,14 +146,18 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
 
     // Create the CiteMind scoring queue (S-INT-04)
     if (FLAGS.ENABLE_CITEMIND) {
-      const { processCiteMindScore } = await import('./workers/citeMindScoringWorker');
+      const { processCiteMindScore } = await import(
+        './workers/citeMindScoringWorker'
+      );
 
       citeMindQueue = new Queue('citemind-score', { connection });
 
       citeMindWorker = new Worker(
         'citemind-score',
         async (job) => {
-          logger.info(`Processing CiteMind job ${job.id} for content ${job.data.contentItemId}`);
+          logger.info(
+            `Processing CiteMind job ${job.id} for content ${job.data.contentItemId}`
+          );
           await processCiteMindScore(job.data);
         },
         {
@@ -151,14 +169,18 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       logger.info('CiteMind scoring queue initialized');
 
       // Citation monitor queue (S-INT-05)
-      const { processCitationMonitor } = await import('./workers/citationMonitorWorker');
+      const { processCitationMonitor } = await import(
+        './workers/citationMonitorWorker'
+      );
 
       citationMonitorQueue = new Queue('citemind-monitor', { connection });
 
       citationMonitorWorker = new Worker(
         'citemind-monitor',
         async (job) => {
-          logger.info(`Processing citation monitor job ${job.id} for org ${job.data.orgId}`);
+          logger.info(
+            `Processing citation monitor job ${job.id} for org ${job.data.orgId}`
+          );
           await processCitationMonitor(job.data);
         },
         {
@@ -217,7 +239,9 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
 
     // Journalist Enrichment queue (S-INT-06)
     if (FLAGS.ENABLE_JOURNALIST_ENRICHMENT) {
-      const { processJournalistEnrich } = await import('./workers/journalistEnrichmentWorker');
+      const { processJournalistEnrich } = await import(
+        './workers/journalistEnrichmentWorker'
+      );
 
       journalistQueue = new Queue('journalists-enrich-batch', { connection });
 
@@ -245,7 +269,9 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         }
       );
 
-      logger.info('Journalist enrichment queue initialized (weekly Sunday 11pm UTC)');
+      logger.info(
+        'Journalist enrichment queue initialized (weekly Sunday 11pm UTC)'
+      );
     }
 
     logger.info('BullMQ initialized with EVI recalculation queue');
@@ -268,7 +294,9 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
  */
 export async function enqueueEVIRecalculate(orgId: string): Promise<void> {
   if (!eviQueue) {
-    logger.warn(`Cannot enqueue EVI recalculate for org ${orgId} — queue not initialized`);
+    logger.warn(
+      `Cannot enqueue EVI recalculate for org ${orgId} — queue not initialized`
+    );
     return;
   }
 
@@ -291,13 +319,15 @@ export async function enqueueEVIRecalculate(orgId: string): Promise<void> {
 /**
  * Enqueue EVI recalculation for all orgs (nightly job).
  */
-export async function enqueueEVIRecalculateAll(supabaseClient: import('@supabase/supabase-js').SupabaseClient): Promise<number> {
-  const { data: orgs, error } = await supabaseClient
-    .from('orgs')
-    .select('id');
+export async function enqueueEVIRecalculateAll(
+  supabaseClient: import('@supabase/supabase-js').SupabaseClient
+): Promise<number> {
+  const { data: orgs, error } = await supabaseClient.from('orgs').select('id');
 
   if (error || !orgs) {
-    logger.error(`Failed to fetch orgs for EVI recalculation: ${error?.message}`);
+    logger.error(
+      `Failed to fetch orgs for EVI recalculation: ${error?.message}`
+    );
     return 0;
   }
 
@@ -317,7 +347,9 @@ export async function enqueueEVIRecalculateAll(supabaseClient: import('@supabase
  */
 export async function enqueueSageSignalScan(orgId: string): Promise<void> {
   if (!sageQueue) {
-    logger.warn(`Cannot enqueue SAGE scan for org ${orgId} — queue not initialized`);
+    logger.warn(
+      `Cannot enqueue SAGE scan for org ${orgId} — queue not initialized`
+    );
     return;
   }
 
@@ -338,9 +370,14 @@ export async function enqueueSageSignalScan(orgId: string): Promise<void> {
  * Enqueue a CiteMind scoring job for a content item.
  * No-op if BullMQ or CiteMind queue is not initialized.
  */
-export async function enqueueCiteMindScore(contentItemId: string, orgId: string): Promise<void> {
+export async function enqueueCiteMindScore(
+  contentItemId: string,
+  orgId: string
+): Promise<void> {
   if (!citeMindQueue) {
-    logger.warn(`Cannot enqueue CiteMind score for ${contentItemId} — queue not initialized`);
+    logger.warn(
+      `Cannot enqueue CiteMind score for ${contentItemId} — queue not initialized`
+    );
     return;
   }
 
@@ -363,7 +400,9 @@ export async function enqueueCiteMindScore(contentItemId: string, orgId: string)
  */
 export async function enqueueCitationMonitor(orgId: string): Promise<void> {
   if (!citationMonitorQueue) {
-    logger.warn(`Cannot enqueue citation monitor for org ${orgId} — queue not initialized`);
+    logger.warn(
+      `Cannot enqueue citation monitor for org ${orgId} — queue not initialized`
+    );
     return;
   }
 
@@ -386,7 +425,9 @@ export async function enqueueCitationMonitor(orgId: string): Promise<void> {
  */
 export async function enqueueGscSync(orgId: string): Promise<void> {
   if (!gscQueue) {
-    logger.warn(`Cannot enqueue GSC sync for org ${orgId} — queue not initialized`);
+    logger.warn(
+      `Cannot enqueue GSC sync for org ${orgId} — queue not initialized`
+    );
     return;
   }
 
@@ -407,9 +448,13 @@ export async function enqueueGscSync(orgId: string): Promise<void> {
  * Enqueue a journalist enrichment batch job for a given org.
  * No-op if BullMQ or journalist queue is not initialized.
  */
-export async function enqueueJournalistEnrichBatch(orgId: string): Promise<void> {
+export async function enqueueJournalistEnrichBatch(
+  orgId: string
+): Promise<void> {
   if (!journalistQueue) {
-    logger.warn(`Cannot enqueue journalist enrichment for org ${orgId} — queue not initialized`);
+    logger.warn(
+      `Cannot enqueue journalist enrichment for org ${orgId} — queue not initialized`
+    );
     return;
   }
 
@@ -539,7 +584,9 @@ function parseRedisUrl(url: string): RedisConnectionOptions {
     connectTimeout: 5000,
     retryStrategy: (times: number) => {
       if (times > 3) {
-        logger.warn(`Redis connection failed after ${times} retries — giving up`);
+        logger.warn(
+          `Redis connection failed after ${times} retries — giving up`
+        );
         return null; // Stop retrying
       }
       return Math.min(times * 500, 3000);
@@ -563,7 +610,11 @@ function parseRedisUrl(url: string): RedisConnectionOptions {
     }
 
     // Upstash and Redis Cloud require TLS
-    if (url.startsWith('rediss://') || parsed.hostname.includes('upstash') || parsed.hostname.includes('redislabs')) {
+    if (
+      url.startsWith('rediss://') ||
+      parsed.hostname.includes('upstash') ||
+      parsed.hostname.includes('redislabs')
+    ) {
       connection.tls = {};
     }
 

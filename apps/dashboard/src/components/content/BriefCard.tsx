@@ -1,9 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+
 import type { SageBrief, BriefPriority } from './content-mock-data';
 
-const priorityConfig: Record<BriefPriority, { label: string; className: string; gapColor: string }> = {
+const priorityConfig: Record<
+  BriefPriority,
+  { label: string; className: string; gapColor: string }
+> = {
   critical: {
     label: 'CRITICAL',
     className: 'bg-red-500/10 text-red-500 text-xs px-2 py-0.5 rounded-full',
@@ -11,7 +15,8 @@ const priorityConfig: Record<BriefPriority, { label: string; className: string; 
   },
   high: {
     label: 'HIGH',
-    className: 'bg-amber-500/10 text-amber-500 text-xs px-2 py-0.5 rounded-full',
+    className:
+      'bg-amber-500/10 text-amber-500 text-xs px-2 py-0.5 rounded-full',
     gapColor: 'text-amber-500',
   },
   medium: {

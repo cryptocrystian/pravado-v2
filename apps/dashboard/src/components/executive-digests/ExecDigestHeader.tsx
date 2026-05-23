@@ -5,8 +5,23 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
+import {
+  FileText,
+  RefreshCw,
+  Send,
+  Download,
+  Settings,
+  MoreVertical,
+  Archive,
+  Trash2,
+  Play,
+  Pause,
+  Clock,
+  Calendar,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,20 +37,6 @@ import {
   formatSchedule,
 } from '@/lib/executiveDigestApi';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  RefreshCw,
-  Send,
-  Download,
-  Settings,
-  MoreVertical,
-  Archive,
-  Trash2,
-  Play,
-  Pause,
-  Clock,
-  Calendar,
-} from 'lucide-react';
 
 interface ExecDigestHeaderProps {
   digest: ExecDigest;
@@ -88,7 +89,9 @@ export function ExecDigestHeader({
             onClick={onGenerate}
             disabled={isGenerating || isDelivering}
           >
-            <RefreshCw className={cn('h-4 w-4 mr-2', isGenerating && 'animate-spin')} />
+            <RefreshCw
+              className={cn('h-4 w-4 mr-2', isGenerating && 'animate-spin')}
+            />
             {isGenerating ? 'Generating...' : 'Generate'}
           </Button>
 
@@ -99,7 +102,9 @@ export function ExecDigestHeader({
             onClick={onDeliver}
             disabled={isGenerating || isDelivering || !digest.isActive}
           >
-            <Send className={cn('h-4 w-4 mr-2', isDelivering && 'animate-pulse')} />
+            <Send
+              className={cn('h-4 w-4 mr-2', isDelivering && 'animate-pulse')}
+            />
             {isDelivering ? 'Delivering...' : 'Deliver Now'}
           </Button>
 
@@ -136,7 +141,10 @@ export function ExecDigestHeader({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {!digest.isArchived && (
-                <DropdownMenuItem onClick={onArchive} className="text-orange-600">
+                <DropdownMenuItem
+                  onClick={onArchive}
+                  className="text-orange-600"
+                >
                   <Archive className="h-4 w-4 mr-2" />
                   Archive
                 </DropdownMenuItem>
@@ -165,7 +173,10 @@ export function ExecDigestHeader({
         </Badge>
 
         {/* Delivery Period */}
-        <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+        <Badge
+          variant="outline"
+          className="bg-indigo-50 text-indigo-700 border-indigo-200"
+        >
           <Calendar className="h-3 w-3 mr-1" />
           {getDeliveryPeriodLabel(digest.deliveryPeriod)}
         </Badge>

@@ -14,8 +14,12 @@ export interface JournalistEnrichPayload {
   type?: 'scheduled';
 }
 
-export async function processJournalistEnrich(payload: JournalistEnrichPayload): Promise<void> {
-  const { enrichBatch } = await import('../../services/journalists/hunterEnrichmentService');
+export async function processJournalistEnrich(
+  payload: JournalistEnrichPayload
+): Promise<void> {
+  const { enrichBatch } = await import(
+    '../../services/journalists/hunterEnrichmentService'
+  );
   const { getSupabaseClient } = await import('../../lib/supabase');
   const supabase = getSupabaseClient();
 
@@ -41,7 +45,9 @@ export async function processJournalistEnrich(payload: JournalistEnrichPayload):
       }
     }
 
-    logger.info(`Scheduled enrichment complete: ${enrichedTotal} journalists enriched across ${orgs.length} orgs`);
+    logger.info(
+      `Scheduled enrichment complete: ${enrichedTotal} journalists enriched across ${orgs.length} orgs`
+    );
   } else if (payload.orgId) {
     // Single org enrichment
     logger.info(`Processing journalist enrichment for org ${payload.orgId}`);

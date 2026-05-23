@@ -15,7 +15,9 @@ export function CrawlStatusBadge({ status }: CrawlStatusBadgeProps) {
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colors[status]}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colors[status]}`}
+    >
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );

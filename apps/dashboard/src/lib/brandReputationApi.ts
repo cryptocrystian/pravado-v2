@@ -104,7 +104,9 @@ export async function getDashboard(
     includeEvents: options.includeEvents,
     maxDrivers: options.maxDrivers,
   });
-  const result = await apiClient<GetReputationDashboardResponse>(`/dashboard?${query}`);
+  const result = await apiClient<GetReputationDashboardResponse>(
+    `/dashboard?${query}`
+  );
   return result.data!;
 }
 
@@ -143,14 +145,17 @@ export interface RecalculateOptions {
 export async function recalculateReputation(
   options: RecalculateOptions = {}
 ): Promise<RecalculateReputationResponse> {
-  const result = await apiClient<RecalculateReputationResponse>('/recalculate', {
-    method: 'POST',
-    body: JSON.stringify({
-      window: options.window || '30d',
-      forceRefresh: options.forceRefresh,
-      includeHistorical: options.includeHistorical,
-    }),
-  });
+  const result = await apiClient<RecalculateReputationResponse>(
+    '/recalculate',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        window: options.window || '30d',
+        forceRefresh: options.forceRefresh,
+        includeHistorical: options.includeHistorical,
+      }),
+    }
+  );
   return result.data!;
 }
 
@@ -177,8 +182,12 @@ export async function updateConfig(
 // SNAPSHOT API
 // ============================================================================
 
-export async function getSnapshot(snapshotId: string): Promise<BrandReputationSnapshot> {
-  const result = await apiClient<BrandReputationSnapshot>(`/snapshots/${snapshotId}`);
+export async function getSnapshot(
+  snapshotId: string
+): Promise<BrandReputationSnapshot> {
+  const result = await apiClient<BrandReputationSnapshot>(
+    `/snapshots/${snapshotId}`
+  );
   return result.data!;
 }
 
@@ -199,7 +208,9 @@ export async function getEvents(
   options: GetEventsOptions = {}
 ): Promise<GetReputationEventsResponse> {
   const query = buildQueryString(options);
-  const result = await apiClient<GetReputationEventsResponse>(`/events?${query}`);
+  const result = await apiClient<GetReputationEventsResponse>(
+    `/events?${query}`
+  );
   return result.data!;
 }
 
@@ -234,7 +245,9 @@ export async function getAlerts(
   options: GetAlertsOptions = {}
 ): Promise<GetReputationAlertsResponse> {
   const query = buildQueryString(options);
-  const result = await apiClient<GetReputationAlertsResponse>(`/alerts?${query}`);
+  const result = await apiClient<GetReputationAlertsResponse>(
+    `/alerts?${query}`
+  );
   return result.data!;
 }
 
@@ -247,10 +260,13 @@ export async function acknowledgeAlert(
   alertId: string,
   notes?: string
 ): Promise<BrandReputationAlert> {
-  const result = await apiClient<BrandReputationAlert>(`/alerts/${alertId}/acknowledge`, {
-    method: 'POST',
-    body: JSON.stringify({ notes }),
-  });
+  const result = await apiClient<BrandReputationAlert>(
+    `/alerts/${alertId}/acknowledge`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ notes }),
+    }
+  );
   return result.data!;
 }
 
@@ -258,10 +274,13 @@ export async function resolveAlert(
   alertId: string,
   resolutionNotes: string
 ): Promise<BrandReputationAlert> {
-  const result = await apiClient<BrandReputationAlert>(`/alerts/${alertId}/resolve`, {
-    method: 'POST',
-    body: JSON.stringify({ resolutionNotes }),
-  });
+  const result = await apiClient<BrandReputationAlert>(
+    `/alerts/${alertId}/resolve`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ resolutionNotes }),
+    }
+  );
   return result.data!;
 }
 
@@ -289,7 +308,9 @@ export async function getCompetitorComparison(
   window: ReputationTimeWindow = '30d'
 ): Promise<CompetitorComparisonResponse> {
   const query = buildQueryString({ window });
-  const result = await apiClient<CompetitorComparisonResponse>(`/competitors?${query}`);
+  const result = await apiClient<CompetitorComparisonResponse>(
+    `/competitors?${query}`
+  );
   return result.data!;
 }
 
@@ -348,7 +369,9 @@ export function formatScore(score: number | null | undefined): string {
 /**
  * Get color for trend direction
  */
-export function getTrendColor(trend: ReputationTrendDirection | null | undefined): string {
+export function getTrendColor(
+  trend: ReputationTrendDirection | null | undefined
+): string {
   if (!trend) return 'text-gray-600';
   if (trend === 'up') return 'text-green-600';
   if (trend === 'down') return 'text-red-600';
@@ -358,7 +381,9 @@ export function getTrendColor(trend: ReputationTrendDirection | null | undefined
 /**
  * Get arrow icon for trend direction
  */
-export function getTrendIcon(trend: ReputationTrendDirection | null | undefined): string {
+export function getTrendIcon(
+  trend: ReputationTrendDirection | null | undefined
+): string {
   if (!trend) return '-';
   if (trend === 'up') return '↑';
   if (trend === 'down') return '↓';
@@ -377,7 +402,8 @@ export function formatDelta(delta: number | null | undefined): {
   }
   const sign = delta >= 0 ? '+' : '';
   const text = `${sign}${delta.toFixed(1)}`;
-  const colorClass = delta > 0 ? 'text-green-600' : delta < 0 ? 'text-red-600' : 'text-gray-600';
+  const colorClass =
+    delta > 0 ? 'text-green-600' : delta < 0 ? 'text-red-600' : 'text-gray-600';
   return { text, colorClass };
 }
 
@@ -416,7 +442,9 @@ export function getComponentIcon(component: ReputationComponent): string {
 /**
  * Get description for reputation component
  */
-export function getComponentDescription(component: ReputationComponent): string {
+export function getComponentDescription(
+  component: ReputationComponent
+): string {
   const descriptions: Record<ReputationComponent, string> = {
     sentiment: 'Overall sentiment of media coverage and mentions',
     coverage: 'Volume and quality of earned media coverage',
@@ -434,7 +462,9 @@ export function getComponentDescription(component: ReputationComponent): string 
 /**
  * Get color for alert severity
  */
-export function getAlertSeverityColor(severity: ReputationAlertSeverity): string {
+export function getAlertSeverityColor(
+  severity: ReputationAlertSeverity
+): string {
   const colors: Record<ReputationAlertSeverity, string> = {
     info: 'text-blue-600',
     warning: 'text-yellow-600',
@@ -446,7 +476,9 @@ export function getAlertSeverityColor(severity: ReputationAlertSeverity): string
 /**
  * Get background color for alert severity
  */
-export function getAlertSeverityBgColor(severity: ReputationAlertSeverity): string {
+export function getAlertSeverityBgColor(
+  severity: ReputationAlertSeverity
+): string {
   const colors: Record<ReputationAlertSeverity, string> = {
     info: 'bg-blue-100',
     warning: 'bg-yellow-100',
@@ -458,7 +490,9 @@ export function getAlertSeverityBgColor(severity: ReputationAlertSeverity): stri
 /**
  * Get color for event severity
  */
-export function getEventSeverityColor(severity: ReputationEventSeverity): string {
+export function getEventSeverityColor(
+  severity: ReputationEventSeverity
+): string {
   const colors: Record<ReputationEventSeverity, string> = {
     low: 'text-gray-600',
     medium: 'text-blue-600',
@@ -471,7 +505,9 @@ export function getEventSeverityColor(severity: ReputationEventSeverity): string
 /**
  * Get background color for event severity
  */
-export function getEventSeverityBgColor(severity: ReputationEventSeverity): string {
+export function getEventSeverityBgColor(
+  severity: ReputationEventSeverity
+): string {
   const colors: Record<ReputationEventSeverity, string> = {
     low: 'bg-gray-100',
     medium: 'bg-blue-100',
@@ -557,8 +593,19 @@ export function getSignalTypeLabel(signalType: ReputationSignalType): string {
  * Get color for signal type (positive/negative/neutral)
  */
 export function getSignalTypeColor(signalType: ReputationSignalType): string {
-  const positive = ['crisis_resolved', 'engagement_increase', 'outreach_success', 'coverage_spike'];
-  const negative = ['crisis_detected', 'engagement_decrease', 'outreach_failure', 'coverage_drop', 'competitor_gain'];
+  const positive = [
+    'crisis_resolved',
+    'engagement_increase',
+    'outreach_success',
+    'coverage_spike',
+  ];
+  const negative = [
+    'crisis_detected',
+    'engagement_decrease',
+    'outreach_failure',
+    'coverage_drop',
+    'competitor_gain',
+  ];
 
   if (positive.includes(signalType)) return 'text-green-600';
   if (negative.includes(signalType)) return 'text-red-600';
@@ -675,7 +722,9 @@ export function formatDateTime(date: string | Date | null | undefined): string {
 /**
  * Format relative time (e.g., "2 hours ago")
  */
-export function formatRelativeTime(date: string | Date | null | undefined): string {
+export function formatRelativeTime(
+  date: string | Date | null | undefined
+): string {
   if (!date) return 'N/A';
   const d = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
@@ -698,7 +747,10 @@ export function formatRelativeTime(date: string | Date | null | undefined): stri
 /**
  * Get rank change indicator
  */
-export function formatRankChange(change: number): { text: string; colorClass: string } {
+export function formatRankChange(change: number): {
+  text: string;
+  colorClass: string;
+} {
   if (change === 0) {
     return { text: '-', colorClass: 'text-gray-600' };
   }
@@ -736,14 +788,19 @@ export function prepareTrendChartData(trendPoints: ReputationTrendPoint[]): {
   };
 } {
   const labels = trendPoints.map((p) =>
-    new Date(p.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    new Date(p.timestamp).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })
   );
   const overallScores = trendPoints.map((p) => p.overallScore);
   const componentData = {
     sentiment: trendPoints.map((p) => p.components.sentiment),
     coverage: trendPoints.map((p) => p.components.coverage),
     crisisImpact: trendPoints.map((p) => p.components.crisisImpact),
-    competitivePosition: trendPoints.map((p) => p.components.competitivePosition),
+    competitivePosition: trendPoints.map(
+      (p) => p.components.competitivePosition
+    ),
     engagement: trendPoints.map((p) => p.components.engagement),
   };
 

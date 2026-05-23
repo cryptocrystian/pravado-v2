@@ -18,7 +18,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/content/gaps] GET Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    console.error('[API /api/content/gaps] GET Error:', {
+      status,
+      message,
+      code,
+    });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

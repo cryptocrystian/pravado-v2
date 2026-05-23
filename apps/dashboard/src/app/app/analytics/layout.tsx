@@ -5,13 +5,17 @@
  * renders: CommandCenterTopbar → AnalyticsChromeBar (with tabs) → children
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { AnalyticsShell } from '@/components/analytics/AnalyticsShell';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AnalyticsLayout({ children }: { children: React.ReactNode }) {
+export default async function AnalyticsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getCurrentUser();
 
   return (
@@ -21,9 +25,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
       userEmail={session?.user.email || undefined}
       userAvatarUrl={session?.user.avatarUrl || undefined}
     >
-      <MSWProvider>
-        {children}
-      </MSWProvider>
+      <MSWProvider>{children}</MSWProvider>
     </AnalyticsShell>
   );
 }

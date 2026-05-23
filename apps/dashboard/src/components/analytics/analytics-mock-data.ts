@@ -79,12 +79,55 @@ export interface ContentRow {
 }
 
 export const mockContentRows: ContentRow[] = [
-  { title: 'Complete Guide to AI Visibility 2026', type: 'Guide', citeMind: 88, citations: 247, eviLift: '+3.1 pts', trend: 'up' },
-  { title: 'AI Marketing Tools Comparison', type: 'Article', citeMind: 79, citations: 134, eviLift: '+2.2 pts', trend: 'up' },
-  { title: 'PR Technology Overview', type: 'Article', citeMind: 71, citations: 67, eviLift: '+1.4 pts', trend: 'stable' },
-  { title: 'Executive Byline: Forbes', type: 'Byline', citeMind: 83, citations: null, eviLift: '+4.1 pts (earned)', earned: true, trend: 'hot' },
-  { title: 'How to Track AI Citations', type: 'Guide', citeMind: 74, citations: 89, eviLift: '+1.8 pts', trend: 'up' },
-  { title: "Enterprise AEO: What's Missing", type: 'Draft', citeMind: 64, citations: 12, eviLift: '+0.4 pts', trend: 'down' },
+  {
+    title: 'Complete Guide to AI Visibility 2026',
+    type: 'Guide',
+    citeMind: 88,
+    citations: 247,
+    eviLift: '+3.1 pts',
+    trend: 'up',
+  },
+  {
+    title: 'AI Marketing Tools Comparison',
+    type: 'Article',
+    citeMind: 79,
+    citations: 134,
+    eviLift: '+2.2 pts',
+    trend: 'up',
+  },
+  {
+    title: 'PR Technology Overview',
+    type: 'Article',
+    citeMind: 71,
+    citations: 67,
+    eviLift: '+1.4 pts',
+    trend: 'stable',
+  },
+  {
+    title: 'Executive Byline: Forbes',
+    type: 'Byline',
+    citeMind: 83,
+    citations: null,
+    eviLift: '+4.1 pts (earned)',
+    earned: true,
+    trend: 'hot',
+  },
+  {
+    title: 'How to Track AI Citations',
+    type: 'Guide',
+    citeMind: 74,
+    citations: 89,
+    eviLift: '+1.8 pts',
+    trend: 'up',
+  },
+  {
+    title: "Enterprise AEO: What's Missing",
+    type: 'Draft',
+    citeMind: 64,
+    citations: 12,
+    eviLift: '+0.4 pts',
+    trend: 'down',
+  },
 ];
 
 // Citation velocity (top 3 content pieces, 6 time points)
@@ -98,8 +141,15 @@ export const mockCitationVelocity = [
 ];
 
 export const mockContentGaps = [
-  { label: 'Enterprise AEO: 0 pieces owned \u00B7 \u221248 pts gap vs CompetitorX', cta: 'Create content' },
-  { label: 'AI Visibility ROI: 0 pieces \u00B7 High search intent detected', cta: 'Create content' },
+  {
+    label:
+      'Enterprise AEO: 0 pieces owned \u00B7 \u221248 pts gap vs CompetitorX',
+    cta: 'Create content',
+  },
+  {
+    label: 'AI Visibility ROI: 0 pieces \u00B7 High search intent detected',
+    cta: 'Create content',
+  },
 ];
 
 // ============================================
@@ -116,11 +166,42 @@ export interface PlacementRow {
 }
 
 export const mockPlacements: PlacementRow[] = [
-  { publication: 'TechCrunch', headline: 'Why AI Is Reshaping PR', date: 'Feb 14', reach: '2.4M', eviLift: '+4.1 pts' },
-  { publication: 'Forbes', headline: 'The AEO Opportunity', date: 'Feb 10', reach: '3.1M', eviLift: '+0.8 pts' },
-  { publication: 'VentureBeat', headline: 'AI Tools for PR', date: 'Feb 6', reach: '0.9M', eviLift: '+0.3 pts' },
-  { publication: 'Wired', headline: 'AI Visibility Platforms', date: 'Jan 30', reach: '4.2M', eviLift: 'Pending', pending: true },
-  { publication: 'MIT Tech Review', headline: 'PR Tech 2026', date: 'Jan 22', reach: '1.1M', eviLift: '+1.4 pts' },
+  {
+    publication: 'TechCrunch',
+    headline: 'Why AI Is Reshaping PR',
+    date: 'Feb 14',
+    reach: '2.4M',
+    eviLift: '+4.1 pts',
+  },
+  {
+    publication: 'Forbes',
+    headline: 'The AEO Opportunity',
+    date: 'Feb 10',
+    reach: '3.1M',
+    eviLift: '+0.8 pts',
+  },
+  {
+    publication: 'VentureBeat',
+    headline: 'AI Tools for PR',
+    date: 'Feb 6',
+    reach: '0.9M',
+    eviLift: '+0.3 pts',
+  },
+  {
+    publication: 'Wired',
+    headline: 'AI Visibility Platforms',
+    date: 'Jan 30',
+    reach: '4.2M',
+    eviLift: 'Pending',
+    pending: true,
+  },
+  {
+    publication: 'MIT Tech Review',
+    headline: 'PR Tech 2026',
+    date: 'Jan 22',
+    reach: '1.1M',
+    eviLift: '+1.4 pts',
+  },
 ];
 
 export const mockPitchFunnel = { sent: 12, replies: 3, placements: 3 };
@@ -153,21 +234,99 @@ export interface TopicPerformanceRow {
 }
 
 export const mockTopicPerformance: TopicPerformanceRow[] = [
-  { topic: 'AI Marketing Tools', startScore: 80, endScore: 88, delta: 8, leader: 'You', gapToLeader: null, isYou: true },
-  { topic: 'PR Technology', startScore: 68, endScore: 74, delta: 6, leader: 'CompetitorX', gapToLeader: -9 },
-  { topic: 'AI Visibility Strategy', startScore: 65, endScore: 71, delta: 6, leader: 'CompetitorX', gapToLeader: -6 },
-  { topic: 'Enterprise AEO', startScore: 21, endScore: 23, delta: 2, leader: 'CompetitorX', gapToLeader: -48 },
-  { topic: 'Brand Monitoring', startScore: 58, endScore: 54, delta: -4, leader: 'CompetitorY', gapToLeader: -7 },
+  {
+    topic: 'AI Marketing Tools',
+    startScore: 80,
+    endScore: 88,
+    delta: 8,
+    leader: 'You',
+    gapToLeader: null,
+    isYou: true,
+  },
+  {
+    topic: 'PR Technology',
+    startScore: 68,
+    endScore: 74,
+    delta: 6,
+    leader: 'CompetitorX',
+    gapToLeader: -9,
+  },
+  {
+    topic: 'AI Visibility Strategy',
+    startScore: 65,
+    endScore: 71,
+    delta: 6,
+    leader: 'CompetitorX',
+    gapToLeader: -6,
+  },
+  {
+    topic: 'Enterprise AEO',
+    startScore: 21,
+    endScore: 23,
+    delta: 2,
+    leader: 'CompetitorX',
+    gapToLeader: -48,
+  },
+  {
+    topic: 'Brand Monitoring',
+    startScore: 58,
+    endScore: 54,
+    delta: -4,
+    leader: 'CompetitorY',
+    gapToLeader: -7,
+  },
 ];
 
 // Engine trend lines (5 engines, 6 time points)
 export const mockEngineTrend = [
-  { date: 'Feb 1', ChatGPT: 78, Perplexity: 64, GoogleAI: 71, Gemini: 62, Claude: 56 },
-  { date: 'Feb 5', ChatGPT: 79, Perplexity: 65, GoogleAI: 71, Gemini: 62, Claude: 56 },
-  { date: 'Feb 9', ChatGPT: 80, Perplexity: 67, GoogleAI: 72, Gemini: 61, Claude: 57 },
-  { date: 'Feb 13', ChatGPT: 80, Perplexity: 68, GoogleAI: 72, Gemini: 61, Claude: 57 },
-  { date: 'Feb 17', ChatGPT: 81, Perplexity: 69, GoogleAI: 72, Gemini: 61, Claude: 58 },
-  { date: 'Feb 21', ChatGPT: 81, Perplexity: 69, GoogleAI: 72, Gemini: 61, Claude: 58 },
+  {
+    date: 'Feb 1',
+    ChatGPT: 78,
+    Perplexity: 64,
+    GoogleAI: 71,
+    Gemini: 62,
+    Claude: 56,
+  },
+  {
+    date: 'Feb 5',
+    ChatGPT: 79,
+    Perplexity: 65,
+    GoogleAI: 71,
+    Gemini: 62,
+    Claude: 56,
+  },
+  {
+    date: 'Feb 9',
+    ChatGPT: 80,
+    Perplexity: 67,
+    GoogleAI: 72,
+    Gemini: 61,
+    Claude: 57,
+  },
+  {
+    date: 'Feb 13',
+    ChatGPT: 80,
+    Perplexity: 68,
+    GoogleAI: 72,
+    Gemini: 61,
+    Claude: 57,
+  },
+  {
+    date: 'Feb 17',
+    ChatGPT: 81,
+    Perplexity: 69,
+    GoogleAI: 72,
+    Gemini: 61,
+    Claude: 58,
+  },
+  {
+    date: 'Feb 21',
+    ChatGPT: 81,
+    Perplexity: 69,
+    GoogleAI: 72,
+    Gemini: 61,
+    Claude: 58,
+  },
 ];
 
 // ============================================
@@ -175,10 +334,22 @@ export const mockEngineTrend = [
 // ============================================
 
 export const mockReportTemplates = [
-  { title: 'Monthly Executive Summary', desc: '2-page overview: headline metrics, top wins, next actions' },
-  { title: 'PR Campaign Report', desc: 'Coverage placements, reach, and EVI attribution' },
-  { title: 'Board / Investor Update', desc: 'High-level AI visibility trend and competitive position' },
-  { title: 'Client Report', desc: 'Full detail with custom branding (Agency plan)' },
+  {
+    title: 'Monthly Executive Summary',
+    desc: '2-page overview: headline metrics, top wins, next actions',
+  },
+  {
+    title: 'PR Campaign Report',
+    desc: 'Coverage placements, reach, and EVI attribution',
+  },
+  {
+    title: 'Board / Investor Update',
+    desc: 'High-level AI visibility trend and competitive position',
+  },
+  {
+    title: 'Client Report',
+    desc: 'Full detail with custom branding (Agency plan)',
+  },
 ];
 
 // ============================================
@@ -186,10 +357,12 @@ export const mockReportTemplates = [
 // ============================================
 
 export const mockNarratives = {
-  overview: 'Your EVI grew 4.2 pts this period, driven primarily by 2 new TechCrunch placements and a 23% increase in Perplexity citations. Content authority is your strongest pillar — PR outreach has the highest upside.',
+  overview:
+    'Your EVI grew 4.2 pts this period, driven primarily by 2 new TechCrunch placements and a 23% increase in Perplexity citations. Content authority is your strongest pillar — PR outreach has the highest upside.',
   pr: 'PR earned +5.2 EVI points this period across 3 placements. TechCrunch coverage alone drove +4.1 pts. Your pitch reply rate (25%) is above the 18% industry average — consider increasing volume.',
   seo: 'AI citations are up 23% period-over-period, led by ChatGPT (+12%) and Perplexity (+18%). Topic "Enterprise AEO" has a 48-pt gap to CompetitorX — this is your highest-leverage opportunity.',
-  content: 'You published 8 pieces this period with an average CiteMind score of 76.5. Your "AI Visibility Guide" is your citation powerhouse with 247 citations across 4 engines. Two content gaps remain in Enterprise AEO.',
+  content:
+    'You published 8 pieces this period with an average CiteMind score of 76.5. Your "AI Visibility Guide" is your citation powerhouse with 247 citations across 4 engines. Two content gaps remain in Enterprise AEO.',
 };
 
 // ============================================

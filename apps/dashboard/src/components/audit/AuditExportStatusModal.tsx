@@ -6,15 +6,23 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+
 import type { AuditExportJob } from '@/lib/auditApi';
-import { formatFileSize, getExportDownloadUrl, getExportStatus } from '@/lib/auditApi';
+import {
+  formatFileSize,
+  getExportDownloadUrl,
+  getExportStatus,
+} from '@/lib/auditApi';
 
 interface AuditExportStatusModalProps {
   jobId: string;
   onClose: () => void;
 }
 
-export function AuditExportStatusModal({ jobId, onClose }: AuditExportStatusModalProps) {
+export function AuditExportStatusModal({
+  jobId,
+  onClose,
+}: AuditExportStatusModalProps) {
   const [job, setJob] = useState<AuditExportJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState(true);
@@ -29,7 +37,9 @@ export function AuditExportStatusModal({ jobId, onClose }: AuditExportStatusModa
         setPolling(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get export status');
+      setError(
+        err instanceof Error ? err.message : 'Failed to get export status'
+      );
       setPolling(false);
     }
   }, [jobId]);
@@ -56,13 +66,25 @@ export function AuditExportStatusModal({ jobId, onClose }: AuditExportStatusModa
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Export Status</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Export Status
+            </h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -83,7 +105,9 @@ export function AuditExportStatusModal({ jobId, onClose }: AuditExportStatusModa
               {/* Status */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Status</span>
-                <span className={`px-2 py-1 rounded text-sm font-medium ${statusColors[job.status]}`}>
+                <span
+                  className={`px-2 py-1 rounded text-sm font-medium ${statusColors[job.status]}`}
+                >
                   {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                 </span>
               </div>
@@ -94,7 +118,9 @@ export function AuditExportStatusModal({ jobId, onClose }: AuditExportStatusModa
                   <div className="overflow-hidden h-2 text-xs flex rounded bg-blue-100">
                     <div className="animate-pulse bg-blue-500 h-full w-full" />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Processing audit logs...</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Processing audit logs...
+                  </p>
                 </div>
               )}
 

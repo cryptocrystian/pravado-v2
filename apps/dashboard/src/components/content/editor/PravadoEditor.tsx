@@ -13,15 +13,16 @@
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import CharacterCount from '@tiptap/extension-character-count';
+import Highlight from '@tiptap/extension-highlight';
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
+import Typography from '@tiptap/extension-typography';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Typography from '@tiptap/extension-typography';
-import CharacterCount from '@tiptap/extension-character-count';
-import Link from '@tiptap/extension-link';
-import Highlight from '@tiptap/extension-highlight';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import { CiteMindMark } from './CiteMindMark';
 import type { ContentStatus } from '../types';
 import { CONTENT_STATUS_CONFIG } from '../types';
@@ -45,7 +46,11 @@ export interface PravadoEditorProps {
 // BUBBLE TOOLBAR
 // ============================================
 
-function EditorBubbleToolbar({ editor }: { editor: NonNullable<ReturnType<typeof useEditor>> }) {
+function EditorBubbleToolbar({
+  editor,
+}: {
+  editor: NonNullable<ReturnType<typeof useEditor>>;
+}) {
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
   const linkInputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +73,12 @@ function EditorBubbleToolbar({ editor }: { editor: NonNullable<ReturnType<typeof
 
   const applyLink = () => {
     if (linkUrl) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange('link')
+        .setLink({ href: linkUrl })
+        .run();
     }
     setShowLinkInput(false);
     setLinkUrl('');
@@ -90,18 +100,45 @@ function EditorBubbleToolbar({ editor }: { editor: NonNullable<ReturnType<typeof
           value={linkUrl}
           onChange={(e) => setLinkUrl(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') { e.preventDefault(); applyLink(); }
-            if (e.key === 'Escape') { setShowLinkInput(false); setLinkUrl(''); }
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              applyLink();
+            }
+            if (e.key === 'Escape') {
+              setShowLinkInput(false);
+              setLinkUrl('');
+            }
           }}
           placeholder="Paste URL..."
           className="w-48 px-2 py-1 text-sm bg-slate-3 border border-slate-4 rounded text-white placeholder:text-white/30 focus:outline-none focus:border-brand-iris/40"
         />
-        <button type="button" onClick={applyLink} className="px-2 py-1 text-xs font-medium text-white bg-brand-iris rounded hover:bg-brand-iris/90 transition-colors">
+        <button
+          type="button"
+          onClick={applyLink}
+          className="px-2 py-1 text-xs font-medium text-white bg-brand-iris rounded hover:bg-brand-iris/90 transition-colors"
+        >
           Apply
         </button>
-        <button type="button" onClick={() => { setShowLinkInput(false); setLinkUrl(''); }} className="p-1 text-white/40 hover:text-white transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <button
+          type="button"
+          onClick={() => {
+            setShowLinkInput(false);
+            setLinkUrl('');
+          }}
+          className="p-1 text-white/40 hover:text-white transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -111,33 +148,91 @@ function EditorBubbleToolbar({ editor }: { editor: NonNullable<ReturnType<typeof
   return (
     <div className="flex items-center gap-0.5 px-2 py-1.5 bg-slate-2 border border-slate-4 rounded-lg shadow-xl">
       {/* Bold */}
-      <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btnClass(editor.isActive('bold'))} title="Bold (Cmd+B)">
-        <span className="text-sm font-bold w-5 h-5 flex items-center justify-center">B</span>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        className={btnClass(editor.isActive('bold'))}
+        title="Bold (Cmd+B)"
+      >
+        <span className="text-sm font-bold w-5 h-5 flex items-center justify-center">
+          B
+        </span>
       </button>
       {/* Italic */}
-      <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={btnClass(editor.isActive('italic'))} title="Italic (Cmd+I)">
-        <span className="text-sm italic w-5 h-5 flex items-center justify-center">I</span>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        className={btnClass(editor.isActive('italic'))}
+        title="Italic (Cmd+I)"
+      >
+        <span className="text-sm italic w-5 h-5 flex items-center justify-center">
+          I
+        </span>
       </button>
       <span className="w-px h-5 bg-white/10 mx-0.5" />
       {/* H1 */}
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btnClass(editor.isActive('heading', { level: 1 }))} title="Heading 1">
-        <span className="text-xs font-bold w-5 h-5 flex items-center justify-center">H1</span>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        className={btnClass(editor.isActive('heading', { level: 1 }))}
+        title="Heading 1"
+      >
+        <span className="text-xs font-bold w-5 h-5 flex items-center justify-center">
+          H1
+        </span>
       </button>
       {/* H2 */}
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btnClass(editor.isActive('heading', { level: 2 }))} title="Heading 2">
-        <span className="text-xs font-bold w-5 h-5 flex items-center justify-center">H2</span>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        className={btnClass(editor.isActive('heading', { level: 2 }))}
+        title="Heading 2"
+      >
+        <span className="text-xs font-bold w-5 h-5 flex items-center justify-center">
+          H2
+        </span>
       </button>
       <span className="w-px h-5 bg-white/10 mx-0.5" />
       {/* Link */}
-      <button type="button" onClick={toggleLink} className={btnClass(editor.isActive('link'))} title="Link (Cmd+K)">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+      <button
+        type="button"
+        onClick={toggleLink}
+        className={btnClass(editor.isActive('link'))}
+        title="Link (Cmd+K)"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+          />
         </svg>
       </button>
       {/* Highlight */}
-      <button type="button" onClick={() => editor.chain().focus().toggleHighlight().run()} className={btnClass(editor.isActive('highlight'))} title="Highlight">
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHighlight().run()}
+        className={btnClass(editor.isActive('highlight'))}
+        title="Highlight"
+      >
+        <svg
+          className="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
         </svg>
       </button>
     </div>
@@ -160,7 +255,9 @@ export function PravadoEditor({
 }: PravadoEditorProps) {
   const [title, setTitle] = useState(initialTitle);
   const [wordCount, setWordCount] = useState(0);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>(
+    'idle'
+  );
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const savedTimerRef = useRef<NodeJS.Timeout | null>(null);
   const titleRef = useRef<HTMLTextAreaElement>(null);
@@ -218,7 +315,8 @@ export function PravadoEditor({
         openOnClick: false,
         autolink: true,
         HTMLAttributes: {
-          class: 'text-brand-iris underline decoration-brand-iris/40 hover:decoration-brand-iris cursor-pointer',
+          class:
+            'text-brand-iris underline decoration-brand-iris/40 hover:decoration-brand-iris cursor-pointer',
         },
       }),
       Highlight.configure({
@@ -232,7 +330,8 @@ export function PravadoEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none focus:outline-none min-h-[60vh] px-8 py-6 text-white/85 text-[15px] leading-relaxed',
+        class:
+          'prose prose-invert max-w-none focus:outline-none min-h-[60vh] px-8 py-6 text-white/85 text-[15px] leading-relaxed',
       },
     },
     onUpdate: ({ editor: ed }) => {
@@ -242,7 +341,10 @@ export function PravadoEditor({
 
       // Word count
       const text = ed.getText();
-      const wc = text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+      const wc = text
+        .trim()
+        .split(/\s+/)
+        .filter((w) => w.length > 0).length;
       setWordCount(wc);
       onWordCountChange?.(wc);
 
@@ -284,19 +386,26 @@ export function PravadoEditor({
         {/* Status row */}
         <div className="flex items-center gap-3 mt-2 text-xs text-white/40">
           <span className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${
-              status === 'draft' ? 'bg-white/40' :
-              status === 'published' ? 'bg-green-400' :
-              status === 'ready' ? 'bg-brand-cyan' :
-              'bg-amber-400'
-            }`} />
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                status === 'draft'
+                  ? 'bg-white/40'
+                  : status === 'published'
+                    ? 'bg-green-400'
+                    : status === 'ready'
+                      ? 'bg-brand-cyan'
+                      : 'bg-amber-400'
+              }`}
+            />
             <span className={statusConfig.color}>{statusConfig.label}</span>
           </span>
           <span className="w-px h-3 bg-white/10" />
           <span>
-            {saveStatus === 'saving' ? 'Saving...' :
-             saveStatus === 'saved' ? 'Saved' :
-             'Draft'}
+            {saveStatus === 'saving'
+              ? 'Saving...'
+              : saveStatus === 'saved'
+                ? 'Saved'
+                : 'Draft'}
           </span>
           <span className="w-px h-3 bg-white/10" />
           <span>{wordCount.toLocaleString()} words</span>

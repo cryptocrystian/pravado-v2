@@ -15,10 +15,15 @@ export async function POST(
 ) {
   const { id } = await params;
   try {
-    const data = await backendFetch(`/api/v1/citemind/gate/${id}/acknowledge`, { method: 'POST' });
+    const data = await backendFetch(`/api/v1/citemind/gate/${id}/acknowledge`, {
+      method: 'POST',
+    });
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

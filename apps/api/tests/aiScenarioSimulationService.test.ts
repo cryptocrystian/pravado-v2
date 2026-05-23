@@ -11,24 +11,46 @@ const mockSupabase = {
 };
 
 // Create mock query builder with proper chaining support
-function createMockQueryBuilder(data: unknown, error: unknown = null, count: number | null = null) {
+function createMockQueryBuilder(
+  data: unknown,
+  error: unknown = null,
+  count: number | null = null
+) {
   const builder: Record<string, unknown> = {};
 
   // All chainable methods return the builder itself
   const chainableMethods = [
-    'insert', 'update', 'delete', 'select', 'eq', 'neq',
-    'in', 'gte', 'lte', 'lt', 'is', 'ilike', 'order', 'range', 'limit'
+    'insert',
+    'update',
+    'delete',
+    'select',
+    'eq',
+    'neq',
+    'in',
+    'gte',
+    'lte',
+    'lt',
+    'is',
+    'ilike',
+    'order',
+    'range',
+    'limit',
   ];
 
-  chainableMethods.forEach(method => {
+  chainableMethods.forEach((method) => {
     builder[method] = vi.fn().mockImplementation(() => builder);
   });
 
   // Terminal methods that resolve
   builder.single = vi.fn().mockResolvedValue({ data, error });
   builder.maybeSingle = vi.fn().mockResolvedValue({ data, error });
-  builder.then = (resolve: (value: { data: unknown; error: unknown; count: number | null }) => void) =>
-    Promise.resolve({ data, error, count }).then(resolve);
+  builder.then = (
+    resolve: (value: {
+      data: unknown;
+      error: unknown;
+      count: number | null;
+    }) => void
+  ) => Promise.resolve({ data, error, count }).then(resolve);
 
   return builder;
 }
@@ -57,7 +79,8 @@ import * as service from '../src/services/aiScenarioSimulationService';
 
 describe('AI Scenario Simulation Service (S71)', () => {
   const mockContext: service.AIScenarioSimulationContext = {
-    supabase: mockSupabase as unknown as service.AIScenarioSimulationContext['supabase'],
+    supabase:
+      mockSupabase as unknown as service.AIScenarioSimulationContext['supabase'],
     orgId: 'org-uuid-123',
     userId: 'user-uuid-456',
   };
@@ -101,7 +124,9 @@ describe('AI Scenario Simulation Service (S71)', () => {
     });
 
     it('should throw error on database failure', async () => {
-      const mockBuilder = createMockQueryBuilder(null, { message: 'Database error' });
+      const mockBuilder = createMockQueryBuilder(null, {
+        message: 'Database error',
+      });
       mockSupabase.from.mockReturnValue(mockBuilder);
 
       await expect(
@@ -198,7 +223,10 @@ describe('AI Scenario Simulation Service (S71)', () => {
       const mockBuilder = createMockQueryBuilder(mockSimulation);
       mockSupabase.from.mockReturnValue(mockBuilder);
 
-      const result = await service.getSimulationById(mockContext, 'sim-uuid-789');
+      const result = await service.getSimulationById(
+        mockContext,
+        'sim-uuid-789'
+      );
 
       expect(result).not.toBeNull();
       expect(result?.id).toBe('sim-uuid-789');
@@ -227,11 +255,15 @@ describe('AI Scenario Simulation Service (S71)', () => {
       const mockBuilder = createMockQueryBuilder(mockUpdated);
       mockSupabase.from.mockReturnValue(mockBuilder);
 
-      const result = await service.updateSimulation(mockContext, 'sim-uuid-789', {
-        name: 'Updated Name',
-        description: 'New description',
-        status: 'configured',
-      });
+      const result = await service.updateSimulation(
+        mockContext,
+        'sim-uuid-789',
+        {
+          name: 'Updated Name',
+          description: 'New description',
+          status: 'configured',
+        }
+      );
 
       expect(mockBuilder.update).toHaveBeenCalled();
       expect(result.name).toBe('Updated Name');
@@ -340,7 +372,11 @@ describe('AI Scenario Simulation Service (S71)', () => {
         return mockBuilder;
       });
 
-      const result = await service.archiveSimulation(mockContext, 'sim-uuid-789', 'No longer needed');
+      const result = await service.archiveSimulation(
+        mockContext,
+        'sim-uuid-789',
+        'No longer needed'
+      );
 
       expect(result.success).toBe(true);
       expect(result.simulation.status).toBe('archived');
@@ -351,8 +387,16 @@ describe('AI Scenario Simulation Service (S71)', () => {
     it('should return simulation statistics', async () => {
       // Mock simulations query response with full data
       const mockSimulations = [
-        { status: 'completed', objective_type: 'crisis_comms', simulation_mode: 'single_run' },
-        { status: 'running', objective_type: 'investor_relations', simulation_mode: 'multi_run' },
+        {
+          status: 'completed',
+          objective_type: 'crisis_comms',
+          simulation_mode: 'single_run',
+        },
+        {
+          status: 'running',
+          objective_type: 'investor_relations',
+          simulation_mode: 'multi_run',
+        },
       ];
 
       // Use unified mock builder with proper chaining

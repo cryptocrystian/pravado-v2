@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Lightning,
   CheckCircle,
@@ -13,6 +11,9 @@ import {
   Trash,
   CircleNotch,
 } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+
 import type { Journalist, ContentPiece } from './pr-mock-data';
 import {
   mockJournalists,
@@ -32,10 +33,11 @@ interface PitchWizardProps {
 export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
   const [step, setStep] = useState(1);
   const [angle, setAngle] = useState<AngleType>('content');
-  const [selectedContent, setSelectedContent] = useState<ContentPiece | null>(null);
-  const [selectedJournalist, setSelectedJournalist] = useState<Journalist | null>(
-    preselectedJournalist ?? null,
+  const [selectedContent, setSelectedContent] = useState<ContentPiece | null>(
+    null
   );
+  const [selectedJournalist, setSelectedJournalist] =
+    useState<Journalist | null>(preselectedJournalist ?? null);
   const [journalistSearch, setJournalistSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState(0);
@@ -66,17 +68,20 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
 
   // SAGE top 3 recommended IDs set — used to deduplicate the full list
   const sageRecommendedIds = new Set(
-    mockJournalists.filter((j) => j.aiCitation === 'high').slice(0, 3).map((j) => j.id),
+    mockJournalists
+      .filter((j) => j.aiCitation === 'high')
+      .slice(0, 3)
+      .map((j) => j.id)
   );
 
   const filteredJournalists = journalistSearch
     ? mockJournalists.filter(
         (j) =>
           j.name.toLowerCase().includes(journalistSearch.toLowerCase()) ||
-          j.publication.toLowerCase().includes(journalistSearch.toLowerCase()),
+          j.publication.toLowerCase().includes(journalistSearch.toLowerCase())
       )
-    // When not searching, exclude SAGE-recommended from the full list (they appear above)
-    : mockJournalists.filter((j) => !sageRecommendedIds.has(j.id));
+    : // When not searching, exclude SAGE-recommended from the full list (they appear above)
+      mockJournalists.filter((j) => !sageRecommendedIds.has(j.id));
 
   // SAGE top 3 recommended
   const sageRecommended = mockJournalists
@@ -132,7 +137,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
                 </span>
               </div>
               {i < stepLabels.length - 1 && (
-                <div className={`w-8 h-px ${isDone ? 'bg-cc-cyan/30' : 'bg-white/8'}`} />
+                <div
+                  className={`w-8 h-px ${isDone ? 'bg-cc-cyan/30' : 'bg-white/8'}`}
+                />
               )}
             </div>
           );
@@ -142,14 +149,24 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
       {/* ── Step 1: Choose Angle ──────────────────────── */}
       {step === 1 && (
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">Choose your angle</h2>
+          <h2 className="text-xl font-bold text-white mb-4">
+            Choose your angle
+          </h2>
           <div className="space-y-2 mb-6">
-            {([
-              { value: 'content', label: 'A specific piece of content (article, study, guide)' },
-              { value: 'announcement', label: 'A product announcement or news' },
-              { value: 'expert', label: 'An expert source / thought leader' },
-              { value: 'custom', label: 'A custom story angle' },
-            ] as { value: AngleType; label: string }[]).map((opt) => (
+            {(
+              [
+                {
+                  value: 'content',
+                  label: 'A specific piece of content (article, study, guide)',
+                },
+                {
+                  value: 'announcement',
+                  label: 'A product announcement or news',
+                },
+                { value: 'expert', label: 'An expert source / thought leader' },
+                { value: 'custom', label: 'A custom story angle' },
+              ] as { value: AngleType; label: string }[]
+            ).map((opt) => (
               <label
                 key={opt.value}
                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
@@ -171,7 +188,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
                     angle === opt.value ? 'border-cc-cyan' : 'border-white/30'
                   }`}
                 >
-                  {angle === opt.value && <div className="w-2 h-2 rounded-full bg-cc-cyan" />}
+                  {angle === opt.value && (
+                    <div className="w-2 h-2 rounded-full bg-cc-cyan" />
+                  )}
                 </div>
                 <span className="text-sm text-white/90">{opt.label}</span>
               </label>
@@ -199,8 +218,12 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-white">{cp.title}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-white/30">CiteMind: {cp.citeMindScore}</span>
-                        <span className="text-xs text-cc-cyan">SAGE: {cp.sageMatchScore}%</span>
+                        <span className="text-xs text-white/30">
+                          CiteMind: {cp.citeMindScore}
+                        </span>
+                        <span className="text-xs text-cc-cyan">
+                          SAGE: {cp.sageMatchScore}%
+                        </span>
                       </div>
                     </div>
                   </button>
@@ -222,7 +245,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
       {/* ── Step 2: Select Journalist ─────────────────── */}
       {step === 2 && (
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">Select journalist</h2>
+          <h2 className="text-xl font-bold text-white mb-4">
+            Select journalist
+          </h2>
 
           <input
             type="text"
@@ -254,11 +279,15 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
                     }`}
                   >
                     <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-                      <span className="text-xs text-white/70">{j.initials}</span>
+                      <span className="text-xs text-white/70">
+                        {j.initials}
+                      </span>
                     </div>
                     <div className="flex-1">
                       <span className="text-sm text-white">{j.name}</span>
-                      <span className="text-xs text-white/45 ml-1.5">{j.publication}</span>
+                      <span className="text-xs text-white/45 ml-1.5">
+                        {j.publication}
+                      </span>
                     </div>
                     <span className="text-xs text-cc-cyan">Recommended</span>
                   </button>
@@ -285,7 +314,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
                 </div>
                 <div className="flex-1">
                   <span className="text-sm text-white">{j.name}</span>
-                  <span className="text-xs text-white/45 ml-1.5">{j.publication}</span>
+                  <span className="text-xs text-white/45 ml-1.5">
+                    {j.publication}
+                  </span>
                 </div>
               </button>
             ))}
@@ -316,20 +347,27 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
         <div>
           {isLoading ? (
             <div className="text-center py-20">
-              <CircleNotch size={32} className="text-cc-cyan animate-spin mx-auto mb-4" />
+              <CircleNotch
+                size={32}
+                className="text-cc-cyan animate-spin mx-auto mb-4"
+              />
               <p className="text-sm text-white/70 animate-pulse">
                 {wizardLoadingMessages[loadingMsg]}
               </p>
             </div>
           ) : (
             <>
-              <h2 className="text-xl font-bold text-white mb-4">Edit your pitch</h2>
+              <h2 className="text-xl font-bold text-white mb-4">
+                Edit your pitch
+              </h2>
 
               {/* Subject */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-xs text-white/45">Subject line</label>
-                  <button type="button" className="text-xs text-cc-cyan">Regenerate</button>
+                  <button type="button" className="text-xs text-cc-cyan">
+                    Regenerate
+                  </button>
                 </div>
                 <input
                   type="text"
@@ -343,7 +381,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-xs text-white/45">Pitch body</label>
-                  <button type="button" className="text-xs text-cc-cyan">Regenerate body</button>
+                  <button type="button" className="text-xs text-cc-cyan">
+                    Regenerate body
+                  </button>
                 </div>
                 <textarea
                   rows={10}
@@ -362,11 +402,21 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
                   {sageReasoningPoints.map((point, i) => (
                     <div key={i} className="flex items-start gap-2">
                       {point.type === 'success' ? (
-                        <CheckCircle size={14} className="text-semantic-success mt-0.5 flex-shrink-0" weight="fill" />
+                        <CheckCircle
+                          size={14}
+                          className="text-semantic-success mt-0.5 flex-shrink-0"
+                          weight="fill"
+                        />
                       ) : (
-                        <Warning size={14} className="text-amber-500 mt-0.5 flex-shrink-0" weight="fill" />
+                        <Warning
+                          size={14}
+                          className="text-amber-500 mt-0.5 flex-shrink-0"
+                          weight="fill"
+                        />
                       )}
-                      <span className="text-sm text-white/70">{point.text}</span>
+                      <span className="text-sm text-white/70">
+                        {point.text}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -396,7 +446,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
       {/* ── Step 4: Review & Finalize ─────────────────── */}
       {step === 4 && (
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">Review &amp; finalize</h2>
+          <h2 className="text-xl font-bold text-white mb-4">
+            Review &amp; finalize
+          </h2>
 
           <div className="bg-cc-surface border border-white/8 rounded-2xl p-5 mb-4">
             <div className="flex items-center justify-between mb-3">
@@ -417,7 +469,9 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
 
           {/* Follow-up reminder */}
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-sm text-white/70">Set a follow-up reminder?</span>
+            <span className="text-sm text-white/70">
+              Set a follow-up reminder?
+            </span>
             <input
               type="date"
               className="bg-white/5 border border-white/8 rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-cc-cyan/30"
@@ -444,9 +498,15 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
               className="flex items-center gap-1.5 bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white/70 hover:text-white transition-colors disabled:opacity-60"
             >
               {savedDraft ? (
-                <><CheckCircle size={14} className="text-semantic-success" />Saved!</>
+                <>
+                  <CheckCircle size={14} className="text-semantic-success" />
+                  Saved!
+                </>
               ) : (
-                <><FloppyDisk size={14} />Save Draft</>
+                <>
+                  <FloppyDisk size={14} />
+                  Save Draft
+                </>
               )}
             </button>
             <button
@@ -464,9 +524,12 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
       {step === 5 && !confirmed && (
         <div className="flex items-center justify-center py-12">
           <div className="bg-cc-surface border border-white/8 rounded-2xl p-6 text-center max-w-[400px]">
-            <h3 className="text-lg font-semibold text-white mb-2">Mark as sent?</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">
+              Mark as sent?
+            </h3>
             <p className="text-sm text-white/70 mb-5">
-              Confirm you&apos;ve sent this pitch to {selectedJournalist?.name} to log it in your pitch tracker.
+              Confirm you&apos;ve sent this pitch to {selectedJournalist?.name}{' '}
+              to log it in your pitch tracker.
             </p>
             <div className="flex items-center justify-center gap-3">
               <button
@@ -491,10 +554,17 @@ export function PitchWizard({ preselectedJournalist }: PitchWizardProps) {
       {step === 5 && confirmed && (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <CheckCircle size={48} className="text-semantic-success mx-auto mb-3" weight="fill" />
-            <h3 className="text-lg font-semibold text-white mb-1">Pitch logged</h3>
+            <CheckCircle
+              size={48}
+              className="text-semantic-success mx-auto mb-3"
+              weight="fill"
+            />
+            <h3 className="text-lg font-semibold text-white mb-1">
+              Pitch logged
+            </h3>
             <p className="text-sm text-white/70">
-              Your pitch to {selectedJournalist?.name} has been moved to Sent / Tracking.
+              Your pitch to {selectedJournalist?.name} has been moved to Sent /
+              Tracking.
             </p>
           </div>
         </div>

@@ -5,7 +5,10 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MediaMonitoringService, createMediaMonitoringService } from '../src/services/mediaMonitoringService';
+import {
+  MediaMonitoringService,
+  createMediaMonitoringService,
+} from '../src/services/mediaMonitoringService';
 
 // Mock Supabase client
 const mockSupabaseData = {
@@ -236,11 +239,15 @@ describe('MediaMonitoringService', () => {
         error: null,
       });
 
-      const result = await service.ingestArticle('org-1', 'https://example.com/article', {
-        title: 'Test Article',
-        author: 'John Doe',
-        content: 'Test content',
-      });
+      const result = await service.ingestArticle(
+        'org-1',
+        'https://example.com/article',
+        {
+          title: 'Test Article',
+          author: 'John Doe',
+          content: 'Test content',
+        }
+      );
 
       expect(result.article).toBeDefined();
       expect(result.article.title).toBe('Test Article');
@@ -259,7 +266,8 @@ describe('MediaMonitoringService', () => {
         org_id: 'org-1',
         url: 'https://example.com/article',
         title: 'Startup Raises Funding',
-        content: 'A startup has raised funding for growth and innovation in technology.',
+        content:
+          'A startup has raised funding for growth and innovation in technology.',
         summary: 'Startup funding news',
         embeddings: null,
         relevance_score: 0.6,
@@ -277,10 +285,15 @@ describe('MediaMonitoringService', () => {
         error: null,
       });
 
-      const result = await service.ingestArticle('org-1', 'https://example.com/article', {
-        title: 'Startup Raises Funding',
-        content: 'A startup has raised funding for growth and innovation in technology.',
-      });
+      const result = await service.ingestArticle(
+        'org-1',
+        'https://example.com/article',
+        {
+          title: 'Startup Raises Funding',
+          content:
+            'A startup has raised funding for growth and innovation in technology.',
+        }
+      );
 
       expect(result.extracted.keywords.length).toBeGreaterThan(0);
     });
@@ -293,7 +306,8 @@ describe('MediaMonitoringService', () => {
         org_id: 'org-1',
         url: 'https://example.com/article',
         title: 'Acme Corp announces new product',
-        content: 'Acme Corp has announced a revolutionary new product called Widget Pro.',
+        content:
+          'Acme Corp has announced a revolutionary new product called Widget Pro.',
         summary: 'Acme Corp product launch',
         embeddings: null,
         relevance_score: 0.7,
@@ -314,9 +328,16 @@ describe('MediaMonitoringService', () => {
 
       mockSupabase._mocks.single
         .mockResolvedValueOnce({ data: mockArticle, error: null }) // Get article
-        .mockResolvedValueOnce({ data: { id: 'mention-1', ...mockArticle }, error: null }); // Insert mention
+        .mockResolvedValueOnce({
+          data: { id: 'mention-1', ...mockArticle },
+          error: null,
+        }); // Insert mention
 
-      const result = await serviceWithoutLlm.detectMentions('org-1', 'article-1', ['Acme Corp']);
+      const result = await serviceWithoutLlm.detectMentions(
+        'org-1',
+        'article-1',
+        ['Acme Corp']
+      );
 
       expect(result.mentions.length).toBeGreaterThanOrEqual(0);
       expect(result.stats).toBeDefined();
@@ -338,8 +359,24 @@ describe('MediaMonitoringService', () => {
       // Mock LLM response for mention detection
       mockLlmRouter.generate.mockResolvedValueOnce({
         completion: JSON.stringify([
-          { entity: 'Company A', entityType: 'brand', sentiment: 'positive', confidence: 0.9, snippet: 'doing great things', isPrimary: true, position: 0 },
-          { entity: 'Company B', entityType: 'brand', sentiment: 'negative', confidence: 0.8, snippet: 'had some issues', isPrimary: false, position: 50 },
+          {
+            entity: 'Company A',
+            entityType: 'brand',
+            sentiment: 'positive',
+            confidence: 0.9,
+            snippet: 'doing great things',
+            isPrimary: true,
+            position: 0,
+          },
+          {
+            entity: 'Company B',
+            entityType: 'brand',
+            sentiment: 'negative',
+            confidence: 0.8,
+            snippet: 'had some issues',
+            isPrimary: false,
+            position: 50,
+          },
         ]),
         tokensUsed: 100,
         model: 'gpt-4o-mini',
@@ -348,15 +385,36 @@ describe('MediaMonitoringService', () => {
       // Mock mention inserts
       mockSupabase._mocks.single
         .mockResolvedValueOnce({
-          data: { id: 'm1', org_id: 'org-1', article_id: 'article-1', entity: 'Company A', sentiment: 'positive', confidence: 0.9, is_primary_mention: true, created_at: new Date().toISOString() },
+          data: {
+            id: 'm1',
+            org_id: 'org-1',
+            article_id: 'article-1',
+            entity: 'Company A',
+            sentiment: 'positive',
+            confidence: 0.9,
+            is_primary_mention: true,
+            created_at: new Date().toISOString(),
+          },
           error: null,
         })
         .mockResolvedValueOnce({
-          data: { id: 'm2', org_id: 'org-1', article_id: 'article-1', entity: 'Company B', sentiment: 'negative', confidence: 0.8, is_primary_mention: false, created_at: new Date().toISOString() },
+          data: {
+            id: 'm2',
+            org_id: 'org-1',
+            article_id: 'article-1',
+            entity: 'Company B',
+            sentiment: 'negative',
+            confidence: 0.8,
+            is_primary_mention: false,
+            created_at: new Date().toISOString(),
+          },
           error: null,
         });
 
-      const result = await service.detectMentions('org-1', 'article-1', ['Company A', 'Company B']);
+      const result = await service.detectMentions('org-1', 'article-1', [
+        'Company A',
+        'Company B',
+      ]);
 
       expect(result.stats.positive).toBeGreaterThanOrEqual(0);
       expect(result.stats.negative).toBeGreaterThanOrEqual(0);
@@ -379,7 +437,11 @@ describe('MediaMonitoringService', () => {
         error: null,
       });
 
-      const result = await service.matchJournalist('org-1', 'Jane Smith', 'Article content');
+      const result = await service.matchJournalist(
+        'org-1',
+        'Jane Smith',
+        'Article content'
+      );
 
       expect(result).toBeDefined();
       expect(result?.name).toBe('Jane Smith');
@@ -397,13 +459,21 @@ describe('MediaMonitoringService', () => {
         error: null,
       });
 
-      const result = await service.matchJournalist('org-1', 'Unknown Author', 'Article content');
+      const result = await service.matchJournalist(
+        'org-1',
+        'Unknown Author',
+        'Article content'
+      );
 
       expect(result).toBeNull();
     });
 
     it('should return null for null author', async () => {
-      const result = await service.matchJournalist('org-1', null, 'Article content');
+      const result = await service.matchJournalist(
+        'org-1',
+        null,
+        'Article content'
+      );
 
       expect(result).toBeNull();
     });
@@ -416,7 +486,8 @@ describe('MediaMonitoringService', () => {
         org_id: 'org-1',
         url: 'https://example.com/article',
         title: 'Long Article With Many Keywords',
-        content: 'A '.repeat(1000) + 'substantial content here with many keywords',
+        content:
+          'A '.repeat(1000) + 'substantial content here with many keywords',
         summary: 'Long article summary',
         embeddings: null,
         relevance_score: 0.8,
@@ -434,10 +505,15 @@ describe('MediaMonitoringService', () => {
         error: null,
       });
 
-      const result = await service.ingestArticle('org-1', 'https://example.com/article', {
-        title: 'Long Article With Many Keywords',
-        content: 'A '.repeat(1000) + 'substantial content here with many keywords',
-      });
+      const result = await service.ingestArticle(
+        'org-1',
+        'https://example.com/article',
+        {
+          title: 'Long Article With Many Keywords',
+          content:
+            'A '.repeat(1000) + 'substantial content here with many keywords',
+        }
+      );
 
       expect(result.article.relevanceScore).toBeGreaterThan(0);
       expect(result.article.relevanceScore).toBeLessThanOrEqual(1);
@@ -480,9 +556,25 @@ describe('MediaMonitoringService', () => {
 
       // Mock fallback queries
       mockSupabase._mocks.select
-        .mockResolvedValueOnce({ data: [{ active: true }], count: 1, error: null })
-        .mockResolvedValueOnce({ data: [{ relevance_score: 0.5, created_at: new Date().toISOString() }], count: 1, error: null })
-        .mockResolvedValueOnce({ data: [{ sentiment: 'neutral', created_at: new Date().toISOString() }], count: 1, error: null });
+        .mockResolvedValueOnce({
+          data: [{ active: true }],
+          count: 1,
+          error: null,
+        })
+        .mockResolvedValueOnce({
+          data: [
+            { relevance_score: 0.5, created_at: new Date().toISOString() },
+          ],
+          count: 1,
+          error: null,
+        })
+        .mockResolvedValueOnce({
+          data: [
+            { sentiment: 'neutral', created_at: new Date().toISOString() },
+          ],
+          count: 1,
+          error: null,
+        });
 
       const result = await service.getStats('org-1');
 

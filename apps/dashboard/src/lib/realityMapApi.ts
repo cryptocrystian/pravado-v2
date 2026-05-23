@@ -27,7 +27,6 @@ import type {
   GetRealityMapGlobalStatsResponse,
   PathOutcomeType,
 } from '@pravado/types';
-
 import {
   REALITY_MAP_STATUS_LABELS,
   REALITY_MAP_STATUS_COLORS,
@@ -93,7 +92,9 @@ export async function listRealityMaps(
 /**
  * Get reality map by ID
  */
-export async function getRealityMap(mapId: string): Promise<GetRealityMapResponse> {
+export async function getRealityMap(
+  mapId: string
+): Promise<GetRealityMapResponse> {
   return fetchWithAuth(`${BASE_PATH}/${mapId}`);
 }
 
@@ -125,7 +126,9 @@ export async function updateRealityMap(
 /**
  * Delete a reality map
  */
-export async function deleteRealityMap(mapId: string): Promise<{ success: boolean }> {
+export async function deleteRealityMap(
+  mapId: string
+): Promise<{ success: boolean }> {
   return fetchWithAuth(`${BASE_PATH}/${mapId}`, {
     method: 'DELETE',
   });
@@ -155,7 +158,9 @@ export async function generateRealityMap(
 /**
  * Get graph data for visualization
  */
-export async function getGraph(mapId: string): Promise<GetRealityMapGraphResponse> {
+export async function getGraph(
+  mapId: string
+): Promise<GetRealityMapGraphResponse> {
   return fetchWithAuth(`${BASE_PATH}/${mapId}/graph`);
 }
 
@@ -166,7 +171,9 @@ export async function getGraph(mapId: string): Promise<GetRealityMapGraphRespons
 /**
  * Get analysis for reality map
  */
-export async function getAnalysis(mapId: string): Promise<GetRealityMapAnalysisResponse> {
+export async function getAnalysis(
+  mapId: string
+): Promise<GetRealityMapAnalysisResponse> {
   return fetchWithAuth(`${BASE_PATH}/${mapId}/analysis`);
 }
 
@@ -318,7 +325,10 @@ export function getEdgeColor(probability: number): string {
 /**
  * Calculate node size based on probability
  */
-export function calculateNodeSize(probability: number, baseSize: number = 40): number {
+export function calculateNodeSize(
+  probability: number,
+  baseSize: number = 40
+): number {
   return Math.max(baseSize * 0.5, baseSize * probability * 1.5);
 }
 
@@ -335,7 +345,9 @@ export function formatDuration(ms: number): string {
 /**
  * Get risk level from score
  */
-export function getRiskLevel(score: number): 'critical' | 'high' | 'medium' | 'low' {
+export function getRiskLevel(
+  score: number
+): 'critical' | 'high' | 'medium' | 'low' {
   if (score >= 80) return 'critical';
   if (score >= 60) return 'high';
   if (score >= 40) return 'medium';

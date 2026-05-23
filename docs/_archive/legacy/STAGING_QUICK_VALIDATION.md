@@ -16,28 +16,29 @@ curl -s "$API_URL/health/ready" | jq
 ```
 
 **Pass Criteria:**
+
 - [ ] Returns `{"ready":true,"version":"1.0.0-rc1",...}`
 
 ---
 
 ## 2. Dashboard Access (2 min)
 
-| Check | URL | Pass |
-|-------|-----|------|
-| Landing loads | `/` | [ ] |
-| Login renders | `/login` | [ ] |
-| No console errors | DevTools | [ ] |
+| Check             | URL      | Pass |
+| ----------------- | -------- | ---- |
+| Landing loads     | `/`      | [ ]  |
+| Login renders     | `/login` | [ ]  |
+| No console errors | DevTools | [ ]  |
 
 ---
 
 ## 3. Authentication Flow (3 min)
 
-| Step | Expected | Pass |
-|------|----------|------|
-| Click login | Auth form appears | [ ] |
-| Enter credentials | Redirects to `/app` | [ ] |
-| Refresh page | Still logged in | [ ] |
-| Click logout | Redirects to login | [ ] |
+| Step              | Expected            | Pass |
+| ----------------- | ------------------- | ---- |
+| Click login       | Auth form appears   | [ ]  |
+| Enter credentials | Redirects to `/app` | [ ]  |
+| Refresh page      | Still logged in     | [ ]  |
+| Click logout      | Redirects to login  | [ ]  |
 
 ---
 
@@ -45,13 +46,13 @@ curl -s "$API_URL/health/ready" | jq
 
 Visit each route, verify it loads:
 
-| Route | Expected | Pass |
-|-------|----------|------|
-| `/app` | Dashboard home | [ ] |
-| `/app/playbooks` | Playbooks list | [ ] |
-| `/app/content` | Content section | [ ] |
-| `/app/pr` | PR section | [ ] |
-| `/app/exec` | Executive view | [ ] |
+| Route            | Expected        | Pass |
+| ---------------- | --------------- | ---- |
+| `/app`           | Dashboard home  | [ ]  |
+| `/app/playbooks` | Playbooks list  | [ ]  |
+| `/app/content`   | Content section | [ ]  |
+| `/app/pr`        | PR section      | [ ]  |
+| `/app/exec`      | Executive view  | [ ]  |
 
 ---
 
@@ -59,11 +60,11 @@ Visit each route, verify it loads:
 
 With DevTools Network tab open:
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| API URL correct | Requests to staging API | [ ] |
-| 200 responses | No 4xx/5xx errors | [ ] |
-| Auth header sent | `Authorization: Bearer ...` | [ ] |
+| Check            | Expected                    | Pass |
+| ---------------- | --------------------------- | ---- |
+| API URL correct  | Requests to staging API     | [ ]  |
+| 200 responses    | No 4xx/5xx errors           | [ ]  |
+| Auth header sent | `Authorization: Bearer ...` | [ ]  |
 
 ---
 
@@ -71,24 +72,24 @@ With DevTools Network tab open:
 
 If demo data is seeded:
 
-| Check | Expected | Pass |
-|-------|----------|------|
-| Playbooks list shows data | 3+ playbooks | [ ] |
-| PR section shows mentions | Data visible | [ ] |
-| Exec digests show | At least 1 digest | [ ] |
+| Check                     | Expected          | Pass |
+| ------------------------- | ----------------- | ---- |
+| Playbooks list shows data | 3+ playbooks      | [ ]  |
+| PR section shows mentions | Data visible      | [ ]  |
+| Exec digests show         | At least 1 digest | [ ]  |
 
 ---
 
 ## Quick Result
 
-| Section | Status |
-|---------|--------|
-| API Health | [ ] PASS / [ ] FAIL |
+| Section          | Status              |
+| ---------------- | ------------------- |
+| API Health       | [ ] PASS / [ ] FAIL |
 | Dashboard Access | [ ] PASS / [ ] FAIL |
-| Authentication | [ ] PASS / [ ] FAIL |
-| Navigation | [ ] PASS / [ ] FAIL |
-| API Integration | [ ] PASS / [ ] FAIL |
-| Data Display | [ ] PASS / [ ] FAIL |
+| Authentication   | [ ] PASS / [ ] FAIL |
+| Navigation       | [ ] PASS / [ ] FAIL |
+| API Integration  | [ ] PASS / [ ] FAIL |
+| Data Display     | [ ] PASS / [ ] FAIL |
 
 **Overall:** [ ] READY FOR TESTING / [ ] NEEDS FIXES
 

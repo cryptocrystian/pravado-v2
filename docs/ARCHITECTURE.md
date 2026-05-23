@@ -23,21 +23,25 @@ pravado-v2/
 ## Technology Stack
 
 ### Build System
+
 - **Turborepo 2.x** - Incremental builds with intelligent caching
 - **pnpm 9.x** - Efficient package management with workspaces
 - **TypeScript 5.x** - Type safety across all packages
 
 ### Backend (apps/api)
+
 - **Fastify 4.x** - High-performance Node.js framework
 - **TypeScript** - Type-safe API development
 - **Vitest** - Fast unit testing framework
 
 ### Frontend (apps/dashboard)
+
 - **Next.js 14** - React framework with App Router
 - **Tailwind CSS** - Utility-first CSS framework
 - **TypeScript** - Type-safe frontend development
 
 ### Mobile (apps/mobile)
+
 - **Expo SDK 50+** - React Native development platform
 - **Expo Router** - File-based routing for React Native
 - **TypeScript** - Type-safe mobile development
@@ -45,23 +49,30 @@ pravado-v2/
 ## Architecture Principles
 
 ### 1. Type Safety
+
 All code is written in TypeScript with strict mode enabled. Shared types in `@pravado/types` ensure consistency across all applications.
 
 ### 2. Shared Packages
+
 Common functionality is extracted into shared packages:
+
 - `@pravado/types` - Type definitions
 - `@pravado/validators` - Zod schemas for validation
 - `@pravado/utils` - Utility functions (logging, formatting, errors)
 - `@pravado/feature-flags` - Feature flag management
 
 ### 3. Environment Validation
+
 All environment variables are validated at startup using Zod schemas in `@pravado/validators`. This ensures:
+
 - Required variables are present
 - Variables have correct types
 - Default values are applied consistently
 
 ### 4. Feature Flags
+
 The feature flag system (`@pravado/feature-flags`) provides:
+
 - Type-safe flag definitions
 - Environment variable overrides
 - Runtime toggleability (future)
@@ -74,6 +85,7 @@ The feature flag system (`@pravado/feature-flags`) provides:
 **Port:** 3001 (default)
 
 **Structure:**
+
 ```
 apps/api/
 ├── src/
@@ -84,6 +96,7 @@ apps/api/
 ```
 
 **Key Features:**
+
 - Request/response logging
 - CORS support
 - Error handling
@@ -95,6 +108,7 @@ apps/api/
 **Port:** 3000 (default)
 
 **Structure:**
+
 ```
 apps/dashboard/
 ├── src/
@@ -105,6 +119,7 @@ apps/dashboard/
 ```
 
 **Key Features:**
+
 - Server-side rendering
 - Tailwind CSS styling
 - TypeScript support
@@ -116,6 +131,7 @@ apps/dashboard/
 **Router:** Expo Router
 
 **Structure:**
+
 ```
 apps/mobile/
 ├── app/
@@ -125,6 +141,7 @@ apps/mobile/
 ```
 
 **Key Features:**
+
 - Cross-platform (iOS, Android, Web)
 - File-based routing
 - TypeScript support
@@ -154,24 +171,28 @@ apps/mobile/
 ### Build Order
 
 Packages are built in dependency order:
+
 1. packages/types
 2. packages/validators
 3. packages/utils
 4. packages/feature-flags
-5. apps/* (in parallel)
+5. apps/\* (in parallel)
 
 ## Testing Strategy
 
 ### Unit Tests
+
 - **Framework:** Vitest
 - **Location:** `__tests__` folders or `.test.ts` files
 - **Coverage:** Shared packages and utilities
 
 ### Integration Tests
+
 - **Scope:** API endpoints
 - **Framework:** Vitest + Fastify test utilities
 
 ### E2E Tests (Future)
+
 - **Framework:** Playwright
 - **Scope:** Critical user flows in dashboard
 
@@ -180,18 +201,21 @@ Packages are built in dependency order:
 ### GitHub Actions Workflow
 
 **Jobs:**
+
 1. **Lint** - ESLint + Prettier checks
 2. **Type Check** - TypeScript validation
 3. **Test** - Unit test execution
 4. **Build** - Build all packages
 
 **Triggers:**
+
 - Push to main branch
 - Pull requests to main
 
 ## Environment Variables
 
 ### API (.env)
+
 ```bash
 NODE_ENV=development
 API_PORT=3001
@@ -202,11 +226,13 @@ CORS_ORIGIN=http://localhost:3000
 ```
 
 ### Dashboard (.env.local)
+
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ### Mobile (.env)
+
 ```bash
 EXPO_PUBLIC_API_URL=http://localhost:3001
 ```
@@ -236,22 +262,26 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
 ## Development Workflow
 
 1. **Clone Repository**
+
    ```bash
    git clone https://github.com/YOUR_ORG/pravado-v2.git
    cd pravado-v2
    ```
 
 2. **Install Dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Start Development**
+
    ```bash
    pnpm dev
    ```
 
 4. **Run Tests**
+
    ```bash
    pnpm test
    ```
@@ -264,16 +294,19 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
 ## Troubleshooting
 
 ### Build Failures
+
 - Clear Turborepo cache: `rm -rf .turbo`
 - Clean all builds: `pnpm clean`
 - Reinstall dependencies: `rm -rf node_modules && pnpm install`
 
 ### Type Errors
+
 - Ensure all packages are built: `pnpm build`
 - Restart TypeScript server in VS Code
 - Check `tsconfig.json` references
 
 ### Dev Server Issues
+
 - Check port availability (3000, 3001)
 - Verify environment variables
 - Check logs for errors

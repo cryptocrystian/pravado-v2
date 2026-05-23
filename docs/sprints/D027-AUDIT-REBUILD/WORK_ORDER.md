@@ -10,6 +10,7 @@
 ## Required Reading Before Starting Any Phase
 
 Per CLAUDE.md Required Boot Sequence:
+
 1. `/ARCHITECT_BRIEFING.md`
 2. `/SESSION_PRIMER.md`
 3. `/docs/canon/DECISIONS_LOG.md` — especially D027 (the decision driving this work order) and D025/D026 for canon hygiene context
@@ -37,14 +38,14 @@ These are decided per D027. Do not ask the architect to revisit:
 
 ## Phase Decomposition
 
-| Phase | Scope | Files | Est. time |
-|-------|-------|-------|-----------|
-| 1A | Backend: three-pillar audit scoring API + schema | `apps/api/src/routes/siloTaxAudit/index.ts` (rewrite), new Supabase migration | 6-8 hr |
-| 1B | Frontend: rebuild `/audit` results renderer for three-pillar output | `apps/dashboard/src/app/(marketing)/audit/page.tsx` | 6-8 hr |
-| 1C | Frontend: PR entry path `/audit/pr` (production-quality bar) + shared component extraction | new `/audit/pr/page.tsx`, new `EVIScorecardResults.tsx`, new `AuditForm.tsx` | 8-12 hr |
-| 1D | Frontend: Content + AI entry paths (shared template polish) | new `/audit/content/page.tsx`, new `/audit/ai/page.tsx` | 4-6 hr |
-| 1E | Email template: three-pillar EVI rebuild | `apps/api/src/routes/siloTaxAudit/index.ts` (`buildAuditClaimEmailHtml` only) | 2-3 hr |
-| 1F | Marketing surfaces cleanup: remove Silo Tax references from homepage, nav badge, About, Pricing | `apps/dashboard/src/app/(marketing)/page.tsx`, layout, pricing | 2-4 hr |
+| Phase | Scope                                                                                           | Files                                                                         | Est. time |
+| ----- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------- |
+| 1A    | Backend: three-pillar audit scoring API + schema                                                | `apps/api/src/routes/siloTaxAudit/index.ts` (rewrite), new Supabase migration | 6-8 hr    |
+| 1B    | Frontend: rebuild `/audit` results renderer for three-pillar output                             | `apps/dashboard/src/app/(marketing)/audit/page.tsx`                           | 6-8 hr    |
+| 1C    | Frontend: PR entry path `/audit/pr` (production-quality bar) + shared component extraction      | new `/audit/pr/page.tsx`, new `EVIScorecardResults.tsx`, new `AuditForm.tsx`  | 8-12 hr   |
+| 1D    | Frontend: Content + AI entry paths (shared template polish)                                     | new `/audit/content/page.tsx`, new `/audit/ai/page.tsx`                       | 4-6 hr    |
+| 1E    | Email template: three-pillar EVI rebuild                                                        | `apps/api/src/routes/siloTaxAudit/index.ts` (`buildAuditClaimEmailHtml` only) | 2-3 hr    |
+| 1F    | Marketing surfaces cleanup: remove Silo Tax references from homepage, nav badge, About, Pricing | `apps/dashboard/src/app/(marketing)/page.tsx`, layout, pricing                | 2-4 hr    |
 
 Sequencing: 1A first. 1B after 1A merges. 1C after 1B merges (architect checkpoint). 1D, 1E, 1F can run in parallel after 1C merges.
 
@@ -64,7 +65,7 @@ Define the TypeScript interfaces in the route file. Validate server-side; if LLM
 
 ### Composite EVI formula
 
-evi_score = (pr.score * 0.40) + (content.score * 0.35) + (ai.score * 0.25)
+evi*score = (pr.score * 0.40) + (content.score \_ 0.35) + (ai.score \* 0.25)
 
 Weights match canonical V/A/M weighting in EVI_MATHEMATICS.md (40/35/25). Document the parallelism in code comment so future readers understand: in-product EVI uses V/A/M from CiteMind/CRAFT signals; audit EVI uses pillar weighting from one-time scan signals. Same scale, same bands, same weights.
 
@@ -82,6 +83,7 @@ Replace existing Silo Tax system prompt. Claude Haiku produces structured JSON f
 8. Generates orchestration_opportunity narrative — 2-3 sentences explaining why the variance matters, in buyer's language.
 
 The prompt must explicitly forbid:
+
 - Dollar figures
 - "Silo Tax" terminology
 - Time-bounded loss claims ("you're losing $X per month")
@@ -146,6 +148,7 @@ Rebuild the results step of `/audit/page.tsx` to render three-pillar output. Str
 ### Pillar order
 
 Read `entry_path` from URL or scan submission:
+
 - `'pr'` → PR first, then Content, then AI
 - `'content'` → Content first, then PR, then AI
 - `'ai'` → AI first, then PR, then Content
@@ -196,6 +199,7 @@ Build `/audit/pr` to production-quality bar. Highest creative bar of the sprint.
 ### Shared component extraction
 
 Extract from `/audit/page.tsx`:
+
 - `apps/dashboard/src/components/marketing/EVIScorecardResults.tsx` — takes `scanResult` and `entryPath` props, renders results identically across all four entry paths
 - `apps/dashboard/src/components/marketing/AuditForm.tsx` — takes `entryPath` and optional `compact` prop
 
@@ -228,6 +232,7 @@ Build `/audit/content` and `/audit/ai` using shared template extracted in 1C. Po
 ### `/audit/content/page.tsx`
 
 Adapt 1C structure with content-buyer vocabulary:
+
 - Hero speaks to HubSpot/Contently refugees — content authority, why content isn't compounding
 - Problem statement names structural content silo
 - Reveal gives Content pillar longest treatment, PR and AI briefer
@@ -236,6 +241,7 @@ Adapt 1C structure with content-buyer vocabulary:
 ### `/audit/ai/page.tsx`
 
 Adapt for AEO/SEO buyers (Semrush/Profound/Search Atlas refugees):
+
 - Hero reframes AEO as a symptom, not a strategy
 - Problem statement: AI visibility is what shows up; AI citation authority is what causes it
 - Reveal gives AI pillar longest treatment, but pivots to cross-pillar dependency
@@ -264,11 +270,13 @@ Replace Silo Tax email content with three-pillar EVI scorecard. Preserve all Out
 ### Email body changes
 
 Remove:
+
 - "Your Silo Tax: $X/month" framing
 - Dollar-loss numbers
 - Component breakdown (risk premium / authority leakage / etc.)
 
 Add:
+
 - Top-line EVI score with canonical band
 - Three pillar mini-cards (table-based, Outlook-safe layout from c8fcaf7) — pillar name, score, band
 - Top 1 gap per pillar with remediation preview
@@ -345,6 +353,7 @@ Each phase commits independently. If any phase introduces regressions, that phas
 ## Final Report (per phase)
 
 Each phase reports:
+
 1. Commit SHA
 2. Files modified (list with line counts)
 3. Migration filename if created
@@ -357,4 +366,4 @@ Each phase reports:
 
 ---
 
-*End of work order.*
+_End of work order._

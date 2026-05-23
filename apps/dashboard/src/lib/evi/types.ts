@@ -8,7 +8,11 @@
  * @see /docs/canon/EARNED_VISIBILITY_INDEX.md
  */
 
-import type { EVIDriverType, Pillar, Trend } from '@/components/command-center/types';
+import type {
+  EVIDriverType,
+  Pillar,
+  Trend,
+} from '@/components/command-center/types';
 
 // ============================================
 // EVI FORMULA CONSTANTS (CANONICAL)
@@ -16,7 +20,7 @@ import type { EVIDriverType, Pillar, Trend } from '@/components/command-center/t
 // ============================================
 
 export const EVI_WEIGHTS = {
-  visibility: 0.40,
+  visibility: 0.4,
   authority: 0.35,
   momentum: 0.25,
 } as const;
@@ -227,9 +231,24 @@ export interface ComputedEVI {
   trend: Trend;
   /** Driver breakdown */
   drivers: {
-    visibility: { score: number; weighted: number; delta_7d: number; trend: Trend };
-    authority: { score: number; weighted: number; delta_7d: number; trend: Trend };
-    momentum: { score: number; weighted: number; delta_7d: number; trend: Trend };
+    visibility: {
+      score: number;
+      weighted: number;
+      delta_7d: number;
+      trend: Trend;
+    };
+    authority: {
+      score: number;
+      weighted: number;
+      delta_7d: number;
+      trend: Trend;
+    };
+    momentum: {
+      score: number;
+      weighted: number;
+      delta_7d: number;
+      trend: Trend;
+    };
   };
   /** Sparkline data (last 7 points) */
   sparkline: number[];

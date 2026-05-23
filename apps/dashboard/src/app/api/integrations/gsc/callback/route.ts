@@ -16,10 +16,11 @@ export async function GET(request: Request) {
   const state = searchParams.get('state') || '';
   const error = searchParams.get('error') || '';
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL
-    || process.env.PRAVADO_API_BASE_URL
-    || process.env.API_BASE_URL
-    || 'http://localhost:3001';
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.PRAVADO_API_BASE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:3001';
 
   // Forward the callback to the backend
   const params = new URLSearchParams();
@@ -44,6 +45,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${appUrl}/app/seo?gsc=connected`);
   } catch {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    return NextResponse.redirect(`${appUrl}/app/seo?gsc=error&reason=proxy_error`);
+    return NextResponse.redirect(
+      `${appUrl}/app/seo?gsc=error&reason=proxy_error`
+    );
   }
 }

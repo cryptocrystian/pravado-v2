@@ -103,6 +103,7 @@ ALTER TABLE playbooks
 **Purpose**: Validate graph structure before execution
 
 **Request Body**:
+
 ```json
 {
   "graph": {
@@ -130,14 +131,13 @@ ALTER TABLE playbooks
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
   "data": {
     "valid": false,
-    "errors": [
-      "Graph contains cycles (circular dependencies)"
-    ],
+    "errors": ["Graph contains cycles (circular dependencies)"],
     "issues": [
       {
         "code": "CYCLIC_GRAPH",
@@ -155,6 +155,7 @@ ALTER TABLE playbooks
 ```
 
 **Validation Rules**:
+
 - ✅ Exactly one entry point (node with no incoming edges)
 - ✅ No orphaned nodes (disconnected from main graph)
 - ✅ No cycles (circular dependencies)
@@ -167,9 +168,12 @@ ALTER TABLE playbooks
 **Purpose**: Execute playbook directly from editor graph
 
 **Request Body**:
+
 ```json
 {
-  "graph": { /* same as validate */ },
+  "graph": {
+    /* same as validate */
+  },
   "input": { "topic": "AI trends" },
   "webhookUrl": "https://example.com/webhook",
   "saveVersion": true,
@@ -178,6 +182,7 @@ ALTER TABLE playbooks
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -190,6 +195,7 @@ ALTER TABLE playbooks
 ```
 
 **Process**:
+
 1. Validate graph structure
 2. Convert graph → playbook steps
 3. Optionally save as new version
@@ -203,6 +209,7 @@ ALTER TABLE playbooks
 **Purpose**: Fetch version history
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -215,7 +222,9 @@ ALTER TABLE playbooks
         "commitMessage": "Added sentiment analysis",
         "createdBy": "user-id",
         "createdAt": "2025-11-17T10:00:00Z",
-        "graph": { /* full graph */ }
+        "graph": {
+          /* full graph */
+        }
       }
     ]
   }
@@ -233,36 +242,33 @@ ALTER TABLE playbooks
 **Purpose**: Compare current graph with latest saved version
 
 **Request Body**:
+
 ```json
 {
-  "currentGraph": { /* current editor graph */ }
+  "currentGraph": {
+    /* current editor graph */
+  }
 }
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
   "data": {
     "diff": {
       "hasChanges": true,
-      "addedNodes": [
-        { "id": "step-4", "label": "Summarize", "type": "AGENT" }
-      ],
+      "addedNodes": [{ "id": "step-4", "label": "Summarize", "type": "AGENT" }],
       "removedNodes": [],
       "modifiedNodes": [
         {
           "id": "step-1",
           "label": "Research",
-          "changes": [
-            "Label: 'Search' → 'Research'",
-            "Configuration changed"
-          ]
+          "changes": ["Label: 'Search' → 'Research'", "Configuration changed"]
         }
       ],
-      "addedEdges": [
-        { "source": "step-3", "target": "step-4" }
-      ],
+      "addedEdges": [{ "source": "step-3", "target": "step-4" }],
       "removedEdges": []
     },
     "validation": {
@@ -289,6 +295,7 @@ ALTER TABLE playbooks
 **Purpose**: Display graph validation errors and warnings
 
 **Usage**:
+
 ```tsx
 <ValidationIssuesModal
   isOpen={showValidationModal}
@@ -299,6 +306,7 @@ ALTER TABLE playbooks
 ```
 
 **Features**:
+
 - Categorizes issues by severity (error/warning)
 - Color-coded display (red for errors, yellow for warnings)
 - Shows error codes and detailed messages
@@ -311,18 +319,20 @@ ALTER TABLE playbooks
 **Purpose**: Visual diff between two playbook graphs
 
 **Usage**:
+
 ```tsx
 <VersionDiffViewer
   diff={graphDiff}
   latestVersion={{
     version: 2,
-    createdAt: "2025-11-17T09:00:00Z",
-    commitMessage: "Initial version"
+    createdAt: '2025-11-17T09:00:00Z',
+    commitMessage: 'Initial version',
   }}
 />
 ```
 
 **Features**:
+
 - Shows added nodes (green)
 - Shows removed nodes (red, strikethrough)
 - Shows modified nodes (blue) with list of changes
@@ -336,6 +346,7 @@ ALTER TABLE playbooks
 **Purpose**: Sidebar showing version history
 
 **Usage**:
+
 ```tsx
 <VersionHistoryDrawer
   isOpen={showHistory}
@@ -347,6 +358,7 @@ ALTER TABLE playbooks
 ```
 
 **Features**:
+
 - List view of all saved versions
 - "Latest" badge on newest version
 - Shows current unsaved changes (if any)
@@ -359,17 +371,19 @@ ALTER TABLE playbooks
 **Location**: `apps/dashboard/src/app/app/playbooks/editor/components/Toolbar.tsx`
 
 **New Props**:
+
 ```tsx
 interface ToolbarProps {
   // Existing props...
-  hasUnsavedChanges?: boolean;       // S20: Changes since last version
-  isRunning?: boolean;                // S20: Execution in progress
-  onRun?: () => void;                 // S20: Run playbook
-  onShowVersionHistory?: () => void;  // S20: Show version history
+  hasUnsavedChanges?: boolean; // S20: Changes since last version
+  isRunning?: boolean; // S20: Execution in progress
+  onRun?: () => void; // S20: Run playbook
+  onShowVersionHistory?: () => void; // S20: Show version history
 }
 ```
 
 **New UI Elements**:
+
 1. **"Run Playbook" button** (green, with play icon)
    - Validates graph
    - Shows validation modal if errors
@@ -450,16 +464,16 @@ interface ToolbarProps {
 
 ## Validation Error Codes
 
-| Code | Severity | Description |
-|------|----------|-------------|
-| `EMPTY_GRAPH` | error | Graph has no nodes |
-| `NO_ENTRY_POINT` | error | No node without incoming edges |
-| `MULTIPLE_ENTRY_POINTS` | error | More than one entry point found |
-| `DUPLICATE_KEYS` | error | Duplicate node IDs detected |
-| `ORPHANED_NODES` | error | Nodes not connected to graph |
-| `CYCLIC_GRAPH` | error | Graph contains circular dependencies |
-| `INVALID_EDGES` | error | Edges reference non-existent nodes |
-| `INCOMPLETE_BRANCH` | warning | BRANCH node missing true/false path |
+| Code                    | Severity | Description                          |
+| ----------------------- | -------- | ------------------------------------ |
+| `EMPTY_GRAPH`           | error    | Graph has no nodes                   |
+| `NO_ENTRY_POINT`        | error    | No node without incoming edges       |
+| `MULTIPLE_ENTRY_POINTS` | error    | More than one entry point found      |
+| `DUPLICATE_KEYS`        | error    | Duplicate node IDs detected          |
+| `ORPHANED_NODES`        | error    | Nodes not connected to graph         |
+| `CYCLIC_GRAPH`          | error    | Graph contains circular dependencies |
+| `INVALID_EDGES`         | error    | Edges reference non-existent nodes   |
+| `INCOMPLETE_BRANCH`     | warning  | BRANCH node missing true/false path  |
 
 ## Versioning Model
 
@@ -473,6 +487,7 @@ interface ToolbarProps {
 ### What Gets Versioned
 
 Each version captures:
+
 1. **Full editor graph** (nodes + edges with positions)
 2. **Compiled playbook JSON** (steps extracted from graph)
 3. **Commit message** (optional user description)
@@ -486,6 +501,7 @@ Each version captures:
 - Creates a **new version** when saved (not a rollback)
 
 Example:
+
 ```
 v1 → v2 → v3 (current)
          ↓
@@ -578,6 +594,7 @@ For each edge in oldGraph:
 ### Backend Tests
 
 **graphValidation.test.ts**:
+
 - Empty graph rejection
 - Entry point validation
 - Duplicate key detection
@@ -588,6 +605,7 @@ For each edge in oldGraph:
 - Valid graph acceptance
 
 **playbookVersioning.test.ts**:
+
 - Diff detection (added/removed/modified nodes)
 - Diff detection (added/removed edges)
 - Label/type/config change detection
@@ -614,6 +632,7 @@ For each edge in oldGraph:
 **Symptoms**: Clicking "Run Playbook" shows validation modal with errors
 
 **Solution**: Fix validation errors shown in modal:
+
 - Remove orphaned nodes
 - Fix circular dependencies
 - Ensure exactly one entry point
@@ -642,6 +661,7 @@ For each edge in oldGraph:
 **Cause**: Execution engine V2 not running or queue stalled
 
 **Solution**:
+
 1. Check V2 engine status: `GET /api/v1/playbooks/queue/stats`
 2. Verify worker pool has capacity
 3. Check `playbook_runs` table for run status

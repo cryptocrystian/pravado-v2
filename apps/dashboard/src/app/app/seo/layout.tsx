@@ -3,13 +3,17 @@
  * Server component: fetches session, passes to SEOShell client wrapper.
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { SEOShell } from '@/components/seo/SEOShell';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SEOLayout({ children }: { children: React.ReactNode }) {
+export default async function SEOLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getCurrentUser();
 
   return (

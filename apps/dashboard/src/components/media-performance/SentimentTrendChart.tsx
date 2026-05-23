@@ -5,12 +5,13 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { getSentimentColor } from '@/lib/mediaPerformanceApi';
 import type { TrendDirection } from '@pravado/types';
 import { useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getSentimentColor } from '@/lib/mediaPerformanceApi';
+import { cn } from '@/lib/utils';
 
 interface SentimentDataPoint {
   timestamp: Date;
@@ -60,8 +61,13 @@ export function SentimentTrendChart({
 
     // Map data points to SVG coordinates
     const points = data.map((point, _idx) => {
-      const x = padding.left + (point.timestamp.getTime() - xMin) / xRange * chartWidth;
-      const y = padding.top + chartHeight - ((point.value - yMin) / yRange) * chartHeight;
+      const x =
+        padding.left +
+        ((point.timestamp.getTime() - xMin) / xRange) * chartWidth;
+      const y =
+        padding.top +
+        chartHeight -
+        ((point.value - yMin) / yRange) * chartHeight;
       return { x, y, value: point.value, timestamp: point.timestamp };
     });
 
@@ -77,8 +83,14 @@ export function SentimentTrendChart({
     // X-axis labels (show first, middle, last)
     const xLabels = [
       { timestamp: data[0].timestamp, x: padding.left },
-      { timestamp: data[Math.floor(data.length / 2)].timestamp, x: padding.left + chartWidth / 2 },
-      { timestamp: data[data.length - 1].timestamp, x: padding.left + chartWidth },
+      {
+        timestamp: data[Math.floor(data.length / 2)].timestamp,
+        x: padding.left + chartWidth / 2,
+      },
+      {
+        timestamp: data[data.length - 1].timestamp,
+        x: padding.left + chartWidth,
+      },
     ];
 
     return {
@@ -104,11 +116,16 @@ export function SentimentTrendChart({
                 variant="outline"
                 className={cn(
                   'text-xs',
-                  currentSentimentColor === 'green' && 'bg-green-100 text-green-800 border-green-200',
-                  currentSentimentColor === 'blue' && 'bg-blue-100 text-blue-800 border-blue-200',
-                  currentSentimentColor === 'yellow' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                  currentSentimentColor === 'orange' && 'bg-orange-100 text-orange-800 border-orange-200',
-                  currentSentimentColor === 'red' && 'bg-red-100 text-red-800 border-red-200'
+                  currentSentimentColor === 'green' &&
+                    'bg-green-100 text-green-800 border-green-200',
+                  currentSentimentColor === 'blue' &&
+                    'bg-blue-100 text-blue-800 border-blue-200',
+                  currentSentimentColor === 'yellow' &&
+                    'bg-yellow-100 text-yellow-800 border-yellow-200',
+                  currentSentimentColor === 'orange' &&
+                    'bg-orange-100 text-orange-800 border-orange-200',
+                  currentSentimentColor === 'red' &&
+                    'bg-red-100 text-red-800 border-red-200'
                 )}
               >
                 {currentSentimentColor === 'green' && 'Positive'}
@@ -128,7 +145,12 @@ export function SentimentTrendChart({
             No sentiment data available
           </div>
         ) : (
-          <svg width="100%" height={height} viewBox={`0 0 600 ${height}`} className="overflow-visible">
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 600 ${height}`}
+            className="overflow-visible"
+          >
             {/* Grid lines */}
             {yAxisLabels.map((label) => (
               <line
@@ -180,7 +202,10 @@ export function SentimentTrendChart({
                 r="2.5"
                 fill="#3b82f6"
               >
-                <title>{point.timestamp.toLocaleDateString()}: {(point.value * 100).toFixed(0)}%</title>
+                <title>
+                  {point.timestamp.toLocaleDateString()}:{' '}
+                  {(point.value * 100).toFixed(0)}%
+                </title>
               </circle>
             ))}
 

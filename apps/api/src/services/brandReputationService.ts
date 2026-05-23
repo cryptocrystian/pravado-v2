@@ -5,7 +5,6 @@
  * from multiple source systems, and providing executive radar data.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   BrandReputationSnapshot,
   BrandReputationEvent,
@@ -32,6 +31,7 @@ import type {
   ScoreCalculationOutput,
   TimeWindowBoundaries,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // CONSTANTS
@@ -99,7 +99,11 @@ export class BrandReputationService {
     }
 
     // Build executive summary
-    const executiveSummary = await this.buildExecutiveRadarSummary(orgId, window, snapshot!);
+    const executiveSummary = await this.buildExecutiveRadarSummary(
+      orgId,
+      window,
+      snapshot!
+    );
 
     return {
       snapshot: snapshot!,
@@ -113,7 +117,9 @@ export class BrandReputationService {
   /**
    * Get the latest snapshot for an org
    */
-  async getLatestSnapshot(orgId: string): Promise<BrandReputationSnapshot | null> {
+  async getLatestSnapshot(
+    orgId: string
+  ): Promise<BrandReputationSnapshot | null> {
     const { data, error } = await this.supabase
       .from('brand_reputation_snapshots')
       .select('*')
@@ -132,7 +138,10 @@ export class BrandReputationService {
   /**
    * Get a specific snapshot by ID
    */
-  async getSnapshotById(orgId: string, snapshotId: string): Promise<BrandReputationSnapshot | null> {
+  async getSnapshotById(
+    orgId: string,
+    snapshotId: string
+  ): Promise<BrandReputationSnapshot | null> {
     const { data, error } = await this.supabase
       .from('brand_reputation_snapshots')
       .select('*')
@@ -150,7 +159,10 @@ export class BrandReputationService {
   /**
    * Get a specific event by ID
    */
-  async getEventById(orgId: string, eventId: string): Promise<BrandReputationEvent | null> {
+  async getEventById(
+    orgId: string,
+    eventId: string
+  ): Promise<BrandReputationEvent | null> {
     const { data, error } = await this.supabase
       .from('brand_reputation_events')
       .select('*')
@@ -168,7 +180,10 @@ export class BrandReputationService {
   /**
    * Get a specific alert by ID
    */
-  async getAlertById(orgId: string, alertId: string): Promise<BrandReputationAlert | null> {
+  async getAlertById(
+    orgId: string,
+    alertId: string
+  ): Promise<BrandReputationAlert | null> {
     const { data, error } = await this.supabase
       .from('brand_reputation_alerts')
       .select('*')
@@ -233,7 +248,9 @@ export class BrandReputationService {
       endScore,
       highScore: scores.length ? Math.max(...scores) : 50,
       lowScore: scores.length ? Math.min(...scores) : 50,
-      averageScore: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 50,
+      averageScore: scores.length
+        ? scores.reduce((a, b) => a + b, 0) / scores.length
+        : 50,
       volatility: this.calculateVolatility(scores),
       window,
       windowStart: boundaries.start.toISOString(),
@@ -260,7 +277,11 @@ export class BrandReputationService {
     const previousSnapshot = await this.getLatestSnapshot(orgId);
 
     // Collect data from source systems
-    const sourceData = await this.collectSourceData(orgId, windowStart, windowEnd);
+    const sourceData = await this.collectSourceData(
+      orgId,
+      windowStart,
+      windowEnd
+    );
 
     // Calculate component scores
     const scores = this.calculateComponentScores(sourceData, config);
@@ -269,15 +290,27 @@ export class BrandReputationService {
     const overallScore = this.calculateWeightedScore(scores, config);
 
     // Determine trend
-    const previousScore = previousSnapshot?.overallScore ?? config.baselineScore ?? DEFAULT_BASELINE_SCORE;
+    const previousScore =
+      previousSnapshot?.overallScore ??
+      config.baselineScore ??
+      DEFAULT_BASELINE_SCORE;
     const scoreDelta = overallScore - previousScore;
     const trendDirection = this.determineTrend(scoreDelta);
 
     // Get drivers
-    const drivers = await this.identifyDrivers(orgId, windowStart, windowEnd, sourceData);
+    const drivers = await this.identifyDrivers(
+      orgId,
+      windowStart,
+      windowEnd,
+      sourceData
+    );
 
     // Get competitor comparison
-    const competitorComparison = await this.getCompetitorComparison(orgId, config, overallScore);
+    const competitorComparison = await this.getCompetitorComparison(
+      orgId,
+      config,
+      overallScore
+    );
 
     // Build executive summary
     const executiveSummary = this.generateExecutiveSummary(
@@ -308,7 +341,8 @@ export class BrandReputationService {
       neutralMentions: sourceData.neutralMentions,
       activeCrisisCount: sourceData.activeCrises,
       resolvedCrisisCount: sourceData.recentCrisisResolutions,
-      crisisSeverityAvg: sourceData.crisisSeveritySum / Math.max(sourceData.activeCrises, 1),
+      crisisSeverityAvg:
+        sourceData.crisisSeveritySum / Math.max(sourceData.activeCrises, 1),
       totalOutreachSent: sourceData.outreachSent,
       outreachResponseRate:
         sourceData.outreachSent > 0
@@ -317,8 +351,12 @@ export class BrandReputationService {
       journalistEngagementCount: sourceData.journalistMeetings,
       competitiveRank: competitorComparison[0]?.rank,
       competitorsTracked: competitorComparison.length,
-      topPositiveDrivers: drivers.filter((d) => d.type === 'positive').slice(0, 5),
-      topNegativeDrivers: drivers.filter((d) => d.type === 'negative').slice(0, 5),
+      topPositiveDrivers: drivers
+        .filter((d) => d.type === 'positive')
+        .slice(0, 5),
+      topNegativeDrivers: drivers
+        .filter((d) => d.type === 'negative')
+        .slice(0, 5),
       competitorComparison,
       executiveSummary,
       keyRisks: this.identifyRisks(sourceData, scores),
@@ -341,7 +379,13 @@ export class BrandReputationService {
     }
 
     // Check for alerts
-    await this.checkAndCreateAlerts(orgId, overallScore, previousScore, config, data.id);
+    await this.checkAndCreateAlerts(
+      orgId,
+      overallScore,
+      previousScore,
+      config,
+      data.id
+    );
 
     return this.mapSnapshotFromDb(data);
   }
@@ -402,7 +446,9 @@ export class BrandReputationService {
 
           data.averageSentiment += sentiment;
         });
-        data.averageSentiment = mentions.length ? data.averageSentiment / mentions.length : 0;
+        data.averageSentiment = mentions.length
+          ? data.averageSentiment / mentions.length
+          : 0;
 
         const daysInWindow =
           (windowEnd.getTime() - windowStart.getTime()) / (1000 * 60 * 60 * 24);
@@ -477,8 +523,10 @@ export class BrandReputationService {
         data.competitorCount = competitors.length;
         if (competitors.length > 0) {
           const avgScore =
-            competitors.reduce((sum, c) => sum + (c.reputation_score || 50), 0) /
-            competitors.length;
+            competitors.reduce(
+              (sum, c) => sum + (c.reputation_score || 50),
+              0
+            ) / competitors.length;
           data.competitorAvgScore = avgScore;
         }
       }
@@ -523,19 +571,29 @@ export class BrandReputationService {
       // Combine ratios and sentiment
       sentimentScore = Math.min(
         100,
-        Math.max(0, sentimentComponent * 0.5 + (positiveRatio - negativeRatio) * 100 * 0.5 + 50)
+        Math.max(
+          0,
+          sentimentComponent * 0.5 +
+            (positiveRatio - negativeRatio) * 100 * 0.5 +
+            50
+        )
       );
     }
 
     // Coverage score (0-100)
     // Based on volume and tier of coverage
     const baselineMentions = 10; // Expected mentions per period
-    const volumeScore = Math.min(100, (data.totalMentions / baselineMentions) * 50);
+    const volumeScore = Math.min(
+      100,
+      (data.totalMentions / baselineMentions) * 50
+    );
     const tierScore =
       data.tier1Mentions * 3 + data.tier2Mentions * 2 + data.tier3Mentions > 0
         ? Math.min(
             100,
-            ((data.tier1Mentions * 3 + data.tier2Mentions * 2 + data.tier3Mentions) /
+            ((data.tier1Mentions * 3 +
+              data.tier2Mentions * 2 +
+              data.tier3Mentions) /
               data.totalMentions) *
               50
           )
@@ -551,14 +609,18 @@ export class BrandReputationService {
       crisisImpactScore = Math.max(0, 100 - severityPenalty - criticalPenalty);
     }
     // Boost for resolved crises
-    crisisImpactScore = Math.min(100, crisisImpactScore + data.recentCrisisResolutions * 2);
+    crisisImpactScore = Math.min(
+      100,
+      crisisImpactScore + data.recentCrisisResolutions * 2
+    );
 
     // Competitive position score (0-100)
     // Based on how we compare to competitors
     let competitivePositionScore = 50;
     if (data.competitorCount > 0) {
       // If we're above average, score higher
-      const ourScore = sentimentScore * 0.4 + coverageScore * 0.3 + crisisImpactScore * 0.3;
+      const ourScore =
+        sentimentScore * 0.4 + coverageScore * 0.3 + crisisImpactScore * 0.3;
       competitivePositionScore = Math.min(
         100,
         Math.max(0, 50 + (ourScore - data.competitorAvgScore))
@@ -572,7 +634,10 @@ export class BrandReputationService {
       const responseRate = data.outreachResponses / data.outreachSent;
       engagementScore = Math.min(100, responseRate * 200 + 30); // 30% base, up to 100 at 35% response rate
     }
-    engagementScore = Math.min(100, engagementScore + data.journalistMeetings * 5);
+    engagementScore = Math.min(
+      100,
+      engagementScore + data.journalistMeetings * 5
+    );
     engagementScore = Math.min(100, engagementScore + data.mediaHits * 3);
 
     return {
@@ -669,7 +734,9 @@ export class BrandReputationService {
         type: 'negative',
         title: `${sourceData.activeCrises} active crisis incident(s)`,
         description: `${sourceData.criticalCrises} critical, impacting reputation`,
-        impact: -10 * sourceData.criticalCrises - 5 * (sourceData.activeCrises - sourceData.criticalCrises),
+        impact:
+          -10 * sourceData.criticalCrises -
+          5 * (sourceData.activeCrises - sourceData.criticalCrises),
         impactPercentage: 15,
         component: 'crisis_impact',
         sourceSystem: 'crisis_incident',
@@ -696,7 +763,12 @@ export class BrandReputationService {
         .from('competitor_profiles')
         .select('id, name, reputation_score')
         .eq('org_id', orgId)
-        .in('id', config.trackedCompetitorIds.length > 0 ? config.trackedCompetitorIds : ['none']);
+        .in(
+          'id',
+          config.trackedCompetitorIds.length > 0
+            ? config.trackedCompetitorIds
+            : ['none']
+        );
 
       if (!error && competitors) {
         // Sort by score to get rankings
@@ -705,9 +777,10 @@ export class BrandReputationService {
         );
 
         // Find brand's rank
-        const allScores = [...sorted.map((c) => c.reputation_score || 50), brandScore].sort(
-          (a, b) => b - a
-        );
+        const allScores = [
+          ...sorted.map((c) => c.reputation_score || 50),
+          brandScore,
+        ].sort((a, b) => b - a);
         const brandRank = allScores.indexOf(brandScore) + 1;
 
         competitors.forEach((c) => {
@@ -753,9 +826,12 @@ export class BrandReputationService {
     const componentScores = this.buildComponentScores(snapshot, config);
 
     // Find strongest and weakest
-    const sortedComponents = [...componentScores].sort((a, b) => b.score - a.score);
+    const sortedComponents = [...componentScores].sort(
+      (a, b) => b.score - a.score
+    );
     const strongestComponent = sortedComponents[0].component;
-    const weakestComponent = sortedComponents[sortedComponents.length - 1].component;
+    const weakestComponent =
+      sortedComponents[sortedComponents.length - 1].component;
 
     // Get recent events
     const boundaries = this.getWindowBoundaries(window);
@@ -782,15 +858,15 @@ export class BrandReputationService {
     // Calculate crisis impact on score
     let crisisImpactOnScore = 0;
     if (snapshot.activeCrisisCount > 0) {
-      crisisImpactOnScore = Math.max(
-        0,
-        100 - snapshot.crisisImpactScore
-      );
+      crisisImpactOnScore = Math.max(0, 100 - snapshot.crisisImpactScore);
     }
 
     return {
       currentScore: snapshot.overallScore,
-      previousScore: snapshot.previousScore ?? config.baselineScore ?? DEFAULT_BASELINE_SCORE,
+      previousScore:
+        snapshot.previousScore ??
+        config.baselineScore ??
+        DEFAULT_BASELINE_SCORE,
       scoreDelta: snapshot.scoreDelta ?? 0,
       trendDirection: snapshot.trendDirection,
       scoreBreakdown: {
@@ -817,7 +893,8 @@ export class BrandReputationService {
           ? `${snapshot.activeCrisisCount} active incident(s) affecting reputation`
           : undefined,
       trendPoints: trendData.trendPoints,
-      summary: snapshot.executiveSummary || this.generateDefaultSummary(snapshot),
+      summary:
+        snapshot.executiveSummary || this.generateDefaultSummary(snapshot),
       keyRisks: snapshot.keyRisks,
       keyOpportunities: snapshot.keyOpportunities,
       recommendedActions: this.generateRecommendedActions(snapshot),
@@ -882,9 +959,16 @@ export class BrandReputationService {
     drivers: ReputationDriver[],
     data: ScoreCalculationInput
   ): string {
-    const trendText = trend === 'up' ? 'improving' : trend === 'down' ? 'declining' : 'stable';
+    const trendText =
+      trend === 'up' ? 'improving' : trend === 'down' ? 'declining' : 'stable';
     const scoreLevel =
-      score >= 80 ? 'excellent' : score >= 60 ? 'good' : score >= 40 ? 'moderate' : 'concerning';
+      score >= 80
+        ? 'excellent'
+        : score >= 60
+          ? 'good'
+          : score >= 40
+            ? 'moderate'
+            : 'concerning';
 
     let summary = `Brand reputation is ${scoreLevel} at ${score.toFixed(1)} and ${trendText}. `;
 
@@ -931,10 +1015,14 @@ export class BrandReputationService {
     const risks: string[] = [];
 
     if (data.activeCrises > 0) {
-      risks.push(`${data.activeCrises} active crisis incident(s) affecting reputation`);
+      risks.push(
+        `${data.activeCrises} active crisis incident(s) affecting reputation`
+      );
     }
     if (data.criticalCrises > 0) {
-      risks.push(`${data.criticalCrises} critical severity crisis requiring immediate attention`);
+      risks.push(
+        `${data.criticalCrises} critical severity crisis requiring immediate attention`
+      );
     }
     if (scores.sentiment < 40) {
       risks.push('Negative media sentiment trend');
@@ -967,7 +1055,9 @@ export class BrandReputationService {
       );
     }
     if (scores.sentiment > 70) {
-      opportunities.push('Strong positive sentiment - leverage for thought leadership');
+      opportunities.push(
+        'Strong positive sentiment - leverage for thought leadership'
+      );
     }
     if (data.outreachResponses > 0) {
       opportunities.push(
@@ -984,14 +1074,18 @@ export class BrandReputationService {
   /**
    * Generate recommended actions
    */
-  private generateRecommendedActions(snapshot: BrandReputationSnapshot): string[] {
+  private generateRecommendedActions(
+    snapshot: BrandReputationSnapshot
+  ): string[] {
     const actions: string[] = [];
 
     if (snapshot.activeCrisisCount > 0) {
       actions.push('Address active crisis incidents with coordinated response');
     }
     if (snapshot.sentimentScore < 50) {
-      actions.push('Implement positive narrative campaign to improve sentiment');
+      actions.push(
+        'Implement positive narrative campaign to improve sentiment'
+      );
     }
     if (snapshot.coverageScore < 50) {
       actions.push('Increase media outreach to improve coverage volume');
@@ -1000,7 +1094,9 @@ export class BrandReputationService {
       actions.push('Enhance journalist relationship building efforts');
     }
     if (snapshot.competitivePositionScore < 50) {
-      actions.push('Analyze competitor strategies and differentiate positioning');
+      actions.push(
+        'Analyze competitor strategies and differentiate positioning'
+      );
     }
 
     return actions;
@@ -1067,28 +1163,36 @@ export class BrandReputationService {
   ): Promise<BrandReputationConfig> {
     const updates: Record<string, unknown> = {};
 
-    if (input.weightSentiment !== undefined) updates.weight_sentiment = input.weightSentiment;
-    if (input.weightCoverage !== undefined) updates.weight_coverage = input.weightCoverage;
-    if (input.weightCrisis !== undefined) updates.weight_crisis = input.weightCrisis;
-    if (input.weightCompetitive !== undefined) updates.weight_competitive = input.weightCompetitive;
-    if (input.weightEngagement !== undefined) updates.weight_engagement = input.weightEngagement;
+    if (input.weightSentiment !== undefined)
+      updates.weight_sentiment = input.weightSentiment;
+    if (input.weightCoverage !== undefined)
+      updates.weight_coverage = input.weightCoverage;
+    if (input.weightCrisis !== undefined)
+      updates.weight_crisis = input.weightCrisis;
+    if (input.weightCompetitive !== undefined)
+      updates.weight_competitive = input.weightCompetitive;
+    if (input.weightEngagement !== undefined)
+      updates.weight_engagement = input.weightEngagement;
     if (input.thresholdAlertScoreDrop !== undefined)
       updates.threshold_alert_score_drop = input.thresholdAlertScoreDrop;
     if (input.thresholdCriticalScore !== undefined)
       updates.threshold_critical_score = input.thresholdCriticalScore;
     if (input.thresholdWarningScore !== undefined)
       updates.threshold_warning_score = input.thresholdWarningScore;
-    if (input.baselineScore !== undefined) updates.baseline_score = input.baselineScore;
+    if (input.baselineScore !== undefined)
+      updates.baseline_score = input.baselineScore;
     if (input.defaultTimeWindow !== undefined)
       updates.default_time_window = input.defaultTimeWindow;
-    if (input.autoRecalculate !== undefined) updates.auto_recalculate = input.autoRecalculate;
+    if (input.autoRecalculate !== undefined)
+      updates.auto_recalculate = input.autoRecalculate;
     if (input.recalculateIntervalHours !== undefined)
       updates.recalculate_interval_hours = input.recalculateIntervalHours;
     if (input.trackedCompetitorIds !== undefined)
       updates.tracked_competitor_ids = input.trackedCompetitorIds;
     if (input.enableScoreAlerts !== undefined)
       updates.enable_score_alerts = input.enableScoreAlerts;
-    if (input.alertRecipients !== undefined) updates.alert_recipients = input.alertRecipients;
+    if (input.alertRecipients !== undefined)
+      updates.alert_recipients = input.alertRecipients;
     if (input.settings !== undefined) updates.settings = input.settings;
     if (userId) updates.updated_by = userId;
 
@@ -1137,7 +1241,9 @@ export class BrandReputationService {
       calculationTimeMs: Date.now() - startTime,
       previousScore,
       newScore: snapshot.overallScore,
-      scoreDelta: previousScore ? snapshot.overallScore - previousScore : undefined,
+      scoreDelta: previousScore
+        ? snapshot.overallScore - previousScore
+        : undefined,
     };
   }
 
@@ -1265,7 +1371,10 @@ export class BrandReputationService {
     // Check for significant score drop
     if (scoreDrop >= config.thresholdAlertScoreDrop) {
       await this.createAlert(orgId, {
-        severity: scoreDrop >= config.thresholdAlertScoreDrop * 2 ? 'critical' : 'warning',
+        severity:
+          scoreDrop >= config.thresholdAlertScoreDrop * 2
+            ? 'critical'
+            : 'warning',
         title: `Reputation score dropped by ${scoreDrop.toFixed(1)} points`,
         message: `Your brand reputation score has dropped from ${previousScore.toFixed(1)} to ${newScore.toFixed(1)}.`,
         snapshotId,
@@ -1276,7 +1385,10 @@ export class BrandReputationService {
     }
 
     // Check for critical threshold breach
-    if (newScore <= config.thresholdCriticalScore && previousScore > config.thresholdCriticalScore) {
+    if (
+      newScore <= config.thresholdCriticalScore &&
+      previousScore > config.thresholdCriticalScore
+    ) {
       await this.createAlert(orgId, {
         severity: 'critical',
         title: 'Reputation score reached critical level',
@@ -1514,7 +1626,9 @@ export class BrandReputationService {
   /**
    * Get time window boundaries
    */
-  private getWindowBoundaries(window: ReputationTimeWindow): TimeWindowBoundaries {
+  private getWindowBoundaries(
+    window: ReputationTimeWindow
+  ): TimeWindowBoundaries {
     const end = new Date();
     const hours = TIME_WINDOW_HOURS[window];
     const start = new Date(end.getTime() - hours * 60 * 60 * 1000);
@@ -1561,7 +1675,9 @@ export class BrandReputationService {
   // DB MAPPERS
   // ==========================================================================
 
-  private mapSnapshotFromDb(row: Record<string, unknown>): BrandReputationSnapshot {
+  private mapSnapshotFromDb(
+    row: Record<string, unknown>
+  ): BrandReputationSnapshot {
     return {
       id: row.id as string,
       orgId: row.org_id as string,
@@ -1569,13 +1685,19 @@ export class BrandReputationService {
       windowStart: row.window_start as string,
       windowEnd: row.window_end as string,
       overallScore: parseFloat(row.overall_score as string),
-      previousScore: row.previous_score ? parseFloat(row.previous_score as string) : undefined,
-      scoreDelta: row.score_delta ? parseFloat(row.score_delta as string) : undefined,
+      previousScore: row.previous_score
+        ? parseFloat(row.previous_score as string)
+        : undefined,
+      scoreDelta: row.score_delta
+        ? parseFloat(row.score_delta as string)
+        : undefined,
       trendDirection: row.trend_direction as ReputationTrendDirection,
       sentimentScore: parseFloat(row.sentiment_score as string),
       coverageScore: parseFloat(row.coverage_score as string),
       crisisImpactScore: parseFloat(row.crisis_impact_score as string),
-      competitivePositionScore: parseFloat(row.competitive_position_score as string),
+      competitivePositionScore: parseFloat(
+        row.competitive_position_score as string
+      ),
       engagementScore: parseFloat(row.engagement_score as string),
       totalMentions: row.total_mentions as number,
       positiveMentions: row.positive_mentions as number,
@@ -1595,13 +1717,16 @@ export class BrandReputationService {
       competitorsTracked: row.competitors_tracked as number,
       topPositiveDrivers: row.top_positive_drivers as ReputationDriver[],
       topNegativeDrivers: row.top_negative_drivers as ReputationDriver[],
-      competitorComparison: row.competitor_comparison as CompetitorReputationComparison[],
+      competitorComparison:
+        row.competitor_comparison as CompetitorReputationComparison[],
       executiveSummary: row.executive_summary as string | undefined,
       keyRisks: row.key_risks as string[],
       keyOpportunities: row.key_opportunities as string[],
       metadata: row.metadata as Record<string, unknown>,
       calculationStartedAt: row.calculation_started_at as string | undefined,
-      calculationCompletedAt: row.calculation_completed_at as string | undefined,
+      calculationCompletedAt: row.calculation_completed_at as
+        | string
+        | undefined,
       eventsProcessed: row.events_processed as number,
     };
   }
@@ -1681,16 +1806,23 @@ export class BrandReputationService {
       weightCrisis: parseFloat(row.weight_crisis as string),
       weightCompetitive: parseFloat(row.weight_competitive as string),
       weightEngagement: parseFloat(row.weight_engagement as string),
-      thresholdAlertScoreDrop: parseFloat(row.threshold_alert_score_drop as string),
-      thresholdCriticalScore: parseFloat(row.threshold_critical_score as string),
+      thresholdAlertScoreDrop: parseFloat(
+        row.threshold_alert_score_drop as string
+      ),
+      thresholdCriticalScore: parseFloat(
+        row.threshold_critical_score as string
+      ),
       thresholdWarningScore: parseFloat(row.threshold_warning_score as string),
-      baselineScore: row.baseline_score ? parseFloat(row.baseline_score as string) : undefined,
+      baselineScore: row.baseline_score
+        ? parseFloat(row.baseline_score as string)
+        : undefined,
       defaultTimeWindow: row.default_time_window as ReputationTimeWindow,
       autoRecalculate: row.auto_recalculate as boolean,
       recalculateIntervalHours: row.recalculate_interval_hours as number,
       trackedCompetitorIds: row.tracked_competitor_ids as string[],
       enableScoreAlerts: row.enable_score_alerts as boolean,
-      alertRecipients: row.alert_recipients as BrandReputationConfig['alertRecipients'],
+      alertRecipients:
+        row.alert_recipients as BrandReputationConfig['alertRecipients'],
       settings: row.settings as Record<string, unknown>,
       updatedBy: row.updated_by as string | undefined,
     };
@@ -1706,7 +1838,9 @@ export class BrandReputationService {
       message: row.message as string,
       snapshotId: row.snapshot_id as string | undefined,
       triggerType: row.trigger_type as string,
-      triggerValue: row.trigger_value ? parseFloat(row.trigger_value as string) : undefined,
+      triggerValue: row.trigger_value
+        ? parseFloat(row.trigger_value as string)
+        : undefined,
       thresholdValue: row.threshold_value
         ? parseFloat(row.threshold_value as string)
         : undefined,
@@ -1718,7 +1852,8 @@ export class BrandReputationService {
       resolvedAt: row.resolved_at as string | undefined,
       resolvedBy: row.resolved_by as string | undefined,
       resolutionNotes: row.resolution_notes as string | undefined,
-      notificationsSent: row.notifications_sent as BrandReputationAlert['notificationsSent'],
+      notificationsSent:
+        row.notifications_sent as BrandReputationAlert['notificationsSent'],
       metadata: row.metadata as Record<string, unknown>,
     };
   }

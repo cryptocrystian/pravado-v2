@@ -64,55 +64,55 @@ The Executive Digest Generator is an automated system for creating and deliverin
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/v1/exec-digests | List digests |
-| POST | /api/v1/exec-digests | Create digest |
-| GET | /api/v1/exec-digests/stats | Get statistics |
-| GET | /api/v1/exec-digests/:id | Get digest details |
-| PATCH | /api/v1/exec-digests/:id | Update digest |
-| DELETE | /api/v1/exec-digests/:id | Delete/archive digest |
-| POST | /api/v1/exec-digests/:id/generate | Generate content |
-| POST | /api/v1/exec-digests/:id/deliver | Send to recipients |
-| GET | /api/v1/exec-digests/:id/sections | List sections |
-| POST | /api/v1/exec-digests/:id/sections/order | Reorder sections |
-| GET | /api/v1/exec-digests/:id/recipients | List recipients |
-| POST | /api/v1/exec-digests/:id/recipients | Add recipient |
-| PATCH | /api/v1/exec-digests/:id/recipients/:recipientId | Update recipient |
-| DELETE | /api/v1/exec-digests/:id/recipients/:recipientId | Remove recipient |
-| GET | /api/v1/exec-digests/:id/deliveries | List delivery logs |
+| Method | Endpoint                                         | Description           |
+| ------ | ------------------------------------------------ | --------------------- |
+| GET    | /api/v1/exec-digests                             | List digests          |
+| POST   | /api/v1/exec-digests                             | Create digest         |
+| GET    | /api/v1/exec-digests/stats                       | Get statistics        |
+| GET    | /api/v1/exec-digests/:id                         | Get digest details    |
+| PATCH  | /api/v1/exec-digests/:id                         | Update digest         |
+| DELETE | /api/v1/exec-digests/:id                         | Delete/archive digest |
+| POST   | /api/v1/exec-digests/:id/generate                | Generate content      |
+| POST   | /api/v1/exec-digests/:id/deliver                 | Send to recipients    |
+| GET    | /api/v1/exec-digests/:id/sections                | List sections         |
+| POST   | /api/v1/exec-digests/:id/sections/order          | Reorder sections      |
+| GET    | /api/v1/exec-digests/:id/recipients              | List recipients       |
+| POST   | /api/v1/exec-digests/:id/recipients              | Add recipient         |
+| PATCH  | /api/v1/exec-digests/:id/recipients/:recipientId | Update recipient      |
+| DELETE | /api/v1/exec-digests/:id/recipients/:recipientId | Remove recipient      |
+| GET    | /api/v1/exec-digests/:id/deliveries              | List delivery logs    |
 
 ### Section Types
 
-| Type | Description |
-|------|-------------|
-| executive_summary | High-level overview of period |
-| key_kpis | Performance metrics snapshot |
-| key_insights | Important findings and trends |
-| risk_summary | Risk analysis and alerts |
-| reputation_summary | Brand reputation status |
-| competitive_summary | Competitive intelligence |
-| media_performance | Media coverage metrics |
-| crisis_status | Active crisis incidents |
-| governance_highlights | Compliance and governance |
-| action_recommendations | AI-generated action items |
+| Type                   | Description                   |
+| ---------------------- | ----------------------------- |
+| executive_summary      | High-level overview of period |
+| key_kpis               | Performance metrics snapshot  |
+| key_insights           | Important findings and trends |
+| risk_summary           | Risk analysis and alerts      |
+| reputation_summary     | Brand reputation status       |
+| competitive_summary    | Competitive intelligence      |
+| media_performance      | Media coverage metrics        |
+| crisis_status          | Active crisis incidents       |
+| governance_highlights  | Compliance and governance     |
+| action_recommendations | AI-generated action items     |
 
 ### Frontend Components
 
-| Component | Purpose |
-|-----------|---------|
-| ExecDigestCard | Summary card for list view |
-| ExecDigestHeader | Detail view header with actions |
-| ExecDigestSectionList | Collapsible section display |
-| ExecDigestRecipientList | Recipient management |
-| ExecDigestDeliveryHistory | Delivery log display |
-| ExecDigestStatsCard | Statistics overview |
-| ExecDigestForm | Create/edit form |
+| Component                 | Purpose                         |
+| ------------------------- | ------------------------------- |
+| ExecDigestCard            | Summary card for list view      |
+| ExecDigestHeader          | Detail view header with actions |
+| ExecDigestSectionList     | Collapsible section display     |
+| ExecDigestRecipientList   | Recipient management            |
+| ExecDigestDeliveryHistory | Delivery log display            |
+| ExecDigestStatsCard       | Statistics overview             |
+| ExecDigestForm            | Create/edit form                |
 
 ### Feature Flag
 
 ```typescript
-ENABLE_EXEC_DIGESTS: true // S62: Automated strategic briefs & exec weekly digest generator
+ENABLE_EXEC_DIGESTS: true; // S62: Automated strategic briefs & exec weekly digest generator
 ```
 
 ### Upstream Dependencies

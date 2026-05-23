@@ -10,9 +10,9 @@
  * creates a new response that drops the refreshed cookies, causing infinite loops.
  */
 
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -42,13 +42,18 @@ export async function middleware(request: NextRequest) {
   );
 
   // Refresh session — may update cookies via setAll
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // --- Auth gate redirects ---
   // IMPORTANT: We rewrite `response` instead of returning NextResponse.redirect()
   // so that any cookies set by getUser() (token refresh) are preserved.
 
-  if (!user && (pathname.startsWith('/app') || pathname.startsWith('/onboarding'))) {
+  if (
+    !user &&
+    (pathname.startsWith('/app') || pathname.startsWith('/onboarding'))
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     response = NextResponse.redirect(url);
@@ -81,9 +86,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/app/:path*',
-    '/onboarding/:path*',
-    '/login',
-  ],
+  matcher: ['/app/:path*', '/onboarding/:path*', '/login'],
 };

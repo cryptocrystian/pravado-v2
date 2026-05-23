@@ -101,13 +101,17 @@ export function ContactTable({
                       {contact.journalist.name}
                     </p>
                     {contact.journalist.email && (
-                      <p className="text-xs text-gray-500">{contact.journalist.email}</p>
+                      <p className="text-xs text-gray-500">
+                        {contact.journalist.email}
+                      </p>
                     )}
                   </div>
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <p className="text-sm text-gray-900">{contact.journalist.beat || '-'}</p>
+                <p className="text-sm text-gray-900">
+                  {contact.journalist.beat || '-'}
+                </p>
                 {contact.journalist.outlet && (
                   <p className="text-xs text-gray-500">
                     {contact.journalist.outlet}

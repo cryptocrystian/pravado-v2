@@ -5,11 +5,18 @@
 
 'use client';
 
+import {
+  EXEC_BOARD_REPORT_FORMAT_LABELS,
+  EXEC_BOARD_REPORT_SECTION_TYPE_LABELS,
+  EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER,
+} from '@pravado/types';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -17,24 +24,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
 import {
   type ExecBoardReport,
   type CreateExecBoardReportInput,
   type UpdateExecBoardReportInput,
   type ExecBoardReportSectionType,
 } from '@/lib/executiveBoardReportApi';
-import {
-  EXEC_BOARD_REPORT_FORMAT_LABELS,
-  EXEC_BOARD_REPORT_SECTION_TYPE_LABELS,
-  EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER,
-} from '@pravado/types';
-import { Loader2 } from 'lucide-react';
 
 interface BoardReportFormProps {
   initialValues?: ExecBoardReport;
   isEditing?: boolean;
-  onSubmit: (values: CreateExecBoardReportInput | UpdateExecBoardReportInput) => Promise<void>;
+  onSubmit: (
+    values: CreateExecBoardReportInput | UpdateExecBoardReportInput
+  ) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
@@ -58,7 +61,8 @@ export function BoardReportForm({
       : getDefaultPeriodEnd(),
     fiscalQuarter: initialValues?.fiscalQuarter || getCurrentFiscalQuarter(),
     fiscalYear: initialValues?.fiscalYear || new Date().getFullYear(),
-    sectionTypes: initialValues?.sectionTypes || EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER,
+    sectionTypes:
+      initialValues?.sectionTypes || EXEC_BOARD_REPORT_SECTION_DEFAULT_ORDER,
     llmModel: initialValues?.llmModel || 'gpt-4o',
     tone: initialValues?.tone || 'professional',
     targetLength: initialValues?.targetLength || 'comprehensive',
@@ -66,13 +70,21 @@ export function BoardReportForm({
 
   function getDefaultPeriodStart(): string {
     const now = new Date();
-    const quarterStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+    const quarterStart = new Date(
+      now.getFullYear(),
+      Math.floor(now.getMonth() / 3) * 3,
+      1
+    );
     return quarterStart.toISOString().split('T')[0];
   }
 
   function getDefaultPeriodEnd(): string {
     const now = new Date();
-    const quarterEnd = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 + 3, 0);
+    const quarterEnd = new Date(
+      now.getFullYear(),
+      Math.floor(now.getMonth() / 3) * 3 + 3,
+      0
+    );
     return quarterEnd.toISOString().split('T')[0];
   }
 
@@ -118,7 +130,9 @@ export function BoardReportForm({
             id="title"
             placeholder="Q1 2025 Board Report"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             required
           />
         </div>
@@ -129,7 +143,9 @@ export function BoardReportForm({
             id="description"
             placeholder="Brief description of this report's focus..."
             value={formData.description || ''}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             rows={3}
           />
         </div>
@@ -150,11 +166,13 @@ export function BoardReportForm({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(EXEC_BOARD_REPORT_FORMAT_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
+                {Object.entries(EXEC_BOARD_REPORT_FORMAT_LABELS).map(
+                  ([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -168,7 +186,10 @@ export function BoardReportForm({
               max={2100}
               value={formData.fiscalYear || ''}
               onChange={(e) =>
-                setFormData({ ...formData, fiscalYear: parseInt(e.target.value) || null })
+                setFormData({
+                  ...formData,
+                  fiscalYear: parseInt(e.target.value) || null,
+                })
               }
             />
           </div>
@@ -181,7 +202,9 @@ export function BoardReportForm({
               id="periodStart"
               type="date"
               value={formData.periodStart}
-              onChange={(e) => setFormData({ ...formData, periodStart: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, periodStart: e.target.value })
+              }
               required
             />
           </div>
@@ -192,7 +215,9 @@ export function BoardReportForm({
               id="periodEnd"
               type="date"
               value={formData.periodEnd}
-              onChange={(e) => setFormData({ ...formData, periodEnd: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, periodEnd: e.target.value })
+              }
               required
             />
           </div>
@@ -202,7 +227,9 @@ export function BoardReportForm({
           <Label htmlFor="fiscalQuarter">Fiscal Quarter</Label>
           <Select
             value={formData.fiscalQuarter || ''}
-            onValueChange={(value) => setFormData({ ...formData, fiscalQuarter: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, fiscalQuarter: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Select quarter" />
@@ -226,7 +253,9 @@ export function BoardReportForm({
             <Label htmlFor="llmModel">AI Model</Label>
             <Select
               value={formData.llmModel || 'gpt-4o'}
-              onValueChange={(value) => setFormData({ ...formData, llmModel: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, llmModel: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -268,7 +297,8 @@ export function BoardReportForm({
               onValueChange={(value) =>
                 setFormData({
                   ...formData,
-                  targetLength: value as CreateExecBoardReportInput['targetLength'],
+                  targetLength:
+                    value as CreateExecBoardReportInput['targetLength'],
                 })
               }
             >
@@ -296,7 +326,8 @@ export function BoardReportForm({
 
         <div className="grid grid-cols-2 gap-2">
           {allSectionTypes.map((sectionType) => {
-            const isChecked = formData.sectionTypes?.includes(sectionType) || false;
+            const isChecked =
+              formData.sectionTypes?.includes(sectionType) || false;
 
             return (
               <div

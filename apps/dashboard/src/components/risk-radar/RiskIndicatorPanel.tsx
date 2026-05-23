@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations -- lexical decl in case block; Phase 1 cleanup */
 /**
  * Risk Indicator Panel Component (Sprint S60)
  * Displays indicators grouped by type with trend analysis
@@ -5,11 +6,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import type { RiskRadarIndicator, RiskRadarTrendDirection } from '@/lib/riskRadarApi';
-import { getIndicatorTypeLabel } from '@/lib/riskRadarApi';
 import {
   TrendingUp,
   TrendingDown,
@@ -26,6 +22,15 @@ import {
   Clock,
   Loader2,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type {
+  RiskRadarIndicator,
+  RiskRadarTrendDirection,
+} from '@/lib/riskRadarApi';
+import { getIndicatorTypeLabel } from '@/lib/riskRadarApi';
+import { cn } from '@/lib/utils';
 
 interface RiskIndicatorPanelProps {
   indicators: RiskRadarIndicator[];
@@ -66,18 +71,27 @@ function getScoreColor(score: number): string {
   return 'text-green-600 bg-green-50';
 }
 
-function groupIndicatorsByType(indicators: RiskRadarIndicator[]): Record<string, RiskRadarIndicator[]> {
-  return indicators.reduce((acc, indicator) => {
-    const type = indicator.indicatorType;
-    if (!acc[type]) {
-      acc[type] = [];
-    }
-    acc[type].push(indicator);
-    return acc;
-  }, {} as Record<string, RiskRadarIndicator[]>);
+function groupIndicatorsByType(
+  indicators: RiskRadarIndicator[]
+): Record<string, RiskRadarIndicator[]> {
+  return indicators.reduce(
+    (acc, indicator) => {
+      const type = indicator.indicatorType;
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(indicator);
+      return acc;
+    },
+    {} as Record<string, RiskRadarIndicator[]>
+  );
 }
 
-export function RiskIndicatorPanel({ indicators, loading, className }: RiskIndicatorPanelProps) {
+export function RiskIndicatorPanel({
+  indicators,
+  loading,
+  className,
+}: RiskIndicatorPanelProps) {
   if (loading) {
     return (
       <Card className={className}>
@@ -163,11 +177,19 @@ export function RiskIndicatorPanel({ indicators, loading, className }: RiskIndic
                     )}
                     <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
                       <span>Source: {indicator.sourceSystem}</span>
-                      {indicator.scoreDelta !== undefined && indicator.scoreDelta !== 0 && (
-                        <span className={indicator.scoreDelta > 0 ? 'text-red-600' : 'text-green-600'}>
-                          {indicator.scoreDelta > 0 ? '+' : ''}{indicator.scoreDelta.toFixed(1)}
-                        </span>
-                      )}
+                      {indicator.scoreDelta !== undefined &&
+                        indicator.scoreDelta !== 0 && (
+                          <span
+                            className={
+                              indicator.scoreDelta > 0
+                                ? 'text-red-600'
+                                : 'text-green-600'
+                            }
+                          >
+                            {indicator.scoreDelta > 0 ? '+' : ''}
+                            {indicator.scoreDelta.toFixed(1)}
+                          </span>
+                        )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 ml-4">

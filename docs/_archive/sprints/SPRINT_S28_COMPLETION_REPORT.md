@@ -16,14 +16,17 @@ Successfully implemented the foundational billing and usage tracking system for 
 Created comprehensive billing schema with 3 tables:
 
 **Files Created:**
+
 - `apps/api/supabase/migrations/35_create_billing_schema.sql`
 
 **Tables:**
+
 - `billing_plans`: Plan definitions with included limits and overage pricing
 - `org_billing_state`: Per-org billing status and soft limit overrides
 - `org_billing_usage_monthly`: Monthly usage aggregates (tokens, runs, seats)
 
 **Features:**
+
 - Row Level Security (RLS) policies using user_orgs pattern
 - 4 seeded plans: internal-dev, starter ($49/mo), growth ($199/mo), enterprise ($599/mo)
 - Billing status tracking: trial, active, past_due, canceled
@@ -32,15 +35,18 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 2. Types & Validators
 
 **Files Created:**
+
 - `packages/types/src/billing.ts`: Complete TypeScript type definitions
 - `packages/validators/src/billing.ts`: Zod validation schemas
 
 **Files Modified:**
+
 - `packages/types/src/index.ts`: Added billing exports
 - `packages/validators/src/index.ts`: Added billing exports
 - `packages/validators/src/env.ts`: Added BILLING_DEFAULT_PLAN_SLUG config
 
 **Types Defined:**
+
 - `BillingPlan`, `OrgBillingState`, `OrgBillingUsageMonthly`
 - `OrgBillingSummary`, `UsageCheckResult`
 - `UpdateUsageOptions`, `CheckQuotaOptions`
@@ -48,9 +54,11 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 3. Billing Service
 
 **File Created:**
+
 - `apps/api/src/services/billingService.ts` (553 lines)
 
 **Core Methods:**
+
 - `getDefaultPlan()`: Returns default plan from env config
 - `listPlans()`: Lists all active plans
 - `getPlanBySlug()`: Fetch specific plan
@@ -62,6 +70,7 @@ Created comprehensive billing schema with 3 tables:
 - `setOrgPlan()`: Update org's billing plan
 
 **Key Features:**
+
 - Auto-seeding of billing state for new orgs (30-day trial, default plan)
 - Graceful degradation (missing billing data doesn't break flows)
 - Soft limit overrides support
@@ -70,18 +79,22 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 4. API Routes
 
 **File Created:**
+
 - `apps/api/src/routes/billing/index.ts`
 
 **File Modified:**
+
 - `apps/api/src/server.ts`: Registered billing routes at `/api/v1/billing`
 
 **Endpoints:**
+
 - `GET /api/v1/billing/plans`: List all active plans
 - `GET /api/v1/billing/org/summary`: Get org's billing summary
 - `POST /api/v1/billing/org/plan`: Set org's plan (admin use)
 - `POST /api/v1/billing/org/check`: Check quota (internal use)
 
 **Features:**
+
 - Authentication via `requireUser` middleware
 - Request validation using Zod schemas
 - Comprehensive error handling
@@ -90,20 +103,24 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 5. Usage Tracking Integration
 
 **Files Modified:**
+
 - `packages/utils/src/llmRouter.ts` (lines 193-198, 412-468)
 - `apps/api/src/services/playbookExecutionEngineV2.ts` (lines 205-208, 706-750)
 
 **LLM Router Integration:**
+
 - Tracks token usage after successful LLM calls
 - Increments `tokens_used` in org_billing_usage_monthly
 - Best-effort, non-blocking (errors swallowed)
 
 **Execution Engine V2 Integration:**
+
 - Tracks playbook runs when execution starts
 - Increments `playbook_runs` in org_billing_usage_monthly
 - Best-effort, non-blocking (errors swallowed)
 
 **Design Principles:**
+
 - Never fail core operations due to billing issues
 - Fire-and-forget updates with error handling
 - Acceptable slight undercounting vs. system downtime
@@ -111,9 +128,11 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 6. Billing Dashboard
 
 **File Created:**
+
 - `apps/dashboard/src/app/app/billing/page.tsx` (263 lines)
 
 **Features:**
+
 - Current plan display with pricing
 - Usage progress bars (tokens, playbook runs, seats)
 - Soft limit visualization with color coding:
@@ -129,10 +148,12 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 7. Tests
 
 **Files Created:**
+
 - `apps/api/__tests__/billingService.test.ts` (339 lines)
 - `apps/api/__tests__/billingRoutes.test.ts` (170 lines)
 
 **Billing Service Tests Coverage:**
+
 - Plan retrieval (default plan, by slug, list all)
 - Auto-seeding of billing state
 - Billing summary generation
@@ -141,6 +162,7 @@ Created comprehensive billing schema with 3 tables:
 - Usage counter updates (tokens, playbook runs)
 
 **Billing Routes Tests Coverage:**
+
 - Authentication requirements
 - Plan listing endpoint
 - Summary retrieval endpoint
@@ -149,6 +171,7 @@ Created comprehensive billing schema with 3 tables:
 - Error handling scenarios
 
 **Testing Approach:**
+
 - Vitest framework
 - Supabase mocks for database operations
 - Fastify inject for route testing
@@ -156,9 +179,11 @@ Created comprehensive billing schema with 3 tables:
 ### ✅ 8. Documentation
 
 **File Created:**
+
 - `docs/product/billing_quota_kernel_v1.md` (395 lines)
 
 **Sections:**
+
 - Overview and key features
 - Architecture (database schema, RLS policies)
 - API endpoints with request/response examples
@@ -174,36 +199,45 @@ Created comprehensive billing schema with 3 tables:
 ## Pipeline Verification
 
 ### ✅ Lint
+
 ```
 pnpm lint
 ```
+
 **Result:** PASSED
 **Notes:** Only pre-existing warnings, no new errors introduced
 
 ### ✅ Typecheck
+
 ```
 pnpm typecheck
 ```
+
 **Result:** PASSED
 **Notes:** All TypeScript types correctly defined, no type errors
 
 ### ✅ Build
+
 ```
 pnpm build
 ```
+
 **Result:** PASSED
 **Notes:** All packages built successfully, dashboard includes billing page
 
 ### ✅ Tests
+
 ```
 pnpm test --filter @pravado/api
 ```
+
 **Result:** PASSED
 **Notes:** New billing tests integrated, all tests passing
 
 ## Files Summary
 
 ### Created (19 files)
+
 1. `apps/api/supabase/migrations/35_create_billing_schema.sql`
 2. `packages/types/src/billing.ts`
 3. `packages/validators/src/billing.ts`
@@ -216,6 +250,7 @@ pnpm test --filter @pravado/api
 10. `SPRINT_S28_COMPLETION_REPORT.md` (this file)
 
 ### Modified (6 files)
+
 1. `packages/types/src/index.ts` - Added billing exports
 2. `packages/validators/src/index.ts` - Added billing exports
 3. `packages/validators/src/env.ts` - Added BILLING_DEFAULT_PLAN_SLUG
@@ -247,16 +282,19 @@ pnpm test --filter @pravado/api
 ## Design Decisions
 
 ### Why Soft Limits Only in S28?
+
 - **Faster Iteration:** Observe usage patterns before adding enforcement
 - **Safer Rollout:** No risk of blocking legitimate operations
 - **Incremental Complexity:** Add hard enforcement in S29 after validation
 
 ### Why Best-Effort Usage Tracking?
+
 - **Reliability First:** Core operations must never fail due to billing
 - **Acceptable Tradeoff:** Slight undercounting vs. system downtime
 - **Performance:** Non-blocking updates don't impact user-facing latency
 
 ### Why Auto-Seeding?
+
 - **Simplified Onboarding:** No manual billing setup required
 - **Immediate Value:** Users can start using the system right away
 - **Consistent State:** Every org always has billing data
@@ -264,6 +302,7 @@ pnpm test --filter @pravado/api
 ## Limitations & Known Issues
 
 ### S28 Scope (Intentional)
+
 - ❌ No hard quota enforcement (coming in S29)
 - ❌ No payment processing (coming in S30+ with Stripe)
 - ❌ No overage billing (coming in S31+)
@@ -271,32 +310,38 @@ pnpm test --filter @pravado/api
 - ❌ No self-service plan management (coming in S33+)
 
 ### Minor Issues
+
 - Dashboard billing page has one `any` type warning (line 37) - pre-existing pattern
 - Billing routes use Supabase `any` type (line 16) - consistent with other routes
 
 ## Future Roadmap
 
 ### Sprint S29: Hard Quota Enforcement
+
 - Gate operations when limits exceeded
 - User-facing quota exceeded messages
 - Grace period handling
 
 ### Sprint S30: Payment Integration
+
 - Stripe Connect integration
 - Credit card payment processing
 - Subscription management
 
 ### Sprint S31: Overage Billing
+
 - Track overages beyond included limits
 - Automatic overage charges
 - Overage invoicing
 
 ### Sprint S32: Usage Alerts
+
 - Email alerts at 80%, 100% usage
 - Dashboard notifications
 - Slack integration
 
 ### Sprint S33: Self-Service Plans
+
 - Plan upgrade/downgrade in dashboard
 - Immediate plan switching
 - Prorated billing
@@ -330,6 +375,7 @@ BILLING_DEFAULT_PLAN_SLUG=internal-dev
 ## Testing the Implementation
 
 ### Test Billing API Endpoints
+
 ```bash
 # List plans
 curl -X GET http://localhost:3001/api/v1/billing/plans \
@@ -341,12 +387,14 @@ curl -X GET http://localhost:3001/api/v1/billing/org/summary \
 ```
 
 ### Test Dashboard
+
 1. Navigate to `http://localhost:3000/app/billing`
 2. Verify current plan displays
 3. Verify usage bars show (0% initially)
 4. Verify soft limits display
 
 ### Run Tests
+
 ```bash
 # Run all API tests (includes billing tests)
 pnpm test --filter @pravado/api
@@ -358,22 +406,22 @@ pnpm test --filter @pravado/api billingRoutes
 
 ## Acceptance Criteria Status
 
-| Criterion | Status | Notes |
-|-----------|--------|-------|
-| Database migration 35 created | ✅ | 3 tables with RLS policies |
-| Types in @pravado/types | ✅ | Complete type coverage |
-| Validators in @pravado/validators | ✅ | Zod schemas for all entities |
-| BillingService implemented | ✅ | All required methods |
-| API routes created | ✅ | 4 endpoints |
-| LLM Router integration | ✅ | Token usage tracking |
-| Execution Engine integration | ✅ | Playbook run tracking |
-| Billing dashboard | ✅ | Full-featured UI |
-| Tests written | ✅ | Service + routes coverage |
-| Documentation created | ✅ | Comprehensive guide |
-| Lint passes | ✅ | No new errors |
-| Typecheck passes | ✅ | No type errors |
-| Tests pass | ✅ | All tests passing |
-| Build succeeds | ✅ | All packages build |
+| Criterion                         | Status | Notes                        |
+| --------------------------------- | ------ | ---------------------------- |
+| Database migration 35 created     | ✅     | 3 tables with RLS policies   |
+| Types in @pravado/types           | ✅     | Complete type coverage       |
+| Validators in @pravado/validators | ✅     | Zod schemas for all entities |
+| BillingService implemented        | ✅     | All required methods         |
+| API routes created                | ✅     | 4 endpoints                  |
+| LLM Router integration            | ✅     | Token usage tracking         |
+| Execution Engine integration      | ✅     | Playbook run tracking        |
+| Billing dashboard                 | ✅     | Full-featured UI             |
+| Tests written                     | ✅     | Service + routes coverage    |
+| Documentation created             | ✅     | Comprehensive guide          |
+| Lint passes                       | ✅     | No new errors                |
+| Typecheck passes                  | ✅     | No type errors               |
+| Tests pass                        | ✅     | All tests passing            |
+| Build succeeds                    | ✅     | All packages build           |
 
 ## Conclusion
 

@@ -16,11 +16,20 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const streamUrl = await getStreamUrl(`/api/v1/playbooks/${id}/editor/stream`);
+    const streamUrl = await getStreamUrl(
+      `/api/v1/playbooks/${id}/editor/stream`
+    );
     return NextResponse.json({ success: true, data: { streamUrl } });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/playbooks/[id]/editor/stream] GET Error:', { status, message, code });
-    return NextResponse.json({ success: false, error: { message, code } }, { status });
+    console.error('[API /api/playbooks/[id]/editor/stream] GET Error:', {
+      status,
+      message,
+      code,
+    });
+    return NextResponse.json(
+      { success: false, error: { message, code } },
+      { status }
+    );
   }
 }

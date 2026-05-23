@@ -33,7 +33,10 @@ export {
 // ============================================
 // SHELL & LAYOUT
 // ============================================
-export { ContentWorkSurfaceShell, type ContentWorkSurfaceShellProps } from './ContentWorkSurfaceShell';
+export {
+  ContentWorkSurfaceShell,
+  type ContentWorkSurfaceShellProps,
+} from './ContentWorkSurfaceShell';
 
 // ============================================
 // VIEWS
@@ -42,8 +45,14 @@ export { ContentWorkQueueView } from './views/ContentWorkQueueView';
 export { ManualModeView } from './views/ManualModeView';
 export { CopilotModeView } from './views/CopilotModeView';
 export { AutopilotModeView } from './views/AutopilotModeView';
-export { ContentLibraryView, AssetDetailPreview } from './views/ContentLibraryView';
-export { ContentCalendarView, ContentAgendaView } from './views/ContentCalendarView';
+export {
+  ContentLibraryView,
+  AssetDetailPreview,
+} from './views/ContentLibraryView';
+export {
+  ContentCalendarView,
+  ContentAgendaView,
+} from './views/ContentCalendarView';
 export { ContentInsightsView } from './views/ContentInsightsView';
 
 // ============================================
@@ -52,14 +61,39 @@ export { ContentInsightsView } from './views/ContentInsightsView';
 export { ContentAssetCard } from './components/ContentAssetCard';
 export { ContentEmptyState } from './components/ContentEmptyState';
 export { ContentLoadingSkeleton } from './components/ContentLoadingSkeleton';
-export { ContentFiltersPanel, QuickFilterBar } from './components/ContentFiltersPanel';
-export { AuthorityDashboard, AuthorityStrip } from './components/AuthorityDashboard';
-export { CiteMindStatusIndicator, CiteMindGatePanel } from './components/CiteMindStatusIndicator';
-export { DerivativesPanel, type DerivativesPanelProps } from './components/DerivativesPanel';
-export { CiteMindGatingPanel, type CiteMindGatingPanelProps } from './components/CiteMindGatingPanel';
-export { CiteMindPublishGate, type CiteMindPublishGateProps } from './components/CiteMindPublishGate';
-export { LifecycleStepper, type LifecycleStatus, type LifecycleStepperProps } from './components/LifecycleStepper';
-export { CrossPillarHooksPanel, type CrossPillarHooksPanelProps } from './components/CrossPillarHooksPanel';
+export {
+  ContentFiltersPanel,
+  QuickFilterBar,
+} from './components/ContentFiltersPanel';
+export {
+  AuthorityDashboard,
+  AuthorityStrip,
+} from './components/AuthorityDashboard';
+export {
+  CiteMindStatusIndicator,
+  CiteMindGatePanel,
+} from './components/CiteMindStatusIndicator';
+export {
+  DerivativesPanel,
+  type DerivativesPanelProps,
+} from './components/DerivativesPanel';
+export {
+  CiteMindGatingPanel,
+  type CiteMindGatingPanelProps,
+} from './components/CiteMindGatingPanel';
+export {
+  CiteMindPublishGate,
+  type CiteMindPublishGateProps,
+} from './components/CiteMindPublishGate';
+export {
+  LifecycleStepper,
+  type LifecycleStatus,
+  type LifecycleStepperProps,
+} from './components/LifecycleStepper';
+export {
+  CrossPillarHooksPanel,
+  type CrossPillarHooksPanelProps,
+} from './components/CrossPillarHooksPanel';
 export {
   VersionHistoryPanel,
   type VersionHistoryPanelProps,

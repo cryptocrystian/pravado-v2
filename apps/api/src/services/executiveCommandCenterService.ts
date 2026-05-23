@@ -207,12 +207,13 @@ function mapNarrativeRecord(record: NarrativeRecord): ExecDashboardNarrative {
   };
 }
 
-
 // ============================================================================
 // Service Factory
 // ============================================================================
 
-export function createExecutiveCommandCenterService(config: ExecCommandCenterServiceConfig) {
+export function createExecutiveCommandCenterService(
+  config: ExecCommandCenterServiceConfig
+) {
   const {
     supabase,
     openaiApiKey,
@@ -248,7 +249,11 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
         meta: meta || {},
       });
     } catch (error) {
-      logger.warn('Failed to log dashboard action', { error, actionType, dashboardId });
+      logger.warn('Failed to log dashboard action', {
+        error,
+        actionType,
+        dashboardId,
+      });
     }
   }
 
@@ -283,17 +288,27 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
 
     const dashboard = mapDashboardRecord(data as DashboardRecord);
 
-    await logDashboardAction(orgId, dashboard.id, userId, 'created', 'Dashboard created', {
-      title: dashboard.title,
-      timeWindow: dashboard.timeWindow,
-      primaryFocus: dashboard.primaryFocus,
-    });
+    await logDashboardAction(
+      orgId,
+      dashboard.id,
+      userId,
+      'created',
+      'Dashboard created',
+      {
+        title: dashboard.title,
+        timeWindow: dashboard.timeWindow,
+        primaryFocus: dashboard.primaryFocus,
+      }
+    );
 
     logger.info('Dashboard created', { dashboardId: dashboard.id, orgId });
     return dashboard;
   }
 
-  async function getDashboard(orgId: string, dashboardId: string): Promise<GetExecDashboardResponse | null> {
+  async function getDashboard(
+    orgId: string,
+    dashboardId: string
+  ): Promise<GetExecDashboardResponse | null> {
     const { data: dashboardData, error: dashboardError } = await db
       .from('exec_dashboards')
       .select('*')
@@ -325,7 +340,9 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
       .order('sort_order', { ascending: true })
       .limit(10);
 
-    const topInsights = (insightsData || []).map((r) => mapInsightRecord(r as InsightRecord));
+    const topInsights = (insightsData || []).map((r) =>
+      mapInsightRecord(r as InsightRecord)
+    );
 
     // Fetch current narrative
     const { data: narrativeData } = await db
@@ -351,13 +368,21 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
     orgId: string,
     query: ListExecDashboardsQuery
   ): Promise<ListExecDashboardsResponse> {
-    const { includeArchived = false, primaryFocus, limit = 20, offset = 0 } = query;
+    const {
+      includeArchived = false,
+      primaryFocus,
+      limit = 20,
+      offset = 0,
+    } = query;
 
     let dbQuery = db
       .from('exec_dashboards')
-      .select('*, exec_dashboard_insights(count), exec_dashboard_kpis(count), exec_dashboard_narratives(count)', {
-        count: 'exact',
-      })
+      .select(
+        '*, exec_dashboard_insights(count), exec_dashboard_kpis(count), exec_dashboard_narratives(count)',
+        {
+          count: 'exact',
+        }
+      )
       .eq('org_id', orgId);
 
     if (!includeArchived) {
@@ -380,16 +405,20 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
       throw new Error(`Failed to list dashboards: ${error.message}`);
     }
 
-    const dashboards: ExecDashboardWithCounts[] = (data || []).map((record: DashboardRecord & {
-      exec_dashboard_insights: { count: number }[];
-      exec_dashboard_kpis: { count: number }[];
-      exec_dashboard_narratives: { count: number }[];
-    }) => ({
-      ...mapDashboardRecord(record),
-      insightsCount: record.exec_dashboard_insights?.[0]?.count || 0,
-      kpisCount: record.exec_dashboard_kpis?.[0]?.count || 0,
-      hasNarrative: (record.exec_dashboard_narratives?.[0]?.count || 0) > 0,
-    }));
+    const dashboards: ExecDashboardWithCounts[] = (data || []).map(
+      (
+        record: DashboardRecord & {
+          exec_dashboard_insights: { count: number }[];
+          exec_dashboard_kpis: { count: number }[];
+          exec_dashboard_narratives: { count: number }[];
+        }
+      ) => ({
+        ...mapDashboardRecord(record),
+        insightsCount: record.exec_dashboard_insights?.[0]?.count || 0,
+        kpisCount: record.exec_dashboard_kpis?.[0]?.count || 0,
+        hasNarrative: (record.exec_dashboard_narratives?.[0]?.count || 0) > 0,
+      })
+    );
 
     return {
       dashboards,
@@ -407,12 +436,16 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
     const updateData: Record<string, unknown> = {};
 
     if (input.title !== undefined) updateData.title = input.title;
-    if (input.description !== undefined) updateData.description = input.description;
-    if (input.timeWindow !== undefined) updateData.time_window = input.timeWindow;
-    if (input.primaryFocus !== undefined) updateData.primary_focus = input.primaryFocus;
+    if (input.description !== undefined)
+      updateData.description = input.description;
+    if (input.timeWindow !== undefined)
+      updateData.time_window = input.timeWindow;
+    if (input.primaryFocus !== undefined)
+      updateData.primary_focus = input.primaryFocus;
     if (input.filters !== undefined) updateData.filters = input.filters;
     if (input.isDefault !== undefined) updateData.is_default = input.isDefault;
-    if (input.isArchived !== undefined) updateData.is_archived = input.isArchived;
+    if (input.isArchived !== undefined)
+      updateData.is_archived = input.isArchived;
 
     if (Object.keys(updateData).length === 0) {
       const existing = await getDashboard(orgId, dashboardId);
@@ -436,9 +469,16 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
 
     const dashboard = mapDashboardRecord(data as DashboardRecord);
 
-    await logDashboardAction(orgId, dashboardId, userId, 'updated', 'Dashboard updated', {
-      changes: Object.keys(updateData),
-    });
+    await logDashboardAction(
+      orgId,
+      dashboardId,
+      userId,
+      'updated',
+      'Dashboard updated',
+      {
+        changes: Object.keys(updateData),
+      }
+    );
 
     return dashboard;
   }
@@ -457,7 +497,11 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
         .eq('id', dashboardId);
 
       if (error) {
-        logger.error('Failed to delete dashboard', { error, dashboardId, orgId });
+        logger.error('Failed to delete dashboard', {
+          error,
+          dashboardId,
+          orgId,
+        });
         return false;
       }
     } else {
@@ -468,12 +512,22 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
         .eq('id', dashboardId);
 
       if (error) {
-        logger.error('Failed to archive dashboard', { error, dashboardId, orgId });
+        logger.error('Failed to archive dashboard', {
+          error,
+          dashboardId,
+          orgId,
+        });
         return false;
       }
     }
 
-    await logDashboardAction(orgId, dashboardId, userId, 'deleted', hardDelete ? 'Dashboard deleted' : 'Dashboard archived');
+    await logDashboardAction(
+      orgId,
+      dashboardId,
+      userId,
+      'deleted',
+      hardDelete ? 'Dashboard deleted' : 'Dashboard archived'
+    );
 
     return true;
   }
@@ -505,9 +559,11 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
 
     if (sourceSystem) dbQuery = dbQuery.eq('source_system', sourceSystem);
     if (category) dbQuery = dbQuery.eq('category', category);
-    if (isTopInsight !== undefined) dbQuery = dbQuery.eq('is_top_insight', isTopInsight);
+    if (isTopInsight !== undefined)
+      dbQuery = dbQuery.eq('is_top_insight', isTopInsight);
     if (isRisk !== undefined) dbQuery = dbQuery.eq('is_risk', isRisk);
-    if (isOpportunity !== undefined) dbQuery = dbQuery.eq('is_opportunity', isOpportunity);
+    if (isOpportunity !== undefined)
+      dbQuery = dbQuery.eq('is_opportunity', isOpportunity);
 
     dbQuery = dbQuery
       .order('sort_order', { ascending: true })
@@ -521,7 +577,9 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
       throw new Error(`Failed to list insights: ${error.message}`);
     }
 
-    const insights = (data || []).map((r) => mapInsightRecord(r as InsightRecord));
+    const insights = (data || []).map((r) =>
+      mapInsightRecord(r as InsightRecord)
+    );
 
     return {
       insights,
@@ -581,7 +639,10 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
     return mapInsightRecord(data as InsightRecord);
   }
 
-  async function clearDashboardInsights(orgId: string, dashboardId: string): Promise<number> {
+  async function clearDashboardInsights(
+    orgId: string,
+    dashboardId: string
+  ): Promise<number> {
     const { error, count } = await db
       .from('exec_dashboard_insights')
       .delete({ count: 'exact' })
@@ -604,7 +665,13 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
     orgId: string,
     query: ListExecKpisQuery
   ): Promise<ListExecKpisResponse> {
-    const { dashboardId, category, sourceSystem, limit = 20, offset = 0 } = query;
+    const {
+      dashboardId,
+      category,
+      sourceSystem,
+      limit = 20,
+      offset = 0,
+    } = query;
 
     let dbQuery = db
       .from('exec_dashboard_kpis')
@@ -658,7 +725,11 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
         metric_label: input.metricLabel,
         metric_value: input.metricValue,
         metric_unit: input.metricUnit || null,
-        metric_trend: input.metricTrend || { direction: 'flat', change: 0, previousValue: null },
+        metric_trend: input.metricTrend || {
+          direction: 'flat',
+          change: 0,
+          previousValue: null,
+        },
         display_order: input.displayOrder || 0,
         category: input.category || null,
         source_system: input.sourceSystem || null,
@@ -675,7 +746,10 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
     return mapKpiRecord(data as KpiRecord);
   }
 
-  async function clearDashboardKpis(orgId: string, dashboardId: string): Promise<number> {
+  async function clearDashboardKpis(
+    orgId: string,
+    dashboardId: string
+  ): Promise<number> {
     const { error, count } = await db
       .from('exec_dashboard_kpis')
       .delete({ count: 'exact' })
@@ -713,7 +787,9 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
       throw new Error(`Failed to list narratives: ${error.message}`);
     }
 
-    const narratives = (data || []).map((r) => mapNarrativeRecord(r as NarrativeRecord));
+    const narratives = (data || []).map((r) =>
+      mapNarrativeRecord(r as NarrativeRecord)
+    );
 
     return {
       narratives,
@@ -732,15 +808,24 @@ export function createExecutiveCommandCenterService(config: ExecCommandCenterSer
 
     // Build the prompt for narrative generation
     const topRisksText = contextSnapshot.topRisks
-      .map((r, i) => `${i + 1}. ${r.title} (Severity: ${r.severity}, Source: ${EXEC_SOURCE_SYSTEM_LABELS[r.source]})`)
+      .map(
+        (r, i) =>
+          `${i + 1}. ${r.title} (Severity: ${r.severity}, Source: ${EXEC_SOURCE_SYSTEM_LABELS[r.source]})`
+      )
       .join('\n');
 
     const topOpportunitiesText = contextSnapshot.topOpportunities
-      .map((o, i) => `${i + 1}. ${o.title} (Impact: ${o.impact}, Source: ${EXEC_SOURCE_SYSTEM_LABELS[o.source]})`)
+      .map(
+        (o, i) =>
+          `${i + 1}. ${o.title} (Impact: ${o.impact}, Source: ${EXEC_SOURCE_SYSTEM_LABELS[o.source]})`
+      )
       .join('\n');
 
     const kpiText = contextSnapshot.kpiSnapshot
-      .map((k) => `- ${k.label}: ${k.value} (Trend: ${k.trend}${k.changePercent ? `, ${k.changePercent > 0 ? '+' : ''}${k.changePercent}%` : ''})`)
+      .map(
+        (k) =>
+          `- ${k.label}: ${k.value} (Trend: ${k.trend}${k.changePercent ? `, ${k.changePercent > 0 ? '+' : ''}${k.changePercent}%` : ''})`
+      )
       .join('\n');
 
     const prompt = `You are an executive communications advisor generating a concise weekly briefing for C-suite leadership.
@@ -774,25 +859,31 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
     if (openaiApiKey) {
       try {
         // Production: Use actual OpenAI API
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${openaiApiKey}`,
-          },
-          body: JSON.stringify({
-            model: narrativeModelName,
-            messages: [
-              { role: 'system', content: 'You are an executive communications advisor.' },
-              { role: 'user', content: prompt },
-            ],
-            max_tokens: 800,
-            temperature: 0.7,
-          }),
-        });
+        const response = await fetch(
+          'https://api.openai.com/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${openaiApiKey}`,
+            },
+            body: JSON.stringify({
+              model: narrativeModelName,
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are an executive communications advisor.',
+                },
+                { role: 'user', content: prompt },
+              ],
+              max_tokens: 800,
+              temperature: 0.7,
+            }),
+          }
+        );
 
         if (response.ok) {
-          const result = await response.json() as {
+          const result = (await response.json()) as {
             choices?: Array<{ message?: { content?: string } }>;
             usage?: { total_tokens?: number };
           };
@@ -800,9 +891,15 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
           tokensUsed = result.usage?.total_tokens || 0;
 
           // Parse sections from response
-          const risksMatch = narrativeText.match(/RISKS?:?\s*([\s\S]*?)(?=OPPORTUNITIES?:|THIS WEEK|$)/i);
-          const opportunitiesMatch = narrativeText.match(/OPPORTUNITIES?:?\s*([\s\S]*?)(?=THIS WEEK|STORYLINE|$)/i);
-          const storylineMatch = narrativeText.match(/(?:THIS WEEK'?S?|STORYLINE):?\s*([\s\S]*?)$/i);
+          const risksMatch = narrativeText.match(
+            /RISKS?:?\s*([\s\S]*?)(?=OPPORTUNITIES?:|THIS WEEK|$)/i
+          );
+          const opportunitiesMatch = narrativeText.match(
+            /OPPORTUNITIES?:?\s*([\s\S]*?)(?=THIS WEEK|STORYLINE|$)/i
+          );
+          const storylineMatch = narrativeText.match(
+            /(?:THIS WEEK'?S?|STORYLINE):?\s*([\s\S]*?)$/i
+          );
 
           risksSection = risksMatch?.[1]?.trim() || '';
           opportunitiesSection = opportunitiesMatch?.[1]?.trim() || '';
@@ -815,13 +912,21 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
 
     // Fallback if no LLM or LLM failed
     if (!narrativeText) {
-      risksSection = contextSnapshot.topRisks.length > 0
-        ? `Key risks include ${contextSnapshot.topRisks.slice(0, 3).map((r) => r.title.toLowerCase()).join(', ')}. These require immediate attention from leadership.`
-        : 'No significant risks identified during this period.';
+      risksSection =
+        contextSnapshot.topRisks.length > 0
+          ? `Key risks include ${contextSnapshot.topRisks
+              .slice(0, 3)
+              .map((r) => r.title.toLowerCase())
+              .join(', ')}. These require immediate attention from leadership.`
+          : 'No significant risks identified during this period.';
 
-      opportunitiesSection = contextSnapshot.topOpportunities.length > 0
-        ? `Notable opportunities include ${contextSnapshot.topOpportunities.slice(0, 3).map((o) => o.title.toLowerCase()).join(', ')}. These present potential for growth.`
-        : 'Continue monitoring for emerging opportunities.';
+      opportunitiesSection =
+        contextSnapshot.topOpportunities.length > 0
+          ? `Notable opportunities include ${contextSnapshot.topOpportunities
+              .slice(0, 3)
+              .map((o) => o.title.toLowerCase())
+              .join(', ')}. These present potential for growth.`
+          : 'Continue monitoring for emerging opportunities.';
 
       storylineSection = `The overall risk posture remains ${contextSnapshot.kpiSnapshot.find((k) => k.key === 'overall_risk_index')?.value || 'moderate'}. Focus areas for the coming week should include addressing top risks while positioning for identified opportunities.`;
 
@@ -858,11 +963,18 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
 
     const narrative = mapNarrativeRecord(data as NarrativeRecord);
 
-    await logDashboardAction(orgId, dashboardId, userId, 'narrative_generated', 'Narrative generated', {
-      tokensUsed,
-      durationMs,
-      modelName: narrative.modelName,
-    });
+    await logDashboardAction(
+      orgId,
+      dashboardId,
+      userId,
+      'narrative_generated',
+      'Narrative generated',
+      {
+        tokensUsed,
+        durationMs,
+        modelName: narrative.modelName,
+      }
+    );
 
     return {
       narrative,
@@ -968,7 +1080,10 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
             displayOrder: displayOrder++,
           });
 
-          if (riskSnapshot.risk_level === 'critical' || riskSnapshot.risk_level === 'high') {
+          if (
+            riskSnapshot.risk_level === 'critical' ||
+            riskSnapshot.risk_level === 'high'
+          ) {
             insights.push({
               sourceSystem: 'risk_radar',
               insightType: 'risk_level_alert',
@@ -1004,14 +1119,20 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
           metricLabel: 'Active Crises',
           metricValue: activeCrises,
           metricUnit: 'count',
-          metricTrend: { direction: activeCrises > 0 ? 'up' : 'flat', change: 0, previousValue: null },
+          metricTrend: {
+            direction: activeCrises > 0 ? 'up' : 'flat',
+            change: 0,
+            previousValue: null,
+          },
           category: 'risk',
           sourceSystem: 'crisis',
           displayOrder: displayOrder++,
         });
 
         if (crisisData && crisisData.length > 0) {
-          const criticalCrises = crisisData.filter((c: { severity: string }) => c.severity === 'critical');
+          const criticalCrises = crisisData.filter(
+            (c: { severity: string }) => c.severity === 'critical'
+          );
           if (criticalCrises.length > 0) {
             insights.push({
               sourceSystem: 'crisis',
@@ -1246,7 +1367,8 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
             severityOrImpact: Math.min(activeCampaigns * 10, 100),
             category: 'outreach',
             title: `${activeCampaigns} Active Outreach Campaign${activeCampaigns > 1 ? 's' : ''}`,
-            description: 'PR outreach campaigns are in progress, driving media engagement.',
+            description:
+              'PR outreach campaigns are in progress, driving media engagement.',
             isTopInsight: false,
             isRisk: false,
             isOpportunity: true,
@@ -1299,7 +1421,11 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
     }
 
     // Aggregate upstream data
-    const { kpis, insights } = await aggregateUpstreamData(orgId, timeWindow, primaryFocus);
+    const { kpis, insights } = await aggregateUpstreamData(
+      orgId,
+      timeWindow,
+      primaryFocus
+    );
 
     // Create KPIs
     let kpisCreated = 0;
@@ -1319,7 +1445,10 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
         await createInsight(orgId, dashboardId, insight);
         insightsCreated++;
       } catch (error) {
-        logger.warn('Failed to create insight', { error, insight: insight.title });
+        logger.warn('Failed to create insight', {
+          error,
+          insight: insight.title,
+        });
       }
     }
 
@@ -1354,9 +1483,11 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
         changePercent: k.metricTrend.changePercent,
       }));
 
-      const sourceSystemStats: Record<ExecInsightSourceSystem, number> = {} as Record<ExecInsightSourceSystem, number>;
+      const sourceSystemStats: Record<ExecInsightSourceSystem, number> =
+        {} as Record<ExecInsightSourceSystem, number>;
       for (const insight of insights) {
-        sourceSystemStats[insight.sourceSystem] = (sourceSystemStats[insight.sourceSystem] || 0) + 1;
+        sourceSystemStats[insight.sourceSystem] =
+          (sourceSystemStats[insight.sourceSystem] || 0) + 1;
       }
 
       const context: ExecNarrativeContext = {
@@ -1388,7 +1519,8 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
     };
 
     for (const insight of insights) {
-      summary.sourceBreakdown[insight.sourceSystem] = (summary.sourceBreakdown[insight.sourceSystem] || 0) + 1;
+      summary.sourceBreakdown[insight.sourceSystem] =
+        (summary.sourceBreakdown[insight.sourceSystem] || 0) + 1;
     }
 
     // Extract key scores from KPIs
@@ -1415,19 +1547,31 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
 
     const durationMs = Date.now() - startTime;
 
-    await logDashboardAction(orgId, dashboardId, userId, 'refreshed', 'Dashboard refreshed', {
-      kpisCreated,
-      insightsCreated,
-      narrativeGenerated,
-      durationMs,
-      timeWindow,
-      primaryFocus,
-    });
+    await logDashboardAction(
+      orgId,
+      dashboardId,
+      userId,
+      'refreshed',
+      'Dashboard refreshed',
+      {
+        kpisCreated,
+        insightsCreated,
+        narrativeGenerated,
+        durationMs,
+        timeWindow,
+        primaryFocus,
+      }
+    );
 
     // Get updated dashboard
     const updatedDashboard = await getDashboard(orgId, dashboardId);
 
-    logger.info('Dashboard refreshed', { dashboardId, kpisCreated, insightsCreated, durationMs });
+    logger.info('Dashboard refreshed', {
+      dashboardId,
+      kpisCreated,
+      insightsCreated,
+      durationMs,
+    });
 
     return {
       dashboard: updatedDashboard!.dashboard,
@@ -1472,4 +1616,6 @@ Keep the tone professional, direct, and action-oriented. Focus on what matters m
   };
 }
 
-export type ExecutiveCommandCenterService = ReturnType<typeof createExecutiveCommandCenterService>;
+export type ExecutiveCommandCenterService = ReturnType<
+  typeof createExecutiveCommandCenterService
+>;

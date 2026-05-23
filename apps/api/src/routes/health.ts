@@ -7,10 +7,10 @@
  * - /info - Application info for monitoring dashboards
  */
 
-import type { HealthCheckResponse } from '@pravado/types';
 import { FLAGS } from '@pravado/feature-flags';
-import type { FastifyInstance } from 'fastify';
+import type { HealthCheckResponse } from '@pravado/types';
 import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
 
 import { config, APP_VERSION, BUILD_INFO } from '../config';
 
@@ -37,7 +37,10 @@ function getSafeFlags(): Record<string, boolean> {
 }
 
 export async function healthRoutes(server: FastifyInstance) {
-  const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   /**
    * Basic health check with dependency checks (S-INT-10 upgrade)
@@ -48,7 +51,10 @@ export async function healthRoutes(server: FastifyInstance) {
 
     // Database check — query a known table
     try {
-      const { error: dbErr } = await supabase.from('orgs').select('id').limit(1);
+      const { error: dbErr } = await supabase
+        .from('orgs')
+        .select('id')
+        .limit(1);
       checks.database = dbErr ? 'degraded' : 'ok';
     } catch {
       checks.database = 'failed';
@@ -80,7 +86,9 @@ export async function healthRoutes(server: FastifyInstance) {
       checks.redis = 'not_configured';
     }
 
-    const allOk = Object.values(checks).every((v) => v === 'ok' || v === 'not_configured');
+    const allOk = Object.values(checks).every(
+      (v) => v === 'ok' || v === 'not_configured'
+    );
 
     if (!allOk) {
       reply.code(503);

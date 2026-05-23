@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { TemplateCard } from './TemplateCard';
+import { useState } from 'react';
+
 import { mockTemplates } from './content-mock-data';
 import type { ContentTemplate, TemplateTag } from './content-mock-data';
+import { TemplateCard } from './TemplateCard';
 
 const filterPills: Array<{ label: string; value: TemplateTag | 'all' }> = [
   { label: 'All', value: 'all' },

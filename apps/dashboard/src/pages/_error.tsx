@@ -12,7 +12,9 @@ function Error({ statusCode }: { statusCode?: number }) {
           ? 'Page not found'
           : 'An error occurred on the server'}
       </p>
-      <a href="/app/command-center" style={{ color: '#0070f3' }}>Go to Command Center</a>
+      <a href="/app/command-center" style={{ color: '#0070f3' }}>
+        Go to Command Center
+      </a>
     </div>
   );
 }

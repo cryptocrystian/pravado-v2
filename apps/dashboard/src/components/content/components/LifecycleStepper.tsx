@@ -70,8 +70,18 @@ const STEPS: StepConfig[] = [
       autopilot: 'N/A (Copilot max)',
     },
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+        />
       </svg>
     ),
   },
@@ -86,9 +96,24 @@ const STEPS: StepConfig[] = [
       autopilot: 'N/A (requires human approval)',
     },
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
       </svg>
     ),
   },
@@ -103,8 +128,18 @@ const STEPS: StepConfig[] = [
       autopilot: 'N/A (publish is manual only)',
     },
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
   },
@@ -119,8 +154,18 @@ const STEPS: StepConfig[] = [
       autopilot: 'N/A (manual publish only)',
     },
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
   },
@@ -158,7 +203,13 @@ function getTransitionLabel(current: LifecycleStatus): string {
 // MODE BADGE COMPONENT (per AUTOMATION_MODES_UX)
 // ============================================
 
-function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: boolean }) {
+function ModeBadge({
+  mode,
+  compact = false,
+}: {
+  mode: AutomationMode;
+  compact?: boolean;
+}) {
   const config = modeTokens[mode];
   return (
     <span
@@ -166,18 +217,38 @@ function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: 
       title={config.description}
     >
       {mode === 'manual' && (
-        <svg className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M9 3a1 1 0 012 0v5.5a.5.5 0 001 0V4a1 1 0 112 0v4.5a.5.5 0 001 0V6a1 1 0 112 0v5a7 7 0 11-14 0V9a1 1 0 012 0v.5a.5.5 0 001 0V4a1 1 0 012 0v5.5a.5.5 0 001 0V3z" clipRule="evenodd" />
+        <svg
+          className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9 3a1 1 0 012 0v5.5a.5.5 0 001 0V4a1 1 0 112 0v4.5a.5.5 0 001 0V6a1 1 0 112 0v5a7 7 0 11-14 0V9a1 1 0 012 0v.5a.5.5 0 001 0V4a1 1 0 012 0v5.5a.5.5 0 001 0V3z"
+            clipRule="evenodd"
+          />
         </svg>
       )}
       {mode === 'copilot' && (
-        <svg className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} fill="currentColor" viewBox="0 0 20 20">
+        <svg
+          className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
           <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
         </svg>
       )}
       {mode === 'autopilot' && (
-        <svg className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+        <svg
+          className={compact ? 'w-2.5 h-2.5' : 'w-3 h-3'}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fillRule="evenodd"
+            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+            clipRule="evenodd"
+          />
         </svg>
       )}
       {config.label}
@@ -189,7 +260,13 @@ function ModeBadge({ mode, compact = false }: { mode: AutomationMode; compact?: 
 // MODE CEILING INDICATOR
 // ============================================
 
-function ModeCeilingIndicator({ ceiling, currentMode }: { ceiling: AutomationMode; currentMode: AutomationMode }) {
+function ModeCeilingIndicator({
+  ceiling,
+  currentMode,
+}: {
+  ceiling: AutomationMode;
+  currentMode: AutomationMode;
+}) {
   const modeOrder: AutomationMode[] = ['manual', 'copilot', 'autopilot'];
   const ceilingIndex = modeOrder.indexOf(ceiling);
   const currentIndex = modeOrder.indexOf(currentMode);
@@ -199,7 +276,11 @@ function ModeCeilingIndicator({ ceiling, currentMode }: { ceiling: AutomationMod
     return (
       <span className="text-xs text-semantic-warning flex items-center gap-1">
         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          <path
+            fillRule="evenodd"
+            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+            clipRule="evenodd"
+          />
         </svg>
         Mode ceiling: {modeTokens[ceiling].label}
       </span>
@@ -234,8 +315,11 @@ export function LifecycleStepper({
   // Check mode ceiling per AUTOMATE_EXECUTION_MODEL
   const modeOrder: AutomationMode[] = ['manual', 'copilot', 'autopilot'];
   const nextStepCeiling = nextStep?.modeCeiling || 'manual';
-  const isAboveModeCeiling = modeOrder.indexOf(automationMode) > modeOrder.indexOf(nextStepCeiling);
-  const effectiveMode: AutomationMode = isAboveModeCeiling ? nextStepCeiling : automationMode;
+  const isAboveModeCeiling =
+    modeOrder.indexOf(automationMode) > modeOrder.indexOf(nextStepCeiling);
+  const effectiveMode: AutomationMode = isAboveModeCeiling
+    ? nextStepCeiling
+    : automationMode;
 
   const canTransition = !isBlocked && !needsAck && nextStatus !== null;
 
@@ -268,7 +352,9 @@ export function LifecycleStepper({
       {/* Steps */}
       <div className="relative">
         {/* Progress line */}
-        <div className={`absolute top-4 left-4 right-4 h-0.5 bg-slate-4 ${compact ? 'top-3' : ''}`}>
+        <div
+          className={`absolute top-4 left-4 right-4 h-0.5 bg-slate-4 ${compact ? 'top-3' : ''}`}
+        >
           <div
             className="h-full bg-brand-iris transition-all duration-500"
             style={{ width: `${(currentIndex / (STEPS.length - 1)) * 100}%` }}
@@ -298,18 +384,30 @@ export function LifecycleStepper({
                   `}
                 >
                   {isCompleted ? (
-                    <svg className={compact ? 'w-3 h-3' : 'w-4 h-4'} fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg
+                      className={compact ? 'w-3 h-3' : 'w-4 h-4'}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   ) : (
-                    <span className={compact ? 'scale-75' : ''}>{step.icon}</span>
+                    <span className={compact ? 'scale-75' : ''}>
+                      {step.icon}
+                    </span>
                   )}
                 </div>
 
                 {/* Label */}
                 {!compact && (
                   <div className="text-center">
-                    <p className={`text-xs font-medium ${isCurrent ? 'text-brand-iris' : isFuture ? text.hint : text.primary}`}>
+                    <p
+                      className={`text-xs font-medium ${isCurrent ? 'text-brand-iris' : isFuture ? text.hint : text.primary}`}
+                    >
                       {step.label}
                     </p>
                     <p className={`text-xs ${text.hint} hidden sm:block`}>
@@ -329,7 +427,10 @@ export function LifecycleStepper({
           {/* Mode ceiling warning if autopilot but publish requires manual */}
           {isAboveModeCeiling && nextStep && (
             <div className="mb-2 p-2 bg-semantic-warning/5 border border-semantic-warning/20 rounded-lg">
-              <ModeCeilingIndicator ceiling={nextStep.modeCeiling} currentMode={automationMode} />
+              <ModeCeilingIndicator
+                ceiling={nextStep.modeCeiling}
+                currentMode={automationMode}
+              />
             </div>
           )}
 
@@ -344,9 +445,24 @@ export function LifecycleStepper({
           >
             {isTransitioning ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
                 Processing...
               </span>
@@ -374,7 +490,9 @@ export function LifecycleStepper({
 
       {/* Published state */}
       {currentStatus === 'published' && (
-        <div className={`${compact ? 'mt-3' : 'mt-4'} p-3 bg-semantic-success/10 border ${border.default} rounded-lg`}>
+        <div
+          className={`${compact ? 'mt-3' : 'mt-4'} p-3 bg-semantic-success/10 border ${border.default} rounded-lg`}
+        >
           <p className="text-xs text-semantic-success font-medium text-center">
             Content is live and published
           </p>

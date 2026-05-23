@@ -114,7 +114,16 @@ export interface ListOrgsData {
 export type ListOrgsResponse = ApiResponse<ListOrgsData>;
 
 export interface ListMembersData {
-  members: Array<OrgMember & { user: { id: UUID; fullName: string | null; avatarUrl: string | null; email: string } }>;
+  members: Array<
+    OrgMember & {
+      user: {
+        id: UUID;
+        fullName: string | null;
+        avatarUrl: string | null;
+        email: string;
+      };
+    }
+  >;
   invites: Array<OrgInvite & { createdByUser: { fullName: string | null } }>;
 }
 

@@ -12,14 +12,28 @@ interface AuditSeverityBadgeProps {
   className?: string;
 }
 
-const severityStyles: Record<AuditSeverity, { bg: string; text: string; dot: string }> = {
+const severityStyles: Record<
+  AuditSeverity,
+  { bg: string; text: string; dot: string }
+> = {
   info: { bg: 'bg-blue-100', text: 'text-blue-800', dot: 'bg-blue-400' },
-  warning: { bg: 'bg-yellow-100', text: 'text-yellow-800', dot: 'bg-yellow-400' },
+  warning: {
+    bg: 'bg-yellow-100',
+    text: 'text-yellow-800',
+    dot: 'bg-yellow-400',
+  },
   error: { bg: 'bg-red-100', text: 'text-red-800', dot: 'bg-red-400' },
-  critical: { bg: 'bg-purple-100', text: 'text-purple-800', dot: 'bg-purple-400' },
+  critical: {
+    bg: 'bg-purple-100',
+    text: 'text-purple-800',
+    dot: 'bg-purple-400',
+  },
 };
 
-export function AuditSeverityBadge({ severity, className = '' }: AuditSeverityBadgeProps) {
+export function AuditSeverityBadge({
+  severity,
+  className = '',
+}: AuditSeverityBadgeProps) {
   const style = severityStyles[severity] || severityStyles.info;
 
   return (

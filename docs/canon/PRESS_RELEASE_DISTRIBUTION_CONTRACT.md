@@ -11,10 +11,10 @@
 
 Every press release in Pravado has two distribution paths. They are not mutually exclusive — both can be used for the same release.
 
-| Path | Name | Purpose | Mode Ceiling | Cost Model |
-|------|------|---------|--------------|------------|
-| **Path 1** | CiteMind AEO Distribution | AI model ingestion, citation building, long-term authority | Copilot | Included in all plans |
-| **Path 2** | Legacy Wire Distribution | Traditional reach, compliance, SEC requirements, broad syndication | Manual — permanent, no exceptions | Credits/add-on per submission |
+| Path       | Name                      | Purpose                                                            | Mode Ceiling                      | Cost Model                    |
+| ---------- | ------------------------- | ------------------------------------------------------------------ | --------------------------------- | ----------------------------- |
+| **Path 1** | CiteMind AEO Distribution | AI model ingestion, citation building, long-term authority         | Copilot                           | Included in all plans         |
+| **Path 2** | Legacy Wire Distribution  | Traditional reach, compliance, SEC requirements, broad syndication | Manual — permanent, no exceptions | Credits/add-on per submission |
 
 **Path 1 is always the recommended primary path.** Path 2 is additive — used when compliance, investor relations, or broad traditional reach requirements demand it.
 
@@ -70,17 +70,18 @@ Pravado Newsroom publishing has zero marginal cost. All plans include unlimited 
 Wire distribution operates on a **dual-mode architecture**: manual fulfillment at V1 with an API stub layer that enables transparent API integration when a suitable partner is identified. The manual fallback remains available permanently — it is never removed even after API integration is live.
 
 This design ensures:
+
 - V1 ships with full wire distribution capability immediately
 - API migration requires zero changes to the user-facing flow or data model
 - No single-point-of-failure dependency on an API provider
 
 ### 3.2 Supported Wire Services
 
-| Wire Service | Primary Use Case | V1 Status | API Stub |
-|--------------|-----------------|-----------|----------|
-| **PR Newswire** | SEC compliance, broad US distribution, financial news | ✅ Available | Stub built |
-| **BusinessWire** | Financial news, regulatory, investor relations | ✅ Available | Stub built |
-| **GlobeNewswire** | International distribution | Roadmap (V2) | Roadmap |
+| Wire Service      | Primary Use Case                                      | V1 Status    | API Stub   |
+| ----------------- | ----------------------------------------------------- | ------------ | ---------- |
+| **PR Newswire**   | SEC compliance, broad US distribution, financial news | ✅ Available | Stub built |
+| **BusinessWire**  | Financial news, regulatory, investor relations        | ✅ Available | Stub built |
+| **GlobeNewswire** | International distribution                            | Roadmap (V2) | Roadmap    |
 
 ### 3.3 V1 Manual Fulfillment Workflow
 
@@ -198,12 +199,12 @@ wire_distribution_submissions (
 
 A computed view for user-facing status display:
 
-| Status | Display | User Message |
-|--------|---------|--------------|
-| `pending` | ⏳ Queued | "Submission received. Distribution in progress (within 4 business hours)." |
-| `submitted` | 🔄 Processing | "Submitted to wire service. Awaiting confirmation." |
-| `distributed` | ✅ Distributed | "Distributed via {wire_service}. Tracking ID: {id}" |
-| `failed` | ❌ Failed | "Distribution failed. {failure_reason}. Credits refunded." |
+| Status        | Display        | User Message                                                               |
+| ------------- | -------------- | -------------------------------------------------------------------------- |
+| `pending`     | ⏳ Queued      | "Submission received. Distribution in progress (within 4 business hours)." |
+| `submitted`   | 🔄 Processing  | "Submitted to wire service. Awaiting confirmation."                        |
+| `distributed` | ✅ Distributed | "Distributed via {wire_service}. Tracking ID: {id}"                        |
+| `failed`      | ❌ Failed      | "Distribution failed. {failure_reason}. Credits refunded."                 |
 
 ---
 
@@ -213,12 +214,12 @@ A computed view for user-facing status display:
 
 Wire distribution uses a credits system across all tiers. Credits are consumed per wire submission. AEO distribution (Pravado Newsroom) is always free and does not consume credits.
 
-| Tier | Wire Credits Included | Additional Credits |
-|------|----------------------|-------------------|
-| Starter | 0 included | Add-on purchase only |
-| Pro | 1 per month | Additional credits purchasable |
-| Business | 3 per month | Additional credits purchasable, bulk discount |
-| Enterprise | 5 per month default (custom) | Bundled credits negotiated in contract |
+| Tier       | Wire Credits Included        | Additional Credits                            |
+| ---------- | ---------------------------- | --------------------------------------------- |
+| Starter    | 0 included                   | Add-on purchase only                          |
+| Pro        | 1 per month                  | Additional credits purchasable                |
+| Business   | 3 per month                  | Additional credits purchasable, bulk discount |
+| Enterprise | 5 per month default (custom) | Bundled credits negotiated in contract        |
 
 **Credit rollover:** Monthly credits do not roll over. Purchased additional credits expire after 12 months.
 
@@ -226,12 +227,12 @@ Wire distribution uses a credits system across all tiers. Credits are consumed p
 
 ### 5.2 Credit Add-On Pricing
 
-| Bundle | Credits | Price | Per-Credit Cost |
-|--------|---------|-------|-----------------|
-| Single | 1 | $35 | $35.00 |
-| Pack | 5 | $150 | $30.00 |
-| Bundle | 12 | $300 | $25.00 |
-| Enterprise block | 25+ | Custom | Negotiated |
+| Bundle           | Credits | Price  | Per-Credit Cost |
+| ---------------- | ------- | ------ | --------------- |
+| Single           | 1       | $35    | $35.00          |
+| Pack             | 5       | $150   | $30.00          |
+| Bundle           | 12      | $300   | $25.00          |
+| Enterprise block | 25+     | Custom | Negotiated      |
 
 Pricing is designed to recover the $30/release fulfillment cost while maintaining a sustainable margin. Bulk discounts incentivize Enterprise commitment.
 
@@ -264,11 +265,11 @@ Every wire submission package contains the following, regardless of whether deli
 ```typescript
 interface SubmissionPackage {
   // Release content
-  headline: string;           // max 170 characters
-  subheadline?: string;        // max 255 characters
-  dateline: string;           // e.g., "AUSTIN, TX, February 26, 2026"
-  body_html: string;          // full release HTML
-  body_plain: string;         // plain text version
+  headline: string; // max 170 characters
+  subheadline?: string; // max 255 characters
+  dateline: string; // e.g., "AUSTIN, TX, February 26, 2026"
+  body_html: string; // full release HTML
+  body_plain: string; // plain text version
 
   // Contact block (required by wire services)
   contact_name: string;
@@ -279,13 +280,13 @@ interface SubmissionPackage {
   contact_website: string;
 
   // Boilerplate
-  about_company: string;       // "About [Company]" section
+  about_company: string; // "About [Company]" section
 
   // Distribution metadata
   wire_service: 'pr_newswire' | 'businesswire';
-  industry_categories: string[];  // wire service taxonomy categories
+  industry_categories: string[]; // wire service taxonomy categories
   geography: 'national' | 'regional' | 'state';
-  geography_detail?: string;      // e.g., "Texas" for state distribution
+  geography_detail?: string; // e.g., "Texas" for state distribution
 
   // Pravado metadata
   org_id: string;
@@ -299,16 +300,16 @@ interface SubmissionPackage {
 
 ## 7. Distribution Decision Matrix
 
-| Content Type | Recommended Path(s) | Rationale |
-|--------------|---------------------|-----------|
-| General company news | AEO only | AI visibility priority; wire not justified for cost |
-| Product launch | AEO + Wire (optional) | Broad reach for major launches; AEO always first |
-| Funding announcement | AEO + Wire | Investor and press community expectation |
-| SEC / regulatory filing | Wire only | Compliance requirement; AEO supplementary |
-| Thought leadership | AEO only | Long-term authority; wire not designed for this |
-| Crisis response | Wire + AEO | Immediate broad reach + permanent record |
-| Partnership announcement | AEO + Wire (optional) | Depends on partner PR requirements |
-| Award recognition | AEO only | Wire cost not justified; AEO sufficient |
+| Content Type             | Recommended Path(s)   | Rationale                                           |
+| ------------------------ | --------------------- | --------------------------------------------------- |
+| General company news     | AEO only              | AI visibility priority; wire not justified for cost |
+| Product launch           | AEO + Wire (optional) | Broad reach for major launches; AEO always first    |
+| Funding announcement     | AEO + Wire            | Investor and press community expectation            |
+| SEC / regulatory filing  | Wire only             | Compliance requirement; AEO supplementary           |
+| Thought leadership       | AEO only              | Long-term authority; wire not designed for this     |
+| Crisis response          | Wire + AEO            | Immediate broad reach + permanent record            |
+| Partnership announcement | AEO + Wire (optional) | Depends on partner PR requirements                  |
+| Award recognition        | AEO only              | Wire cost not justified; AEO sufficient             |
 
 ---
 
@@ -316,13 +317,14 @@ interface SubmissionPackage {
 
 Wire distribution mode constraints are **permanent and non-negotiable**:
 
-| Mode | Wire Distribution Permitted |
-|------|---------------------------|
-| Autopilot | ❌ Never |
-| Copilot | ❌ Never |
-| Manual | ✅ Only mode permitted |
+| Mode      | Wire Distribution Permitted |
+| --------- | --------------------------- |
+| Autopilot | ❌ Never                    |
+| Copilot   | ❌ Never                    |
+| Manual    | ✅ Only mode permitted      |
 
 This ceiling applies to:
+
 - All plan tiers including Enterprise
 - All trust levels including Veteran
 - All confidence scores including 1.0
@@ -334,14 +336,14 @@ Rationale: Wire distribution is an external, costly, irreversible action. Human 
 
 ## 9. SLA & Operations
 
-| Metric | Commitment |
-|--------|-----------|
-| Submission processing SLA | Within 4 business hours of package receipt |
-| Business hours definition | Monday–Friday 8am–6pm US Central |
-| Weekend/holiday submissions | Queued, processed next business day |
-| Failure notification | Within 30 minutes of failure detection |
-| Credit refund on failure | Automatic, within 1 hour |
-| Tracking ID delivery | Within 30 minutes of wire service confirmation |
+| Metric                      | Commitment                                     |
+| --------------------------- | ---------------------------------------------- |
+| Submission processing SLA   | Within 4 business hours of package receipt     |
+| Business hours definition   | Monday–Friday 8am–6pm US Central               |
+| Weekend/holiday submissions | Queued, processed next business day            |
+| Failure notification        | Within 30 minutes of failure detection         |
+| Credit refund on failure    | Automatic, within 1 hour                       |
+| Tracking ID delivery        | Within 30 minutes of wire service confirmation |
 
 ---
 
@@ -370,14 +372,15 @@ This document is the authoritative specification for press release distribution.
 
 ### 11.2 Dependent Specifications
 
-| Document | Relationship |
-|----------|-------------|
-| `PR_PILLAR_MODEL.md` | Parent — distribution model references this doc |
-| `PR_WORK_SURFACE_CONTRACT.md` | Release Editor and distribution UI contract |
+| Document                      | Relationship                                    |
+| ----------------------------- | ----------------------------------------------- |
+| `PR_PILLAR_MODEL.md`          | Parent — distribution model references this doc |
+| `PR_WORK_SURFACE_CONTRACT.md` | Release Editor and distribution UI contract     |
 
 ### 11.3 Change Control
 
 Modifications require:
+
 1. Product review sign-off
 2. Finance review for any billing model changes
 3. Legal review for compliance implications (SEC, regulatory)
@@ -387,6 +390,6 @@ Modifications require:
 
 ## 12. Revision History
 
-| Date | Version | Change |
-|------|---------|--------|
-| 2026-02-26 | 1.0 | Initial specification — dual distribution model, manual fulfillment workflow, API stub architecture, credit billing model, submission package specification, mode constraints |
+| Date       | Version | Change                                                                                                                                                                        |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-02-26 | 1.0     | Initial specification — dual distribution model, manual fulfillment workflow, API stub architecture, credit billing model, submission package specification, mode constraints |

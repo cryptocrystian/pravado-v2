@@ -38,7 +38,9 @@ test.describe('Executive Board Reports', () => {
       await expect(page.locator('h1')).toContainText('Executive Board Reports');
 
       // Check for create button
-      await expect(page.getByRole('button', { name: /create report/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /create report/i })
+      ).toBeVisible();
     });
 
     test('should display statistics cards', async ({ page }) => {
@@ -57,17 +59,22 @@ test.describe('Executive Board Reports', () => {
       await page.waitForLoadState('networkidle');
 
       // Check for empty state or report cards
-      const hasReports = await page.locator('[data-testid="report-card"]').count() > 0;
+      const hasReports =
+        (await page.locator('[data-testid="report-card"]').count()) > 0;
 
       if (!hasReports) {
         await expect(page.getByText('No reports created yet')).toBeVisible();
-        await expect(page.getByRole('button', { name: /create first report/i })).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: /create first report/i })
+        ).toBeVisible();
       }
     });
   });
 
   test.describe('Report Creation', () => {
-    test('should open create dialog when clicking create button', async ({ page }) => {
+    test('should open create dialog when clicking create button', async ({
+      page,
+    }) => {
       await page.goto(BOARD_REPORTS_URL);
 
       await page.getByRole('button', { name: /create report/i }).click();
@@ -96,7 +103,9 @@ test.describe('Executive Board Reports', () => {
       await page.getByLabel('Report Title').fill('');
 
       // Create button should be disabled without required fields
-      const createButton = page.getByRole('button', { name: /create report/i }).last();
+      const createButton = page
+        .getByRole('button', { name: /create report/i })
+        .last();
       await expect(createButton).toBeDisabled();
     });
 
@@ -106,10 +115,15 @@ test.describe('Executive Board Reports', () => {
 
       // Fill in form
       await page.getByLabel('Report Title').fill('E2E Test Report');
-      await page.getByLabel('Description').fill('Test report created via E2E tests');
+      await page
+        .getByLabel('Description')
+        .fill('Test report created via E2E tests');
 
       // Submit form
-      await page.getByRole('button', { name: /create report/i }).last().click();
+      await page
+        .getByRole('button', { name: /create report/i })
+        .last()
+        .click();
 
       // Wait for dialog to close
       await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 5000 });
@@ -125,7 +139,10 @@ test.describe('Executive Board Reports', () => {
       await page.goto(BOARD_REPORTS_URL);
       await page.getByRole('button', { name: /create report/i }).click();
       await page.getByLabel('Report Title').fill('Detail View Test Report');
-      await page.getByRole('button', { name: /create report/i }).last().click();
+      await page
+        .getByRole('button', { name: /create report/i })
+        .last()
+        .click();
       await page.waitForTimeout(1000);
     });
 
@@ -136,11 +153,17 @@ test.describe('Executive Board Reports', () => {
       await page.getByText('Detail View Test Report').click();
 
       // Check header elements
-      await expect(page.getByRole('heading', { name: 'Detail View Test Report' })).toBeVisible();
-      await expect(page.getByRole('button', { name: /generate/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Detail View Test Report' })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /generate/i })
+      ).toBeVisible();
     });
 
-    test('should have tabbed content for sections, audience, and activity', async ({ page }) => {
+    test('should have tabbed content for sections, audience, and activity', async ({
+      page,
+    }) => {
       await page.goto(BOARD_REPORTS_URL);
       await page.getByText('Detail View Test Report').click();
 
@@ -171,7 +194,10 @@ test.describe('Executive Board Reports', () => {
       // Create and select a report
       await page.getByRole('button', { name: /create report/i }).click();
       await page.getByLabel('Report Title').fill('Sections Test Report');
-      await page.getByRole('button', { name: /create report/i }).last().click();
+      await page
+        .getByRole('button', { name: /create report/i })
+        .last()
+        .click();
       await page.waitForTimeout(1000);
 
       await page.getByText('Sections Test Report').click();
@@ -189,8 +215,12 @@ test.describe('Executive Board Reports', () => {
         await reportCard.click();
 
         // Check for expand/collapse buttons
-        await expect(page.getByRole('button', { name: /expand all/i })).toBeVisible();
-        await expect(page.getByRole('button', { name: /collapse all/i })).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: /expand all/i })
+        ).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: /collapse all/i })
+        ).toBeVisible();
       }
     });
   });
@@ -202,7 +232,10 @@ test.describe('Executive Board Reports', () => {
       // Create and select a report
       await page.getByRole('button', { name: /create report/i }).click();
       await page.getByLabel('Report Title').fill('Audience Test Report');
-      await page.getByRole('button', { name: /create report/i }).last().click();
+      await page
+        .getByRole('button', { name: /create report/i })
+        .last()
+        .click();
       await page.waitForTimeout(1000);
 
       await page.getByText('Audience Test Report').click();
@@ -232,10 +265,15 @@ test.describe('Executive Board Reports', () => {
         await page.getByLabel('Role').fill('Board Member');
 
         // Submit
-        await page.getByRole('button', { name: /add member/i }).last().click();
+        await page
+          .getByRole('button', { name: /add member/i })
+          .last()
+          .click();
 
         // Wait for dialog to close
-        await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('dialog')).not.toBeVisible({
+          timeout: 5000,
+        });
 
         // Check member appears in list
         await expect(page.getByText('test@example.com')).toBeVisible();
@@ -244,13 +282,18 @@ test.describe('Executive Board Reports', () => {
   });
 
   test.describe('Generation Workflow', () => {
-    test('should trigger generation when clicking generate button', async ({ page }) => {
+    test('should trigger generation when clicking generate button', async ({
+      page,
+    }) => {
       await page.goto(BOARD_REPORTS_URL);
 
       // Create a new report
       await page.getByRole('button', { name: /create report/i }).click();
       await page.getByLabel('Report Title').fill('Generation Test Report');
-      await page.getByRole('button', { name: /create report/i }).last().click();
+      await page
+        .getByRole('button', { name: /create report/i })
+        .last()
+        .click();
       await page.waitForTimeout(1000);
 
       await page.getByText('Generation Test Report').click();
@@ -261,13 +304,17 @@ test.describe('Executive Board Reports', () => {
         await generateButton.click();
 
         // Check for loading state
-        await expect(page.getByText(/generating/i)).toBeVisible({ timeout: 2000 });
+        await expect(page.getByText(/generating/i)).toBeVisible({
+          timeout: 2000,
+        });
       }
     });
   });
 
   test.describe('Approval Workflow', () => {
-    test('should show approve button when in review status', async ({ page }) => {
+    test('should show approve button when in review status', async ({
+      page,
+    }) => {
       await page.goto(BOARD_REPORTS_URL);
 
       // Look for a report in review status
@@ -276,7 +323,9 @@ test.describe('Executive Board Reports', () => {
         await reviewBadge.click();
 
         // Check for approve button
-        await expect(page.getByRole('button', { name: /approve/i })).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: /approve/i })
+        ).toBeVisible();
       }
     });
 
@@ -289,7 +338,9 @@ test.describe('Executive Board Reports', () => {
         await approvedBadge.click();
 
         // Check for publish button
-        await expect(page.getByRole('button', { name: /publish/i })).toBeVisible();
+        await expect(
+          page.getByRole('button', { name: /publish/i })
+        ).toBeVisible();
       }
     });
   });
@@ -324,7 +375,7 @@ test.describe('Executive Board Reports', () => {
         await page.getByRole('menuitem', { name: /delete report/i }).click();
 
         // Check for confirmation dialog
-        page.on('dialog', dialog => dialog.dismiss());
+        page.on('dialog', (dialog) => dialog.dismiss());
       }
     });
   });
@@ -336,7 +387,9 @@ test.describe('Executive Board Reports', () => {
 
       // Check page loads correctly
       await expect(page.locator('h1')).toContainText('Executive Board Reports');
-      await expect(page.getByRole('button', { name: /create report/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /create report/i })
+      ).toBeVisible();
     });
 
     test('should display correctly on tablet', async ({ page }) => {

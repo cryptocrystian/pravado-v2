@@ -3,7 +3,13 @@
  * Handles persistence of semantic memory, episodic traces, and memory links
  */
 
-import type { AgentMemory, EpisodicTrace, MemoryLink, MemoryType, MemorySource } from '@pravado/types';
+import type {
+  AgentMemory,
+  EpisodicTrace,
+  MemoryLink,
+  MemoryType,
+  MemorySource,
+} from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface MemoryStoreOptions {
@@ -41,7 +47,11 @@ export class MemoryStore {
     ttlSeconds?: number | null
   ): Promise<AgentMemory> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Saving semantic memory', { orgId, importance, source });
+      console.log('[MemoryStore] Saving semantic memory', {
+        orgId,
+        importance,
+        source,
+      });
     }
 
     const { data, error } = await this.supabase
@@ -76,7 +86,11 @@ export class MemoryStore {
     embedding: number[]
   ): Promise<EpisodicTrace> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Saving episodic trace', { orgId, runId, stepKey });
+      console.log('[MemoryStore] Saving episodic trace', {
+        orgId,
+        runId,
+        stepKey,
+      });
     }
 
     const { data, error } = await this.supabase
@@ -108,7 +122,12 @@ export class MemoryStore {
     weight: number = 1.0
   ): Promise<MemoryLink> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Linking memory to entity', { memoryId, entityType, entityId, weight });
+      console.log('[MemoryStore] Linking memory to entity', {
+        memoryId,
+        entityType,
+        entityId,
+        weight,
+      });
     }
 
     const { data, error } = await this.supabase
@@ -134,7 +153,10 @@ export class MemoryStore {
    */
   async updateImportance(memoryId: string, importance: number): Promise<void> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Updating memory importance', { memoryId, importance });
+      console.log('[MemoryStore] Updating memory importance', {
+        memoryId,
+        importance,
+      });
     }
 
     const { error } = await this.supabase
@@ -150,19 +172,27 @@ export class MemoryStore {
   /**
    * Prune expired or low-importance memories
    */
-  async pruneMemory(orgId: string, options: PruneMemoryOptions = {}): Promise<number> {
+  async pruneMemory(
+    orgId: string,
+    options: PruneMemoryOptions = {}
+  ): Promise<number> {
     if (this.debugMode) {
       console.log('[MemoryStore] Pruning memories', { orgId, options });
     }
 
     const { expiredOnly = true, minImportance = 0, limit = 100 } = options;
 
-    let query = this.supabase.from('agent_memories').delete().eq('org_id', orgId);
+    let query = this.supabase
+      .from('agent_memories')
+      .delete()
+      .eq('org_id', orgId);
 
     if (expiredOnly) {
       // Delete memories where TTL has expired
       const now = Math.floor(Date.now() / 1000);
-      query = query.lt('created_at', new Date(now * 1000).toISOString()).not('ttl_seconds', 'is', null);
+      query = query
+        .lt('created_at', new Date(now * 1000).toISOString())
+        .not('ttl_seconds', 'is', null);
     } else if (minImportance > 0) {
       // Delete memories below importance threshold
       query = query.lt('importance', minImportance);
@@ -180,7 +210,10 @@ export class MemoryStore {
   /**
    * Get all episodic traces for a specific run
    */
-  async getEpisodicTracesForRun(orgId: string, runId: string): Promise<EpisodicTrace[]> {
+  async getEpisodicTracesForRun(
+    orgId: string,
+    runId: string
+  ): Promise<EpisodicTrace[]> {
     const { data, error } = await this.supabase
       .from('agent_episode_runs')
       .select('*')
@@ -214,7 +247,10 @@ export class MemoryStore {
   /**
    * Get memories linked to a specific entity
    */
-  async getMemoriesByEntity(entityType: string, entityId: string): Promise<AgentMemory[]> {
+  async getMemoriesByEntity(
+    entityType: string,
+    entityId: string
+  ): Promise<AgentMemory[]> {
     const { data, error } = await this.supabase
       .from('agent_memory_links')
       .select('memory_id')
@@ -252,7 +288,10 @@ export class MemoryStore {
       orgId: row.org_id,
       type: row.type as MemoryType,
       content: row.content,
-      embedding: typeof row.embedding === 'string' ? JSON.parse(row.embedding) : row.embedding,
+      embedding:
+        typeof row.embedding === 'string'
+          ? JSON.parse(row.embedding)
+          : row.embedding,
       source: row.source as MemorySource,
       importance: row.importance,
       createdAt: row.created_at,
@@ -270,7 +309,10 @@ export class MemoryStore {
       orgId: row.org_id,
       stepKey: row.step_key,
       content: row.content,
-      embedding: typeof row.embedding === 'string' ? JSON.parse(row.embedding) : row.embedding,
+      embedding:
+        typeof row.embedding === 'string'
+          ? JSON.parse(row.embedding)
+          : row.embedding,
       createdAt: row.created_at,
     };
   }

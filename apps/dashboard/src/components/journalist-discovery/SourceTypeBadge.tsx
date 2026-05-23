@@ -45,7 +45,10 @@ const sizeClasses = {
   md: 'text-sm px-2 py-1',
 };
 
-export function SourceTypeBadge({ sourceType, size = 'md' }: SourceTypeBadgeProps) {
+export function SourceTypeBadge({
+  sourceType,
+  size = 'md',
+}: SourceTypeBadgeProps) {
   const colorClass = getSourceTypeColor(sourceType);
   const label = getSourceTypeLabel(sourceType);
 

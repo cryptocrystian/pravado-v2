@@ -3,8 +3,6 @@
  * Automated journalist outreach engine
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import type {
   CreateOutreachEventInput,
   CreateOutreachRunInput,
@@ -33,6 +31,8 @@ import type {
   UpdateOutreachSequenceInput,
   UpdateOutreachStepInput,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import type { OutreachDeliverabilityService } from './outreachDeliverabilityService';
 
 /**
@@ -80,7 +80,8 @@ export class OutreachService {
         beat_filter: input.beatFilter || null,
         tier_filter: input.tierFilter || null,
         max_runs_per_day: input.maxRunsPerDay || 50,
-        stop_on_reply: input.stopOnReply !== undefined ? input.stopOnReply : true,
+        stop_on_reply:
+          input.stopOnReply !== undefined ? input.stopOnReply : true,
         pitch_id: input.pitchId || null,
         press_release_id: input.pressReleaseId || null,
         is_active: true,
@@ -124,7 +125,10 @@ export class OutreachService {
 
     queryBuilder = queryBuilder
       .order('created_at', { ascending: false })
-      .range(query?.offset || 0, (query?.offset || 0) + (query?.limit || 20) - 1);
+      .range(
+        query?.offset || 0,
+        (query?.offset || 0) + (query?.limit || 20) - 1
+      );
 
     const { data, error, count } = await queryBuilder;
 
@@ -141,7 +145,10 @@ export class OutreachService {
   /**
    * Get a single sequence by ID
    */
-  async getSequence(sequenceId: string, orgId: string): Promise<OutreachSequence> {
+  async getSequence(
+    sequenceId: string,
+    orgId: string
+  ): Promise<OutreachSequence> {
     const { data, error } = await this.supabase
       .from('pr_outreach_sequences')
       .select('*')
@@ -192,16 +199,23 @@ export class OutreachService {
     const updateData: Record<string, unknown> = {};
 
     if (input.name !== undefined) updateData.name = input.name;
-    if (input.description !== undefined) updateData.description = input.description;
-    if (input.journalistIds !== undefined) updateData.journalist_ids = input.journalistIds;
+    if (input.description !== undefined)
+      updateData.description = input.description;
+    if (input.journalistIds !== undefined)
+      updateData.journalist_ids = input.journalistIds;
     if (input.outletIds !== undefined) updateData.outlet_ids = input.outletIds;
-    if (input.beatFilter !== undefined) updateData.beat_filter = input.beatFilter;
-    if (input.tierFilter !== undefined) updateData.tier_filter = input.tierFilter;
+    if (input.beatFilter !== undefined)
+      updateData.beat_filter = input.beatFilter;
+    if (input.tierFilter !== undefined)
+      updateData.tier_filter = input.tierFilter;
     if (input.isActive !== undefined) updateData.is_active = input.isActive;
-    if (input.maxRunsPerDay !== undefined) updateData.max_runs_per_day = input.maxRunsPerDay;
-    if (input.stopOnReply !== undefined) updateData.stop_on_reply = input.stopOnReply;
+    if (input.maxRunsPerDay !== undefined)
+      updateData.max_runs_per_day = input.maxRunsPerDay;
+    if (input.stopOnReply !== undefined)
+      updateData.stop_on_reply = input.stopOnReply;
     if (input.pitchId !== undefined) updateData.pitch_id = input.pitchId;
-    if (input.pressReleaseId !== undefined) updateData.press_release_id = input.pressReleaseId;
+    if (input.pressReleaseId !== undefined)
+      updateData.press_release_id = input.pressReleaseId;
 
     const { data, error } = await this.supabase
       .from('pr_outreach_sequences')
@@ -212,7 +226,9 @@ export class OutreachService {
       .single();
 
     if (error || !data) {
-      throw new Error(`Failed to update sequence: ${error?.message || 'Not found'}`);
+      throw new Error(
+        `Failed to update sequence: ${error?.message || 'Not found'}`
+      );
     }
 
     return this.mapSequenceFromDb(data);
@@ -238,7 +254,10 @@ export class OutreachService {
           stopped_at: new Date().toISOString(),
           stop_reason: 'sequence_deleted',
         })
-        .in('id', activeRuns.map((r) => r.id));
+        .in(
+          'id',
+          activeRuns.map((r) => r.id)
+        );
     }
 
     const { error } = await this.supabase
@@ -259,7 +278,10 @@ export class OutreachService {
   /**
    * Create a new sequence step
    */
-  async createStep(sequenceId: string, input: CreateOutreachStepInput): Promise<OutreachSequenceStep> {
+  async createStep(
+    sequenceId: string,
+    input: CreateOutreachStepInput
+  ): Promise<OutreachSequenceStep> {
     const { data, error } = await this.supabase
       .from('pr_outreach_sequence_steps')
       .insert({
@@ -292,10 +314,14 @@ export class OutreachService {
   ): Promise<OutreachSequenceStep> {
     const updateData: Record<string, unknown> = {};
 
-    if (input.stepNumber !== undefined) updateData.step_number = input.stepNumber;
-    if (input.delayHours !== undefined) updateData.delay_hours = input.delayHours;
-    if (input.subjectTemplate !== undefined) updateData.subject_template = input.subjectTemplate;
-    if (input.bodyTemplate !== undefined) updateData.body_template = input.bodyTemplate;
+    if (input.stepNumber !== undefined)
+      updateData.step_number = input.stepNumber;
+    if (input.delayHours !== undefined)
+      updateData.delay_hours = input.delayHours;
+    if (input.subjectTemplate !== undefined)
+      updateData.subject_template = input.subjectTemplate;
+    if (input.bodyTemplate !== undefined)
+      updateData.body_template = input.bodyTemplate;
     if (input.templateVariables !== undefined)
       updateData.template_variables = input.templateVariables;
     if (input.useLlmGeneration !== undefined)
@@ -311,7 +337,9 @@ export class OutreachService {
       .single();
 
     if (error || !data) {
-      throw new Error(`Failed to update step: ${error?.message || 'Not found'}`);
+      throw new Error(
+        `Failed to update step: ${error?.message || 'Not found'}`
+      );
     }
 
     return this.mapStepFromDb(data);
@@ -338,7 +366,10 @@ export class OutreachService {
   /**
    * Start sequence runs
    */
-  async startSequenceRuns(orgId: string, input: StartSequenceRunsInput): Promise<{
+  async startSequenceRuns(
+    orgId: string,
+    input: StartSequenceRunsInput
+  ): Promise<{
     runsCreated: number;
     runs: OutreachRun[];
     skippedJournalists: string[];
@@ -390,7 +421,9 @@ export class OutreachService {
       (existingRuns || []).map((r) => r.journalist_id)
     );
 
-    const newJournalistIds = journalistIds.filter((jid) => !existingJournalistIds.has(jid));
+    const newJournalistIds = journalistIds.filter(
+      (jid) => !existingJournalistIds.has(jid)
+    );
 
     if (input.dryRun) {
       return {
@@ -434,7 +467,10 @@ export class OutreachService {
   /**
    * Create a run
    */
-  async createRun(orgId: string, input: CreateOutreachRunInput): Promise<OutreachRun> {
+  async createRun(
+    orgId: string,
+    input: CreateOutreachRunInput
+  ): Promise<OutreachRun> {
     const { data, error } = await this.supabase
       .from('pr_outreach_runs')
       .insert({
@@ -483,7 +519,10 @@ export class OutreachService {
 
     queryBuilder = queryBuilder
       .order('created_at', { ascending: false })
-      .range(query?.offset || 0, (query?.offset || 0) + (query?.limit || 20) - 1);
+      .range(
+        query?.offset || 0,
+        (query?.offset || 0) + (query?.limit || 20) - 1
+      );
 
     const { data, error, count } = await queryBuilder;
 
@@ -500,7 +539,10 @@ export class OutreachService {
   /**
    * Get run with details
    */
-  async getRunWithDetails(runId: string, orgId: string): Promise<OutreachRunWithDetails> {
+  async getRunWithDetails(
+    runId: string,
+    orgId: string
+  ): Promise<OutreachRunWithDetails> {
     const { data: runData, error: runError } = await this.supabase
       .from('pr_outreach_runs')
       .select('*')
@@ -573,15 +615,21 @@ export class OutreachService {
       updateData.next_step_at = input.nextStepAt?.toISOString();
     if (input.completedAt !== undefined)
       updateData.completed_at = input.completedAt?.toISOString();
-    if (input.stoppedAt !== undefined) updateData.stopped_at = input.stoppedAt?.toISOString();
-    if (input.stopReason !== undefined) updateData.stop_reason = input.stopReason;
-    if (input.totalStepsSent !== undefined) updateData.total_steps_sent = input.totalStepsSent;
-    if (input.lastSentAt !== undefined) updateData.last_sent_at = input.lastSentAt?.toISOString();
-    if (input.repliedAt !== undefined) updateData.replied_at = input.repliedAt?.toISOString();
+    if (input.stoppedAt !== undefined)
+      updateData.stopped_at = input.stoppedAt?.toISOString();
+    if (input.stopReason !== undefined)
+      updateData.stop_reason = input.stopReason;
+    if (input.totalStepsSent !== undefined)
+      updateData.total_steps_sent = input.totalStepsSent;
+    if (input.lastSentAt !== undefined)
+      updateData.last_sent_at = input.lastSentAt?.toISOString();
+    if (input.repliedAt !== undefined)
+      updateData.replied_at = input.repliedAt?.toISOString();
     if (input.replyStepNumber !== undefined)
       updateData.reply_step_number = input.replyStepNumber;
     if (input.lastError !== undefined) updateData.last_error = input.lastError;
-    if (input.retryCount !== undefined) updateData.retry_count = input.retryCount;
+    if (input.retryCount !== undefined)
+      updateData.retry_count = input.retryCount;
 
     const { data, error } = await this.supabase
       .from('pr_outreach_runs')
@@ -601,7 +649,11 @@ export class OutreachService {
   /**
    * Stop a run
    */
-  async stopRun(runId: string, orgId: string, reason: OutreachStopReason): Promise<OutreachRun> {
+  async stopRun(
+    runId: string,
+    orgId: string,
+    reason: OutreachStopReason
+  ): Promise<OutreachRun> {
     return this.updateRun(runId, orgId, {
       status: 'stopped',
       stoppedAt: new Date(),
@@ -665,23 +717,28 @@ export class OutreachService {
 
     // Generate and send email
     try {
-      const email = await this.generateEmail(step, run.journalist, run.sequence);
+      const email = await this.generateEmail(
+        step,
+        run.journalist,
+        run.sequence
+      );
 
       let providerMessageId: string | null = null;
 
       // S45: Send email via deliverability service if configured
       if (this.deliverabilityService) {
         // Create email message record for tracking
-        const emailMessage = await this.deliverabilityService.createEmailMessage(orgId, {
-          runId,
-          sequenceId: run.sequenceId,
-          stepNumber: step.stepNumber,
-          journalistId: run.journalist.id,
-          subject: email.subject,
-          bodyHtml: email.body, // Assuming body is HTML
-          bodyText: email.body, // For now, use same content
-          metadata: email.variables,
-        });
+        const emailMessage =
+          await this.deliverabilityService.createEmailMessage(orgId, {
+            runId,
+            sequenceId: run.sequenceId,
+            stepNumber: step.stepNumber,
+            journalistId: run.journalist.id,
+            subject: email.subject,
+            bodyHtml: email.body, // Assuming body is HTML
+            bodyText: email.body, // For now, use same content
+            metadata: email.variables,
+          });
 
         // Send the email
         const sendResult = await this.deliverabilityService.sendEmail({
@@ -696,16 +753,24 @@ export class OutreachService {
           providerMessageId = sendResult.messageId;
 
           // Update email message with provider message ID and sent status
-          await this.deliverabilityService.updateEmailMessage(emailMessage.id, orgId, {
-            providerMessageId: sendResult.messageId,
-            sendStatus: 'sent',
-            sentAt: new Date(),
-          });
+          await this.deliverabilityService.updateEmailMessage(
+            emailMessage.id,
+            orgId,
+            {
+              providerMessageId: sendResult.messageId,
+              sendStatus: 'sent',
+              sentAt: new Date(),
+            }
+          );
         } else {
           // Mark as failed
-          await this.deliverabilityService.updateEmailMessage(emailMessage.id, orgId, {
-            sendStatus: 'failed',
-          });
+          await this.deliverabilityService.updateEmailMessage(
+            emailMessage.id,
+            orgId,
+            {
+              sendStatus: 'failed',
+            }
+          );
 
           throw new Error(sendResult.error || 'Failed to send email');
         }
@@ -735,7 +800,9 @@ export class OutreachService {
 
       if (nextStepData) {
         const nextStep = this.mapStepFromDb(nextStepData);
-        const nextStepAt = new Date(Date.now() + nextStep.delayHours * 60 * 60 * 1000);
+        const nextStepAt = new Date(
+          Date.now() + nextStep.delayHours * 60 * 60 * 1000
+        );
 
         await this.updateRun(runId, orgId, {
           currentStepNumber: run.currentStepNumber + 1,
@@ -783,7 +850,10 @@ export class OutreachService {
   /**
    * Create an outreach event
    */
-  async createEvent(orgId: string, input: CreateOutreachEventInput): Promise<OutreachEvent> {
+  async createEvent(
+    orgId: string,
+    input: CreateOutreachEventInput
+  ): Promise<OutreachEvent> {
     const { data, error } = await this.supabase
       .from('pr_outreach_events')
       .insert({
@@ -840,16 +910,25 @@ export class OutreachService {
     }
 
     if (query?.startDate) {
-      queryBuilder = queryBuilder.gte('created_at', query.startDate.toISOString());
+      queryBuilder = queryBuilder.gte(
+        'created_at',
+        query.startDate.toISOString()
+      );
     }
 
     if (query?.endDate) {
-      queryBuilder = queryBuilder.lte('created_at', query.endDate.toISOString());
+      queryBuilder = queryBuilder.lte(
+        'created_at',
+        query.endDate.toISOString()
+      );
     }
 
     queryBuilder = queryBuilder
       .order('created_at', { ascending: false })
-      .range(query?.offset || 0, (query?.offset || 0) + (query?.limit || 20) - 1);
+      .range(
+        query?.offset || 0,
+        (query?.offset || 0) + (query?.limit || 20) - 1
+      );
 
     const { data, error, count } = await queryBuilder;
 
@@ -892,7 +971,10 @@ export class OutreachService {
       updateData.metadata = metadata;
     }
 
-    await this.supabase.from('pr_outreach_events').update(updateData).eq('id', eventId);
+    await this.supabase
+      .from('pr_outreach_events')
+      .update(updateData)
+      .eq('id', eventId);
 
     // If replied, stop the run
     if (eventType === 'replied') {
@@ -939,7 +1021,12 @@ export class OutreachService {
    */
   async generateEmail(
     step: OutreachSequenceStep,
-    journalist: { id: string; name: string; email: string; outlet: string | null },
+    journalist: {
+      id: string;
+      name: string;
+      email: string;
+      outlet: string | null;
+    },
     sequence: OutreachSequence
   ): Promise<GeneratedEmail> {
     // Build template variables
@@ -957,7 +1044,10 @@ export class OutreachService {
     // Replace template variables
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `{{${key}}}`;
-      subject = subject.replace(new RegExp(placeholder, 'g'), String(value || ''));
+      subject = subject.replace(
+        new RegExp(placeholder, 'g'),
+        String(value || '')
+      );
       body = body.replace(new RegExp(placeholder, 'g'), String(value || ''));
     }
 
@@ -966,7 +1056,8 @@ export class OutreachService {
       // Placeholder for LLM generation
       // In production, this would call the LLM router service
       // For now, we just use the templates as-is
-      this.debugMode && console.log('LLM generation requested but not implemented yet');
+      this.debugMode &&
+        console.log('LLM generation requested but not implemented yet');
     }
 
     return {
@@ -983,10 +1074,15 @@ export class OutreachService {
   /**
    * Preview targeting - show how many journalists match
    */
-  async previewTargeting(sequenceId: string, orgId: string): Promise<TargetingPreview> {
+  async previewTargeting(
+    sequenceId: string,
+    orgId: string
+  ): Promise<TargetingPreview> {
     const sequence = await this.getSequence(sequenceId, orgId);
 
-    let queryBuilder = this.supabase.from('journalists').select('id', { count: 'exact' });
+    let queryBuilder = this.supabase
+      .from('journalists')
+      .select('id', { count: 'exact' });
 
     // Apply filters
     if (sequence.journalistIds.length > 0) {
@@ -1178,6 +1274,8 @@ export class OutreachService {
 /**
  * Factory function to create service instance
  */
-export function createOutreachService(config: OutreachServiceConfig): OutreachService {
+export function createOutreachService(
+  config: OutreachServiceConfig
+): OutreachService {
   return new OutreachService(config);
 }

@@ -17,8 +17,6 @@
  *   → FAQ → Footer CTA.
  */
 
-import { useState } from 'react';
-import Link from 'next/link';
 import {
   Newspaper,
   FileText,
@@ -28,12 +26,17 @@ import {
   CaretDown,
   ArrowRight,
 } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import type { ScanResponse } from '@/components/marketing/audit-types';
 import { AuditForm } from '@/components/marketing/AuditForm';
 import { EVIScorecardResults } from '@/components/marketing/EVIScorecardResults';
-import type { ScanResponse } from '@/components/marketing/audit-types';
 
 function TM() {
-  return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;
+  return (
+    <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>
+  );
 }
 
 const KEYFRAMES = `
@@ -119,7 +122,6 @@ export default function AuditPrPage() {
       />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 1: HERO                                            */}
         {/* ─────────────────────────────────────────────────────────── */}
@@ -163,14 +165,16 @@ export default function AuditPrPage() {
                   lineHeight: 1.05,
                   marginTop: 0,
                   marginBottom: 24,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #E879F9 60%, #A855F7 100%)',
+                  background:
+                    'linear-gradient(135deg, #ffffff 0%, #E879F9 60%, #A855F7 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                   letterSpacing: '-0.02em',
                 }}
               >
-                Cision tracked the placement. Muck Rack found the journalist. Now what?
+                Cision tracked the placement. Muck Rack found the journalist.
+                Now what?
               </h1>
 
               <p
@@ -183,11 +187,11 @@ export default function AuditPrPage() {
                   maxWidth: 580,
                 }}
               >
-                You earned the tier-1 hit. The mention is in the report. Six months
-                later, when buyers ask Perplexity or ChatGPT who leads your category,
-                your competitors are cited. Same story, every quarter. Your PR work
-                is real — the visibility just stops compounding the moment the press
-                cycle ends.
+                You earned the tier-1 hit. The mention is in the report. Six
+                months later, when buyers ask Perplexity or ChatGPT who leads
+                your category, your competitors are cited. Same story, every
+                quarter. Your PR work is real — the visibility just stops
+                compounding the moment the press cycle ends.
               </p>
 
               <div
@@ -199,15 +203,33 @@ export default function AuditPrPage() {
                   color: 'rgba(255,255,255,0.5)',
                 }}
               >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   Free, no credit card
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   20–30 seconds
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   283K-profile media database
                 </span>
@@ -248,7 +270,8 @@ export default function AuditPrPage() {
                   lineHeight: 1.25,
                 }}
               >
-                Score your three pillars. See the variance that&apos;s hiding the work.
+                Score your three pillars. See the variance that&apos;s hiding
+                the work.
               </h2>
               <AuditForm
                 entryPath="pr"
@@ -262,7 +285,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 2: PROBLEM (Layer 1) — names lived experience      */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <div
               style={{
@@ -300,12 +329,13 @@ export default function AuditPrPage() {
               }}
             >
               You ship 30+ placements a quarter. Tier-1 hits, named-spokesperson
-              features, the occasional viral moment. Your media database is current.
-              Your pitch list is segmented by beat. The reporting deck shows a healthy
-              AVE column. And yet, when your CMO asks what those placements actually
-              <em> built</em> — what topics you now own, what queries cite you, where
-              authority compounded — the honest answer is: we don&apos;t know. The hits
-              arrive. The compound interest never does.
+              features, the occasional viral moment. Your media database is
+              current. Your pitch list is segmented by beat. The reporting deck
+              shows a healthy AVE column. And yet, when your CMO asks what those
+              placements actually
+              <em> built</em> — what topics you now own, what queries cite you,
+              where authority compounded — the honest answer is: we don&apos;t
+              know. The hits arrive. The compound interest never does.
             </p>
           </div>
         </section>
@@ -313,7 +343,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 3: STRUCTURAL (Layer 2) — names the silo            */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 920, margin: '0 auto' }}>
             <div
               style={{
@@ -347,19 +383,36 @@ export default function AuditPrPage() {
             </h2>
 
             <div style={{ maxWidth: 720, margin: '0 auto', marginBottom: 40 }}>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, marginTop: 0, marginBottom: 20 }}>
+              <p
+                style={{
+                  fontSize: 17,
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.75,
+                  marginTop: 0,
+                  marginBottom: 20,
+                }}
+              >
                 Cision tells you a placement happened. Muck Rack tells you which
-                journalist wrote it. Neither knows what content on your site that
-                placement <em>should</em> be pointing to, or whether the AI engines
-                your buyers are actually using have learned that you&apos;re the brand
-                to cite for the topic.
+                journalist wrote it. Neither knows what content on your site
+                that placement <em>should</em> be pointing to, or whether the AI
+                engines your buyers are actually using have learned that
+                you&apos;re the brand to cite for the topic.
               </p>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, marginTop: 0, marginBottom: 0 }}>
-                PR tools were designed when the internet had ten gateways: Google,
-                the major outlets, the trade press. The gateways multiplied. The
-                tools didn&apos;t. In 2026, half of category research happens inside
-                ChatGPT, Perplexity, Gemini, Claude, and Bing Copilot — and your
-                media database has no idea any of them exist.
+              <p
+                style={{
+                  fontSize: 17,
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.75,
+                  marginTop: 0,
+                  marginBottom: 0,
+                }}
+              >
+                PR tools were designed when the internet had ten gateways:
+                Google, the major outlets, the trade press. The gateways
+                multiplied. The tools didn&apos;t. In 2026, half of category
+                research happens inside ChatGPT, Perplexity, Gemini, Claude, and
+                Bing Copilot — and your media database has no idea any of them
+                exist.
               </p>
             </div>
 
@@ -375,9 +428,23 @@ export default function AuditPrPage() {
               }}
             >
               {[
-                { name: 'Cision', sees: 'Mentions, AVE, clipping reports', misses: 'Whether content compounds or AI engines cite the brand' },
-                { name: 'Muck Rack', sees: 'Journalist relationships, beat coverage', misses: 'Whether earned coverage created compounding authority' },
-                { name: 'Pravado', sees: 'All of the above + content layer + AI citation tracking', misses: null },
+                {
+                  name: 'Cision',
+                  sees: 'Mentions, AVE, clipping reports',
+                  misses:
+                    'Whether content compounds or AI engines cite the brand',
+                },
+                {
+                  name: 'Muck Rack',
+                  sees: 'Journalist relationships, beat coverage',
+                  misses:
+                    'Whether earned coverage created compounding authority',
+                },
+                {
+                  name: 'Pravado',
+                  sees: 'All of the above + content layer + AI citation tracking',
+                  misses: null,
+                },
               ].map((tool) => {
                 const isPravado = tool.name === 'Pravado';
                 return (
@@ -386,27 +453,68 @@ export default function AuditPrPage() {
                     style={{
                       padding: 20,
                       borderRadius: 12,
-                      background: isPravado ? 'rgba(232,121,249,0.06)' : 'rgba(255,255,255,0.03)',
-                      border: isPravado ? '1px solid rgba(232,121,249,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                      background: isPravado
+                        ? 'rgba(232,121,249,0.06)'
+                        : 'rgba(255,255,255,0.03)',
+                      border: isPravado
+                        ? '1px solid rgba(232,121,249,0.3)'
+                        : '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
-                    <div style={{ fontSize: 16, fontWeight: 700, color: isPravado ? '#E879F9' : '#ffffff', marginBottom: 16 }}>
+                    <div
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 700,
+                        color: isPravado ? '#E879F9' : '#ffffff',
+                        marginBottom: 16,
+                      }}
+                    >
                       {tool.name}
                     </div>
                     <div style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(34,197,94,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: 'rgba(34,197,94,0.9)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.08em',
+                          marginBottom: 6,
+                        }}
+                      >
                         Sees
                       </div>
-                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: 'rgba(255,255,255,0.75)',
+                          lineHeight: 1.5,
+                        }}
+                      >
                         {tool.sees}
                       </div>
                     </div>
                     {tool.misses && (
                       <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(239,68,68,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                        <div
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: 'rgba(239,68,68,0.9)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            marginBottom: 6,
+                          }}
+                        >
                           Misses
                         </div>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: 'rgba(255,255,255,0.55)',
+                            lineHeight: 1.5,
+                          }}
+                        >
                           {tool.misses}
                         </div>
                       </div>
@@ -436,7 +544,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 4: REVEAL (Layer 3) — three pillars credentialed   */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div
               style={{
@@ -466,7 +580,8 @@ export default function AuditPrPage() {
                 marginRight: 'auto',
               }}
             >
-              Three pillars of earned visibility. One scorecard. One platform that runs them together.
+              Three pillars of earned visibility. One scorecard. One platform
+              that runs them together.
             </h2>
             <p
               style={{
@@ -478,9 +593,9 @@ export default function AuditPrPage() {
                 maxWidth: 720,
               }}
             >
-              Best-in-class on PR by itself. Compounding when paired with Content
-              and AI Citation, because the schema is shared at the platform level —
-              not retrofitted across an acquisition stack.
+              Best-in-class on PR by itself. Compounding when paired with
+              Content and AI Citation, because the schema is shared at the
+              platform level — not retrofitted across an acquisition stack.
             </p>
 
             {/* PR Pillar — long treatment */}
@@ -513,25 +628,63 @@ export default function AuditPrPage() {
                 >
                   <Newspaper size={26} weight="regular" color="#E879F9" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#E879F9', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#E879F9',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 8,
+                  }}
+                >
                   Pillar 1
                 </div>
-                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#ffffff', lineHeight: 1.2, marginTop: 0, marginBottom: 0 }}>
+                <h3
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.2,
+                    marginTop: 0,
+                    marginBottom: 0,
+                  }}
+                >
                   PR Authority
                 </h3>
               </div>
               <div>
-                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginTop: 0, marginBottom: 16 }}>
-                  Pravado includes the most comprehensive PR platform shipping today:
-                  a <strong style={{ color: '#ffffff' }}>283,000-profile media database</strong> with named-journalist matching,
-                  beat-aware pitch routing, named-spokesperson positioning, pitch
-                  personalization scored at the journalist level, and follow-up cadence
-                  guardrails capped at two per contact per seven-day window.
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.75)',
+                    lineHeight: 1.7,
+                    marginTop: 0,
+                    marginBottom: 16,
+                  }}
+                >
+                  Pravado includes the most comprehensive PR platform shipping
+                  today: a{' '}
+                  <strong style={{ color: '#ffffff' }}>
+                    283,000-profile media database
+                  </strong>{' '}
+                  with named-journalist matching, beat-aware pitch routing,
+                  named-spokesperson positioning, pitch personalization scored
+                  at the journalist level, and follow-up cadence guardrails
+                  capped at two per contact per seven-day window.
                 </p>
-                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginTop: 0, marginBottom: 16 }}>
-                  Standalone, it&apos;s a Cision replacement at roughly 70% lower cost.
-                  But the database isn&apos;t the point — the database talks to the
-                  rest of the platform.
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.75)',
+                    lineHeight: 1.7,
+                    marginTop: 0,
+                    marginBottom: 16,
+                  }}
+                >
+                  Standalone, it&apos;s a Cision replacement at roughly 70%
+                  lower cost. But the database isn&apos;t the point — the
+                  database talks to the rest of the platform.
                 </p>
                 <ul
                   className="audit-pr-features-list"
@@ -554,7 +707,14 @@ export default function AuditPrPage() {
                     'Coverage tracking + AVE',
                     'Crisis comms surface',
                   ].map((feature) => (
-                    <li key={feature} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <li
+                      key={feature}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
                       <CheckCircle size={14} weight="fill" color="#E879F9" />
                       {feature}
                     </li>
@@ -564,7 +724,14 @@ export default function AuditPrPage() {
             </div>
 
             {/* Content + AI — briefer treatment */}
-            <div className="audit-pillars-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+            <div
+              className="audit-pillars-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 24,
+              }}
+            >
               <div
                 style={{
                   padding: 32,
@@ -587,18 +754,43 @@ export default function AuditPrPage() {
                 >
                   <FileText size={22} weight="regular" color="#A855F7" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#A855F7', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#A855F7',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 6,
+                  }}
+                >
                   Pillar 2
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.25, marginTop: 0, marginBottom: 14 }}>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.25,
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
                   Content Authority
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
-                  Every placement Pravado helps you earn comes with a content layer
-                  that matters: the pillar pages that should compound from the press
-                  hit, the FAQ schema that lets AI engines extract the answer, the
-                  named-entity scaffolding that connects your spokesperson to your
-                  topic to the citing outlet.
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  Every placement Pravado helps you earn comes with a content
+                  layer that matters: the pillar pages that should compound from
+                  the press hit, the FAQ schema that lets AI engines extract the
+                  answer, the named-entity scaffolding that connects your
+                  spokesperson to your topic to the citing outlet.
                 </p>
               </div>
 
@@ -624,17 +816,43 @@ export default function AuditPrPage() {
                 >
                   <Brain size={22} weight="regular" color="#00D9FF" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#00D9FF', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#00D9FF',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 6,
+                  }}
+                >
                   Pillar 3
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.25, marginTop: 0, marginBottom: 14 }}>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.25,
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
                   AI Citation Authority
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
-                  Every piece of content is scored by CiteMind<TM /> for citation
-                  worthiness across ChatGPT, Perplexity, Gemini, Claude, and Bing
-                  Copilot. You see which queries cite you, which cite competitors,
-                  and what you&apos;d need to publish to flip the share-of-model.
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  Every piece of content is scored by CiteMind
+                  <TM /> for citation worthiness across ChatGPT, Perplexity,
+                  Gemini, Claude, and Bing Copilot. You see which queries cite
+                  you, which cite competitors, and what you&apos;d need to
+                  publish to flip the share-of-model.
                 </p>
               </div>
             </div>
@@ -661,12 +879,15 @@ export default function AuditPrPage() {
                   marginRight: 'auto',
                 }}
               >
-                The orchestration layer (<strong style={{ color: '#A855F7' }}>SAGE</strong>
-                <TM /> strategy mesh, <strong style={{ color: '#00D9FF' }}>CRAFT</strong>
-                <TM /> execution, <strong style={{ color: '#E879F9' }}>CiteMind</strong>
-                <TM /> citation intelligence) is the thing no single-pillar competitor
-                can ship — because it requires shared schema across PR, Content, and
-                AEO that no acquisition stack can retrofit.
+                The orchestration layer (
+                <strong style={{ color: '#A855F7' }}>SAGE</strong>
+                <TM /> strategy mesh,{' '}
+                <strong style={{ color: '#00D9FF' }}>CRAFT</strong>
+                <TM /> execution,{' '}
+                <strong style={{ color: '#E879F9' }}>CiteMind</strong>
+                <TM /> citation intelligence) is the thing no single-pillar
+                competitor can ship — because it requires shared schema across
+                PR, Content, and AEO that no acquisition stack can retrofit.
               </p>
             </div>
           </div>
@@ -675,7 +896,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 5: MID-PAGE FORM REPEAT                            */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
             <h2
               style={{
@@ -701,8 +928,8 @@ export default function AuditPrPage() {
                 maxWidth: 600,
               }}
             >
-              Free three-pillar scorecard. Specific gaps, named outlets, operational
-              remediation. 20–30 seconds.
+              Free three-pillar scorecard. Specific gaps, named outlets,
+              operational remediation. 20–30 seconds.
             </p>
             <div
               style={{
@@ -724,7 +951,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 6: SOCIAL PROOF / CATEGORY POSITIONING             */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div
               style={{
@@ -763,11 +996,12 @@ export default function AuditPrPage() {
                 maxWidth: 720,
               }}
             >
-              Pravado&apos;s media database draws from 283,000 verified journalist
-              profiles, refreshed continuously, with beat coverage that goes deeper
-              than Cision&apos;s tier classifications and matching that&apos;s smarter
-              than Muck Rack&apos;s keyword search. The team behind it built and ran
-              a comms function before founding the platform.
+              Pravado&apos;s media database draws from 283,000 verified
+              journalist profiles, refreshed continuously, with beat coverage
+              that goes deeper than Cision&apos;s tier classifications and
+              matching that&apos;s smarter than Muck Rack&apos;s keyword search.
+              The team behind it built and ran a comms function before founding
+              the platform.
             </p>
 
             {/* Comparison table */}
@@ -784,62 +1018,158 @@ export default function AuditPrPage() {
                 className="audit-compare-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
+                  gridTemplateColumns:
+                    'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                   background: 'rgba(0,0,0,0.2)',
                 }}
               >
-                <div style={{ padding: '16px 20px', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.5)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                  }}
+                >
                   Capability
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textAlign: 'center',
+                  }}
+                >
                   Cision
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textAlign: 'center',
+                  }}
+                >
                   Muck Rack
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: '#E879F9', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#E879F9',
+                    textAlign: 'center',
+                  }}
+                >
                   Pravado
                 </div>
               </div>
               {[
-                { capability: '283K-profile journalist database',  cision: true,  muck: true,  pravado: true },
-                { capability: 'Beat-aware pitch matching',         cision: true,  muck: true,  pravado: true },
-                { capability: 'Coverage tracking + AVE',           cision: true,  muck: false, pravado: true },
-                { capability: 'Pillar content layer',              cision: false, muck: false, pravado: true },
-                { capability: 'AEO citation tracking',             cision: false, muck: false, pravado: true },
-                { capability: 'Cross-pillar EVI scorecard',        cision: false, muck: false, pravado: true },
-                { capability: 'Shared schema across PR / Content / AEO', cision: false, muck: false, pravado: true },
+                {
+                  capability: '283K-profile journalist database',
+                  cision: true,
+                  muck: true,
+                  pravado: true,
+                },
+                {
+                  capability: 'Beat-aware pitch matching',
+                  cision: true,
+                  muck: true,
+                  pravado: true,
+                },
+                {
+                  capability: 'Coverage tracking + AVE',
+                  cision: true,
+                  muck: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Pillar content layer',
+                  cision: false,
+                  muck: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'AEO citation tracking',
+                  cision: false,
+                  muck: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Cross-pillar EVI scorecard',
+                  cision: false,
+                  muck: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Shared schema across PR / Content / AEO',
+                  cision: false,
+                  muck: false,
+                  pravado: true,
+                },
               ].map((row, i) => (
                 <div
                   key={row.capability}
                   className="audit-compare-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
-                    borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
-                    background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
+                    gridTemplateColumns:
+                      'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
+                    borderTop:
+                      i === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                    background:
+                      i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
                   }}
                 >
-                  <div style={{ padding: '14px 20px', fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>
+                  <div
+                    style={{
+                      padding: '14px 20px',
+                      fontSize: 14,
+                      color: 'rgba(255,255,255,0.85)',
+                    }}
+                  >
                     {row.capability}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
                     {row.cision ? (
-                      <CheckCircle size={20} weight="fill" color="rgba(34,197,94,0.7)" />
+                      <CheckCircle
+                        size={20}
+                        weight="fill"
+                        color="rgba(34,197,94,0.7)"
+                      />
                     ) : (
-                      <XCircle size={20} weight="regular" color="rgba(255,255,255,0.2)" />
+                      <XCircle
+                        size={20}
+                        weight="regular"
+                        color="rgba(255,255,255,0.2)"
+                      />
                     )}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
                     {row.muck ? (
-                      <CheckCircle size={20} weight="fill" color="rgba(34,197,94,0.7)" />
+                      <CheckCircle
+                        size={20}
+                        weight="fill"
+                        color="rgba(34,197,94,0.7)"
+                      />
                     ) : (
-                      <XCircle size={20} weight="regular" color="rgba(255,255,255,0.2)" />
+                      <XCircle
+                        size={20}
+                        weight="regular"
+                        color="rgba(255,255,255,0.2)"
+                      />
                     )}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
-                    {row.pravado && <CheckCircle size={20} weight="fill" color="#E879F9" />}
+                    {row.pravado && (
+                      <CheckCircle size={20} weight="fill" color="#E879F9" />
+                    )}
                   </div>
                 </div>
               ))}
@@ -854,7 +1184,8 @@ export default function AuditPrPage() {
                 marginBottom: 0,
               }}
             >
-              Comparison reflects publicly stated capabilities of Cision and Muck Rack as of 2026.
+              Comparison reflects publicly stated capabilities of Cision and
+              Muck Rack as of 2026.
             </p>
           </div>
         </section>
@@ -862,7 +1193,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 7: FAQ                                              */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <h2
               style={{
@@ -945,7 +1282,13 @@ export default function AuditPrPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 8: FOOTER CTA                                      */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
             <h2
               style={{
@@ -969,9 +1312,10 @@ export default function AuditPrPage() {
                 maxWidth: 560,
               }}
             >
-              Free three-pillar EVI<TM /> scorecard. No credit card. No upgrade
-              pitch. The conversation that matters happens after the scan, on a
-              call where your specifics are on the table.
+              Free three-pillar EVI
+              <TM /> scorecard. No credit card. No upgrade pitch. The
+              conversation that matters happens after the scan, on a call where
+              your specifics are on the table.
             </p>
 
             <div
@@ -991,7 +1335,13 @@ export default function AuditPrPage() {
               />
             </div>
 
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: 0 }}>
+            <p
+              style={{
+                fontSize: 13,
+                color: 'rgba(255,255,255,0.45)',
+                margin: 0,
+              }}
+            >
               Or skip the scan and{' '}
               <Link
                 href="https://pravado.io/contact"

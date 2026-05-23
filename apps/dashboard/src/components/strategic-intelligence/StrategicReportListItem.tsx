@@ -5,6 +5,18 @@
 
 'use client';
 
+import {
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Trash2,
+  FileText,
+  Users,
+  Calendar,
+  Target,
+} from 'lucide-react';
+import Link from 'next/link';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,17 +37,6 @@ import {
   formatScore,
   getScoreColor,
 } from '@/lib/strategicIntelligenceApi';
-import {
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-  FileText,
-  Users,
-  Calendar,
-  Target,
-} from 'lucide-react';
-import Link from 'next/link';
 
 interface StrategicReportListItemProps {
   report: ReportListItem;
@@ -48,7 +49,11 @@ export function StrategicReportListItem({
 }: StrategicReportListItemProps) {
   // getStatusColor is used for background styling in the badge component
 
-  const getStatusBadgeVariant = (): 'default' | 'secondary' | 'destructive' | 'outline' => {
+  const getStatusBadgeVariant = ():
+    | 'default'
+    | 'secondary'
+    | 'destructive'
+    | 'outline' => {
     switch (report.status) {
       case 'published':
         return 'default';
@@ -89,11 +94,16 @@ export function StrategicReportListItem({
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            <span>{formatPeriodRange(report.periodStart, report.periodEnd)}</span>
+            <span>
+              {formatPeriodRange(report.periodStart, report.periodEnd)}
+            </span>
           </div>
           {report.fiscalQuarter && report.fiscalYear && (
             <span className="text-xs bg-muted px-2 py-0.5 rounded">
-              {formatFiscalQuarter(report.fiscalYear, parseInt(report.fiscalQuarter.replace(/\D/g, ''), 10) || 1)}
+              {formatFiscalQuarter(
+                report.fiscalYear,
+                parseInt(report.fiscalQuarter.replace(/\D/g, ''), 10) || 1
+              )}
             </span>
           )}
         </div>

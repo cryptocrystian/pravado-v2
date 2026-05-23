@@ -26,7 +26,10 @@ import type {
 // SAGE DIMENSION STYLING - DS3
 // ============================================
 
-const SAGE_DIMENSION_CONFIG: Record<SAGEDimension, { label: string; color: string; bgColor: string }> = {
+const SAGE_DIMENSION_CONFIG: Record<
+  SAGEDimension,
+  { label: string; color: string; bgColor: string }
+> = {
   signal: {
     label: 'Signal',
     color: 'text-semantic-warning',
@@ -53,13 +56,17 @@ const SAGE_DIMENSION_CONFIG: Record<SAGEDimension, { label: string; color: strin
 // EVI DRIVER STYLING - DS3
 // ============================================
 
-const EVI_DRIVER_CONFIG: Record<EVIDriver, { label: string; abbrev: string }> = {
-  visibility: { label: 'Visibility', abbrev: 'Vis' },
-  authority: { label: 'Authority', abbrev: 'Auth' },
-  momentum: { label: 'Momentum', abbrev: 'Mom' },
-};
+const EVI_DRIVER_CONFIG: Record<EVIDriver, { label: string; abbrev: string }> =
+  {
+    visibility: { label: 'Visibility', abbrev: 'Vis' },
+    authority: { label: 'Authority', abbrev: 'Auth' },
+    momentum: { label: 'Momentum', abbrev: 'Mom' },
+  };
 
-const EVI_DIRECTION_CONFIG: Record<EVIDirection, { icon: string; color: string; symbol: string }> = {
+const EVI_DIRECTION_CONFIG: Record<
+  EVIDirection,
+  { icon: string; color: string; symbol: string }
+> = {
   positive: {
     icon: '↑',
     color: 'text-semantic-success',
@@ -81,7 +88,10 @@ const EVI_DIRECTION_CONFIG: Record<EVIDirection, { icon: string; color: string; 
 // AUTOMATION MODE STYLING - DS3
 // ============================================
 
-const MODE_CONFIG: Record<AutomationMode, { label: string; color: string; bgColor: string; description: string }> = {
+const MODE_CONFIG: Record<
+  AutomationMode,
+  { label: string; color: string; bgColor: string; description: string }
+> = {
   manual: {
     label: 'Manual',
     color: 'text-white/55',
@@ -142,7 +152,9 @@ function EVIIndicator({ impact, compact = false }: EVIIndicatorProps) {
   return (
     <span
       className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[13px] font-medium bg-white/10 ${directionConfig.color}`}
-      title={impact.explanation || `${driverConfig.label} ${directionConfig.symbol}`}
+      title={
+        impact.explanation || `${driverConfig.label} ${directionConfig.symbol}`
+      }
     >
       <span className="font-bold">{directionConfig.icon}</span>
       {!compact && <span>{driverConfig.abbrev}</span>}
@@ -210,7 +222,9 @@ export function ImpactStrip({
   const rationale = data?.modeRationale ?? modeRationale;
 
   // Sort SAGE contributions: primary first
-  const sortedSage = [...sage].sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
+  const sortedSage = [...sage].sort(
+    (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0)
+  );
 
   return (
     <div
@@ -235,7 +249,11 @@ export function ImpactStrip({
       {evi && <EVIIndicator impact={evi} compact={compact} />}
 
       {/* Mode Badge */}
-      <ModeBadge mode={automationMode} rationale={rationale} compact={compact} />
+      <ModeBadge
+        mode={automationMode}
+        rationale={rationale}
+        compact={compact}
+      />
     </div>
   );
 }
@@ -245,4 +263,9 @@ export function ImpactStrip({
 // ============================================
 
 export { SAGETag, EVIIndicator, ModeBadge };
-export type { SAGETagProps, EVIIndicatorProps, ModeBadgeProps, ImpactStripProps };
+export type {
+  SAGETagProps,
+  EVIIndicatorProps,
+  ModeBadgeProps,
+  ImpactStripProps,
+};

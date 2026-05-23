@@ -14,12 +14,12 @@ export default function PrivacyPage() {
   return (
     <LegalDoc title="Privacy Policy" lastUpdated="March 15, 2026">
       <P>
-        Saipien Labs LLC (&quot;Pravado&quot;, &quot;we&quot;, &quot;us&quot;, or
-        &quot;our&quot;) is committed to protecting your privacy. This Privacy
-        Policy explains how we collect, use, disclose, and safeguard your
-        information when you use the Pravado platform at{' '}
-        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink>{' '}
-        and all associated services (the &quot;Service&quot;).
+        Saipien Labs LLC (&quot;Pravado&quot;, &quot;we&quot;, &quot;us&quot;,
+        or &quot;our&quot;) is committed to protecting your privacy. This
+        Privacy Policy explains how we collect, use, disclose, and safeguard
+        your information when you use the Pravado platform at{' '}
+        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink> and
+        all associated services (the &quot;Service&quot;).
       </P>
       <P>
         By using the Service, you consent to the data practices described in
@@ -65,8 +65,8 @@ export default function PrivacyPage() {
       <P>
         We store and process content you create, upload, or manage through the
         Service, including articles, press releases, pitch drafts, SEO analyses,
-        keyword research, journalist contact information, and any other materials
-        you input into the platform.
+        keyword research, journalist contact information, and any other
+        materials you input into the platform.
       </P>
 
       <H3>2.4 Integration Data</H3>
@@ -80,16 +80,16 @@ export default function PrivacyPage() {
 
       <H3>2.5 Device and Technical Data</H3>
       <P>
-        We collect information about the device and browser you use to access the
-        Service, including IP address, browser type and version, operating
+        We collect information about the device and browser you use to access
+        the Service, including IP address, browser type and version, operating
         system, screen resolution, language preferences, and referring URLs.
       </P>
 
       <H3>2.6 Communications</H3>
       <P>
         We retain records of communications between you and our support team,
-        including emails, chat messages, and any feedback or survey responses you
-        provide.
+        including emails, chat messages, and any feedback or survey responses
+        you provide.
       </P>
 
       <HR />
@@ -107,8 +107,8 @@ export default function PrivacyPage() {
         <li>
           <strong className="text-white">AI Features</strong> -- To power
           AI-driven analysis, recommendations, and content generation within the
-          Service. Your content is processed in real time by AI models to deliver
-          personalized insights and suggestions.
+          Service. Your content is processed in real time by AI models to
+          deliver personalized insights and suggestions.
         </li>
         <li>
           <strong className="text-white">Payments</strong> -- To process
@@ -233,8 +233,8 @@ export default function PrivacyPage() {
         We retain your personal information and content data for as long as your
         account is active and as needed to provide the Service. Upon account
         termination or deletion, we retain your data for a period of 90 days to
-        allow you to request data export. After the 90-day retention period, your
-        data is permanently deleted from our systems.
+        allow you to request data export. After the 90-day retention period,
+        your data is permanently deleted from our systems.
       </P>
       <P>
         We may retain certain information beyond the 90-day period where
@@ -387,8 +387,8 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong className="text-white">Right to Opt-Out</strong> -- We do not
-          sell personal information. If this changes, we will provide a
-          &quot;Do Not Sell My Personal Information&quot; option.
+          sell personal information. If this changes, we will provide a &quot;Do
+          Not Sell My Personal Information&quot; option.
         </li>
         <li>
           <strong className="text-white">Non-Discrimination</strong> -- We will
@@ -421,10 +421,10 @@ export default function PrivacyPage() {
       <P>
         We may update this Privacy Policy from time to time. We will provide at
         least 30 days&apos; notice of material changes via email or in-product
-        notification. The &quot;Last updated&quot; date at the top of this policy
-        indicates when it was last revised. Your continued use of the Service
-        after the effective date of any changes constitutes acceptance of the
-        updated policy.
+        notification. The &quot;Last updated&quot; date at the top of this
+        policy indicates when it was last revised. Your continued use of the
+        Service after the effective date of any changes constitutes acceptance
+        of the updated policy.
       </P>
 
       <HR />

@@ -60,7 +60,12 @@ export class SEOOnPageService {
 
     // If no audit exists, generate one
     if (!audits || audits.length === 0) {
-      return this.generateAudit(orgId, pageId, auditType || 'onpage', this.mapPageFromDb(page));
+      return this.generateAudit(
+        orgId,
+        pageId,
+        auditType || 'onpage',
+        this.mapPageFromDb(page)
+      );
     }
 
     const audit = audits[0];
@@ -75,7 +80,10 @@ export class SEOOnPageService {
 
     const mappedAudit = this.mapAuditFromDb(audit);
     const mappedIssues = issues ? issues.map(this.mapIssueFromDb) : [];
-    const recommendations = this.generateRecommendations(mappedIssues, this.mapPageFromDb(page));
+    const recommendations = this.generateRecommendations(
+      mappedIssues,
+      this.mapPageFromDb(page)
+    );
 
     return {
       audit: mappedAudit,
@@ -160,7 +168,9 @@ export class SEOOnPageService {
       score,
       status: 'completed',
       issues_count: issues.filter((i) => i.severity === 'high').length,
-      warnings_count: issues.filter((i) => i.severity === 'medium' || i.severity === 'low').length,
+      warnings_count: issues.filter(
+        (i) => i.severity === 'medium' || i.severity === 'low'
+      ).length,
       notes: `Generated on-page audit for ${page.url}`,
       snapshot_at: new Date().toISOString(),
     };
@@ -217,7 +227,10 @@ export class SEOOnPageService {
    */
   private computeOnPageScore(page: SEOPage): {
     score: number;
-    issues: Omit<SEOPageIssue, 'id' | 'orgId' | 'auditId' | 'pageId' | 'createdAt' | 'updatedAt'>[];
+    issues: Omit<
+      SEOPageIssue,
+      'id' | 'orgId' | 'auditId' | 'pageId' | 'createdAt' | 'updatedAt'
+    >[];
   } {
     let score = 100;
     const issues: Omit<

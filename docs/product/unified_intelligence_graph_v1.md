@@ -35,28 +35,28 @@ A unified knowledge graph that:
 
 The graph supports 40+ node types covering all integrated systems:
 
-| Category | Node Types |
-|----------|-----------|
-| Content | `content_piece`, `content_brief`, `content_topic`, `narrative`, `keyword` |
-| People | `journalist`, `author`, `spokesperson`, `audience_persona` |
-| Organizations | `media_outlet`, `competitor`, `agency` |
-| Campaigns | `campaign`, `playbook`, `outreach_sequence`, `pitch` |
-| Performance | `media_mention`, `coverage`, `alert`, `sentiment` |
-| Analytics | `metric`, `trend`, `insight`, `benchmark` |
-| System | `playbook_run`, `user`, `team` |
+| Category      | Node Types                                                                |
+| ------------- | ------------------------------------------------------------------------- |
+| Content       | `content_piece`, `content_brief`, `content_topic`, `narrative`, `keyword` |
+| People        | `journalist`, `author`, `spokesperson`, `audience_persona`                |
+| Organizations | `media_outlet`, `competitor`, `agency`                                    |
+| Campaigns     | `campaign`, `playbook`, `outreach_sequence`, `pitch`                      |
+| Performance   | `media_mention`, `coverage`, `alert`, `sentiment`                         |
+| Analytics     | `metric`, `trend`, `insight`, `benchmark`                                 |
+| System        | `playbook_run`, `user`, `team`                                            |
 
 ### Edge Types
 
 37 relationship types capture connections:
 
-| Category | Edge Types |
-|----------|-----------|
-| Authorship | `authored_by`, `attributed_to`, `quoted_in` |
-| Coverage | `covers_topic`, `mentioned_in`, `related_to` |
-| Hierarchy | `part_of`, `belongs_to`, `derived_from` |
-| Influence | `influences`, `competes_with`, `precedes` |
-| Performance | `measured_by`, `resulted_in`, `targets` |
-| Workflow | `created_by`, `approved_by`, `triggered` |
+| Category    | Edge Types                                   |
+| ----------- | -------------------------------------------- |
+| Authorship  | `authored_by`, `attributed_to`, `quoted_in`  |
+| Coverage    | `covers_topic`, `mentioned_in`, `related_to` |
+| Hierarchy   | `part_of`, `belongs_to`, `derived_from`      |
+| Influence   | `influences`, `competes_with`, `precedes`    |
+| Performance | `measured_by`, `resulted_in`, `targets`      |
+| Workflow    | `created_by`, `approved_by`, `triggered`     |
 
 ### Graph Metrics
 
@@ -87,35 +87,35 @@ intelligence_graph_audit_log - Operation audit trail
 
 All endpoints under `/api/v1/unified-graph`:
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /nodes | Create node |
-| GET | /nodes/:id | Get node |
-| PATCH | /nodes/:id | Update node |
-| DELETE | /nodes/:id | Delete node |
-| GET | /nodes/:id/connections | Get node with edges/neighbors |
-| GET | /nodes | List nodes with filters |
-| POST | /edges | Create edge |
-| GET | /edges/:id | Get edge |
-| PATCH | /edges/:id | Update edge |
-| DELETE | /edges/:id | Delete edge |
-| GET | /edges/:id/with-nodes | Get edge with source/target |
-| GET | /edges | List edges with filters |
-| POST | /merge | Merge duplicate nodes |
-| POST | /query | Execute graph query |
-| POST | /traverse | BFS graph traversal |
-| POST | /path | Find shortest path |
-| POST | /explain-path | LLM-powered path explanation |
-| POST | /search | Semantic vector search |
-| GET | /metrics | Get current metrics |
-| POST | /metrics/compute | Compute centrality/clusters |
-| POST | /embeddings/generate | Generate vector embeddings |
-| POST | /snapshots | Create snapshot |
-| GET | /snapshots/:id | Get snapshot |
-| GET | /snapshots | List snapshots |
-| POST | /snapshots/:id/regenerate | Regenerate snapshot |
-| GET | /audit | List audit logs |
-| GET | /stats | Get graph statistics |
+| Method | Endpoint                  | Description                   |
+| ------ | ------------------------- | ----------------------------- |
+| POST   | /nodes                    | Create node                   |
+| GET    | /nodes/:id                | Get node                      |
+| PATCH  | /nodes/:id                | Update node                   |
+| DELETE | /nodes/:id                | Delete node                   |
+| GET    | /nodes/:id/connections    | Get node with edges/neighbors |
+| GET    | /nodes                    | List nodes with filters       |
+| POST   | /edges                    | Create edge                   |
+| GET    | /edges/:id                | Get edge                      |
+| PATCH  | /edges/:id                | Update edge                   |
+| DELETE | /edges/:id                | Delete edge                   |
+| GET    | /edges/:id/with-nodes     | Get edge with source/target   |
+| GET    | /edges                    | List edges with filters       |
+| POST   | /merge                    | Merge duplicate nodes         |
+| POST   | /query                    | Execute graph query           |
+| POST   | /traverse                 | BFS graph traversal           |
+| POST   | /path                     | Find shortest path            |
+| POST   | /explain-path             | LLM-powered path explanation  |
+| POST   | /search                   | Semantic vector search        |
+| GET    | /metrics                  | Get current metrics           |
+| POST   | /metrics/compute          | Compute centrality/clusters   |
+| POST   | /embeddings/generate      | Generate vector embeddings    |
+| POST   | /snapshots                | Create snapshot               |
+| GET    | /snapshots/:id            | Get snapshot                  |
+| GET    | /snapshots                | List snapshots                |
+| POST   | /snapshots/:id/regenerate | Regenerate snapshot           |
+| GET    | /audit                    | List audit logs               |
+| GET    | /stats                    | Get graph statistics          |
 
 ## Key Features
 
@@ -209,16 +209,16 @@ Three-panel layout:
 
 ### Components
 
-| Component | Purpose |
-|-----------|---------|
-| `GraphNodeCard` | Compact/full node display |
-| `GraphEdgeCard` | Edge display with endpoints |
+| Component                 | Purpose                            |
+| ------------------------- | ---------------------------------- |
+| `GraphNodeCard`           | Compact/full node display          |
+| `GraphEdgeCard`           | Edge display with endpoints        |
 | `GraphVisualizationPanel` | Canvas-based force-directed layout |
-| `GraphMetricsPanel` | Analytics and distributions |
-| `NodeInspectorDrawer` | Detailed node view/edit |
-| `EdgeInspectorDrawer` | Detailed edge view/edit |
-| `SnapshotPanel` | Snapshot list and creation |
-| `GraphQueryBuilder` | Filter/traverse/semantic query UI |
+| `GraphMetricsPanel`       | Analytics and distributions        |
+| `NodeInspectorDrawer`     | Detailed node view/edit            |
+| `EdgeInspectorDrawer`     | Detailed edge view/edit            |
+| `SnapshotPanel`           | Snapshot list and creation         |
+| `GraphQueryBuilder`       | Filter/traverse/semantic query UI  |
 
 ## Integration Points
 
@@ -338,7 +338,7 @@ OPENAI_API_KEY          - Required for embeddings/explanations
 ### Feature Flag
 
 ```typescript
-ENABLE_UNIFIED_INTELLIGENCE_GRAPH: true
+ENABLE_UNIFIED_INTELLIGENCE_GRAPH: true;
 ```
 
 ## Changelog

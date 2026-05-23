@@ -15,9 +15,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { useEVIHistory } from '@/lib/useEVI';
-import { useAnalyticsDate } from './AnalyticsDateContext';
+
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+import { useEVIHistory } from '@/lib/useEVI';
+
+import { useAnalyticsDate } from './AnalyticsDateContext';
 
 function CustomTooltip({
   active,
@@ -36,7 +38,9 @@ function CustomTooltip({
       {payload.map((p) => (
         <p
           key={p.dataKey}
-          className={p.dataKey === 'prior' ? 'text-white/40' : 'text-cc-cyan font-medium'}
+          className={
+            p.dataKey === 'prior' ? 'text-white/40' : 'text-cc-cyan font-medium'
+          }
         >
           {p.dataKey === 'prior' ? 'Prior period' : 'Your EVI'}: {p.value}
         </p>
@@ -58,14 +62,19 @@ export function EviGrowthChart() {
   const { days, comparisonEnabled } = useAnalyticsDate();
 
   // Fetch current period + prior period (2x days to cover both)
-  const { data: history, isLoading } = useEVIHistory(comparisonEnabled ? days * 2 : days);
+  const { data: history, isLoading } = useEVIHistory(
+    comparisonEnabled ? days * 2 : days
+  );
 
   if (isLoading) return <ChartSkeleton />;
 
   // Deduplicate: keep only the last data point per calendar date
   const byDate = new Map<string, number>();
   for (const point of history) {
-    const label = new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const label = new Date(point.date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
     byDate.set(label, Number(point.evi_score));
   }
   const allPoints = Array.from(byDate, ([date, evi]) => ({ date, evi }));
@@ -90,8 +99,16 @@ export function EviGrowthChart() {
     <div className="bg-cc-surface border border-white/8 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-white">
-          EVI Growth Story ({days} days) <InfoTooltip content="Your EVI score over time. Upward trends mean AI engines are citing your brand more frequently and more prominently. Dips often follow competitor content surges." size={12} />
-          {comparisonEnabled && <span className="text-white/40 font-normal ml-2">vs prior period</span>}
+          EVI Growth Story ({days} days){' '}
+          <InfoTooltip
+            content="Your EVI score over time. Upward trends mean AI engines are citing your brand more frequently and more prominently. Dips often follow competitor content surges."
+            size={12}
+          />
+          {comparisonEnabled && (
+            <span className="text-white/40 font-normal ml-2">
+              vs prior period
+            </span>
+          )}
         </h3>
       </div>
 
@@ -140,7 +157,8 @@ export function EviGrowthChart() {
         </ResponsiveContainer>
       ) : (
         <div className="flex items-center justify-center h-[240px] text-white/30 text-sm">
-          No trend data yet. EVI history will appear after the first calculation.
+          No trend data yet. EVI history will appear after the first
+          calculation.
         </div>
       )}
     </div>

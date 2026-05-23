@@ -8,11 +8,11 @@ This guide explains how to test the PR Pillar end-to-end with real database pers
 
 The dashboard may be deployed with a basePath (e.g., `/app`). All API paths are relative to the Next.js app root, NOT the basePath.
 
-| Deployment | basePath | API Path Example |
-|------------|----------|------------------|
-| Local dev | (none) | `http://localhost:3000/api/pr/_status` |
-| Staging | `/app` | `https://staging.pravado.io/app/api/pr/_status` |
-| Production | `/app` | `https://pravado.io/app/api/pr/_status` |
+| Deployment | basePath | API Path Example                                |
+| ---------- | -------- | ----------------------------------------------- |
+| Local dev  | (none)   | `http://localhost:3000/api/pr/_status`          |
+| Staging    | `/app`   | `https://staging.pravado.io/app/api/pr/_status` |
+| Production | `/app`   | `https://pravado.io/app/api/pr/_status`         |
 
 **Key insight**: In browser DevTools or curl, always include the basePath prefix when deployed.
 
@@ -74,15 +74,15 @@ PRAVADO_STRICT_API=1
 
 The seed script creates realistic test data:
 
-| Entity | Count | Description |
-|--------|-------|-------------|
-| `journalist_profiles` | 15 | Journalist contacts with varied profiles |
-| `pr_pitch_sequences` | 5 | Pitch campaigns in various stages |
-| `pr_pitch_contacts` | 5-15 | Contacts attached to sequences |
-| `pr_pitch_events` | ~10 | Pitch event history |
-| `journalist_activity_log` | 12 | Touch/activity records |
-| `media_lists` | 4 | Saved journalist lists |
-| `media_list_entries` | 12-20 | List membership records |
+| Entity                    | Count | Description                              |
+| ------------------------- | ----- | ---------------------------------------- |
+| `journalist_profiles`     | 15    | Journalist contacts with varied profiles |
+| `pr_pitch_sequences`      | 5     | Pitch campaigns in various stages        |
+| `pr_pitch_contacts`       | 5-15  | Contacts attached to sequences           |
+| `pr_pitch_events`         | ~10   | Pitch event history                      |
+| `journalist_activity_log` | 12    | Touch/activity records                   |
+| `media_lists`             | 4     | Saved journalist lists                   |
+| `media_list_entries`      | 12-20 | List membership records                  |
 
 ### Seed Commands
 
@@ -100,6 +100,7 @@ pnpm seed:pr:clean
 ### Seed Data Identification
 
 All seeded data includes a marker for easy cleanup:
+
 - `metadata.seed_marker = 'pravado_pr_seed_v1'`
 
 This allows the `--clean` flag to remove only seeded data without affecting real user data.
@@ -157,24 +158,24 @@ pnpm verify:pr --warn-only
 
 ### Read Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/pr/journalists` | GET | List journalist contacts |
-| `/api/pr/lists` | GET | List media lists |
-| `/api/pr/pitches/sequences` | GET | List pitch sequences |
-| `/api/pr/inbox` | GET | Computed inbox items |
-| `/api/pr/touches` | GET | Activity log |
-| `/api/pr/status` | GET | Backend status (dev only) |
+| Endpoint                    | Method | Description               |
+| --------------------------- | ------ | ------------------------- |
+| `/api/pr/journalists`       | GET    | List journalist contacts  |
+| `/api/pr/lists`             | GET    | List media lists          |
+| `/api/pr/pitches/sequences` | GET    | List pitch sequences      |
+| `/api/pr/inbox`             | GET    | Computed inbox items      |
+| `/api/pr/touches`           | GET    | Activity log              |
+| `/api/pr/status`            | GET    | Backend status (dev only) |
 
 ### Write Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/pr/journalists` | POST | Create journalist |
-| `/api/pr/lists` | POST | Create media list |
-| `/api/pr/pitches/sequences` | POST | Create pitch sequence |
-| `/api/pr/touches` | POST | Log a touch/activity |
-| `/api/pr/pitches/manual-send` | POST | Manual pitch send (NON-NEGOTIABLE: Manual only) |
+| Endpoint                      | Method | Description                                     |
+| ----------------------------- | ------ | ----------------------------------------------- |
+| `/api/pr/journalists`         | POST   | Create journalist                               |
+| `/api/pr/lists`               | POST   | Create media list                               |
+| `/api/pr/pitches/sequences`   | POST   | Create pitch sequence                           |
+| `/api/pr/touches`             | POST   | Log a touch/activity                            |
+| `/api/pr/pitches/manual-send` | POST   | Manual pitch send (NON-NEGOTIABLE: Manual only) |
 
 ### Diagnostic Endpoints
 
@@ -187,6 +188,7 @@ curl http://localhost:3000/api/whoami
 ```
 
 Returns:
+
 ```json
 {
   "appName": "pravado-dashboard",
@@ -211,6 +213,7 @@ curl -v http://localhost:3000/api/pr/status
 ```
 
 Returns:
+
 ```json
 {
   "timestamp": "2026-01-20T...",
@@ -221,7 +224,7 @@ Returns:
     "allowMockFallback": false
   },
   "auth": {
-    "status": "ok",       // or "missing_session", "no_org", "error"
+    "status": "ok", // or "missing_session", "no_org", "error"
     "userId": "uuid",
     "orgId": "uuid"
   },
@@ -248,13 +251,13 @@ Returns:
 
 All PR API routes include a response header `x-pr-auth` that indicates auth status:
 
-| Value | Meaning |
-|-------|---------|
-| `ok` | Authenticated with valid org |
-| `missing_session` | No user session (401) |
-| `no_org` | User has no org membership (403) |
-| `forbidden` | Permission denied (403) |
-| `error` | Server error (500) |
+| Value             | Meaning                          |
+| ----------------- | -------------------------------- |
+| `ok`              | Authenticated with valid org     |
+| `missing_session` | No user session (401)            |
+| `no_org`          | User has no org membership (403) |
+| `forbidden`       | Permission denied (403)          |
+| `error`           | Server error (500)               |
 
 **How to view**: In browser DevTools → Network tab → Select request → Headers → Response Headers → `x-pr-auth`
 
@@ -267,6 +270,7 @@ The PR pillar supports **manual-only sending** of pitches. The system enforces t
 When clicking "Send Now (Manual)" in the Pitch Detail Panel:
 
 **Expected Request:**
+
 ```http
 POST /api/pr/pitches/manual-send
 Content-Type: application/json
@@ -279,6 +283,7 @@ Content-Type: application/json
 ```
 
 **Verification Steps:**
+
 1. Open browser DevTools → Network tab
 2. Filter by "manual-send"
 3. Click "Send Now (Manual)" button on a pending pitch
@@ -287,6 +292,7 @@ Content-Type: application/json
 6. Verify response status is `200` or `201`
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -300,13 +306,14 @@ Content-Type: application/json
 
 After successful send, the pitch contact should transition:
 
-| Before | After |
-|--------|-------|
-| `status: pending` | `status: active` |
-| `last_step_sent: 0` | `last_step_sent: 1` |
-| `sent_at: null` | `sent_at: <timestamp>` |
+| Before              | After                  |
+| ------------------- | ---------------------- |
+| `status: pending`   | `status: active`       |
+| `last_step_sent: 0` | `last_step_sent: 1`    |
+| `sent_at: null`     | `sent_at: <timestamp>` |
 
 **Database Verification (Supabase SQL Editor):**
+
 ```sql
 -- Check sequence contact status after send
 SELECT
@@ -337,6 +344,7 @@ LIMIT 1;
 ```
 
 **Expected Results:**
+
 - `pr_sequence_contacts.status` = `'active'`
 - `pr_sequence_contacts.last_step_sent` = step position sent
 - `pr_sequence_contacts.sent_at` = timestamp of send
@@ -347,6 +355,7 @@ LIMIT 1;
 The manual send API includes attribution data for tracking and audit:
 
 **Expected Attribution in Event:**
+
 ```json
 {
   "attribution": {
@@ -361,6 +370,7 @@ The manual send API includes attribution data for tracking and audit:
 ```
 
 **Verification via Database:**
+
 ```sql
 -- Check attribution on the pitch event
 SELECT
@@ -374,6 +384,7 @@ LIMIT 1;
 ```
 
 **API Endpoint Validation:**
+
 - Check server logs for the `/api/pr/pitches/manual-send` route
 - Verify attribution metadata is stored with the outreach record
 - Confirm audit trail shows user who triggered the send
@@ -382,16 +393,17 @@ LIMIT 1;
 
 The Manual Send button provides clear feedback at each state:
 
-| State | UI Behavior |
-|-------|-------------|
-| Idle | "Send Now (Manual)" button visible, enabled |
+| State   | UI Behavior                                       |
+| ------- | ------------------------------------------------- |
+| Idle    | "Send Now (Manual)" button visible, enabled       |
 | Loading | Button shows spinner, disabled, text "Sending..." |
-| Success | Toast appears: "Email sent successfully" |
-| Error | Toast appears: "Failed to send email" with reason |
+| Success | Toast appears: "Email sent successfully"          |
+| Error   | Toast appears: "Failed to send email" with reason |
 
 **Test Scenarios:**
 
 #### Happy Path
+
 1. Navigate to PR → Pipeline
 2. Select a pitch in "draft" or "pending" stage
 3. Click "Send Now (Manual)" button
@@ -401,14 +413,15 @@ The Manual Send button provides clear feedback at each state:
 7. Verify SWR cache revalidates (list refreshes automatically)
 
 #### Error Cases
-| Scenario | Expected Behavior |
-|----------|-------------------|
-| Missing sequence ID | Error toast: "Missing sequence or contact ID" |
-| Missing contact ID | Error toast: "Missing sequence or contact ID" |
-| Network failure | Error toast with retry option |
-| Auth error (401) | Redirect to login page |
-| Permission denied (403) | Error toast: "Permission denied" |
-| Server error (500) | Error toast with retry option |
+
+| Scenario                | Expected Behavior                             |
+| ----------------------- | --------------------------------------------- |
+| Missing sequence ID     | Error toast: "Missing sequence or contact ID" |
+| Missing contact ID      | Error toast: "Missing sequence or contact ID" |
+| Network failure         | Error toast with retry option                 |
+| Auth error (401)        | Redirect to login page                        |
+| Permission denied (403) | Error toast: "Permission denied"              |
+| Server error (500)      | Error toast with retry option                 |
 
 ### 5. Manual Send CI Verification
 
@@ -454,6 +467,7 @@ Browser API calls must include auth cookies. Here's how to verify:
 6. Look for `Cookie:` header containing `sb-*` tokens
 
 If cookies are missing, check:
+
 - You're logged in (auth cookies exist in Application → Cookies)
 - Request is same-origin (no CORS issues)
 - `credentials: 'include'` is set in fetch calls
@@ -474,11 +488,11 @@ curl -v \
 
 ### Common Cookie Issues
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `x-pr-auth: missing_session` | No cookies sent | Check same-origin, credentials mode |
-| `x-pr-auth: no_org` | Authenticated but no org | User needs org membership |
-| Cookies present but 401 | Expired tokens | Log out and back in |
+| Symptom                      | Cause                    | Fix                                 |
+| ---------------------------- | ------------------------ | ----------------------------------- |
+| `x-pr-auth: missing_session` | No cookies sent          | Check same-origin, credentials mode |
+| `x-pr-auth: no_org`          | Authenticated but no org | User needs org membership           |
+| Cookies present but 401      | Expired tokens           | Log out and back in                 |
 
 ## Troubleshooting
 
@@ -493,6 +507,7 @@ The user is not authenticated or not a member of any organization.
 The seed script requires an existing org and user.
 
 **Fix**:
+
 1. Ensure migrations are applied
 2. Create an org and user first
 3. Re-run `pnpm seed:pr`
@@ -500,6 +515,7 @@ The seed script requires an existing org and user.
 ### Inbox shows no items
 
 Inbox items are computed from DB state:
+
 - **Relationship decay**: Journalists with `engagement_score < 0.4` and `last_activity_at > 30 days ago`
 - **Follow-ups**: Active sequences created 5-7 days ago
 - **Approvals**: Draft sequences
@@ -533,12 +549,12 @@ pnpm test:e2e:ui
 
 ### Pages Covered
 
-| Page | Test File |
-|------|-----------|
+| Page           | Test File                                    |
+| -------------- | -------------------------------------------- |
 | Command Center | `tests/visual/ds3-visual-regression.spec.ts` |
-| PR Inbox | `tests/visual/ds3-visual-regression.spec.ts` |
-| PR Database | `tests/visual/ds3-visual-regression.spec.ts` |
-| PR Pitches | `tests/visual/ds3-visual-regression.spec.ts` |
+| PR Inbox       | `tests/visual/ds3-visual-regression.spec.ts` |
+| PR Database    | `tests/visual/ds3-visual-regression.spec.ts` |
+| PR Pitches     | `tests/visual/ds3-visual-regression.spec.ts` |
 
 ### Typography CI Check
 
@@ -664,26 +680,30 @@ When strict mode is enabled and the backend fails, the UI should display:
 Example error component pattern:
 
 ```tsx
-{error && config.isStrictApi && (
-  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-    <h3 className="font-medium text-red-800">Unable to load data</h3>
-    <p className="text-sm text-red-600 mt-1">{error.message}</p>
-    <div className="flex gap-2 mt-3">
-      <button onClick={retry}>Retry</button>
-      <a href="/api/pr/status" target="_blank">Open Status</a>
+{
+  error && config.isStrictApi && (
+    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+      <h3 className="font-medium text-red-800">Unable to load data</h3>
+      <p className="text-sm text-red-600 mt-1">{error.message}</p>
+      <div className="flex gap-2 mt-3">
+        <button onClick={retry}>Retry</button>
+        <a href="/api/pr/status" target="_blank">
+          Open Status
+        </a>
+      </div>
     </div>
-  </div>
-)}
+  );
+}
 ```
 
 ### Environment Variables Reference
 
-| Variable | Values | Default | Description |
-|----------|--------|---------|-------------|
-| `PRAVADO_STRICT_API` | `1`, `true` | `0` | Disables ALL mock fallback |
-| `PRAVADO_DEMO_MODE` | `1`, `true` | `0` | Enables mock fallback (when strict is off) |
-| `NEXT_PUBLIC_BASE_URL` | URL | `http://localhost:3000` | Base URL for smoke test API calls |
-| `NEXT_PUBLIC_BASE_PATH` | Path | `` | Base path if app is mounted at subpath |
+| Variable                | Values      | Default                 | Description                                |
+| ----------------------- | ----------- | ----------------------- | ------------------------------------------ |
+| `PRAVADO_STRICT_API`    | `1`, `true` | `0`                     | Disables ALL mock fallback                 |
+| `PRAVADO_DEMO_MODE`     | `1`, `true` | `0`                     | Enables mock fallback (when strict is off) |
+| `NEXT_PUBLIC_BASE_URL`  | URL         | `http://localhost:3000` | Base URL for smoke test API calls          |
+| `NEXT_PUBLIC_BASE_PATH` | Path        | ``                      | Base path if app is mounted at subpath     |
 
 ### Troubleshooting Strict Mode
 

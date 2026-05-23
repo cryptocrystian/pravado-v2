@@ -4,7 +4,12 @@
  * @see /docs/canon/SEO_AEO_PILLAR_CANON.md
  */
 
-export type SEOView = 'overview' | 'aeo' | 'technical' | 'intelligence' | 'exceptions';
+export type SEOView =
+  | 'overview'
+  | 'aeo'
+  | 'technical'
+  | 'intelligence'
+  | 'exceptions';
 
 export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
 
@@ -16,9 +21,9 @@ export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
 
 export interface AEOScoreBreakdown {
   entityClarity: number; // 0-100, weight 30%
-  schema: number;        // 0-100, weight 25%
+  schema: number; // 0-100, weight 25%
   semanticDepth: number; // 0-100, weight 25%
-  authority: number;     // 0-100, weight 20%
+  authority: number; // 0-100, weight 20%
 }
 
 export function computeAEOScore(breakdown: AEOScoreBreakdown): number {
@@ -68,7 +73,13 @@ export interface SEOAsset {
 
 export interface TechnicalFinding {
   id: string;
-  category: 'performance' | 'crawlability' | 'indexing' | 'structured-data' | 'mobile' | 'security';
+  category:
+    | 'performance'
+    | 'crawlability'
+    | 'indexing'
+    | 'structured-data'
+    | 'mobile'
+    | 'security';
   severity: 'critical' | 'warning' | 'info';
   title: string;
   description: string;
@@ -135,20 +146,72 @@ export interface AutopilotExecution {
 // CATEGORY CONFIG
 // ============================================
 
-export const FINDING_CATEGORY_CONFIG: Record<TechnicalFinding['category'], { label: string; color: string }> = {
-  performance: { label: 'Performance', color: 'bg-brand-amber/10 text-brand-amber border-brand-amber/30' },
-  crawlability: { label: 'Crawlability', color: 'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/30' },
-  indexing: { label: 'Indexing', color: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30' },
-  'structured-data': { label: 'Schema', color: 'bg-brand-iris/10 text-brand-iris border-brand-iris/30' },
-  mobile: { label: 'Mobile', color: 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' },
-  security: { label: 'Security', color: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20' },
+export const FINDING_CATEGORY_CONFIG: Record<
+  TechnicalFinding['category'],
+  { label: string; color: string }
+> = {
+  performance: {
+    label: 'Performance',
+    color: 'bg-brand-amber/10 text-brand-amber border-brand-amber/30',
+  },
+  crawlability: {
+    label: 'Crawlability',
+    color: 'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/30',
+  },
+  indexing: {
+    label: 'Indexing',
+    color: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30',
+  },
+  'structured-data': {
+    label: 'Schema',
+    color: 'bg-brand-iris/10 text-brand-iris border-brand-iris/30',
+  },
+  mobile: {
+    label: 'Mobile',
+    color: 'bg-brand-teal/10 text-brand-teal border-brand-teal/30',
+  },
+  security: {
+    label: 'Security',
+    color:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+  },
 };
 
-export const SEVERITY_CONFIG: Record<string, { label: string; color: string; order: number }> = {
-  critical: { label: 'Critical', color: 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20', order: 0 },
-  high: { label: 'High', color: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20', order: 1 },
-  warning: { label: 'Warning', color: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20', order: 1 },
-  medium: { label: 'Medium', color: 'bg-brand-amber/10 text-brand-amber border-brand-amber/30', order: 2 },
-  low: { label: 'Low', color: 'bg-white/5 text-white/50 border-white/10', order: 3 },
-  info: { label: 'Info', color: 'bg-white/5 text-white/50 border-white/10', order: 3 },
+export const SEVERITY_CONFIG: Record<
+  string,
+  { label: string; color: string; order: number }
+> = {
+  critical: {
+    label: 'Critical',
+    color:
+      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
+    order: 0,
+  },
+  high: {
+    label: 'High',
+    color:
+      'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    order: 1,
+  },
+  warning: {
+    label: 'Warning',
+    color:
+      'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    order: 1,
+  },
+  medium: {
+    label: 'Medium',
+    color: 'bg-brand-amber/10 text-brand-amber border-brand-amber/30',
+    order: 2,
+  },
+  low: {
+    label: 'Low',
+    color: 'bg-white/5 text-white/50 border-white/10',
+    order: 3,
+  },
+  info: {
+    label: 'Info',
+    color: 'bg-white/5 text-white/50 border-white/10',
+    order: 3,
+  },
 };

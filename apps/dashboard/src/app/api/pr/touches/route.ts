@@ -15,7 +15,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -29,7 +33,9 @@ export async function POST(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/touches] POST Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/touches] POST Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -62,15 +68,20 @@ export async function POST(request: NextRequest) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/touches] POST: Logged touch ${result.id} for journalist ${body.journalistId}`);
+      console.log(
+        `[API /api/pr/touches] POST: Logged touch ${result.id} for journalist ${body.journalistId}`
+      );
     }
 
-    const response = NextResponse.json({
-      success: true,
-      touchId: result.id,
-      journalistId: body.journalistId,
-      activityType: body.activityType,
-    }, { status: 201 });
+    const response = NextResponse.json(
+      {
+        success: true,
+        touchId: result.id,
+        journalistId: body.journalistId,
+        activityType: body.activityType,
+      },
+      { status: 201 }
+    );
     return addPRAuthHeader(response, 'ok');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
@@ -91,7 +102,9 @@ export async function GET(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/touches] GET Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/touches] GET Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }

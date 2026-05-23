@@ -145,9 +145,9 @@ describe('Plan Management (S33) - BillingService', () => {
         updatedAt: '2025-01-01T00:00:00Z',
       });
 
-      await expect(billingService.switchOrgPlan('org-123', 'starter')).rejects.toThrow(
-        BillingQuotaError
-      );
+      await expect(
+        billingService.switchOrgPlan('org-123', 'starter')
+      ).rejects.toThrow(BillingQuotaError);
     });
 
     it('should allow downgrade when usage is within target plan limits', async () => {
@@ -268,11 +268,19 @@ describe('Plan Management (S33) - BillingService', () => {
         updatedAt: '2025-01-01T00:00:00Z',
       });
 
-      const generateAlertSpy = vi.spyOn(billingService as any, 'generatePlanChangeAlert');
+      const generateAlertSpy = vi.spyOn(
+        billingService as any,
+        'generatePlanChangeAlert'
+      );
 
       await billingService.switchOrgPlan('org-123', 'growth');
 
-      expect(generateAlertSpy).toHaveBeenCalledWith('org-123', 'starter', 'growth', true);
+      expect(generateAlertSpy).toHaveBeenCalledWith(
+        'org-123',
+        'starter',
+        'growth',
+        true
+      );
     });
   });
 
@@ -336,7 +344,8 @@ describe('Plan Management (S33) - BillingService', () => {
         },
       ]);
 
-      const recommendation = await billingService.getPlanRecommendations('org-123');
+      const recommendation =
+        await billingService.getPlanRecommendations('org-123');
 
       expect(recommendation).toBe('growth');
     });
@@ -400,7 +409,8 @@ describe('Plan Management (S33) - BillingService', () => {
         },
       ]);
 
-      const recommendation = await billingService.getPlanRecommendations('org-123');
+      const recommendation =
+        await billingService.getPlanRecommendations('org-123');
 
       expect(recommendation).toBe('growth');
     });
@@ -431,7 +441,8 @@ describe('Plan Management (S33) - BillingService', () => {
         softLimits: {},
       });
 
-      const recommendation = await billingService.getPlanRecommendations('org-123');
+      const recommendation =
+        await billingService.getPlanRecommendations('org-123');
 
       expect(recommendation).toBeNull();
     });
@@ -462,7 +473,8 @@ describe('Plan Management (S33) - BillingService', () => {
         softLimits: {},
       });
 
-      const recommendation = await billingService.getPlanRecommendations('org-123');
+      const recommendation =
+        await billingService.getPlanRecommendations('org-123');
 
       expect(recommendation).toBeNull();
     });
@@ -470,7 +482,9 @@ describe('Plan Management (S33) - BillingService', () => {
 
   describe('buildOrgBillingSummaryEnriched()', () => {
     it('should include daysUntilRenewal when period end is set', async () => {
-      const futureDate = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(); // 15 days from now
+      const futureDate = new Date(
+        Date.now() + 15 * 24 * 60 * 60 * 1000
+      ).toISOString(); // 15 days from now
 
       vi.spyOn(billingService, 'buildOrgBillingSummary').mockResolvedValue({
         plan: {
@@ -497,9 +511,12 @@ describe('Plan Management (S33) - BillingService', () => {
         softLimits: {},
       });
 
-      vi.spyOn(billingService, 'getPlanRecommendations').mockResolvedValue(null);
+      vi.spyOn(billingService, 'getPlanRecommendations').mockResolvedValue(
+        null
+      );
 
-      const enrichedSummary = await billingService.buildOrgBillingSummaryEnriched('org-123');
+      const enrichedSummary =
+        await billingService.buildOrgBillingSummaryEnriched('org-123');
 
       expect(enrichedSummary?.daysUntilRenewal).toBeGreaterThanOrEqual(14);
       expect(enrichedSummary?.daysUntilRenewal).toBeLessThanOrEqual(15);
@@ -531,13 +548,19 @@ describe('Plan Management (S33) - BillingService', () => {
         softLimits: {},
       });
 
-      vi.spyOn(billingService as any, 'getOverageSummaryForOrg').mockResolvedValue({
+      vi.spyOn(
+        billingService as any,
+        'getOverageSummaryForOrg'
+      ).mockResolvedValue({
         totalCost: 10500, // $105 in cents
       });
 
-      vi.spyOn(billingService, 'getPlanRecommendations').mockResolvedValue('growth');
+      vi.spyOn(billingService, 'getPlanRecommendations').mockResolvedValue(
+        'growth'
+      );
 
-      const enrichedSummary = await billingService.buildOrgBillingSummaryEnriched('org-123');
+      const enrichedSummary =
+        await billingService.buildOrgBillingSummaryEnriched('org-123');
 
       expect(enrichedSummary?.projectedOverageCost).toBe(10500);
     });
@@ -568,17 +591,23 @@ describe('Plan Management (S33) - BillingService', () => {
         softLimits: {},
       });
 
-      vi.spyOn(billingService, 'getPlanRecommendations').mockResolvedValue('growth');
+      vi.spyOn(billingService, 'getPlanRecommendations').mockResolvedValue(
+        'growth'
+      );
 
-      const enrichedSummary = await billingService.buildOrgBillingSummaryEnriched('org-123');
+      const enrichedSummary =
+        await billingService.buildOrgBillingSummaryEnriched('org-123');
 
       expect(enrichedSummary?.recommendedPlanSlug).toBe('growth');
     });
 
     it('should return null when base summary is null', async () => {
-      vi.spyOn(billingService, 'buildOrgBillingSummary').mockResolvedValue(null);
+      vi.spyOn(billingService, 'buildOrgBillingSummary').mockResolvedValue(
+        null
+      );
 
-      const enrichedSummary = await billingService.buildOrgBillingSummaryEnriched('org-123');
+      const enrichedSummary =
+        await billingService.buildOrgBillingSummaryEnriched('org-123');
 
       expect(enrichedSummary).toBeNull();
     });
@@ -591,7 +620,11 @@ describe('Plan Management (S33) - StripeService Integration', () => {
   beforeEach(() => {
     // Note: StripeService tests would require proper Stripe mocking
     // This is a simplified version for demonstration
-    stripeService = new StripeService(supabase, 'sk_test_fake', 'whsec_test_fake');
+    stripeService = new StripeService(
+      supabase,
+      'sk_test_fake',
+      'whsec_test_fake'
+    );
     vi.clearAllMocks();
   });
 

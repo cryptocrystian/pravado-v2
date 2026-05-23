@@ -9,11 +9,17 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import type { Factor } from '@supabase/supabase-js';
+import { useState, useEffect, useCallback } from 'react';
 
-type MFAState = 'loading' | 'not-enrolled' | 'enrolling' | 'verifying' | 'enrolled';
+import { supabase } from '@/lib/supabaseClient';
+
+type MFAState =
+  | 'loading'
+  | 'not-enrolled'
+  | 'enrolling'
+  | 'verifying'
+  | 'enrolled';
 
 export default function SecuritySettingsPage() {
   // MFA state
@@ -70,7 +76,9 @@ export default function SecuritySettingsPage() {
   }, []);
 
   const loadOrgMFARequirement = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data: membership } = await supabase
@@ -80,7 +88,9 @@ export default function SecuritySettingsPage() {
       .limit(1)
       .single();
 
-    const orgData = membership?.orgs as unknown as { require_mfa: boolean } | null;
+    const orgData = membership?.orgs as unknown as {
+      require_mfa: boolean;
+    } | null;
     setOrgRequiresMFA(orgData?.require_mfa ?? false);
   }, []);
 
@@ -108,7 +118,9 @@ export default function SecuritySettingsPage() {
       setFactorId(data.id);
       setMfaState('enrolling');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start MFA enrollment');
+      setError(
+        err instanceof Error ? err.message : 'Failed to start MFA enrollment'
+      );
     } finally {
       setLoading(false);
     }
@@ -125,9 +137,10 @@ export default function SecuritySettingsPage() {
     setLoading(true);
 
     try {
-      const { data: challenge, error: challengeErr } = await supabase.auth.mfa.challenge({
-        factorId,
-      });
+      const { data: challenge, error: challengeErr } =
+        await supabase.auth.mfa.challenge({
+          factorId,
+        });
       if (challengeErr) throw challengeErr;
 
       const { error: verifyErr } = await supabase.auth.mfa.verify({
@@ -143,7 +156,9 @@ export default function SecuritySettingsPage() {
       setQrCode('');
       loadMFAStatus();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Verification failed. Try again.');
+      setError(
+        err instanceof Error ? err.message : 'Verification failed. Try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -164,9 +179,10 @@ export default function SecuritySettingsPage() {
       const factor = factors[0];
       if (!factor) throw new Error('No factor found');
 
-      const { data: challenge, error: challengeErr } = await supabase.auth.mfa.challenge({
-        factorId: factor.id,
-      });
+      const { data: challenge, error: challengeErr } =
+        await supabase.auth.mfa.challenge({
+          factorId: factor.id,
+        });
       if (challengeErr) throw challengeErr;
 
       const { error: verifyErr } = await supabase.auth.mfa.verify({
@@ -213,8 +229,18 @@ export default function SecuritySettingsPage() {
         <div className="max-w-3xl mx-auto">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-xl bg-slate-5/50 ring-1 ring-slate-4">
-              <svg className="w-6 h-6 text-slate-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                className="w-6 h-6 text-slate-11"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
             </div>
             <div>
@@ -230,36 +256,67 @@ export default function SecuritySettingsPage() {
       <div className="px-8 py-8 max-w-3xl mx-auto space-y-8">
         {/* Status messages */}
         {error && (
-          <div className="px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}>
+          <div
+            className="px-4 py-3 rounded-lg text-sm"
+            style={{
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              color: '#EF4444',
+            }}
+          >
             {error}
           </div>
         )}
         {success && (
-          <div className="px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: '#22C55E' }}>
+          <div
+            className="px-4 py-3 rounded-lg text-sm"
+            style={{
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              color: '#22C55E',
+            }}
+          >
             {success}
           </div>
         )}
 
         {/* Org MFA requirement banner */}
         {orgRequiresMFA && mfaState === 'not-enrolled' && (
-          <div className="px-4 py-3 rounded-lg text-sm border" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)', borderColor: 'rgba(234, 179, 8, 0.3)', color: '#EAB308' }}>
-            Your organization requires two-factor authentication. Set it up to continue using Pravado.
+          <div
+            className="px-4 py-3 rounded-lg text-sm border"
+            style={{
+              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+              borderColor: 'rgba(234, 179, 8, 0.3)',
+              color: '#EAB308',
+            }}
+          >
+            Your organization requires two-factor authentication. Set it up to
+            continue using Pravado.
           </div>
         )}
 
         {/* ================================ */}
         {/* MFA Section */}
         {/* ================================ */}
-        <section className="rounded-2xl border p-6 space-y-4" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+        <section
+          className="rounded-2xl border p-6 space-y-4"
+          style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-white">Two-Factor Authentication</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Two-Factor Authentication
+              </h2>
               <p className="text-sm text-slate-11 mt-0.5">
                 Add an extra layer of security with a TOTP authenticator app
               </p>
             </div>
             {mfaState === 'enrolled' && (
-              <span className="px-2.5 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22C55E' }}>
+              <span
+                className="px-2.5 py-1 rounded-full text-xs font-medium"
+                style={{
+                  backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                  color: '#22C55E',
+                }}
+              >
                 Active
               </span>
             )}
@@ -274,7 +331,9 @@ export default function SecuritySettingsPage() {
               onClick={handleEnroll}
               disabled={loading}
               className="px-4 py-2.5 rounded-lg text-sm font-medium text-white transition-opacity disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}
+              style={{
+                background: 'linear-gradient(135deg, #A855F7, #7C3AED)',
+              }}
             >
               {loading ? 'Setting up...' : 'Enable Two-Factor Authentication'}
             </button>
@@ -283,7 +342,8 @@ export default function SecuritySettingsPage() {
           {mfaState === 'enrolling' && (
             <div className="space-y-4">
               <p className="text-sm text-slate-11">
-                Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.):
+                Scan this QR code with your authenticator app (Google
+                Authenticator, Authy, 1Password, etc.):
               </p>
               {qrCode && (
                 <div className="flex justify-center p-4 rounded-lg bg-white w-fit mx-auto">
@@ -297,16 +357,23 @@ export default function SecuritySettingsPage() {
                   inputMode="numeric"
                   maxLength={6}
                   value={verifyCode}
-                  onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) =>
+                    setVerifyCode(e.target.value.replace(/\D/g, ''))
+                  }
                   className="flex-1 px-3 py-2.5 rounded-lg text-sm text-white text-center font-mono tracking-[0.3em] outline-none"
-                  style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                  style={{
+                    backgroundColor: '#0A0A0F',
+                    border: '1px solid #1F1F28',
+                  }}
                   placeholder="000000"
                 />
                 <button
                   onClick={handleVerify}
                   disabled={loading || verifyCode.length !== 6}
                   className="px-4 py-2.5 rounded-lg text-sm font-medium text-white transition-opacity disabled:opacity-50"
-                  style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}
+                  style={{
+                    background: 'linear-gradient(135deg, #A855F7, #7C3AED)',
+                  }}
                 >
                   {loading ? 'Verifying...' : 'Verify'}
                 </button>
@@ -317,14 +384,25 @@ export default function SecuritySettingsPage() {
           {mfaState === 'enrolled' && (
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm text-slate-11">
-                <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-4 h-4 text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 Two-factor authentication is active
               </div>
               {factors.map((f) => (
                 <div key={f.id} className="text-xs text-slate-11">
-                  Factor: {f.friendly_name || 'Authenticator App'} (enrolled {new Date(f.created_at).toLocaleDateString()})
+                  Factor: {f.friendly_name || 'Authenticator App'} (enrolled{' '}
+                  {new Date(f.created_at).toLocaleDateString()})
                 </div>
               ))}
 
@@ -343,21 +421,32 @@ export default function SecuritySettingsPage() {
                     inputMode="numeric"
                     maxLength={6}
                     value={disableCode}
-                    onChange={(e) => setDisableCode(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) =>
+                      setDisableCode(e.target.value.replace(/\D/g, ''))
+                    }
                     className="flex-1 px-3 py-2.5 rounded-lg text-sm text-white text-center font-mono tracking-[0.3em] outline-none"
-                    style={{ backgroundColor: '#0A0A0F', border: '1px solid #1F1F28' }}
+                    style={{
+                      backgroundColor: '#0A0A0F',
+                      border: '1px solid #1F1F28',
+                    }}
                     placeholder="Enter code"
                   />
                   <button
                     onClick={handleDisable}
                     disabled={loading || disableCode.length !== 6}
                     className="px-4 py-2.5 rounded-lg text-sm font-medium transition-opacity disabled:opacity-50"
-                    style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#EF4444' }}
+                    style={{
+                      backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                      color: '#EF4444',
+                    }}
                   >
                     {loading ? 'Disabling...' : 'Confirm Disable'}
                   </button>
                   <button
-                    onClick={() => { setShowDisable(false); setDisableCode(''); }}
+                    onClick={() => {
+                      setShowDisable(false);
+                      setDisableCode('');
+                    }}
                     className="text-sm text-slate-11 hover:text-white"
                   >
                     Cancel
@@ -371,25 +460,43 @@ export default function SecuritySettingsPage() {
         {/* ================================ */}
         {/* Active Sessions Section */}
         {/* ================================ */}
-        <section className="rounded-2xl border p-6 space-y-4" style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}>
+        <section
+          className="rounded-2xl border p-6 space-y-4"
+          style={{ backgroundColor: '#13131A', borderColor: '#1F1F28' }}
+        >
           <div>
-            <h2 className="text-lg font-semibold text-white">Active Sessions</h2>
+            <h2 className="text-lg font-semibold text-white">
+              Active Sessions
+            </h2>
             <p className="text-sm text-slate-11 mt-0.5">
               Manage your active sign-in sessions
             </p>
           </div>
 
           {sessionInfo && (
-            <div className="rounded-lg border p-4 space-y-2" style={{ backgroundColor: '#0A0A0F', borderColor: '#1F1F28' }}>
+            <div
+              className="rounded-lg border p-4 space-y-2"
+              style={{ backgroundColor: '#0A0A0F', borderColor: '#1F1F28' }}
+            >
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white">Current Session</span>
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22C55E' }}>
+                <span className="text-sm font-medium text-white">
+                  Current Session
+                </span>
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs font-medium"
+                  style={{
+                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                    color: '#22C55E',
+                  }}
+                >
                   Active
                 </span>
               </div>
               <div className="text-xs text-slate-11 space-y-1">
                 <p>Browser: {getBrowserName(sessionInfo.userAgent)}</p>
-                <p>Expires: {new Date(sessionInfo.expiresAt).toLocaleString()}</p>
+                <p>
+                  Expires: {new Date(sessionInfo.expiresAt).toLocaleString()}
+                </p>
               </div>
             </div>
           )}
@@ -405,7 +512,10 @@ export default function SecuritySettingsPage() {
             <button
               onClick={handleSignOutAll}
               className="px-4 py-2.5 rounded-lg text-sm font-medium transition-opacity"
-              style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#EF4444' }}
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                color: '#EF4444',
+              }}
             >
               Sign out all devices
             </button>

@@ -17,11 +17,11 @@ Quick-reference operator guide for deploying Pravado Dashboard to Vercel.
 
 ## Required Environment Variables
 
-| Variable | Source | Required |
-|----------|--------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard > Project Settings > API | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard > Project Settings > API | Yes |
-| `NEXT_PUBLIC_API_URL` | Your Render API URL (e.g., `https://pravado-api.onrender.com`) | Yes |
+| Variable                        | Source                                                         | Required |
+| ------------------------------- | -------------------------------------------------------------- | -------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase Dashboard > Project Settings > API                    | Yes      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard > Project Settings > API                    | Yes      |
+| `NEXT_PUBLIC_API_URL`           | Your Render API URL (e.g., `https://pravado-api.onrender.com`) | Yes      |
 
 ---
 
@@ -39,14 +39,14 @@ Quick-reference operator guide for deploying Pravado Dashboard to Vercel.
 
 In the configuration screen:
 
-| Setting | Value |
-|---------|-------|
-| **Framework Preset** | Next.js (auto-detected) |
-| **Root Directory** | `apps/dashboard` |
-| **Build Command** | `pnpm build` (default) |
-| **Output Directory** | `.next` (default) |
-| **Install Command** | `pnpm install` (default) |
-| **Node.js Version** | 20.x |
+| Setting              | Value                    |
+| -------------------- | ------------------------ |
+| **Framework Preset** | Next.js (auto-detected)  |
+| **Root Directory**   | `apps/dashboard`         |
+| **Build Command**    | `pnpm build` (default)   |
+| **Output Directory** | `.next` (default)        |
+| **Install Command**  | `pnpm install` (default) |
+| **Node.js Version**  | 20.x                     |
 
 ### Step 3: Add Environment Variables
 
@@ -73,11 +73,11 @@ NEXT_PUBLIC_API_URL = https://pravado-api-staging.onrender.com
 
 ### Manual Checks
 
-| Check | URL | Expected |
-|-------|-----|----------|
-| Landing page | `/` | Page loads without errors |
-| Login page | `/login` | Auth UI renders |
-| App redirect | `/app` | Redirects to login if not authenticated |
+| Check        | URL      | Expected                                |
+| ------------ | -------- | --------------------------------------- |
+| Landing page | `/`      | Page loads without errors               |
+| Login page   | `/login` | Auth UI renders                         |
+| App redirect | `/app`   | Redirects to login if not authenticated |
 
 ### Browser DevTools Checks
 
@@ -100,29 +100,29 @@ NEXT_PUBLIC_API_URL = https://pravado-api-staging.onrender.com
 
 ### Build Fails
 
-| Error | Solution |
-|-------|----------|
-| `pnpm: command not found` | Ensure Node.js 20.x is selected |
-| `Cannot find package` | Root directory must be `apps/dashboard` |
-| `TypeScript errors` | Check workspace packages are configured in `transpilePackages` |
-| `ESLint errors` | Build should continue (lint is disabled during build) |
+| Error                     | Solution                                                       |
+| ------------------------- | -------------------------------------------------------------- |
+| `pnpm: command not found` | Ensure Node.js 20.x is selected                                |
+| `Cannot find package`     | Root directory must be `apps/dashboard`                        |
+| `TypeScript errors`       | Check workspace packages are configured in `transpilePackages` |
+| `ESLint errors`           | Build should continue (lint is disabled during build)          |
 
 ### Runtime Errors
 
-| Error | Solution |
-|-------|----------|
-| Blank page | Check browser console for errors |
+| Error             | Solution                                |
+| ----------------- | --------------------------------------- |
+| Blank page        | Check browser console for errors        |
 | "Failed to fetch" | Verify `NEXT_PUBLIC_API_URL` is correct |
-| CORS errors | API needs to allow dashboard domain |
-| Auth issues | Verify Supabase URL and anon key |
+| CORS errors       | API needs to allow dashboard domain     |
+| Auth issues       | Verify Supabase URL and anon key        |
 
 ### Environment Variable Issues
 
-| Symptom | Check |
-|---------|-------|
-| API calls fail | Verify `NEXT_PUBLIC_API_URL` includes protocol (`https://`) |
-| Auth doesn't work | Verify `NEXT_PUBLIC_SUPABASE_URL` is correct |
-| Variables undefined | Ensure variable names start with `NEXT_PUBLIC_` |
+| Symptom             | Check                                                       |
+| ------------------- | ----------------------------------------------------------- |
+| API calls fail      | Verify `NEXT_PUBLIC_API_URL` includes protocol (`https://`) |
+| Auth doesn't work   | Verify `NEXT_PUBLIC_SUPABASE_URL` is correct                |
+| Variables undefined | Ensure variable names start with `NEXT_PUBLIC_`             |
 
 ---
 
@@ -166,15 +166,16 @@ To enable automatic deployments via GitHub Actions:
 
 ### Required Secrets
 
-| Secret | Source |
-|--------|--------|
-| `VERCEL_TOKEN` | Vercel Dashboard > Settings > Tokens |
-| `VERCEL_ORG_ID` | Vercel Dashboard > Settings > General |
+| Secret              | Source                                  |
+| ------------------- | --------------------------------------- |
+| `VERCEL_TOKEN`      | Vercel Dashboard > Settings > Tokens    |
+| `VERCEL_ORG_ID`     | Vercel Dashboard > Settings > General   |
 | `VERCEL_PROJECT_ID` | Project Settings > General > Project ID |
 
 ### Workflow Trigger
 
 Deployments trigger automatically on:
+
 - Push to `main` branch
 - Pull request updates (preview deployment)
 

@@ -166,7 +166,9 @@ describe('ContentRewriteService', () => {
     it('should add transition sentences', () => {
       const sentences = new Array(10).fill('Test sentence');
       const result = (service as any).addTransitions(sentences);
-      const transitions = result.filter((s: string) => s.includes('Furthermore'));
+      const transitions = result.filter((s: string) =>
+        s.includes('Furthermore')
+      );
       expect(transitions.length).toBeGreaterThan(0);
     });
 
@@ -226,13 +228,20 @@ describe('ContentRewriteService', () => {
         slug: 'test',
         name: 'Test',
         description: 'Test personality',
-        configuration: { name: 'Test', tone: 'assertive' as const, style: 'direct' as const },
+        configuration: {
+          name: 'Test',
+          tone: 'assertive' as const,
+          style: 'direct' as const,
+        },
         createdAt: '',
         updatedAt: '',
       } as any;
 
       const longSentence = new Array(20).fill('word').join(' ');
-      const result = (service as any).applyPersonalityTransforms([longSentence], personality);
+      const result = (service as any).applyPersonalityTransforms(
+        [longSentence],
+        personality
+      );
 
       const words = result[0].split(/\s+/);
       expect(words.length).toBeLessThanOrEqual(16); // 15 words + potential period
@@ -245,16 +254,25 @@ describe('ContentRewriteService', () => {
         slug: 'test',
         name: 'Test',
         description: 'Test personality',
-        configuration: { name: 'Test', tone: 'supportive' as const, style: 'warm' as const },
+        configuration: {
+          name: 'Test',
+          tone: 'supportive' as const,
+          style: 'warm' as const,
+        },
         createdAt: '',
         updatedAt: '',
       } as any;
 
       const sentences = new Array(5).fill('Test sentence');
-      const result = (service as any).applyPersonalityTransforms(sentences, personality);
+      const result = (service as any).applyPersonalityTransforms(
+        sentences,
+        personality
+      );
 
       // Some sentences should have "Additionally"
-      const withAdditionally = result.filter((s: string) => s.includes('Additionally'));
+      const withAdditionally = result.filter((s: string) =>
+        s.includes('Additionally')
+      );
       // Due to randomness, we can't guarantee exact count, but should be > 0
       expect(result.length).toBe(5);
     });
@@ -320,7 +338,9 @@ describe('ContentRewriteService', () => {
       };
 
       const improvements = (service as any).extractImprovements(context, diff);
-      expect(improvements).toContain('Added 3 new sentence(s) to improve clarity');
+      expect(improvements).toContain(
+        'Added 3 new sentence(s) to improve clarity'
+      );
     });
 
     it('should list removed sentences', () => {
@@ -380,7 +400,9 @@ describe('ContentRewriteService', () => {
       };
 
       const improvements = (service as any).extractImprovements(context, diff);
-      expect(improvements).toContain('Improved readability by splitting long sentences');
+      expect(improvements).toContain(
+        'Improved readability by splitting long sentences'
+      );
     });
   });
 
@@ -397,7 +419,10 @@ describe('ContentRewriteService', () => {
       };
       const improvements = ['Test improvement'];
 
-      const reasoning = (service as any).generateReasoning(context, improvements);
+      const reasoning = (service as any).generateReasoning(
+        context,
+        improvements
+      );
 
       expect(reasoning.qualityScoreBefore).toBe(58);
       expect(reasoning.readabilityBefore).toBe(45);
@@ -414,7 +439,10 @@ describe('ContentRewriteService', () => {
       };
       const improvements = [];
 
-      const reasoning = (service as any).generateReasoning(context, improvements);
+      const reasoning = (service as any).generateReasoning(
+        context,
+        improvements
+      );
 
       expect(reasoning.personalityApplied).toBe('Executive Voice');
     });
@@ -428,7 +456,10 @@ describe('ContentRewriteService', () => {
       };
       const improvements = [];
 
-      const reasoning = (service as any).generateReasoning(context, improvements);
+      const reasoning = (service as any).generateReasoning(
+        context,
+        improvements
+      );
 
       expect(reasoning.targetKeyword).toBe('content quality');
     });
@@ -441,7 +472,10 @@ describe('ContentRewriteService', () => {
       };
       const improvements = ['Imp 1', 'Imp 2', 'Imp 3'];
 
-      const reasoning = (service as any).generateReasoning(context, improvements);
+      const reasoning = (service as any).generateReasoning(
+        context,
+        improvements
+      );
 
       expect(reasoning.improvementsCount).toBe(3);
     });
@@ -454,7 +488,10 @@ describe('ContentRewriteService', () => {
       };
       const improvements = [];
 
-      const reasoning = (service as any).generateReasoning(context, improvements);
+      const reasoning = (service as any).generateReasoning(
+        context,
+        improvements
+      );
 
       expect(reasoning.strategy).toBe('deterministic_stub_v1');
     });

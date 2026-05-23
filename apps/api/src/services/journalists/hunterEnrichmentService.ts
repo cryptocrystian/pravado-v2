@@ -337,7 +337,9 @@ export async function enrichJournalist(
 
   // Fall back to Hunter.io if PDL returned no result and Hunter key is set
   if (!result && getHunterApiKey()) {
-    logger.info(`PDL returned no result for ${journalistId}, trying Hunter.io fallback`);
+    logger.info(
+      `PDL returned no result for ${journalistId}, trying Hunter.io fallback`
+    );
     result = await hunterEmailFinder(journalist.name, domain);
     await delay(1000);
   }
@@ -357,7 +359,10 @@ export async function enrichJournalist(
   };
 
   // Only update email if confidence >= 70 and no manual email exists
-  if (result.email && (!journalist.email || journalist.metadata?.enrichment_source)) {
+  if (
+    result.email &&
+    (!journalist.email || journalist.metadata?.enrichment_source)
+  ) {
     updateData.email = result.email;
   }
 
@@ -366,10 +371,7 @@ export async function enrichJournalist(
     updateData.twitter_handle = result.twitter_handle;
   }
 
-  await supabase
-    .from('journalists')
-    .update(updateData)
-    .eq('id', journalistId);
+  await supabase.from('journalists').update(updateData).eq('id', journalistId);
 
   logger.info(
     `Enriched journalist ${journalistId}: email=${result.email ? 'found' : 'not found'}, confidence=${result.email_confidence}, source=${result.enrichment_source}`
@@ -386,18 +388,24 @@ export async function enrichBatch(
   supabase: any,
   orgId: string
 ): Promise<{ enriched: number; skipped: number; errors: number }> {
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const thirtyDaysAgo = new Date(
+    Date.now() - 30 * 24 * 60 * 60 * 1000
+  ).toISOString();
 
   // Find journalists needing enrichment
   const { data: journalists, error } = await supabase
     .from('journalists')
     .select('id')
     .eq('org_id', orgId)
-    .or(`metadata->>enriched_at.is.null,metadata->>enriched_at.lt.${thirtyDaysAgo}`)
+    .or(
+      `metadata->>enriched_at.is.null,metadata->>enriched_at.lt.${thirtyDaysAgo}`
+    )
     .limit(20);
 
   if (error || !journalists) {
-    logger.error(`Failed to fetch journalists for enrichment: ${error?.message}`);
+    logger.error(
+      `Failed to fetch journalists for enrichment: ${error?.message}`
+    );
     return { enriched: 0, skipped: 0, errors: 1 };
   }
 
@@ -418,7 +426,9 @@ export async function enrichBatch(
     }
   }
 
-  logger.info(`Batch enrichment for org ${orgId}: enriched=${enriched}, skipped=${skipped}, errors=${errors}`);
+  logger.info(
+    `Batch enrichment for org ${orgId}: enriched=${enriched}, skipped=${skipped}, errors=${errors}`
+  );
   return { enriched, skipped, errors };
 }
 

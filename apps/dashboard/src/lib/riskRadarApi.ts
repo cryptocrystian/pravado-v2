@@ -72,7 +72,11 @@ export type RiskRadarNoteType =
   | 'context'
   | 'executive_comment';
 
-export type RiskRadarTrendDirection = 'improving' | 'stable' | 'worsening' | 'volatile';
+export type RiskRadarTrendDirection =
+  | 'improving'
+  | 'stable'
+  | 'worsening'
+  | 'volatile';
 
 // ========================================
 // Entity Interfaces
@@ -530,13 +534,19 @@ export async function getDashboard(
   query: RiskRadarDashboardQuery = {}
 ): Promise<ApiResponse<RiskRadarDashboard>> {
   const params = new URLSearchParams();
-  if (query.trendPeriodDays !== undefined) params.set('trendPeriodDays', String(query.trendPeriodDays));
-  if (query.includeForecasts !== undefined) params.set('includeForecasts', String(query.includeForecasts));
-  if (query.topDriversLimit !== undefined) params.set('topDriversLimit', String(query.topDriversLimit));
-  if (query.recentNotesLimit !== undefined) params.set('recentNotesLimit', String(query.recentNotesLimit));
+  if (query.trendPeriodDays !== undefined)
+    params.set('trendPeriodDays', String(query.trendPeriodDays));
+  if (query.includeForecasts !== undefined)
+    params.set('includeForecasts', String(query.includeForecasts));
+  if (query.topDriversLimit !== undefined)
+    params.set('topDriversLimit', String(query.topDriversLimit));
+  if (query.recentNotesLimit !== undefined)
+    params.set('recentNotesLimit', String(query.recentNotesLimit));
 
   const queryString = params.toString();
-  return apiRequest(`/api/v1/risk-radar/dashboard${queryString ? `?${queryString}` : ''}`);
+  return apiRequest(
+    `/api/v1/risk-radar/dashboard${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 // ========================================
@@ -550,20 +560,32 @@ export async function listSnapshots(
   query: RiskRadarSnapshotsQuery = {}
 ): Promise<ApiResponse<RiskRadarSnapshotsListResponse>> {
   const params = new URLSearchParams();
-  if (query.riskLevel) params.set('riskLevel', Array.isArray(query.riskLevel) ? query.riskLevel.join(',') : query.riskLevel);
-  if (query.isActive !== undefined) params.set('isActive', String(query.isActive));
-  if (query.isArchived !== undefined) params.set('isArchived', String(query.isArchived));
+  if (query.riskLevel)
+    params.set(
+      'riskLevel',
+      Array.isArray(query.riskLevel)
+        ? query.riskLevel.join(',')
+        : query.riskLevel
+    );
+  if (query.isActive !== undefined)
+    params.set('isActive', String(query.isActive));
+  if (query.isArchived !== undefined)
+    params.set('isArchived', String(query.isArchived));
   if (query.startDate) params.set('startDate', query.startDate);
   if (query.endDate) params.set('endDate', query.endDate);
-  if (query.minRiskIndex !== undefined) params.set('minRiskIndex', String(query.minRiskIndex));
-  if (query.maxRiskIndex !== undefined) params.set('maxRiskIndex', String(query.maxRiskIndex));
+  if (query.minRiskIndex !== undefined)
+    params.set('minRiskIndex', String(query.minRiskIndex));
+  if (query.maxRiskIndex !== undefined)
+    params.set('maxRiskIndex', String(query.maxRiskIndex));
   if (query.sortBy) params.set('sortBy', query.sortBy);
   if (query.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query.limit !== undefined) params.set('limit', String(query.limit));
   if (query.offset !== undefined) params.set('offset', String(query.offset));
 
   const queryString = params.toString();
-  return apiRequest(`/api/v1/risk-radar/snapshots${queryString ? `?${queryString}` : ''}`);
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 /**
@@ -581,14 +603,18 @@ export async function createSnapshot(
 /**
  * Get the currently active snapshot
  */
-export async function getActiveSnapshot(): Promise<ApiResponse<RiskRadarSnapshot>> {
+export async function getActiveSnapshot(): Promise<
+  ApiResponse<RiskRadarSnapshot>
+> {
   return apiRequest('/api/v1/risk-radar/snapshots/active');
 }
 
 /**
  * Get a specific snapshot
  */
-export async function getSnapshot(snapshotId: string): Promise<ApiResponse<RiskRadarSnapshot>> {
+export async function getSnapshot(
+  snapshotId: string
+): Promise<ApiResponse<RiskRadarSnapshot>> {
   return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}`);
 }
 
@@ -617,7 +643,9 @@ export async function updateSnapshot(
 /**
  * Archive a snapshot
  */
-export async function archiveSnapshot(snapshotId: string): Promise<ApiResponse<void>> {
+export async function archiveSnapshot(
+  snapshotId: string
+): Promise<ApiResponse<void>> {
   return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/archive`, {
     method: 'POST',
   });
@@ -635,10 +663,18 @@ export async function listIndicators(
   query: RiskRadarIndicatorsQuery = {}
 ): Promise<ApiResponse<RiskRadarIndicatorsListResponse>> {
   const params = new URLSearchParams();
-  if (query.indicatorType) params.set('indicatorType', Array.isArray(query.indicatorType) ? query.indicatorType.join(',') : query.indicatorType);
+  if (query.indicatorType)
+    params.set(
+      'indicatorType',
+      Array.isArray(query.indicatorType)
+        ? query.indicatorType.join(',')
+        : query.indicatorType
+    );
   if (query.sourceSystem) params.set('sourceSystem', query.sourceSystem);
-  if (query.minScore !== undefined) params.set('minScore', String(query.minScore));
-  if (query.maxScore !== undefined) params.set('maxScore', String(query.maxScore));
+  if (query.minScore !== undefined)
+    params.set('minScore', String(query.minScore));
+  if (query.maxScore !== undefined)
+    params.set('maxScore', String(query.maxScore));
   if (query.trendDirection) params.set('trendDirection', query.trendDirection);
   if (query.sortBy) params.set('sortBy', query.sortBy);
   if (query.sortOrder) params.set('sortOrder', query.sortOrder);
@@ -646,7 +682,9 @@ export async function listIndicators(
   if (query.offset !== undefined) params.set('offset', String(query.offset));
 
   const queryString = params.toString();
-  return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/indicators${queryString ? `?${queryString}` : ''}`);
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots/${snapshotId}/indicators${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 /**
@@ -655,9 +693,12 @@ export async function listIndicators(
 export async function rebuildIndicators(
   snapshotId: string
 ): Promise<ApiResponse<RiskRadarRebuildIndicatorsResponse>> {
-  return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/indicators/rebuild`, {
-    method: 'POST',
-  });
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots/${snapshotId}/indicators/rebuild`,
+    {
+      method: 'POST',
+    }
+  );
 }
 
 // ========================================
@@ -672,17 +713,26 @@ export async function listForecasts(
   query: RiskRadarForecastsQuery = {}
 ): Promise<ApiResponse<RiskRadarForecastsListResponse>> {
   const params = new URLSearchParams();
-  if (query.horizon) params.set('horizon', Array.isArray(query.horizon) ? query.horizon.join(',') : query.horizon);
-  if (query.isCurrent !== undefined) params.set('isCurrent', String(query.isCurrent));
-  if (query.minProbability !== undefined) params.set('minProbability', String(query.minProbability));
-  if (query.maxProbability !== undefined) params.set('maxProbability', String(query.maxProbability));
+  if (query.horizon)
+    params.set(
+      'horizon',
+      Array.isArray(query.horizon) ? query.horizon.join(',') : query.horizon
+    );
+  if (query.isCurrent !== undefined)
+    params.set('isCurrent', String(query.isCurrent));
+  if (query.minProbability !== undefined)
+    params.set('minProbability', String(query.minProbability));
+  if (query.maxProbability !== undefined)
+    params.set('maxProbability', String(query.maxProbability));
   if (query.sortBy) params.set('sortBy', query.sortBy);
   if (query.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query.limit !== undefined) params.set('limit', String(query.limit));
   if (query.offset !== undefined) params.set('offset', String(query.offset));
 
   const queryString = params.toString();
-  return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/forecasts${queryString ? `?${queryString}` : ''}`);
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots/${snapshotId}/forecasts${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 /**
@@ -701,7 +751,9 @@ export async function createForecast(
 /**
  * Get a specific forecast
  */
-export async function getForecast(forecastId: string): Promise<ApiResponse<RiskRadarForecast>> {
+export async function getForecast(
+  forecastId: string
+): Promise<ApiResponse<RiskRadarForecast>> {
   return apiRequest(`/api/v1/risk-radar/forecasts/${forecastId}`);
 }
 
@@ -730,18 +782,31 @@ export async function listDrivers(
   query: RiskRadarDriversQuery = {}
 ): Promise<ApiResponse<RiskRadarDriversListResponse>> {
   const params = new URLSearchParams();
-  if (query.category) params.set('category', Array.isArray(query.category) ? query.category.join(',') : query.category);
-  if (query.urgency) params.set('urgency', Array.isArray(query.urgency) ? query.urgency.join(',') : query.urgency);
-  if (query.isEmerging !== undefined) params.set('isEmerging', String(query.isEmerging));
-  if (query.isTurningPoint !== undefined) params.set('isTurningPoint', String(query.isTurningPoint));
-  if (query.minImpactScore !== undefined) params.set('minImpactScore', String(query.minImpactScore));
+  if (query.category)
+    params.set(
+      'category',
+      Array.isArray(query.category) ? query.category.join(',') : query.category
+    );
+  if (query.urgency)
+    params.set(
+      'urgency',
+      Array.isArray(query.urgency) ? query.urgency.join(',') : query.urgency
+    );
+  if (query.isEmerging !== undefined)
+    params.set('isEmerging', String(query.isEmerging));
+  if (query.isTurningPoint !== undefined)
+    params.set('isTurningPoint', String(query.isTurningPoint));
+  if (query.minImpactScore !== undefined)
+    params.set('minImpactScore', String(query.minImpactScore));
   if (query.sortBy) params.set('sortBy', query.sortBy);
   if (query.sortOrder) params.set('sortOrder', query.sortOrder);
   if (query.limit !== undefined) params.set('limit', String(query.limit));
   if (query.offset !== undefined) params.set('offset', String(query.offset));
 
   const queryString = params.toString();
-  return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/drivers${queryString ? `?${queryString}` : ''}`);
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots/${snapshotId}/drivers${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 /**
@@ -750,9 +815,12 @@ export async function listDrivers(
 export async function identifyDrivers(
   snapshotId: string
 ): Promise<ApiResponse<{ drivers: RiskRadarDriver[]; count: number }>> {
-  return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/drivers/identify`, {
-    method: 'POST',
-  });
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots/${snapshotId}/drivers/identify`,
+    {
+      method: 'POST',
+    }
+  );
 }
 
 // ========================================
@@ -767,9 +835,15 @@ export async function listNotes(
   query: RiskRadarNotesQuery = {}
 ): Promise<ApiResponse<RiskRadarNotesListResponse>> {
   const params = new URLSearchParams();
-  if (query.noteType) params.set('noteType', Array.isArray(query.noteType) ? query.noteType.join(',') : query.noteType);
-  if (query.isExecutiveVisible !== undefined) params.set('isExecutiveVisible', String(query.isExecutiveVisible));
-  if (query.isPinned !== undefined) params.set('isPinned', String(query.isPinned));
+  if (query.noteType)
+    params.set(
+      'noteType',
+      Array.isArray(query.noteType) ? query.noteType.join(',') : query.noteType
+    );
+  if (query.isExecutiveVisible !== undefined)
+    params.set('isExecutiveVisible', String(query.isExecutiveVisible));
+  if (query.isPinned !== undefined)
+    params.set('isPinned', String(query.isPinned));
   if (query.createdBy) params.set('createdBy', query.createdBy);
   if (query.sortBy) params.set('sortBy', query.sortBy);
   if (query.sortOrder) params.set('sortOrder', query.sortOrder);
@@ -777,7 +851,9 @@ export async function listNotes(
   if (query.offset !== undefined) params.set('offset', String(query.offset));
 
   const queryString = params.toString();
-  return apiRequest(`/api/v1/risk-radar/snapshots/${snapshotId}/notes${queryString ? `?${queryString}` : ''}`);
+  return apiRequest(
+    `/api/v1/risk-radar/snapshots/${snapshotId}/notes${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 /**
@@ -898,7 +974,9 @@ export function getHorizonLabel(horizon: RiskRadarForecastHorizon): string {
 /**
  * Get driver category label
  */
-export function getDriverCategoryLabel(category: RiskRadarDriverCategory): string {
+export function getDriverCategoryLabel(
+  category: RiskRadarDriverCategory
+): string {
   const labels: Record<RiskRadarDriverCategory, string> = {
     sentiment_shift: 'Sentiment Shift',
     velocity_spike: 'Velocity Spike',
@@ -931,7 +1009,9 @@ export function getNoteTypeLabel(type: RiskRadarNoteType): string {
 /**
  * Get trend direction label
  */
-export function getTrendDirectionLabel(direction: RiskRadarTrendDirection): string {
+export function getTrendDirectionLabel(
+  direction: RiskRadarTrendDirection
+): string {
   const labels: Record<RiskRadarTrendDirection, string> = {
     improving: 'Improving',
     stable: 'Stable',
@@ -944,7 +1024,9 @@ export function getTrendDirectionLabel(direction: RiskRadarTrendDirection): stri
 /**
  * Get trend direction color
  */
-export function getTrendDirectionColor(direction: RiskRadarTrendDirection): string {
+export function getTrendDirectionColor(
+  direction: RiskRadarTrendDirection
+): string {
   const colors: Record<RiskRadarTrendDirection, string> = {
     improving: 'green',
     stable: 'gray',
@@ -1007,7 +1089,10 @@ export const riskRadarApi = {
   identifyDrivers,
   // Notes
   listNotes,
-  createNote: createNote as (snapshotId: string, input: CreateRiskRadarNoteInput) => Promise<ApiResponse<RiskRadarNote>>,
+  createNote: createNote as (
+    snapshotId: string,
+    input: CreateRiskRadarNoteInput
+  ) => Promise<ApiResponse<RiskRadarNote>>,
   addNote: createNote,
   updateNote,
   deleteNote,

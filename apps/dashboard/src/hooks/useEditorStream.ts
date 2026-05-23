@@ -168,7 +168,9 @@ export function useEditorStream(
           }
         } else if (event.type === 'presence.leave') {
           const userId = event.payload.userId as string;
-          newState.presence = newState.presence.filter((u) => u.userId !== userId);
+          newState.presence = newState.presence.filter(
+            (u) => u.userId !== userId
+          );
           // Clean up cursor and selection
           const { [userId]: _, ...cursors } = newState.cursors;
           const { [userId]: __, ...selections } = newState.selections;
@@ -216,9 +218,12 @@ export function useEditorStream(
 
     try {
       // Gate 1A: Get authenticated stream URL from route handler
-      const response = await fetch(`/api/playbooks/${playbookId}/editor/stream`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `/api/playbooks/${playbookId}/editor/stream`,
+        {
+          credentials: 'include',
+        }
+      );
       const result = await response.json();
 
       if (!result.success || !result.data?.streamUrl) {

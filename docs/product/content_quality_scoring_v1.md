@@ -74,15 +74,16 @@ score = Math.max(0, Math.min(100, Math.round(score)))
 
 ### Component Weights
 
-| Component          | Weight | Range | Description                                    |
-|--------------------|--------|-------|------------------------------------------------|
-| Readability        | 20%    | 0-100 | Flesch-Kincaid Reading Ease score             |
-| Topic Alignment    | 30%    | 0-100 | Vector similarity with primary topic          |
-| Keyword Alignment  | 30%    | 0-100 | Target keyword presence in title and opening  |
-| Thin Content       | -20    | Flag  | Penalty if word count < 300                   |
-| Duplicate Content  | -30    | Flag  | Penalty if similar content exists (>85% sim)  |
+| Component         | Weight | Range | Description                                  |
+| ----------------- | ------ | ----- | -------------------------------------------- |
+| Readability       | 20%    | 0-100 | Flesch-Kincaid Reading Ease score            |
+| Topic Alignment   | 30%    | 0-100 | Vector similarity with primary topic         |
+| Keyword Alignment | 30%    | 0-100 | Target keyword presence in title and opening |
+| Thin Content      | -20    | Flag  | Penalty if word count < 300                  |
+| Duplicate Content | -30    | Flag  | Penalty if similar content exists (>85% sim) |
 
 **Special Cases:**
+
 - If no primary topic is assigned, the topic alignment weight (30%) is redistributed to keyword alignment, making keyword alignment worth 60% total.
 - If no target keyword is set, keyword alignment defaults to a neutral score of 50.
 
@@ -103,6 +104,7 @@ Where:
 ```
 
 **Interpretation:**
+
 - **90-100**: Very Easy (5th grade level)
 - **80-89**: Easy (6th grade)
 - **70-79**: Fairly Easy (7th grade)
@@ -137,12 +139,14 @@ countSyllables(word: string): number {
 ```
 
 **Examples:**
+
 - "hello" → [e], [o] → 2 syllables
 - "content" → [o], [e] → 2 syllables (silent 'e' not at end)
 - "quality" → [ua], [i], [y] → 3 syllables
 - "the" → length ≤3 → 1 syllable
 
 **Limitations:**
+
 - This heuristic is approximate and may miscount complex words
 - Silent letters other than final 'e' are not handled
 - Diphthongs and special phonetic rules are simplified
@@ -159,6 +163,7 @@ The Content Quality Engine uses **pgvector** (PostgreSQL extension) to perform s
 #### Embedding Storage
 
 Content items store their semantic embeddings in the `embeddings` column:
+
 - **Dimension**: 1536 (OpenAI `text-embedding-3-small` format)
 - **Type**: `vector(1536)` (pgvector type)
 - **Generation**: Embeddings are created during content ingestion (S3 flow)
@@ -178,6 +183,7 @@ ORDER BY ci.embeddings <-> p_embedding
 ```
 
 **Distance to Similarity Conversion:**
+
 ```
 similarity = 1 - distance
 
@@ -208,6 +214,7 @@ RETURNS TABLE (
 ```
 
 **Parameters:**
+
 - `p_org_id`: Organization scope (security)
 - `p_content_item_id`: Current content item to exclude from results
 - `p_embedding`: The embedding vector to compare against
@@ -215,6 +222,7 @@ RETURNS TABLE (
 - `p_limit`: Maximum results to return (default 5)
 
 **Filtering:**
+
 - Only returns content from the same organization
 - Excludes the current content item itself
 - Only includes items with non-null embeddings
@@ -239,17 +247,22 @@ private readonly SIMILARITY_THRESHOLD = 0.85;
 1. **Check for embeddings**: If the content item has no embeddings, duplicate detection is skipped (returns empty array)
 
 2. **Call pgvector function**:
+
    ```typescript
-   const { data: similarItems } = await this.supabase.rpc('find_similar_content', {
-     p_org_id: orgId,
-     p_content_item_id: item.id,
-     p_embedding: item.embeddings,
-     p_threshold: 1 - this.SIMILARITY_THRESHOLD,  // 0.15 distance
-     p_limit: 5,
-   });
+   const { data: similarItems } = await this.supabase.rpc(
+     'find_similar_content',
+     {
+       p_org_id: orgId,
+       p_content_item_id: item.id,
+       p_embedding: item.embeddings,
+       p_threshold: 1 - this.SIMILARITY_THRESHOLD, // 0.15 distance
+       p_limit: 5,
+     }
+   );
    ```
 
 3. **Set duplicate flag**:
+
    ```typescript
    const duplicateFlag = similarItems.length > 0;
    ```
@@ -259,6 +272,7 @@ private readonly SIMILARITY_THRESHOLD = 0.85;
 ### Warnings Generated
 
 When duplicates are detected:
+
 ```json
 {
   "duplicate": "Similar content detected"
@@ -268,6 +282,7 @@ When duplicates are detected:
 ### Suggested Improvements
 
 When duplicates are found:
+
 ```
 "Differentiate this content from \"<title>\" to avoid duplicate content issues."
 ```
@@ -285,6 +300,7 @@ The keyword alignment score measures how prominently the **target keyword** appe
 #### Target Keyword Source
 
 The target keyword is retrieved from the content item's metadata:
+
 ```typescript
 const metadata = item.metadata as Record<string, unknown>;
 const targetKeyword = metadata?.targetKeyword as string | undefined;
@@ -322,19 +338,21 @@ computeKeywordAlignment(item: ContentItem): number {
 
 #### Score Breakdown
 
-| Location          | Points | Description                                    |
-|-------------------|--------|------------------------------------------------|
-| Title             | +50    | Primary keyword in title (SEO critical)        |
-| First 200 Words   | +50    | Keyword in opening content (user experience)   |
-| **Maximum**       | 100    | Both conditions met                            |
+| Location        | Points | Description                                  |
+| --------------- | ------ | -------------------------------------------- |
+| Title           | +50    | Primary keyword in title (SEO critical)      |
+| First 200 Words | +50    | Keyword in opening content (user experience) |
+| **Maximum**     | 100    | Both conditions met                          |
 
 **Rationale:**
+
 - **Title**: Search engines and users see the title first—critical for SEO and CTR
 - **First 200 Words**: Users decide to continue reading based on opening content—important for engagement and topical clarity
 
 #### Warnings Generated
 
 If keyword alignment score < 50:
+
 ```json
 {
   "keyword": "Target keyword not prominently featured"
@@ -344,6 +362,7 @@ If keyword alignment score < 50:
 #### Suggested Improvements
 
 If keyword alignment < 50:
+
 ```
 "Add primary keyword to title or introduction for better keyword alignment."
 ```
@@ -376,6 +395,7 @@ detectThinContent(text: string): boolean {
 ### Penalty
 
 If thin content is detected:
+
 - **Score Penalty**: -20 points
 - **Flag**: `thinContent: true`
 
@@ -396,6 +416,7 @@ If thin content is detected:
 ### Rationale
 
 Search engines favor comprehensive, in-depth content that provides value. Content under 300 words is generally considered "thin" and may:
+
 - Rank poorly in search results
 - Provide insufficient information to users
 - Be perceived as low-quality by search algorithms
@@ -435,6 +456,7 @@ async computeTopicAlignment(item: ContentItem): Promise<number | null> {
 ```
 
 **Behavior:**
+
 - If content has a primary topic assigned: **Returns 85** (good alignment)
 - If no primary topic or topic not found: **Returns null** (excluded from scoring)
 - If embeddings are missing: **Returns null**
@@ -476,6 +498,7 @@ async computeTopicAlignment(item: ContentItem): Promise<number | null> {
 ```
 
 **Requirements for V2:**
+
 1. Add `centroid_embedding` column to `content_topics` table
 2. Compute topic centroids (average embeddings of all content in topic)
 3. Update centroids when content is added/removed from topics
@@ -502,17 +525,20 @@ All endpoints require authentication via cookies (session-based auth). User must
 Analyze content quality for a specific content item.
 
 **Endpoint:**
+
 ```
 POST /api/v1/content/quality/analyze
 ```
 
 **Request Headers:**
+
 ```
 Content-Type: application/json
 Cookie: <session-cookie>
 ```
 
 **Request Body:**
+
 ```json
 {
   "contentItemId": "uuid"
@@ -520,13 +546,15 @@ Cookie: <session-cookie>
 ```
 
 **Validation Schema:**
+
 ```typescript
 {
-  contentItemId: z.string().uuid()
+  contentItemId: z.string().uuid();
 }
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -580,6 +608,7 @@ Cookie: <session-cookie>
 **Error Responses:**
 
 **401 Unauthorized:**
+
 ```json
 {
   "success": false,
@@ -591,6 +620,7 @@ Cookie: <session-cookie>
 ```
 
 **403 Forbidden:**
+
 ```json
 {
   "success": false,
@@ -602,6 +632,7 @@ Cookie: <session-cookie>
 ```
 
 **400 Bad Request:**
+
 ```json
 {
   "success": false,
@@ -613,6 +644,7 @@ Cookie: <session-cookie>
 ```
 
 **500 Internal Server Error:**
+
 ```json
 {
   "success": false,
@@ -630,16 +662,19 @@ Cookie: <session-cookie>
 Retrieve quality score for a content item, analyzing if no score exists.
 
 **Endpoint:**
+
 ```
 GET /api/v1/content/quality/:contentItemId
 ```
 
 **Request Headers:**
+
 ```
 Cookie: <session-cookie>
 ```
 
 **URL Parameters:**
+
 - `contentItemId` (UUID): The content item ID
 
 **Response (200 OK):**
@@ -647,6 +682,7 @@ Cookie: <session-cookie>
 Same structure as POST /analyze response.
 
 **Behavior:**
+
 1. Attempts to fetch existing quality score from database
 2. If no score exists, triggers full analysis
 3. Returns analysis result (either existing or newly computed)
@@ -684,6 +720,7 @@ Same as POST /analyze endpoint.
 ```
 
 **Behavior:**
+
 - Disabled when no content item is selected
 - Disabled during analysis (`isAnalyzingQuality` state)
 - Shows "Analyzing..." text during API call
@@ -695,11 +732,13 @@ Same as POST /analyze endpoint.
 Appears after analysis completes:
 
 ```tsx
-{qualityAnalysis && (
-  <div className="pt-4 border-t border-gray-200 space-y-3">
-    {/* Score sections */}
-  </div>
-)}
+{
+  qualityAnalysis && (
+    <div className="pt-4 border-t border-gray-200 space-y-3">
+      {/* Score sections */}
+    </div>
+  );
+}
 ```
 
 **Sub-Components:**
@@ -718,8 +757,8 @@ Appears after analysis completes:
           qualityAnalysis.score.score >= 70
             ? 'bg-green-600'
             : qualityAnalysis.score.score >= 40
-            ? 'bg-yellow-600'
-            : 'bg-red-600'
+              ? 'bg-yellow-600'
+              : 'bg-red-600'
         }`}
         style={{ width: `${qualityAnalysis.score.score}%` }}
       />
@@ -730,6 +769,7 @@ Appears after analysis completes:
 ```
 
 **Color Coding:**
+
 - **Green (≥70)**: Good quality
 - **Yellow (40-69)**: Needs improvement
 - **Red (<40)**: Poor quality
@@ -737,16 +777,18 @@ Appears after analysis completes:
 ##### Readability Metric
 
 ```tsx
-{qualityAnalysis.score.readability !== null && (
-  <div>
-    <label className="text-xs font-medium text-gray-500 uppercase">
-      Readability
-    </label>
-    <p className="text-sm text-gray-900">
-      {qualityAnalysis.score.readability}/100
-    </p>
-  </div>
-)}
+{
+  qualityAnalysis.score.readability !== null && (
+    <div>
+      <label className="text-xs font-medium text-gray-500 uppercase">
+        Readability
+      </label>
+      <p className="text-sm text-gray-900">
+        {qualityAnalysis.score.readability}/100
+      </p>
+    </div>
+  );
+}
 ```
 
 Only shown if readability score is available (non-null).
@@ -754,16 +796,18 @@ Only shown if readability score is available (non-null).
 ##### Keyword Alignment Metric
 
 ```tsx
-{qualityAnalysis.score.keywordAlignment !== null && (
-  <div>
-    <label className="text-xs font-medium text-gray-500 uppercase">
-      Keyword Alignment
-    </label>
-    <p className="text-sm text-gray-900">
-      {qualityAnalysis.score.keywordAlignment}/100
-    </p>
-  </div>
-)}
+{
+  qualityAnalysis.score.keywordAlignment !== null && (
+    <div>
+      <label className="text-xs font-medium text-gray-500 uppercase">
+        Keyword Alignment
+      </label>
+      <p className="text-sm text-gray-900">
+        {qualityAnalysis.score.keywordAlignment}/100
+      </p>
+    </div>
+  );
+}
 ```
 
 Only shown if keyword alignment score is available (non-null).
@@ -771,23 +815,28 @@ Only shown if keyword alignment score is available (non-null).
 ##### Suggested Improvements
 
 ```tsx
-{qualityAnalysis.suggestedImprovements.length > 0 && (
-  <div>
-    <label className="text-xs font-medium text-gray-500 uppercase">
-      Suggestions
-    </label>
-    <ul className="mt-1 space-y-1">
-      {qualityAnalysis.suggestedImprovements.slice(0, 3).map((suggestion, i) => (
-        <li key={i} className="text-xs text-gray-700">
-          • {suggestion}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+{
+  qualityAnalysis.suggestedImprovements.length > 0 && (
+    <div>
+      <label className="text-xs font-medium text-gray-500 uppercase">
+        Suggestions
+      </label>
+      <ul className="mt-1 space-y-1">
+        {qualityAnalysis.suggestedImprovements
+          .slice(0, 3)
+          .map((suggestion, i) => (
+            <li key={i} className="text-xs text-gray-700">
+              • {suggestion}
+            </li>
+          ))}
+      </ul>
+    </div>
+  );
+}
 ```
 
 **Behavior:**
+
 - Shows up to **top 3 suggestions** only (`.slice(0, 3)`)
 - Bullet point list format
 - Only shown if suggestions array is non-empty
@@ -817,6 +866,7 @@ const [isAnalyzingQuality, setIsAnalyzingQuality] = useState(false);
 ```
 
 **State Flow:**
+
 1. `isAnalyzingQuality = true` → Button disabled, shows "Analyzing..."
 2. API call executes
 3. On success: `qualityAnalysis` set to result
@@ -877,17 +927,20 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 ```
 
 **Indexes:**
+
 - `idx_content_quality_scores_org` on `org_id`
 - `idx_content_quality_scores_content_item` on `content_item_id`
 - `idx_content_quality_scores_org_content` on `(org_id, content_item_id)`
 - `idx_content_quality_scores_score` on `(org_id, score DESC)`
 
 **Row Level Security (RLS):**
+
 - Enabled for org-scoped access control
 - Users can only SELECT/INSERT/UPDATE/DELETE scores for their organization
 - Policies check `user_orgs` table for membership
 
 **Triggers:**
+
 - `update_content_quality_scores_updated_at()`: Auto-updates `updated_at` on row modification
 
 ---
@@ -899,6 +952,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Replace placeholder topic alignment with actual vector similarity
 
 **Requirements:**
+
 1. Add `centroid_embedding vector(1536)` to `content_topics` table
 2. Create background job to compute topic centroids:
    - Average all content item embeddings for each topic
@@ -907,6 +961,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 4. Consider weighted centroids (more weight to high-performing content)
 
 **Expected Impact:**
+
 - More accurate topic alignment scores
 - Better detection of off-topic content
 - Improved overall quality scoring precision
@@ -918,6 +973,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Add multiple readability formulas and grade-level estimates
 
 **Potential Additions:**
+
 - **Flesch-Kincaid Grade Level** (in addition to Reading Ease)
 - **Gunning Fog Index** (estimate years of education required)
 - **SMOG Index** (Simple Measure of Gobbledygook)
@@ -925,6 +981,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 - **Automated Readability Index (ARI)**
 
 **Benefits:**
+
 - Cross-validation across multiple formulas
 - Different perspectives on readability
 - Target specific grade levels for audience segmentation
@@ -936,6 +993,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Analyze content structure completeness
 
 **Metrics:**
+
 - **Heading hierarchy** (H1 → H2 → H3 proper nesting)
 - **Paragraph length distribution** (detect walls of text)
 - **Sentence length variance** (detect monotonous rhythm)
@@ -945,6 +1003,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 - **Call-to-action presence**
 
 **Scoring Impact:**
+
 - Add "Structure Score" component (10-15% weight)
 - Penalize missing H1, improper heading hierarchy
 - Reward balanced paragraph lengths, varied sentence structure
@@ -956,6 +1015,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Integrate SEO best practices into quality scoring
 
 **Checks:**
+
 - **Title length** (50-60 characters optimal)
 - **Meta description** (150-160 characters)
 - **Image alt text** (presence and quality)
@@ -967,6 +1027,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 - **Schema markup** (structured data presence)
 
 **Integration:**
+
 - Add `seo_score` column to quality scores
 - Weight SEO score as 10-20% of overall quality
 - Generate SEO-specific warnings and improvements
@@ -978,12 +1039,14 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Provide live quality feedback during content editing
 
 **Approach:**
+
 - WebSocket or Server-Sent Events for real-time updates
 - Debounced analysis triggers (analyze after 2 seconds of inactivity)
 - Incremental updates (only recompute changed metrics)
 - Client-side heuristics for instant feedback (readability, word count)
 
 **Benefits:**
+
 - Writers see quality score while drafting
 - Immediate feedback on improvements
 - Prevent low-quality content from being saved
@@ -995,6 +1058,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Train ML models on high-performing content
 
 **Potential Models:**
+
 1. **Performance Predictor**: Predict traffic, engagement, conversions based on content features
 2. **Quality Classifier**: Binary classifier (high/low quality) trained on editor labels
 3. **Topic Suggester**: Recommend related topics based on content embeddings
@@ -1002,6 +1066,7 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 5. **Improvement Ranker**: Rank suggested improvements by expected impact
 
 **Data Requirements:**
+
 - Historical performance data (pageviews, time on page, conversions)
 - Editor quality labels (human-rated content quality)
 - A/B test results (which improvements actually worked)
@@ -1013,11 +1078,13 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Support content quality analysis in multiple languages
 
 **Challenges:**
+
 - Readability formulas are English-specific
 - Syllable counting differs across languages
 - Embedding models may have language biases
 
 **Solutions:**
+
 1. Use language-specific readability formulas:
    - **Spanish**: Flesch-Szigriszt
    - **German**: Wiener Sachtextformel
@@ -1033,12 +1100,14 @@ CREATE TABLE IF NOT EXISTS public.content_quality_scores (
 **Goal:** Tie quality analysis to content gap recommendations
 
 **Integration Points:**
+
 1. **Gap-Driven Quality**: Prioritize quality improvements for content targeting high-value gaps
 2. **Quality-Driven Gaps**: Identify topics where existing content is low-quality
 3. **Competitor Comparison**: Compare quality scores to competitor content on same topics
 4. **Opportunity Score**: Combine quality score + gap score for prioritization
 
 **Formula:**
+
 ```
 opportunity = (gap_score × 0.6) + (quality_score × 0.4)
 ```
@@ -1052,6 +1121,7 @@ High gap + low quality = highest priority for improvement
 **Goal:** Auto-implement suggested improvements using AI
 
 **Capabilities:**
+
 1. **Readability Rewrite**: AI rewrites complex sentences for clarity
 2. **Keyword Insertion**: AI suggests natural placements for target keyword
 3. **Content Expansion**: AI generates additional paragraphs to meet word count
@@ -1059,6 +1129,7 @@ High gap + low quality = highest priority for improvement
 5. **Structure Fixes**: AI reorganizes content with proper headings
 
 **Workflow:**
+
 1. User reviews suggested improvements
 2. User selects which improvements to auto-apply
 3. AI generates revised content sections
@@ -1066,6 +1137,7 @@ High gap + low quality = highest priority for improvement
 5. Content updated, quality re-analyzed
 
 **Safety:**
+
 - Always human-in-the-loop (no auto-publish)
 - Track AI-generated vs. human-written content
 - Version control for rollback
@@ -1122,8 +1194,8 @@ See `apps/api/tests/contentQualityService.test.ts` for comprehensive test covera
 
 ### Academic Sources
 
-- **Flesch-Kincaid Readability**: Flesch, R. (1948). "A New Readability Yardstick." *Journal of Applied Psychology*, 32(3), 221-233.
-- **Cosine Similarity**: Salton, G., & McGill, M. J. (1983). *Introduction to Modern Information Retrieval*. McGraw-Hill.
+- **Flesch-Kincaid Readability**: Flesch, R. (1948). "A New Readability Yardstick." _Journal of Applied Psychology_, 32(3), 221-233.
+- **Cosine Similarity**: Salton, G., & McGill, M. J. (1983). _Introduction to Modern Information Retrieval_. McGraw-Hill.
 
 ### Tools and Libraries
 

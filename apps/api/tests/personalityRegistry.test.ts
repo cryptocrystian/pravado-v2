@@ -44,20 +44,25 @@ describe('PersonalityRegistry', () => {
     it('should have valid risk tolerance values', () => {
       const validRiskLevels = ['low', 'medium', 'high'];
       SYSTEM_PERSONALITIES.forEach((personality) => {
-        expect(validRiskLevels).toContain(personality.configuration.riskTolerance);
+        expect(validRiskLevels).toContain(
+          personality.configuration.riskTolerance
+        );
       });
     });
 
     it('should have valid collaboration styles', () => {
       const validStyles = ['assertive', 'supportive', 'balanced'];
       SYSTEM_PERSONALITIES.forEach((personality) => {
-        expect(validStyles).toContain(personality.configuration.collaborationStyle);
+        expect(validStyles).toContain(
+          personality.configuration.collaborationStyle
+        );
       });
     });
 
     it('should have valid memory weight and escalation sensitivity values', () => {
       SYSTEM_PERSONALITIES.forEach((personality) => {
-        const { memoryWeight, escalationSensitivity } = personality.configuration;
+        const { memoryWeight, escalationSensitivity } =
+          personality.configuration;
 
         // Should be between 0 and 1
         expect(memoryWeight).toBeGreaterThanOrEqual(0);
@@ -69,8 +74,12 @@ describe('PersonalityRegistry', () => {
 
     it('should have domain specialties', () => {
       SYSTEM_PERSONALITIES.forEach((personality) => {
-        expect(Array.isArray(personality.configuration.domainSpecialty)).toBe(true);
-        expect(personality.configuration.domainSpecialty.length).toBeGreaterThan(0);
+        expect(Array.isArray(personality.configuration.domainSpecialty)).toBe(
+          true
+        );
+        expect(
+          personality.configuration.domainSpecialty.length
+        ).toBeGreaterThan(0);
       });
     });
 
@@ -212,8 +221,12 @@ describe('PersonalityRegistry', () => {
       expect(personality?.configuration.biasModifiers.optimism).toBe(0.3);
       expect(personality?.configuration.memoryWeight).toBe(0.7);
       expect(personality?.configuration.escalationSensitivity).toBe(0.6);
-      expect(personality?.configuration.constraints.require).toContain('journalist_validation');
-      expect(personality?.configuration.constraints.forbid).toContain('spam_tactics');
+      expect(personality?.configuration.constraints.require).toContain(
+        'journalist_validation'
+      );
+      expect(personality?.configuration.constraints.forbid).toContain(
+        'spam_tactics'
+      );
     });
 
     it('SEO Analyst should have correct configuration', () => {
@@ -226,8 +239,12 @@ describe('PersonalityRegistry', () => {
       expect(personality?.configuration.biasModifiers.precision).toBe(0.5);
       expect(personality?.configuration.memoryWeight).toBe(0.8);
       expect(personality?.configuration.escalationSensitivity).toBe(0.4);
-      expect(personality?.configuration.constraints.require).toContain('keyword_validation');
-      expect(personality?.configuration.constraints.forbid).toContain('keyword_stuffing');
+      expect(personality?.configuration.constraints.require).toContain(
+        'keyword_validation'
+      );
+      expect(personality?.configuration.constraints.forbid).toContain(
+        'keyword_stuffing'
+      );
     });
 
     it('Content Architect should have correct configuration', () => {
@@ -240,8 +257,12 @@ describe('PersonalityRegistry', () => {
       expect(personality?.configuration.biasModifiers.creativity).toBe(0.5);
       expect(personality?.configuration.memoryWeight).toBe(0.6);
       expect(personality?.configuration.escalationSensitivity).toBe(0.5);
-      expect(personality?.configuration.constraints.require).toContain('originality_check');
-      expect(personality?.configuration.constraints.forbid).toContain('plagiarism');
+      expect(personality?.configuration.constraints.require).toContain(
+        'originality_check'
+      );
+      expect(personality?.configuration.constraints.forbid).toContain(
+        'plagiarism'
+      );
     });
 
     it('Social Media Manager should have high risk tolerance', () => {
@@ -258,7 +279,9 @@ describe('PersonalityRegistry', () => {
 
       expect(personality?.configuration.riskTolerance).toBe('low');
       expect(personality?.configuration.biasModifiers.conservatism).toBe(0.6);
-      expect(personality?.configuration.biasModifiers.brand_consistency).toBe(0.8);
+      expect(personality?.configuration.biasModifiers.brand_consistency).toBe(
+        0.8
+      );
       expect(personality?.configuration.escalationSensitivity).toBe(0.2);
     });
   });

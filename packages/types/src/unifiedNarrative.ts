@@ -952,7 +952,10 @@ export const NARRATIVE_TYPE_LABELS: Record<NarrativeType, string> = {
 /**
  * Display labels for narrative section types
  */
-export const NARRATIVE_SECTION_TYPE_LABELS: Record<NarrativeSectionType, string> = {
+export const NARRATIVE_SECTION_TYPE_LABELS: Record<
+  NarrativeSectionType,
+  string
+> = {
   // Executive Narrative sections
   executive_summary: 'Executive Summary',
   strategic_overview: 'Strategic Overview',
@@ -1015,7 +1018,10 @@ export const NARRATIVE_SECTION_TYPE_LABELS: Record<NarrativeSectionType, string>
 /**
  * Display labels for insight strength
  */
-export const NARRATIVE_INSIGHT_STRENGTH_LABELS: Record<NarrativeInsightStrength, string> = {
+export const NARRATIVE_INSIGHT_STRENGTH_LABELS: Record<
+  NarrativeInsightStrength,
+  string
+> = {
   critical: 'Critical',
   high: 'High',
   medium: 'Medium',
@@ -1062,7 +1068,10 @@ export const NARRATIVE_STATUS_LABELS: Record<NarrativeStatus, string> = {
 /**
  * Display labels for source systems
  */
-export const NARRATIVE_SOURCE_SYSTEM_LABELS: Record<NarrativeSourceSystem, string> = {
+export const NARRATIVE_SOURCE_SYSTEM_LABELS: Record<
+  NarrativeSourceSystem,
+  string
+> = {
   media_briefing: 'Media Briefing',
   crisis_engine: 'Crisis Engine',
   brand_reputation: 'Brand Reputation',

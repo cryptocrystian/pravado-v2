@@ -16,42 +16,42 @@ Sprint S55 delivers a comprehensive AI-powered crisis response and escalation en
 
 ### Phase 1: Foundation (Backend Core)
 
-| Deliverable | Status | Location |
-|-------------|--------|----------|
-| Migration 60 | DONE | `apps/api/supabase/migrations/60_crisis_response_schema.sql` |
-| Types | DONE | `packages/types/src/crisis.ts` (~1,044 lines) |
-| Validators | DONE | `packages/validators/src/crisis.ts` |
+| Deliverable  | Status | Location                                                     |
+| ------------ | ------ | ------------------------------------------------------------ |
+| Migration 60 | DONE   | `apps/api/supabase/migrations/60_crisis_response_schema.sql` |
+| Types        | DONE   | `packages/types/src/crisis.ts` (~1,044 lines)                |
+| Validators   | DONE   | `packages/validators/src/crisis.ts`                          |
 
 ### Phase 2: Service & Routes
 
-| Deliverable | Status | Location |
-|-------------|--------|----------|
-| Crisis Service | DONE | `apps/api/src/services/crisisService.ts` (~1,450 lines) |
-| API Routes | DONE | `apps/api/src/routes/crisis/index.ts` (~850 lines) |
-| Feature Flag | DONE | `packages/feature-flags/src/flags.ts` (ENABLE_CRISIS_ENGINE) |
-| Server Registration | DONE | `apps/api/src/server.ts` |
-| Frontend API | DONE | `apps/dashboard/src/lib/crisisApi.ts` (~526 lines) |
+| Deliverable         | Status | Location                                                     |
+| ------------------- | ------ | ------------------------------------------------------------ |
+| Crisis Service      | DONE   | `apps/api/src/services/crisisService.ts` (~1,450 lines)      |
+| API Routes          | DONE   | `apps/api/src/routes/crisis/index.ts` (~850 lines)           |
+| Feature Flag        | DONE   | `packages/feature-flags/src/flags.ts` (ENABLE_CRISIS_ENGINE) |
+| Server Registration | DONE   | `apps/api/src/server.ts`                                     |
+| Frontend API        | DONE   | `apps/dashboard/src/lib/crisisApi.ts` (~526 lines)           |
 
 ### Phase 3: Frontend & Testing
 
-| Deliverable | Status | Location |
-|-------------|--------|----------|
-| CrisisIncidentCard | DONE | `apps/dashboard/src/components/crisis/CrisisIncidentCard.tsx` |
-| CrisisSignalList | DONE | `apps/dashboard/src/components/crisis/CrisisSignalList.tsx` |
-| CrisisActionList | DONE | `apps/dashboard/src/components/crisis/CrisisActionList.tsx` |
-| CrisisIncidentDetailDrawer | DONE | `apps/dashboard/src/components/crisis/CrisisIncidentDetailDrawer.tsx` |
-| CrisisBriefPanel | DONE | `apps/dashboard/src/components/crisis/CrisisBriefPanel.tsx` |
-| CrisisFiltersBar | DONE | `apps/dashboard/src/components/crisis/CrisisFiltersBar.tsx` |
-| CrisisDashboardStats | DONE | `apps/dashboard/src/components/crisis/CrisisDashboardStats.tsx` |
-| CrisisSeverityBadge | DONE | `apps/dashboard/src/components/crisis/CrisisSeverityBadge.tsx` (~210 lines) |
-| CrisisDetectionPanel | DONE | `apps/dashboard/src/components/crisis/CrisisDetectionPanel.tsx` (~315 lines) |
-| CrisisEscalationRuleEditor | DONE | `apps/dashboard/src/components/crisis/CrisisEscalationRuleEditor.tsx` (~420 lines) |
-| Barrel Export | DONE | `apps/dashboard/src/components/crisis/index.ts` |
-| Dashboard Page | DONE | `apps/dashboard/src/app/app/crisis/page.tsx` (~750 lines) |
-| Backend Tests | DONE | `apps/api/tests/crisisService.test.ts` (~820 lines) |
-| E2E Tests | DONE | `apps/dashboard/tests/crisis.spec.ts` (~570 lines) |
-| Product Spec | DONE | `docs/product/crisis_response_engine_v1.md` |
-| Completion Report | DONE | `docs/SPRINT_S55_COMPLETION_REPORT.md` |
+| Deliverable                | Status | Location                                                                           |
+| -------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| CrisisIncidentCard         | DONE   | `apps/dashboard/src/components/crisis/CrisisIncidentCard.tsx`                      |
+| CrisisSignalList           | DONE   | `apps/dashboard/src/components/crisis/CrisisSignalList.tsx`                        |
+| CrisisActionList           | DONE   | `apps/dashboard/src/components/crisis/CrisisActionList.tsx`                        |
+| CrisisIncidentDetailDrawer | DONE   | `apps/dashboard/src/components/crisis/CrisisIncidentDetailDrawer.tsx`              |
+| CrisisBriefPanel           | DONE   | `apps/dashboard/src/components/crisis/CrisisBriefPanel.tsx`                        |
+| CrisisFiltersBar           | DONE   | `apps/dashboard/src/components/crisis/CrisisFiltersBar.tsx`                        |
+| CrisisDashboardStats       | DONE   | `apps/dashboard/src/components/crisis/CrisisDashboardStats.tsx`                    |
+| CrisisSeverityBadge        | DONE   | `apps/dashboard/src/components/crisis/CrisisSeverityBadge.tsx` (~210 lines)        |
+| CrisisDetectionPanel       | DONE   | `apps/dashboard/src/components/crisis/CrisisDetectionPanel.tsx` (~315 lines)       |
+| CrisisEscalationRuleEditor | DONE   | `apps/dashboard/src/components/crisis/CrisisEscalationRuleEditor.tsx` (~420 lines) |
+| Barrel Export              | DONE   | `apps/dashboard/src/components/crisis/index.ts`                                    |
+| Dashboard Page             | DONE   | `apps/dashboard/src/app/app/crisis/page.tsx` (~750 lines)                          |
+| Backend Tests              | DONE   | `apps/api/tests/crisisService.test.ts` (~820 lines)                                |
+| E2E Tests                  | DONE   | `apps/dashboard/tests/crisis.spec.ts` (~570 lines)                                 |
+| Product Spec               | DONE   | `docs/product/crisis_response_engine_v1.md`                                        |
+| Completion Report          | DONE   | `docs/SPRINT_S55_COMPLETION_REPORT.md`                                             |
 
 ---
 
@@ -102,35 +102,38 @@ Sprint S55 delivers a comprehensive AI-powered crisis response and escalation en
 
 ## Technical Metrics
 
-| Metric | Value |
-|--------|-------|
-| New Tables | 8 |
-| API Endpoints | 20+ |
+| Metric           | Value        |
+| ---------------- | ------------ |
+| New Tables       | 8            |
+| API Endpoints    | 20+          |
 | Type Definitions | ~1,044 lines |
-| Service Code | ~1,450 lines |
-| Route Code | ~850 lines |
-| Frontend API | ~526 lines |
-| UI Components | 10 |
-| Dashboard Page | ~750 lines |
-| Backend Tests | ~820 lines |
-| E2E Tests | ~570 lines |
-| Test Cases | 60+ |
+| Service Code     | ~1,450 lines |
+| Route Code       | ~850 lines   |
+| Frontend API     | ~526 lines   |
+| UI Components    | 10           |
+| Dashboard Page   | ~750 lines   |
+| Backend Tests    | ~820 lines   |
+| E2E Tests        | ~570 lines   |
+| Test Cases       | 60+          |
 
 ---
 
 ## Integration Points
 
 ### Source Systems (Read)
+
 - S40: Media Monitoring (media_mentions)
 - S41: Media Crawling (crawled_articles)
 - S43: Media Alerts (media_alerts)
 
 ### Supporting Features
+
 - S49: Journalist Timeline (context enrichment)
 - S52: Media Performance (impact metrics)
 - S53: Competitive Intelligence (competitor crises)
 
 ### Shared Services
+
 - LLM Router (recommendation generation)
 - Audit Logging (compliance tracking)
 
@@ -154,12 +157,14 @@ crisis_audit_log           # Activity tracking
 ## Quality Assurance
 
 ### Backend Testing
+
 - 12 test suites covering all service methods
 - Mock Supabase client for isolation
 - Mock LLM Router for AI features
 - 45+ individual test cases
 
 ### E2E Testing
+
 - Playwright test structure created
 - Authentication flow tests
 - UI interaction tests (skipped pending auth setup)
@@ -191,10 +196,10 @@ crisis_audit_log           # Activity tracking
 
 ## Files Modified (S0-S54)
 
-| File | Change |
-|------|--------|
+| File                                  | Change                          |
+| ------------------------------------- | ------------------------------- |
 | `packages/feature-flags/src/flags.ts` | Added ENABLE_CRISIS_ENGINE flag |
-| `apps/api/src/server.ts` | Import + register crisis routes |
+| `apps/api/src/server.ts`              | Import + register crisis routes |
 
 All other changes are net-new S55 additions.
 

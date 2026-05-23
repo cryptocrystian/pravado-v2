@@ -6,6 +6,7 @@
  */
 
 import type { InsightConflict } from '@pravado/types';
+
 import { ConflictCard } from './ConflictCard';
 
 interface ConflictListProps {
@@ -49,7 +50,7 @@ export function ConflictList({
     if (selectedConflicts.size === conflicts.length) {
       onSelectionChange(new Set());
     } else {
-      onSelectionChange(new Set(conflicts.map(c => c.id)));
+      onSelectionChange(new Set(conflicts.map((c) => c.id)));
     }
   };
 
@@ -57,7 +58,10 @@ export function ConflictList({
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+          <div
+            key={i}
+            className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
+          >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
@@ -101,9 +105,12 @@ export function ConflictList({
             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <h3 className="text-lg font-medium text-gray-900 mb-1">{emptyMessage}</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">
+          {emptyMessage}
+        </h3>
         <p className="text-sm text-gray-500">
-          Conflicts will appear here when detected across your intelligence systems.
+          Conflicts will appear here when detected across your intelligence
+          systems.
         </p>
       </div>
     );

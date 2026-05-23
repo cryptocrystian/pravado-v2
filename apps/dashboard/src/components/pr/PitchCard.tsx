@@ -32,18 +32,25 @@ export function PitchCard({ pitch, onClick }: PitchCardProps) {
 
       {/* Priority + beat tags */}
       <div className="flex flex-wrap items-center gap-1.5 mb-2">
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${priority.bg} ${priority.text}`}>
+        <span
+          className={`text-xs font-medium px-2 py-0.5 rounded-full ${priority.bg} ${priority.text}`}
+        >
           {pitch.priority.toUpperCase()}
         </span>
         {pitch.beats?.map((beat) => (
-          <span key={beat} className="text-xs text-white/30 bg-white/5 px-1.5 py-0.5 rounded-full">
+          <span
+            key={beat}
+            className="text-xs text-white/30 bg-white/5 px-1.5 py-0.5 rounded-full"
+          >
             {beat}
           </span>
         ))}
       </div>
 
       {/* AEO target */}
-      <p className="text-xs text-brand-magenta font-medium">AEO target: {pitch.aeoTarget}</p>
+      <p className="text-xs text-brand-magenta font-medium">
+        AEO target: {pitch.aeoTarget}
+      </p>
 
       {/* Date */}
       <p className="text-xs text-white/30 mt-1">{pitch.created}</p>

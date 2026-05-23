@@ -5,17 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { SeverityBadge } from './SeverityBadge';
-import { cn } from '@/lib/utils';
-import type {
-  GovernanceAuditInsight,
-  GovernanceInsightRecommendation,
-  GovernanceInsightTopRisk,
-} from '@/lib/governanceApi';
-import { formatDate, formatDateTime, getScopeLabel, getEntityTypeLabel } from '@/lib/governanceApi';
 import {
   Lightbulb,
   AlertTriangle,
@@ -26,6 +15,24 @@ import {
   FileText,
   RefreshCw,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type {
+  GovernanceAuditInsight,
+  GovernanceInsightRecommendation,
+  GovernanceInsightTopRisk,
+} from '@/lib/governanceApi';
+import {
+  formatDate,
+  formatDateTime,
+  getScopeLabel,
+  getEntityTypeLabel,
+} from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
+
+import { SeverityBadge } from './SeverityBadge';
 
 interface InsightsSummaryProps {
   insights: GovernanceAuditInsight[];
@@ -56,11 +63,15 @@ function getPriorityColor(priority: string): string {
 }
 
 function InsightCard({ insight, onClick }: InsightCardProps) {
-  const isLlmGenerated = insight.generatedBy === 'llm_assisted' || insight.generatedBy === 'hybrid';
+  const isLlmGenerated =
+    insight.generatedBy === 'llm_assisted' || insight.generatedBy === 'hybrid';
 
   return (
     <Card
-      className={cn('hover:shadow-md transition-shadow', onClick && 'cursor-pointer')}
+      className={cn(
+        'hover:shadow-md transition-shadow',
+        onClick && 'cursor-pointer'
+      )}
       onClick={onClick}
     >
       <CardContent className="p-4 space-y-3">
@@ -72,7 +83,10 @@ function InsightCard({ insight, onClick }: InsightCardProps) {
           </div>
           <div className="flex items-center gap-1">
             {isLlmGenerated && (
-              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
+              <Badge
+                variant="outline"
+                className="text-xs bg-purple-50 text-purple-700"
+              >
                 <Sparkles className="h-3 w-3 mr-1" />
                 AI
               </Badge>
@@ -98,7 +112,10 @@ function InsightCard({ insight, onClick }: InsightCardProps) {
           </div>
           <div className="flex items-center gap-1 text-gray-500">
             <Clock className="h-4 w-4" />
-            <span>{formatDate(insight.timeWindowStart)} - {formatDate(insight.timeWindowEnd)}</span>
+            <span>
+              {formatDate(insight.timeWindowStart)} -{' '}
+              {formatDate(insight.timeWindowEnd)}
+            </span>
           </div>
         </div>
 
@@ -110,7 +127,10 @@ function InsightCard({ insight, onClick }: InsightCardProps) {
             <span className="text-xs font-medium text-gray-700">
               {insight.topRisks[0].entityName || insight.topRisks[0].entityId}
             </span>
-            <SeverityBadge severity={insight.topRisks[0].riskLevel} className="text-xs" />
+            <SeverityBadge
+              severity={insight.topRisks[0].riskLevel}
+              className="text-xs"
+            />
           </div>
         )}
 
@@ -131,7 +151,10 @@ interface RecommendationListProps {
   maxItems?: number;
 }
 
-function RecommendationList({ recommendations, maxItems = 5 }: RecommendationListProps) {
+function RecommendationList({
+  recommendations,
+  maxItems = 5,
+}: RecommendationListProps) {
   const visibleRecs = recommendations.slice(0, maxItems);
 
   return (
@@ -141,14 +164,21 @@ function RecommendationList({ recommendations, maxItems = 5 }: RecommendationLis
           key={index}
           className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
         >
-          <Badge variant="outline" className={cn('text-xs shrink-0', getPriorityColor(rec.priority))}>
+          <Badge
+            variant="outline"
+            className={cn('text-xs shrink-0', getPriorityColor(rec.priority))}
+          >
             {rec.priority}
           </Badge>
           <div className="flex-1 min-w-0">
             <div className="font-medium text-sm text-gray-900">{rec.title}</div>
-            <div className="text-xs text-gray-600 line-clamp-2">{rec.description}</div>
+            <div className="text-xs text-gray-600 line-clamp-2">
+              {rec.description}
+            </div>
             {rec.estimatedImpact && (
-              <div className="text-xs text-gray-500 mt-1">Impact: {rec.estimatedImpact}</div>
+              <div className="text-xs text-gray-500 mt-1">
+                Impact: {rec.estimatedImpact}
+              </div>
             )}
           </div>
         </div>
@@ -189,7 +219,17 @@ function TopRisksList({ topRisks, maxItems = 5 }: TopRisksListProps) {
             </div>
           </div>
           <div className="text-right">
-            <div className="font-bold text-lg" style={{ color: risk.riskScore >= 70 ? '#dc2626' : risk.riskScore >= 40 ? '#f59e0b' : '#16a34a' }}>
+            <div
+              className="font-bold text-lg"
+              style={{
+                color:
+                  risk.riskScore >= 70
+                    ? '#dc2626'
+                    : risk.riskScore >= 40
+                      ? '#f59e0b'
+                      : '#16a34a',
+              }}
+            >
               {risk.riskScore.toFixed(0)}
             </div>
             <SeverityBadge severity={risk.riskLevel} className="text-xs" />
@@ -226,7 +266,9 @@ export function InsightsSummary({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Lightbulb className="h-5 w-5 text-amber-500" />
-          <h2 className="text-lg font-semibold text-gray-900">AI Governance Insights</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            AI Governance Insights
+          </h2>
         </div>
         {onGenerateClick && (
           <Button onClick={onGenerateClick} variant="outline" size="sm">
@@ -259,10 +301,15 @@ export function InsightsSummary({
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{latestInsight.title}</CardTitle>
+                  <CardTitle className="text-base">
+                    {latestInsight.title}
+                  </CardTitle>
                   <div className="flex items-center gap-2">
                     {latestInsight.generatedBy !== 'rule_based' && (
-                      <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
+                      <Badge
+                        variant="outline"
+                        className="text-xs bg-purple-50 text-purple-700"
+                      >
                         <Sparkles className="h-3 w-3 mr-1" />
                         AI Generated
                       </Badge>
@@ -277,31 +324,46 @@ export function InsightsSummary({
                 {/* Executive Summary */}
                 {latestInsight.executiveSummary && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Executive Summary</h4>
-                    <p className="text-sm text-gray-600">{latestInsight.executiveSummary}</p>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                      Executive Summary
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {latestInsight.executiveSummary}
+                    </p>
                   </div>
                 )}
 
                 {/* Summary */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Summary</h4>
-                  <p className="text-sm text-gray-600">{latestInsight.summary}</p>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Summary
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {latestInsight.summary}
+                  </p>
                 </div>
 
                 {/* Recommendations */}
-                {latestInsight.recommendations && latestInsight.recommendations.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Recommendations</h4>
-                    <RecommendationList recommendations={latestInsight.recommendations} />
-                  </div>
-                )}
+                {latestInsight.recommendations &&
+                  latestInsight.recommendations.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        Recommendations
+                      </h4>
+                      <RecommendationList
+                        recommendations={latestInsight.recommendations}
+                      />
+                    </div>
+                  )}
               </CardContent>
             </Card>
 
             {/* Previous Insights */}
             {insights.length > 1 && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-gray-700">Previous Insights</h3>
+                <h3 className="text-sm font-medium text-gray-700">
+                  Previous Insights
+                </h3>
                 <div className="space-y-2">
                   {insights.slice(1, 4).map((insight) => (
                     <InsightCard
@@ -332,23 +394,33 @@ export function InsightsSummary({
             )}
 
             {/* Risk Distribution */}
-            {latestInsight.riskDistribution && Object.keys(latestInsight.riskDistribution).length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Risk Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {Object.entries(latestInsight.riskDistribution).map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600 capitalize">{key.replace(/_/g, ' ')}</span>
-                        <span className="font-medium">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {latestInsight.riskDistribution &&
+              Object.keys(latestInsight.riskDistribution).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">
+                      Risk Distribution
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {Object.entries(latestInsight.riskDistribution).map(
+                        ([key, value]) => (
+                          <div
+                            key={key}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <span className="text-gray-600 capitalize">
+                              {key.replace(/_/g, ' ')}
+                            </span>
+                            <span className="font-medium">{value}</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
           </div>
         </div>
       )}

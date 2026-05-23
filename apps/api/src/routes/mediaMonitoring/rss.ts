@@ -23,8 +23,8 @@ import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
-import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
 import { createMediaCrawlerService } from '../../services/mediaCrawlerService';
+import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
 
 /**
  * Register RSS and crawler routes
@@ -38,7 +38,10 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
 
   // Create Supabase client (S100.2 fix)
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   /**
    * Helper to get user's org ID
@@ -75,97 +78,114 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
   // POST /api/v1/media-monitoring/rss-feeds - Add RSS feed
   server.post<{
     Body: CreateRSSFeedInput;
-  }>('/api/v1/media-monitoring/rss-feeds', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/rss-feeds',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = createRSSFeedSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const feed = await crawlerService.addRSSFeed(orgId, validation.data);
+
+        return reply.status(201).send({
+          success: true,
+          data: { feed },
+        });
+      } catch (error) {
+        console.error('Failed to add RSS feed:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error ? error.message : 'Failed to add RSS feed',
           },
         });
       }
-
-      const validation = createRSSFeedSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const feed = await crawlerService.addRSSFeed(orgId, validation.data);
-
-      return reply.status(201).send({
-        success: true,
-        data: { feed },
-      });
-    } catch (error) {
-      console.error('Failed to add RSS feed:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to add RSS feed',
-        },
-      });
     }
-  });
+  );
 
   // GET /api/v1/media-monitoring/rss-feeds - List RSS feeds
   server.get<{
     Querystring: Record<string, string | undefined>;
-  }>('/api/v1/media-monitoring/rss-feeds', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/rss-feeds',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = listRSSFeedsSchema.safeParse(request.query);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
+            },
+          });
+        }
+
+        const result = await crawlerService.listRSSFeeds(
+          orgId,
+          validation.data
+        );
+
+        return reply.send({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error('Failed to list RSS feeds:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list RSS feeds',
           },
         });
       }
-
-      const validation = listRSSFeedsSchema.safeParse(request.query);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid query parameters',
-          },
-        });
-      }
-
-      const result = await crawlerService.listRSSFeeds(orgId, validation.data);
-
-      return reply.send({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      console.error('Failed to list RSS feeds:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to list RSS feeds',
-        },
-      });
     }
-  });
+  );
 
   // GET /api/v1/media-monitoring/rss-feeds/:id - Get RSS feed
   server.get<{
@@ -210,7 +230,8 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to get RSS feed',
+            message:
+              error instanceof Error ? error.message : 'Failed to get RSS feed',
           },
         });
       }
@@ -250,7 +271,11 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        const feed = await crawlerService.updateRSSFeed(orgId, request.params.id, validation.data);
+        const feed = await crawlerService.updateRSSFeed(
+          orgId,
+          request.params.id,
+          validation.data
+        );
 
         return reply.send({
           success: true,
@@ -262,7 +287,10 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to update RSS feed',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to update RSS feed',
           },
         });
       }
@@ -302,7 +330,10 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to deactivate RSS feed',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to deactivate RSS feed',
           },
         });
       }
@@ -316,53 +347,66 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
   // POST /api/v1/media-monitoring/rss/fetch - Manually trigger RSS fetch
   server.post<{
     Body: { feedIds?: string[] };
-  }>('/api/v1/media-monitoring/rss/fetch', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  }>(
+    '/api/v1/media-monitoring/rss/fetch',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const validation = triggerRSSFetchSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.status(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: validation.error.errors[0]?.message || 'Invalid input',
+            },
+          });
+        }
+
+        const results = await crawlerService.fetchAllActiveFeeds(
+          orgId,
+          validation.data.feedIds
+        );
+
+        return reply.send({
+          success: true,
+          data: {
+            results,
+            totalFeeds: results.length,
+            totalJobsCreated: results.reduce(
+              (sum, r) => sum + r.jobsCreated,
+              0
+            ),
+          },
+        });
+      } catch (error) {
+        console.error('Failed to fetch RSS feeds:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to fetch RSS feeds',
           },
         });
       }
-
-      const validation = triggerRSSFetchSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.status(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: validation.error.errors[0]?.message || 'Invalid input',
-          },
-        });
-      }
-
-      const results = await crawlerService.fetchAllActiveFeeds(orgId, validation.data.feedIds);
-
-      return reply.send({
-        success: true,
-        data: {
-          results,
-          totalFeeds: results.length,
-          totalJobsCreated: results.reduce((sum, r) => sum + r.jobsCreated, 0),
-        },
-      });
-    } catch (error) {
-      console.error('Failed to fetch RSS feeds:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to fetch RSS feeds',
-        },
-      });
     }
-  });
+  );
 
   // ============================================================================
   // CRAWL JOB ENDPOINTS
@@ -413,7 +457,10 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to create crawl job',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to create crawl job',
           },
         });
       }
@@ -447,12 +494,17 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
             success: false,
             error: {
               code: 'VALIDATION_ERROR',
-              message: validation.error.errors[0]?.message || 'Invalid query parameters',
+              message:
+                validation.error.errors[0]?.message ||
+                'Invalid query parameters',
             },
           });
         }
 
-        const result = await crawlerService.listCrawlJobs(orgId, validation.data);
+        const result = await crawlerService.listCrawlJobs(
+          orgId,
+          validation.data
+        );
 
         return reply.send({
           success: true,
@@ -464,7 +516,10 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to list crawl jobs',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to list crawl jobs',
           },
         });
       }
@@ -507,7 +562,10 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           success: false,
           error: {
             code: 'INTERNAL_ERROR',
-            message: error instanceof Error ? error.message : 'Failed to run crawl jobs',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to run crawl jobs',
           },
         });
       }
@@ -519,36 +577,41 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
   // ============================================================================
 
   // GET /api/v1/media-monitoring/rss/stats - Get RSS and crawler statistics
-  server.get('/api/v1/media-monitoring/rss/stats', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const userId = request.user!.id;
-      const orgId = await getUserOrgId(userId);
+  server.get(
+    '/api/v1/media-monitoring/rss/stats',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const userId = request.user!.id;
+        const orgId = await getUserOrgId(userId);
 
-      if (!orgId) {
-        return reply.status(404).send({
+        if (!orgId) {
+          return reply.status(404).send({
+            success: false,
+            error: {
+              code: 'ORG_NOT_FOUND',
+              message: 'Organization not found for user',
+            },
+          });
+        }
+
+        const stats = await crawlerService.getStats(orgId);
+
+        return reply.send({
+          success: true,
+          data: { stats },
+        });
+      } catch (error) {
+        console.error('Failed to get stats:', error);
+        return reply.status(500).send({
           success: false,
           error: {
-            code: 'ORG_NOT_FOUND',
-            message: 'Organization not found for user',
+            code: 'INTERNAL_ERROR',
+            message:
+              error instanceof Error ? error.message : 'Failed to get stats',
           },
         });
       }
-
-      const stats = await crawlerService.getStats(orgId);
-
-      return reply.send({
-        success: true,
-        data: { stats },
-      });
-    } catch (error) {
-      console.error('Failed to get stats:', error);
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to get stats',
-        },
-      });
     }
-  });
+  );
 }

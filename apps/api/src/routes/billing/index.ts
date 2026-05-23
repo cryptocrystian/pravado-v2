@@ -29,7 +29,10 @@ import { StripeService } from '../../services/stripeService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -45,11 +48,18 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
  */
 export async function billingRoutes(server: FastifyInstance): Promise<void> {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // S30: Initialize Stripe service if enabled
   const stripeService = FLAGS.ENABLE_STRIPE_BILLING
-    ? new StripeService(supabase, env.STRIPE_SECRET_KEY, env.STRIPE_WEBHOOK_SECRET)
+    ? new StripeService(
+        supabase,
+        env.STRIPE_SECRET_KEY,
+        env.STRIPE_WEBHOOK_SECRET
+      )
     : undefined;
 
   const billingService = new BillingService(
@@ -87,46 +97,50 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * GET /api/v1/billing/org/summary
    * Get current org's billing summary
    */
-  server.get('/org/summary', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
+  server.get(
+    '/org/summary',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
 
-      const summary = await billingService.buildOrgBillingSummary(orgId);
-      if (!summary) {
+        const summary = await billingService.buildOrgBillingSummary(orgId);
+        if (!summary) {
+          return reply.code(500).send({
+            success: false,
+            error: {
+              code: 'BILLING_ERROR',
+              message: 'Failed to build billing summary',
+            },
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: summary,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to get org summary', { error });
         return reply.code(500).send({
           success: false,
           error: {
-            code: 'BILLING_ERROR',
-            message: 'Failed to build billing summary',
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to get billing summary',
           },
         });
       }
-
-      return reply.send({
-        success: true,
-        data: summary,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to get org summary', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error.message || 'Failed to get billing summary',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/plan
@@ -246,89 +260,94 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       cancelUrl?: string;
       trialPeriodDays?: number;
     };
-  }>('/org/create-checkout', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check if Stripe is enabled
-      if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
-        return reply.code(503).send({
+  }>(
+    '/org/create-checkout',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check if Stripe is enabled
+        if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'STRIPE_DISABLED',
+              message: 'Stripe billing is not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        const { planSlug, successUrl, cancelUrl, trialPeriodDays } =
+          request.body;
+
+        // Validate plan exists
+        const plan = await billingService.getPlanBySlug(planSlug);
+        if (!plan) {
+          return reply.code(404).send({
+            success: false,
+            error: {
+              code: 'PLAN_NOT_FOUND',
+              message: `Plan '${planSlug}' not found`,
+            },
+          });
+        }
+
+        // Get Stripe price ID from environment
+        const priceIdMap: Record<string, string | undefined> = {
+          starter: env.STRIPE_PRICE_STARTER,
+          growth: env.STRIPE_PRICE_GROWTH,
+          enterprise: env.STRIPE_PRICE_ENTERPRISE,
+        };
+
+        const priceId = priceIdMap[planSlug];
+        if (!priceId) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'NO_PRICE_ID',
+              message: `No Stripe price ID configured for plan '${planSlug}'`,
+            },
+          });
+        }
+
+        // Create checkout session
+        const dashboardUrl = env.DASHBOARD_URL;
+        const checkoutSession = await stripeService.createCheckoutSession({
+          orgId,
+          planSlug,
+          priceId,
+          successUrl: successUrl || `${dashboardUrl}/app/billing?success=true`,
+          cancelUrl: cancelUrl || `${dashboardUrl}/app/billing?canceled=true`,
+          trialPeriodDays,
+        });
+
+        return reply.send({
+          success: true,
+          data: checkoutSession,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to create checkout session', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'STRIPE_DISABLED',
-            message: 'Stripe billing is not enabled',
+            code: 'CHECKOUT_FAILED',
+            message: error.message || 'Failed to create checkout session',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      const { planSlug, successUrl, cancelUrl, trialPeriodDays } = request.body;
-
-      // Validate plan exists
-      const plan = await billingService.getPlanBySlug(planSlug);
-      if (!plan) {
-        return reply.code(404).send({
-          success: false,
-          error: {
-            code: 'PLAN_NOT_FOUND',
-            message: `Plan '${planSlug}' not found`,
-          },
-        });
-      }
-
-      // Get Stripe price ID from environment
-      const priceIdMap: Record<string, string | undefined> = {
-        starter: env.STRIPE_PRICE_STARTER,
-        growth: env.STRIPE_PRICE_GROWTH,
-        enterprise: env.STRIPE_PRICE_ENTERPRISE,
-      };
-
-      const priceId = priceIdMap[planSlug];
-      if (!priceId) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'NO_PRICE_ID',
-            message: `No Stripe price ID configured for plan '${planSlug}'`,
-          },
-        });
-      }
-
-      // Create checkout session
-      const dashboardUrl = env.DASHBOARD_URL;
-      const checkoutSession = await stripeService.createCheckoutSession({
-        orgId,
-        planSlug,
-        priceId,
-        successUrl: successUrl || `${dashboardUrl}/app/billing?success=true`,
-        cancelUrl: cancelUrl || `${dashboardUrl}/app/billing?canceled=true`,
-        trialPeriodDays,
-      });
-
-      return reply.send({
-        success: true,
-        data: checkoutSession,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to create checkout session', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'CHECKOUT_FAILED',
-          message: error.message || 'Failed to create checkout session',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/stripe/webhook
@@ -440,52 +459,56 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * POST /api/v1/billing/org/resume
    * Resume canceled Stripe subscription (S30)
    */
-  server.post('/org/resume', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check if Stripe is enabled
-      if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
-        return reply.code(503).send({
+  server.post(
+    '/org/resume',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check if Stripe is enabled
+        if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'STRIPE_DISABLED',
+              message: 'Stripe billing is not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Resume subscription
+        await stripeService.resumeSubscription(orgId);
+
+        // Return updated summary
+        const summary = await billingService.buildOrgBillingSummary(orgId);
+
+        return reply.send({
+          success: true,
+          data: summary,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to resume subscription', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'STRIPE_DISABLED',
-            message: 'Stripe billing is not enabled',
+            code: 'RESUME_FAILED',
+            message: error.message || 'Failed to resume subscription',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Resume subscription
-      await stripeService.resumeSubscription(orgId);
-
-      // Return updated summary
-      const summary = await billingService.buildOrgBillingSummary(orgId);
-
-      return reply.send({
-        success: true,
-        data: summary,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to resume subscription', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'RESUME_FAILED',
-          message: error.message || 'Failed to resume subscription',
-        },
-      });
     }
-  });
+  );
 
   // ========================================
   // S31: OVERAGE BILLING ENDPOINTS
@@ -495,69 +518,74 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * GET /api/v1/billing/org/overages
    * Get overage summary for current billing period (S31)
    */
-  server.get('/org/overages', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check if overage billing is enabled
-      if (!FLAGS.ENABLE_OVERAGE_BILLING) {
-        return reply.code(503).send({
-          success: false,
-          error: {
-            code: 'OVERAGE_BILLING_DISABLED',
-            message: 'Overage billing is not enabled',
-          },
-        });
-      }
+  server.get(
+    '/org/overages',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check if overage billing is enabled
+        if (!FLAGS.ENABLE_OVERAGE_BILLING) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'OVERAGE_BILLING_DISABLED',
+              message: 'Overage billing is not enabled',
+            },
+          });
+        }
 
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
 
-      // Get overage summary for current period
-      const overageSummary = await billingService.getOverageSummaryForOrg(orgId);
+        // Get overage summary for current period
+        const overageSummary =
+          await billingService.getOverageSummaryForOrg(orgId);
 
-      if (!overageSummary) {
-        // No overages found - return zero overages
+        if (!overageSummary) {
+          // No overages found - return zero overages
+          return reply.send({
+            success: true,
+            data: {
+              orgId,
+              period: {
+                start: new Date().toISOString(),
+                end: new Date().toISOString(),
+              },
+              overages: {
+                tokens: { amount: 0, unitPrice: 0, cost: 0 },
+                playbookRuns: { amount: 0, unitPrice: 0, cost: 0 },
+                seats: { amount: 0, unitPrice: 0, cost: 0 },
+              },
+              totalCost: 0,
+            },
+          });
+        }
+
         return reply.send({
           success: true,
-          data: {
-            orgId,
-            period: {
-              start: new Date().toISOString(),
-              end: new Date().toISOString(),
-            },
-            overages: {
-              tokens: { amount: 0, unitPrice: 0, cost: 0 },
-              playbookRuns: { amount: 0, unitPrice: 0, cost: 0 },
-              seats: { amount: 0, unitPrice: 0, cost: 0 },
-            },
-            totalCost: 0,
+          data: overageSummary,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to get overage summary', { error });
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'OVERAGE_ERROR',
+            message: error.message || 'Failed to get overage summary',
           },
         });
       }
-
-      return reply.send({
-        success: true,
-        data: overageSummary,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to get overage summary', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'OVERAGE_ERROR',
-          message: error.message || 'Failed to get overage summary',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/overages/recalculate
@@ -565,79 +593,86 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    */
   server.post<{
     Body: { force?: boolean };
-  }>('/org/overages/recalculate', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check if overage billing is enabled
-      if (!FLAGS.ENABLE_OVERAGE_BILLING) {
-        return reply.code(503).send({
+  }>(
+    '/org/overages/recalculate',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check if overage billing is enabled
+        if (!FLAGS.ENABLE_OVERAGE_BILLING) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'OVERAGE_BILLING_DISABLED',
+              message: 'Overage billing is not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Validate request body
+        const validation = recalculateOveragesRequestSchema.safeParse(
+          request.body
+        );
+        if (!validation.success) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request body',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const { force = false } = validation.data;
+
+        console.log('[Billing] Recalculating overages', { orgId, force });
+
+        // Calculate overages
+        const calculation = await billingService.calculateOveragesForOrg(orgId);
+
+        if (!calculation) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'CALCULATION_FAILED',
+              message:
+                'Failed to calculate overages (no plan or billing summary)',
+            },
+          });
+        }
+
+        // Record overages to database
+        await billingService.recordOverages(orgId, calculation);
+
+        return reply.send({
+          success: true,
+          data: calculation,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to recalculate overages', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'OVERAGE_BILLING_DISABLED',
-            message: 'Overage billing is not enabled',
+            code: 'RECALCULATION_FAILED',
+            message: error.message || 'Failed to recalculate overages',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Validate request body
-      const validation = recalculateOveragesRequestSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid request body',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const { force = false } = validation.data;
-
-      console.log('[Billing] Recalculating overages', { orgId, force });
-
-      // Calculate overages
-      const calculation = await billingService.calculateOveragesForOrg(orgId);
-
-      if (!calculation) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'CALCULATION_FAILED',
-            message: 'Failed to calculate overages (no plan or billing summary)',
-          },
-        });
-      }
-
-      // Record overages to database
-      await billingService.recordOverages(orgId, calculation);
-
-      return reply.send({
-        success: true,
-        data: calculation,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to recalculate overages', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'RECALCULATION_FAILED',
-          message: error.message || 'Failed to recalculate overages',
-        },
-      });
     }
-  });
+  );
 
   // ========================================
   // S32: BILLING USAGE ALERTS ENDPOINTS
@@ -647,52 +682,56 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * POST /api/v1/billing/alerts/generate
    * Generate usage alerts for current org (S32)
    */
-  server.post('/alerts/generate', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check if usage alerts are enabled
-      if (!FLAGS.ENABLE_USAGE_ALERTS) {
-        return reply.code(503).send({
+  server.post(
+    '/alerts/generate',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check if usage alerts are enabled
+        if (!FLAGS.ENABLE_USAGE_ALERTS) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'USAGE_ALERTS_DISABLED',
+              message: 'Billing usage alerts are not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Generate alerts
+        const alerts = await billingService.generateUsageAlerts(orgId);
+
+        return reply.send({
+          success: true,
+          data: {
+            generatedCount: alerts.length,
+            alerts,
+          },
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to generate usage alerts', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'USAGE_ALERTS_DISABLED',
-            message: 'Billing usage alerts are not enabled',
+            code: 'ALERT_GENERATION_FAILED',
+            message: error.message || 'Failed to generate usage alerts',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Generate alerts
-      const alerts = await billingService.generateUsageAlerts(orgId);
-
-      return reply.send({
-        success: true,
-        data: {
-          generatedCount: alerts.length,
-          alerts,
-        },
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to generate usage alerts', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'ALERT_GENERATION_FAILED',
-          message: error.message || 'Failed to generate usage alerts',
-        },
-      });
     }
-  });
+  );
 
   /**
    * GET /api/v1/billing/alerts
@@ -777,81 +816,88 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    */
   server.post<{
     Params: { alertId: string };
-  }>('/alerts/:alertId/acknowledge', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check if usage alerts are enabled
-      if (!FLAGS.ENABLE_USAGE_ALERTS) {
-        return reply.code(503).send({
+  }>(
+    '/alerts/:alertId/acknowledge',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check if usage alerts are enabled
+        if (!FLAGS.ENABLE_USAGE_ALERTS) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'USAGE_ALERTS_DISABLED',
+              message: 'Billing usage alerts are not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Validate alert ID
+        const validation = acknowledgeAlertSchema.safeParse({
+          alertId: request.params.alertId,
+        });
+        if (!validation.success) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid alert ID',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const { alertId } = validation.data;
+
+        // Verify alert belongs to user's org
+        const alerts = await billingService.getAlertsForOrg(orgId);
+        const alertExists = alerts.some((a) => a.id === alertId);
+
+        if (!alertExists) {
+          return reply.code(404).send({
+            success: false,
+            error: {
+              code: 'ALERT_NOT_FOUND',
+              message:
+                'Alert not found or does not belong to your organization',
+            },
+          });
+        }
+
+        // Acknowledge alert
+        await billingService.acknowledgeAlert(alertId);
+
+        return reply.send({
+          success: true,
+          data: {
+            alertId,
+            acknowledgedAt: new Date().toISOString(),
+          },
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to acknowledge alert', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'USAGE_ALERTS_DISABLED',
-            message: 'Billing usage alerts are not enabled',
+            code: 'ACKNOWLEDGE_FAILED',
+            message: error.message || 'Failed to acknowledge alert',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Validate alert ID
-      const validation = acknowledgeAlertSchema.safeParse({ alertId: request.params.alertId });
-      if (!validation.success) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid alert ID',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const { alertId } = validation.data;
-
-      // Verify alert belongs to user's org
-      const alerts = await billingService.getAlertsForOrg(orgId);
-      const alertExists = alerts.some((a) => a.id === alertId);
-
-      if (!alertExists) {
-        return reply.code(404).send({
-          success: false,
-          error: {
-            code: 'ALERT_NOT_FOUND',
-            message: 'Alert not found or does not belong to your organization',
-          },
-        });
-      }
-
-      // Acknowledge alert
-      await billingService.acknowledgeAlert(alertId);
-
-      return reply.send({
-        success: true,
-        data: {
-          alertId,
-          acknowledgedAt: new Date().toISOString(),
-        },
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to acknowledge alert', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'ACKNOWLEDGE_FAILED',
-          message: error.message || 'Failed to acknowledge alert',
-        },
-      });
     }
-  });
+  );
 
   // ========================================
   // S33: PLAN MANAGEMENT ENDPOINTS
@@ -861,259 +907,282 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * GET /api/v1/billing/plans/:slug
    * Get plan details by slug (S33)
    */
-  server.get('/plans/:slug', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Validate params
-      const validation = getPlanBySlugParamsSchema.safeParse(request.params);
-      if (!validation.success) {
-        return reply.code(400).send({
+  server.get(
+    '/plans/:slug',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Validate params
+        const validation = getPlanBySlugParamsSchema.safeParse(request.params);
+        if (!validation.success) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid plan slug',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const { slug } = validation.data;
+
+        // Get plan
+        const plan = await billingService.getPlanBySlug(slug);
+
+        if (!plan) {
+          return reply.code(404).send({
+            success: false,
+            error: {
+              code: 'PLAN_NOT_FOUND',
+              message: `Plan '${slug}' not found`,
+            },
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: plan,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to get plan', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid plan slug',
-            details: validation.error.errors,
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to retrieve plan',
           },
         });
       }
-
-      const { slug } = validation.data;
-
-      // Get plan
-      const plan = await billingService.getPlanBySlug(slug);
-
-      if (!plan) {
-        return reply.code(404).send({
-          success: false,
-          error: {
-            code: 'PLAN_NOT_FOUND',
-            message: `Plan '${slug}' not found`,
-          },
-        });
-      }
-
-      return reply.send({
-        success: true,
-        data: plan,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to get plan', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: error.message || 'Failed to retrieve plan',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/switch-plan
    * Switch organization to a different plan (S33)
    */
-  server.post('/org/switch-plan', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
+  server.post(
+    '/org/switch-plan',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Validate request body
+        const validation = switchPlanRequestSchema.safeParse(request.body);
+        if (!validation.success) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const { targetPlanSlug } = validation.data;
+
+        // Switch plan
+        const updatedState = await billingService.switchOrgPlan(
+          orgId,
+          targetPlanSlug
+        );
+
+        if (!updatedState) {
+          return reply.code(500).send({
+            success: false,
+            error: {
+              code: 'SWITCH_FAILED',
+              message: 'Failed to switch plan',
+            },
+          });
+        }
+
+        return reply.send({
+          success: true,
+          data: {
+            planId: updatedState.planId,
+            billingStatus: updatedState.billingStatus,
+            message: `Successfully switched to ${targetPlanSlug}`,
           },
         });
-      }
+      } catch (err) {
+        const error = err as any;
+        console.error('[Billing] Failed to switch plan', { error });
 
-      // Validate request body
-      const validation = switchPlanRequestSchema.safeParse(request.body);
-      if (!validation.success) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid request',
-            details: validation.error.errors,
-          },
-        });
-      }
+        // Handle BillingQuotaError (downgrade blocked)
+        if (error.name === 'BillingQuotaError') {
+          return reply.code(422).send({
+            success: false,
+            error: {
+              code: 'UPGRADE_REQUIRED',
+              message:
+                error.message ||
+                'Cannot downgrade: current usage exceeds target plan limits',
+              details: error.details,
+            },
+          });
+        }
 
-      const { targetPlanSlug } = validation.data;
-
-      // Switch plan
-      const updatedState = await billingService.switchOrgPlan(orgId, targetPlanSlug);
-
-      if (!updatedState) {
         return reply.code(500).send({
           success: false,
           error: {
             code: 'SWITCH_FAILED',
-            message: 'Failed to switch plan',
+            message: error.message || 'Failed to switch plan',
           },
         });
       }
-
-      return reply.send({
-        success: true,
-        data: {
-          planId: updatedState.planId,
-          billingStatus: updatedState.billingStatus,
-          message: `Successfully switched to ${targetPlanSlug}`,
-        },
-      });
-    } catch (err) {
-      const error = err as any;
-      console.error('[Billing] Failed to switch plan', { error });
-
-      // Handle BillingQuotaError (downgrade blocked)
-      if (error.name === 'BillingQuotaError') {
-        return reply.code(422).send({
-          success: false,
-          error: {
-            code: 'UPGRADE_REQUIRED',
-            message: error.message || 'Cannot downgrade: current usage exceeds target plan limits',
-            details: error.details,
-          },
-        });
-      }
-
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'SWITCH_FAILED',
-          message: error.message || 'Failed to switch plan',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/payment-method
    * Generate Stripe Customer Portal link for payment method management (S33)
    */
-  server.post('/org/payment-method', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
-        return reply.code(503).send({
+  server.post(
+    '/org/payment-method',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'FEATURE_DISABLED',
+              message: 'Stripe billing is not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Get or create Stripe customer
+        const customerId = await stripeService.getOrCreateStripeCustomer(orgId);
+
+        // Create Stripe Customer Portal session
+        // Note: Stripe SDK is typed, but portalSessions may not be fully typed
+        const stripe = (stripeService as any).stripe;
+        if (!stripe) {
+          throw new Error('Stripe client not initialized');
+        }
+
+        const session = await stripe.billingPortal.sessions.create({
+          customer: customerId,
+          return_url: `${env.DASHBOARD_URL}/app/billing`,
+        });
+
+        return reply.send({
+          success: true,
+          data: {
+            url: session.url,
+          },
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to create portal session', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Stripe billing is not enabled',
+            code: 'PORTAL_FAILED',
+            message: error.message || 'Failed to create payment portal session',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Get or create Stripe customer
-      const customerId = await stripeService.getOrCreateStripeCustomer(orgId);
-
-      // Create Stripe Customer Portal session
-      // Note: Stripe SDK is typed, but portalSessions may not be fully typed
-      const stripe = (stripeService as any).stripe;
-      if (!stripe) {
-        throw new Error('Stripe client not initialized');
-      }
-
-      const session = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: `${env.DASHBOARD_URL}/app/billing`,
-      });
-
-      return reply.send({
-        success: true,
-        data: {
-          url: session.url,
-        },
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to create portal session', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'PORTAL_FAILED',
-          message: error.message || 'Failed to create payment portal session',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/plan/cancel
    * Cancel subscription (S33)
    */
-  server.post('/org/plan/cancel', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
-        return reply.code(503).send({
+  server.post(
+    '/org/plan/cancel',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'FEATURE_DISABLED',
+              message: 'Stripe billing is not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Validate request body
+        const validation = cancelPlanRequestSchema.safeParse(
+          request.body || {}
+        );
+        if (!validation.success) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request',
+              details: validation.error.errors,
+            },
+          });
+        }
+
+        const { immediate } = validation.data;
+
+        // Cancel subscription
+        await stripeService.cancelSubscription(orgId, !immediate); // atPeriodEnd = !immediate
+
+        return reply.send({
+          success: true,
+          data: {
+            message: immediate
+              ? 'Subscription canceled immediately'
+              : 'Subscription will be canceled at the end of the billing period',
+            canceledAt: new Date().toISOString(),
+          },
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to cancel subscription', { error });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Stripe billing is not enabled',
+            code: 'CANCEL_FAILED',
+            message: error.message || 'Failed to cancel subscription',
           },
         });
       }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Validate request body
-      const validation = cancelPlanRequestSchema.safeParse(request.body || {});
-      if (!validation.success) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid request',
-            details: validation.error.errors,
-          },
-        });
-      }
-
-      const { immediate } = validation.data;
-
-      // Cancel subscription
-      await stripeService.cancelSubscription(orgId, !immediate); // atPeriodEnd = !immediate
-
-      return reply.send({
-        success: true,
-        data: {
-          message: immediate
-            ? 'Subscription canceled immediately'
-            : 'Subscription will be canceled at the end of the billing period',
-          canceledAt: new Date().toISOString(),
-        },
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to cancel subscription', { error });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'CANCEL_FAILED',
-          message: error.message || 'Failed to cancel subscription',
-        },
-      });
     }
-  });
+  );
 
   // ========================================
   // S34: INVOICE HISTORY ENDPOINTS
@@ -1123,166 +1192,194 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * GET /api/v1/billing/org/invoices
    * Get billing history (invoice list) for the organization (S34)
    */
-  server.get('/org/invoices', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
+  server.get(
+    '/org/invoices',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Get billing history summary from BillingService
+        const historySummary =
+          await billingService.getBillingHistorySummary(orgId);
+
+        return reply.send({
+          success: true,
+          data: historySummary,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to get invoice history', {
+          error,
+          orgId: request.user?.id,
+        });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
+            code: 'INVOICE_HISTORY_FAILED',
+            message: error.message || 'Failed to retrieve invoice history',
           },
         });
       }
-
-      // Get billing history summary from BillingService
-      const historySummary = await billingService.getBillingHistorySummary(orgId);
-
-      return reply.send({
-        success: true,
-        data: historySummary,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to get invoice history', { error, orgId: request.user?.id });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'INVOICE_HISTORY_FAILED',
-          message: error.message || 'Failed to retrieve invoice history',
-        },
-      });
     }
-  });
+  );
 
   /**
    * GET /api/v1/billing/org/invoices/:id
    * Get detailed invoice breakdown (S34)
    */
-  server.get('/org/invoices/:id', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
+  server.get(
+    '/org/invoices/:id',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Get invoice ID from URL params
+        const params = request.params as { id: string };
+        const invoiceId = params.id;
+
+        if (!invoiceId) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'MISSING_INVOICE_ID',
+              message: 'Invoice ID is required',
+            },
+          });
+        }
+
+        // Get invoice with detailed breakdown
+        const invoiceDetails = await billingService.getInvoiceWithBreakdown(
+          orgId,
+          invoiceId
+        );
+
+        return reply.send({
+          success: true,
+          data: invoiceDetails,
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to get invoice details', {
+          error,
+          orgId: request.user?.id,
+        });
+
+        // Check if invoice not found
+        if (error.message === 'Invoice not found') {
+          return reply.code(404).send({
+            success: false,
+            error: {
+              code: 'INVOICE_NOT_FOUND',
+              message: 'Invoice not found',
+            },
+          });
+        }
+
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
+            code: 'INVOICE_DETAILS_FAILED',
+            message: error.message || 'Failed to retrieve invoice details',
           },
         });
       }
-
-      // Get invoice ID from URL params
-      const params = request.params as { id: string };
-      const invoiceId = params.id;
-
-      if (!invoiceId) {
-        return reply.code(400).send({
-          success: false,
-          error: {
-            code: 'MISSING_INVOICE_ID',
-            message: 'Invoice ID is required',
-          },
-        });
-      }
-
-      // Get invoice with detailed breakdown
-      const invoiceDetails = await billingService.getInvoiceWithBreakdown(orgId, invoiceId);
-
-      return reply.send({
-        success: true,
-        data: invoiceDetails,
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to get invoice details', { error, orgId: request.user?.id });
-
-      // Check if invoice not found
-      if (error.message === 'Invoice not found') {
-        return reply.code(404).send({
-          success: false,
-          error: {
-            code: 'INVOICE_NOT_FOUND',
-            message: 'Invoice not found',
-          },
-        });
-      }
-
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'INVOICE_DETAILS_FAILED',
-          message: error.message || 'Failed to retrieve invoice details',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/invoices/sync
    * Manually sync invoices from Stripe to cache (S34)
    * Admin-only, feature flag protected
    */
-  server.post('/org/invoices/sync', { preHandler: requireUser }, async (request, reply) => {
-    try {
-      // Check feature flag for admin sync
-      if (!FLAGS.ENABLE_ADMIN_INVOICE_SYNC) {
-        return reply.code(403).send({
+  server.post(
+    '/org/invoices/sync',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      try {
+        // Check feature flag for admin sync
+        if (!FLAGS.ENABLE_ADMIN_INVOICE_SYNC) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'FEATURE_DISABLED',
+              message: 'Manual invoice sync is not enabled',
+            },
+          });
+        }
+
+        if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'FEATURE_DISABLED',
+              message: 'Stripe billing is not enabled',
+            },
+          });
+        }
+
+        const orgId = await getUserOrgId(request.user!.id!, supabase);
+        if (!orgId) {
+          return reply.code(403).send({
+            success: false,
+            error: {
+              code: 'NO_ORG_ACCESS',
+              message: 'User is not a member of any organization',
+            },
+          });
+        }
+
+        // Check if user is admin (optional - implement based on your auth system)
+        // For now, any authenticated user can sync their org's invoices
+
+        console.log('[Billing] Starting manual invoice sync', { orgId });
+
+        // Sync all invoices for the org
+        const syncedCount = await stripeService.syncAllInvoicesForOrg(
+          orgId,
+          12
+        );
+
+        return reply.send({
+          success: true,
+          data: {
+            message: `Successfully synced ${syncedCount} invoices`,
+            syncedCount,
+          },
+        });
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Billing] Failed to sync invoices', {
+          error,
+          orgId: request.user?.id,
+        });
+        return reply.code(500).send({
           success: false,
           error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Manual invoice sync is not enabled',
+            code: 'INVOICE_SYNC_FAILED',
+            message: error.message || 'Failed to sync invoices',
           },
         });
       }
-
-      if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
-        return reply.code(503).send({
-          success: false,
-          error: {
-            code: 'FEATURE_DISABLED',
-            message: 'Stripe billing is not enabled',
-          },
-        });
-      }
-
-      const orgId = await getUserOrgId(request.user!.id!, supabase);
-      if (!orgId) {
-        return reply.code(403).send({
-          success: false,
-          error: {
-            code: 'NO_ORG_ACCESS',
-            message: 'User is not a member of any organization',
-          },
-        });
-      }
-
-      // Check if user is admin (optional - implement based on your auth system)
-      // For now, any authenticated user can sync their org's invoices
-
-      console.log('[Billing] Starting manual invoice sync', { orgId });
-
-      // Sync all invoices for the org
-      const syncedCount = await stripeService.syncAllInvoicesForOrg(orgId, 12);
-
-      return reply.send({
-        success: true,
-        data: {
-          message: `Successfully synced ${syncedCount} invoices`,
-          syncedCount,
-        },
-      });
-    } catch (err) {
-      const error = err as Error;
-      console.error('[Billing] Failed to sync invoices', { error, orgId: request.user?.id });
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'INVOICE_SYNC_FAILED',
-          message: error.message || 'Failed to sync invoices',
-        },
-      });
     }
-  });
+  );
 }

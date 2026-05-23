@@ -28,10 +28,10 @@ A `GeneratedBrief` is the output of the brief generation process:
 interface GeneratedBrief {
   id: string;
   orgId: string;
-  contentItemId: string | null;      // Optional link to content item
-  playbookRunId: string | null;      // Execution tracking
-  brief: Record<string, unknown>;    // Full brief structure
-  outline: Record<string, unknown>;  // Detailed outline
+  contentItemId: string | null; // Optional link to content item
+  playbookRunId: string | null; // Execution tracking
+  brief: Record<string, unknown>; // Full brief structure
+  outline: Record<string, unknown>; // Detailed outline
   seoContext: Record<string, unknown>;
   personalityUsed: Record<string, unknown> | null;
   createdAt: string;
@@ -45,10 +45,14 @@ Users provide minimal input to generate a brief:
 
 ```typescript
 interface BriefGenerationInput {
-  contentItemId?: string;            // Optional: link to content item
-  targetKeyword?: string;            // Optional: primary keyword
-  targetIntent?: 'informational' | 'navigational' | 'commercial' | 'transactional';
-  personalityId?: string;            // Optional: personality override
+  contentItemId?: string; // Optional: link to content item
+  targetKeyword?: string; // Optional: primary keyword
+  targetIntent?:
+    | 'informational'
+    | 'navigational'
+    | 'commercial'
+    | 'transactional';
+  personalityId?: string; // Optional: personality override
 }
 ```
 
@@ -158,6 +162,7 @@ The brief generation process follows a three-step playbook:
 **Purpose:** Collect and merge all relevant context for brief generation
 
 **Inputs:**
+
 - `targetKeyword`: Primary keyword
 - `targetIntent`: Search intent
 - `contentItem`: Content item data (optional)
@@ -167,6 +172,7 @@ The brief generation process follows a three-step playbook:
 - `personality`: Personality profile for tone/style
 
 **Outputs:**
+
 - `mergedContext`: Combined context object
 - `seoSignals`: Relevant SEO data
 - `contentSignals`: Content patterns
@@ -179,12 +185,14 @@ The brief generation process follows a three-step playbook:
 **Purpose:** Generate structured outline based on context
 
 **Inputs:**
+
 - `mergedContext`: From GATHER_CONTEXT step
 - `targetKeyword`: Primary keyword
 - `targetIntent`: Search intent
 - `personality`: Tone and style preferences
 
 **Outputs:**
+
 - `outline`: Structured outline object
   - `title`: Compelling title
   - `sections`: Array of sections with headings, descriptions, word counts
@@ -193,6 +201,7 @@ The brief generation process follows a three-step playbook:
 **Handler:** Stub outline generator (S13), LLM-based generator (S16+)
 
 **Prompt Template (for S16+):**
+
 ```
 Generate a detailed content outline for: {{targetKeyword}}
 Intent: {{targetIntent}}
@@ -213,6 +222,7 @@ Context:
 **Purpose:** Generate complete content brief with all details
 
 **Inputs:**
+
 - `outline`: From GENERATE_OUTLINE step
 - `mergedContext`: From GATHER_CONTEXT step
 - `targetKeyword`: Primary keyword
@@ -221,11 +231,13 @@ Context:
 - `seoContext`: SEO signals for optimization
 
 **Outputs:**
+
 - `brief`: Complete brief object (see Brief Structure above)
 
 **Handler:** Stub brief generator (S13), LLM-based generator (S16+)
 
 **Prompt Template (for S16+):**
+
 ```
 Generate a comprehensive content brief for: {{targetKeyword}}
 
@@ -292,7 +304,7 @@ The service assembles comprehensive context from multiple sources:
     preferredTone: string | null;
     preferredLength: string | null;
     preferredFormat: string | null;
-  };
+  }
 }
 ```
 
@@ -338,16 +350,18 @@ The service assembles comprehensive context from multiple sources:
 Generate a new content brief.
 
 **Request:**
+
 ```json
 {
-  "contentItemId": "uuid",      // optional
+  "contentItemId": "uuid", // optional
   "targetKeyword": "content marketing strategy",
   "targetIntent": "informational",
-  "personalityId": "uuid"       // optional
+  "personalityId": "uuid" // optional
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -355,9 +369,15 @@ Generate a new content brief.
     "result": {
       "runId": "uuid",
       "generatedBriefId": "uuid",
-      "brief": { /* brief object */ },
-      "outline": { /* outline object */ },
-      "seoContext": { /* seo context */ }
+      "brief": {
+        /* brief object */
+      },
+      "outline": {
+        /* outline object */
+      },
+      "seoContext": {
+        /* seo context */
+      }
     }
   }
 }
@@ -368,6 +388,7 @@ Generate a new content brief.
 Get a generated brief by ID.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -377,10 +398,18 @@ Get a generated brief by ID.
       "orgId": "uuid",
       "contentItemId": "uuid",
       "playbookRunId": "uuid",
-      "brief": { /* brief object */ },
-      "outline": { /* outline object */ },
-      "seoContext": { /* seo context */ },
-      "personalityUsed": { /* personality */ },
+      "brief": {
+        /* brief object */
+      },
+      "outline": {
+        /* outline object */
+      },
+      "seoContext": {
+        /* seo context */
+      },
+      "personalityUsed": {
+        /* personality */
+      },
       "createdAt": "timestamp",
       "updatedAt": "timestamp"
     }
@@ -393,17 +422,21 @@ Get a generated brief by ID.
 List generated briefs for the organization.
 
 **Query Parameters:**
+
 - `limit`: Number of items (default: 20, max: 100)
 - `offset`: Pagination offset (default: 0)
 - `contentItemId`: Filter by content item (optional)
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "items": [
-      { /* GeneratedBrief */ }
+      {
+        /* GeneratedBrief */
+      }
     ]
   }
 }
@@ -418,6 +451,7 @@ List generated briefs for the organization.
 **Trigger:** "Generate Brief" button (appears when content item is selected)
 
 **Form Fields:**
+
 1. **Target Keyword** (optional text input)
    - Placeholder: "e.g., content marketing strategy"
    - Help text: "Primary keyword to target in the brief"
@@ -432,6 +466,7 @@ List generated briefs for the organization.
    - Help text: "Choose a personality profile for tone and style"
 
 **Submission:**
+
 - Calls POST /api/v1/content/briefs/generate
 - Shows loading state: "Generating..."
 - On success: Navigates to /app/content/brief/[id]
@@ -501,6 +536,7 @@ CREATE INDEX idx_content_generated_briefs_created_at
 ```
 
 **RLS Policies:**
+
 - SELECT: Users can view briefs for their org
 - INSERT: Users can create briefs for their org
 - UPDATE: Users can update briefs for their org
@@ -515,6 +551,7 @@ The S13 implementation uses deterministic stub outputs:
 For input keyword "content strategy", the stub generates:
 
 **Outline:**
+
 ```json
 {
   "title": "Complete Guide to content strategy",
@@ -550,6 +587,7 @@ For input keyword "content strategy", the stub generates:
 ```
 
 **Brief:**
+
 ```json
 {
   "title": "Complete Guide to content strategy",
@@ -559,7 +597,9 @@ For input keyword "content strategy", the stub generates:
   "tone": "professional",
   "minWordCount": 1500,
   "maxWordCount": 2500,
-  "outline": { /* detailed outline */ },
+  "outline": {
+    /* detailed outline */
+  },
   "seoGuidelines": {
     "primaryKeyword": "content strategy",
     "secondaryKeywords": ["content marketing", "..."],
@@ -603,6 +643,7 @@ For input keyword "content strategy", the stub generates:
 `apps/api/tests/briefGeneratorService.test.ts`
 
 **Test Coverage:**
+
 - ✅ Generation workflow with stub outputs
 - ✅ Database persistence
 - ✅ Personality override logic

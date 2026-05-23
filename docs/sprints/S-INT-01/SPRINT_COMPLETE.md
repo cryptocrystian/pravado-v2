@@ -9,6 +9,7 @@
 ## What Was Built
 
 ### 1. Database Migration
+
 - `apps/api/supabase/migrations/80_evi_snapshots.sql`
 - Table: `evi_snapshots` with org_id, evi_score, visibility/authority/momentum sub-scores, signal_breakdown (jsonb), calculated_at, period_days
 - RLS: org members can SELECT; service role can INSERT
@@ -16,28 +17,32 @@
 
 ### 2. EVI Services (`apps/api/src/services/evi/`)
 
-| File | Purpose |
-|------|---------|
-| `eviSignalAggregator.ts` | Pulls raw signals from PR (pitches, journalist DA), Content (quality scores), SEO (backlinks) for a given org and period |
+| File                       | Purpose                                                                                                                                              |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eviSignalAggregator.ts`   | Pulls raw signals from PR (pitches, journalist DA), Content (quality scores), SEO (backlinks) for a given org and period                             |
 | `eviCalculationService.ts` | Applies formula: `EVI = (V x 0.40) + (A x 0.35) + (M x 0.25)`. Normalizes sub-scores to 0-100. Saves snapshot with full signal_breakdown audit trail |
-| `eviHistoryService.ts` | Fetches historical snapshots for trend chart rendering |
-| `eviDeltaService.ts` | Compares latest two snapshots to compute delta/direction |
+| `eviHistoryService.ts`     | Fetches historical snapshots for trend chart rendering                                                                                               |
+| `eviDeltaService.ts`       | Compares latest two snapshots to compute delta/direction                                                                                             |
 
 ### 3. API Routes
+
 - `GET /api/v1/evi/current` — Calculates current EVI, returns score + delta + signal_breakdown
 - `GET /api/v1/evi/history?days=30|60|90` — Returns historical snapshots for charts
 - Both routes: auth-required, org-scoped, feature-flagged (`ENABLE_EVI`)
 - Registered at `/api/v1/evi` prefix in server.ts
 
 ### 4. Dashboard Proxy Routes
+
 - `GET /api/evi/current` — Proxies to Fastify backend via `backendFetch`
 - `GET /api/evi/history?days=N` — Proxies to Fastify backend
 
 ### 5. Feature Flag
+
 - Added `ENABLE_EVI: true` to `packages/feature-flags/src/flags.ts`
 - Routes return 404 if flag is disabled
 
 ### 6. BullMQ Queue Wiring (`apps/api/src/queue/`)
+
 - `bullmqQueue.ts` — BullMQ setup with Redis connection parsing (supports Upstash TLS, Redis Cloud)
 - `workers/eviRecalculateWorker.ts` — Processes `evi:recalculate` jobs
 - Graceful fallback: if `REDIS_URL` not set, logs warning, all enqueue operations are no-ops
@@ -46,12 +51,14 @@
 - BullMQ initialized conditionally in server.ts when `ENABLE_EVI` flag is true
 
 ### 7. Dashboard UI Updates
+
 - `EviScoreCard.tsx` — Now fetches from `/api/evi/current` via `useEVICurrent()` SWR hook. Shows loading skeleton, stale indicator on error, real sub-score breakdown.
 - `EviHero.tsx` (SEO surface) — Fetches current score + 30-day trend from real API. Loading skeleton, empty state for no history.
 - `EviGrowthChart.tsx` (Analytics surface) — Fetches 30-day history from real API. Loading skeleton, empty state.
 - `useEVI.ts` hook — Shared SWR hook with 5-minute revalidation for current, 10-minute for history.
 
 ### 8. Dependency
+
 - Added `bullmq` to `apps/api/package.json`
 
 ---

@@ -5,16 +5,20 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { useEffect, useState } from 'react';
+
 import { PravadoLogo } from '@/components/brand/PravadoLogo';
+import { supabase } from '@/lib/supabaseClient';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
 // Map error codes to user-friendly messages
-const getErrorMessage = (error: string | null, errorDescription: string | null): string => {
+const getErrorMessage = (
+  error: string | null,
+  errorDescription: string | null
+): string => {
   // Log raw error for debugging
   console.log('[Callback] Raw error:', error);
   console.log('[Callback] Raw error_description:', errorDescription);
@@ -25,12 +29,18 @@ const getErrorMessage = (error: string | null, errorDescription: string | null):
   const normalizedDesc = (errorDescription || '').toLowerCase();
 
   // Expired OTP / Magic Link
-  if (normalizedError.includes('otp_expired') || normalizedDesc.includes('expired')) {
+  if (
+    normalizedError.includes('otp_expired') ||
+    normalizedDesc.includes('expired')
+  ) {
     return 'Your sign-in link has expired. Please request a new one.';
   }
 
   // Invalid token
-  if (normalizedError.includes('invalid_token') || normalizedDesc.includes('invalid')) {
+  if (
+    normalizedError.includes('invalid_token') ||
+    normalizedDesc.includes('invalid')
+  ) {
     return 'The sign-in link is invalid. Please request a new one.';
   }
 
@@ -40,8 +50,13 @@ const getErrorMessage = (error: string | null, errorDescription: string | null):
   }
 
   // Provider mismatch - show actual error for debugging
-  if (normalizedDesc.includes('provider') || normalizedDesc.includes('mismatch')) {
-    const rawError = errorDescription?.replace(/_/g, ' ').replace(/\+/g, ' ') || 'Provider mismatch';
+  if (
+    normalizedDesc.includes('provider') ||
+    normalizedDesc.includes('mismatch')
+  ) {
+    const rawError =
+      errorDescription?.replace(/_/g, ' ').replace(/\+/g, ' ') ||
+      'Provider mismatch';
     return `Provider error: ${rawError}`;
   }
 
@@ -54,7 +69,11 @@ const getErrorMessage = (error: string | null, errorDescription: string | null):
 };
 
 // AI Presence Dot component
-const AIPresenceDot = ({ status }: { status: 'idle' | 'analyzing' | 'generating' }) => {
+const AIPresenceDot = ({
+  status,
+}: {
+  status: 'idle' | 'analyzing' | 'generating';
+}) => {
   const statusClasses = {
     idle: 'bg-slate-6',
     analyzing: 'bg-brand-cyan animate-ai-pulse',
@@ -72,7 +91,9 @@ const AIPresenceDot = ({ status }: { status: 'idle' | 'analyzing' | 'generating'
 export default function CallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>(
+    'loading'
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -100,10 +121,11 @@ export default function CallbackPage() {
         const type = searchParams?.get('type');
 
         if (tokenHash) {
-          const { data: otpData, error: verifyError } = await supabase.auth.verifyOtp({
-            token_hash: tokenHash,
-            type: (type as 'signup' | 'magiclink' | 'recovery') || 'signup',
-          });
+          const { data: otpData, error: verifyError } =
+            await supabase.auth.verifyOtp({
+              token_hash: tokenHash,
+              type: (type as 'signup' | 'magiclink' | 'recovery') || 'signup',
+            });
 
           if (verifyError) {
             setErrorMessage(`Verification failed: ${verifyError.message}`);
@@ -126,7 +148,11 @@ export default function CallbackPage() {
         }
 
         // First, try to get existing session
-        let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const {
+          data: { session: initialSession },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        let session = initialSession;
 
         if (sessionError) {
           console.error('getSession error:', sessionError);
@@ -135,15 +161,17 @@ export default function CallbackPage() {
         // If no session, try to exchange the auth code (for OAuth flows)
         if (!session) {
           // Check if there's a code in the URL hash or search params
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const hashParams = new URLSearchParams(
+            window.location.hash.substring(1)
+          );
           const urlParams = new URLSearchParams(window.location.search);
-          const hasAuthCode = hashParams.get('access_token') || urlParams.get('code');
+          const hasAuthCode =
+            hashParams.get('access_token') || urlParams.get('code');
 
           if (hasAuthCode) {
             // For PKCE flow, exchange code for session
-            const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(
-              window.location.href
-            );
+            const { data, error: exchangeError } =
+              await supabase.auth.exchangeCodeForSession(window.location.href);
 
             if (exchangeError) {
               console.error('Code exchange error:', exchangeError);
@@ -170,7 +198,11 @@ export default function CallbackPage() {
         await redirectBasedOnOrgs();
       } catch (err) {
         console.error('Callback error:', err);
-        setErrorMessage(err instanceof Error ? err.message : 'Failed to complete authentication');
+        setErrorMessage(
+          err instanceof Error
+            ? err.message
+            : 'Failed to complete authentication'
+        );
         setStatus('error');
       }
     };
@@ -191,10 +223,13 @@ export default function CallbackPage() {
       // row) land on /onboarding/ai-intro; existing users on /app/command-center.
       // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0A-COLD-START-UNBLOCK.md.
       try {
-        const checkRes = await fetch('/api/auth/session-check', { credentials: 'include' });
-        const checkBody = (await checkRes.json().catch(() => null)) as
-          | { hasOrg?: boolean; redirectTo?: string }
-          | null;
+        const checkRes = await fetch('/api/auth/session-check', {
+          credentials: 'include',
+        });
+        const checkBody = (await checkRes.json().catch(() => null)) as {
+          hasOrg?: boolean;
+          redirectTo?: string;
+        } | null;
 
         const redirectTo = checkBody?.redirectTo ?? '/onboarding/ai-intro';
         console.log('[Callback] session-check →', {
@@ -227,7 +262,8 @@ export default function CallbackPage() {
         <div
           className="fixed inset-0 pointer-events-none opacity-30"
           style={{
-            background: 'radial-gradient(ellipse at 50% 0%, var(--brand-iris) 0%, transparent 50%)',
+            background:
+              'radial-gradient(ellipse at 50% 0%, var(--brand-iris) 0%, transparent 50%)',
           }}
         />
 
@@ -246,8 +282,18 @@ export default function CallbackPage() {
             {/* Error Alert */}
             <div className="alert-error">
               <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-5 h-5 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
                 <div>
                   <p className="font-medium">Sign-in failed</p>
@@ -275,7 +321,10 @@ export default function CallbackPage() {
             {/* Help text */}
             <p className="text-center text-xs text-muted">
               If this problem persists, please contact{' '}
-              <a href="mailto:support@pravado.com" className="text-brand-cyan hover:underline">
+              <a
+                href="mailto:support@pravado.com"
+                className="text-brand-cyan hover:underline"
+              >
                 support@pravado.com
               </a>
             </p>
@@ -292,7 +341,8 @@ export default function CallbackPage() {
       <div
         className="fixed inset-0 pointer-events-none opacity-30"
         style={{
-          background: 'radial-gradient(ellipse at 50% 0%, var(--brand-iris) 0%, transparent 50%)',
+          background:
+            'radial-gradient(ellipse at 50% 0%, var(--brand-iris) 0%, transparent 50%)',
         }}
       />
 
@@ -323,7 +373,8 @@ export default function CallbackPage() {
           {/* Status text */}
           <div className="text-center">
             <p className="text-xs text-slate-6">
-              Authenticating via {searchParams?.get('provider') || 'your provider'}...
+              Authenticating via{' '}
+              {searchParams?.get('provider') || 'your provider'}...
             </p>
           </div>
         </div>

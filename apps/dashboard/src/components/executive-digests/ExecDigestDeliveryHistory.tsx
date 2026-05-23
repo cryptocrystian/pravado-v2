@@ -5,9 +5,23 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Send,
+  Clock,
+  Users,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Loader,
+} from 'lucide-react';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,19 +36,6 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveDigestApi';
 import { cn } from '@/lib/utils';
-import {
-  Send,
-  Clock,
-  Users,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  ChevronDown,
-  ChevronRight,
-  FileText,
-  Loader,
-} from 'lucide-react';
-import { useState } from 'react';
 
 interface ExecDigestDeliveryHistoryProps {
   deliveryLogs: ExecDigestDeliveryLog[];
@@ -118,10 +119,14 @@ export function ExecDigestDeliveryHistory({
                         {getStatusIcon(log.status)}
                         <div>
                           <div className="font-medium text-gray-900">
-                            {formatDateTime(log.completedAt || log.startedAt || log.createdAt)}
+                            {formatDateTime(
+                              log.completedAt || log.startedAt || log.createdAt
+                            )}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {formatRelativeTime(log.completedAt || log.startedAt || log.createdAt)}
+                            {formatRelativeTime(
+                              log.completedAt || log.startedAt || log.createdAt
+                            )}
                           </div>
                         </div>
                       </div>
@@ -156,19 +161,25 @@ export function ExecDigestDeliveryHistory({
                       {log.scheduledAt && (
                         <div>
                           <div className="text-gray-500">Scheduled</div>
-                          <div className="font-medium">{formatDateTime(log.scheduledAt)}</div>
+                          <div className="font-medium">
+                            {formatDateTime(log.scheduledAt)}
+                          </div>
                         </div>
                       )}
                       {log.startedAt && (
                         <div>
                           <div className="text-gray-500">Started</div>
-                          <div className="font-medium">{formatDateTime(log.startedAt)}</div>
+                          <div className="font-medium">
+                            {formatDateTime(log.startedAt)}
+                          </div>
                         </div>
                       )}
                       {log.completedAt && (
                         <div>
                           <div className="text-gray-500">Completed</div>
-                          <div className="font-medium">{formatDateTime(log.completedAt)}</div>
+                          <div className="font-medium">
+                            {formatDateTime(log.completedAt)}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -189,7 +200,10 @@ export function ExecDigestDeliveryHistory({
                         <div className="flex items-center gap-1 text-gray-500">
                           <FileText className="h-3 w-3" />
                           <span>
-                            PDF {log.pdfSizeBytes ? `(${Math.round(log.pdfSizeBytes / 1024)}KB)` : ''}
+                            PDF{' '}
+                            {log.pdfSizeBytes
+                              ? `(${Math.round(log.pdfSizeBytes / 1024)}KB)`
+                              : ''}
                           </span>
                         </div>
                       )}
@@ -203,39 +217,50 @@ export function ExecDigestDeliveryHistory({
                     )}
 
                     {/* Recipient results */}
-                    {log.recipientResults && log.recipientResults.length > 0 && (
-                      <div className="space-y-1">
-                        <div className="text-xs text-gray-500 font-medium">Recipients:</div>
+                    {log.recipientResults &&
+                      log.recipientResults.length > 0 && (
                         <div className="space-y-1">
-                          {log.recipientResults.map((result, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center justify-between p-2 rounded bg-gray-50 text-xs"
-                            >
-                              <span className="text-gray-700">{result.email}</span>
-                              <div className="flex items-center gap-2">
-                                {result.status === 'success' ? (
-                                  <Badge variant="outline" className="text-green-600 border-green-200">
-                                    <CheckCircle className="h-3 w-3 mr-1" />
-                                    Sent
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="outline" className="text-red-600 border-red-200">
-                                    <XCircle className="h-3 w-3 mr-1" />
-                                    Failed
-                                  </Badge>
-                                )}
-                                {result.sentAt && (
-                                  <span className="text-gray-400">
-                                    {formatRelativeTime(result.sentAt)}
-                                  </span>
-                                )}
+                          <div className="text-xs text-gray-500 font-medium">
+                            Recipients:
+                          </div>
+                          <div className="space-y-1">
+                            {log.recipientResults.map((result, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between p-2 rounded bg-gray-50 text-xs"
+                              >
+                                <span className="text-gray-700">
+                                  {result.email}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  {result.status === 'success' ? (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-green-600 border-green-200"
+                                    >
+                                      <CheckCircle className="h-3 w-3 mr-1" />
+                                      Sent
+                                    </Badge>
+                                  ) : (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-red-600 border-red-200"
+                                    >
+                                      <XCircle className="h-3 w-3 mr-1" />
+                                      Failed
+                                    </Badge>
+                                  )}
+                                  {result.sentAt && (
+                                    <span className="text-gray-400">
+                                      {formatRelativeTime(result.sentAt)}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 </CollapsibleContent>
               </div>

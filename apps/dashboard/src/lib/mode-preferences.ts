@@ -75,14 +75,20 @@ export function getModeIndex(mode: AutomationMode): number {
 /**
  * Check if a mode is at or below a ceiling
  */
-export function isModeBelowOrAtCeiling(mode: AutomationMode, ceiling: AutomationMode): boolean {
+export function isModeBelowOrAtCeiling(
+  mode: AutomationMode,
+  ceiling: AutomationMode
+): boolean {
   return getModeIndex(mode) <= getModeIndex(ceiling);
 }
 
 /**
  * Get the effective mode after applying ceiling
  */
-export function applyModeCeiling(requestedMode: AutomationMode, ceiling: AutomationMode): AutomationMode {
+export function applyModeCeiling(
+  requestedMode: AutomationMode,
+  ceiling: AutomationMode
+): AutomationMode {
   if (isModeBelowOrAtCeiling(requestedMode, ceiling)) {
     return requestedMode;
   }
@@ -286,17 +292,20 @@ export interface ModeConfig {
 export const MODE_CONFIGS: Record<AutomationMode, ModeConfig> = {
   manual: {
     label: 'Manual',
-    description: 'You control everything. AI provides suggestions but takes no action.',
+    description:
+      'You control everything. AI provides suggestions but takes no action.',
     shortDescription: 'Full control',
   },
   copilot: {
     label: 'Copilot',
-    description: 'AI prepares drafts and recommendations. You approve before execution.',
+    description:
+      'AI prepares drafts and recommendations. You approve before execution.',
     shortDescription: 'AI assists, you approve',
   },
   autopilot: {
     label: 'Autopilot',
-    description: 'AI handles routine tasks automatically. You review exceptions only.',
+    description:
+      'AI handles routine tasks automatically. You review exceptions only.',
     shortDescription: 'AI executes, you monitor',
   },
 };

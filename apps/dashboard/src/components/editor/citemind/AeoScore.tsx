@@ -28,7 +28,9 @@ export function AeoScore({ data }: AeoScoreProps) {
         <div>
           <span className="text-xs text-white/45 block mb-1">AEO Score</span>
           <div className="flex items-baseline gap-1.5">
-            <span className={`text-3xl font-bold ${scoreTextColor(data.overall)}`}>
+            <span
+              className={`text-3xl font-bold ${scoreTextColor(data.overall)}`}
+            >
               {data.overall}
             </span>
             <span className="text-sm text-white/45">/100</span>
@@ -68,7 +70,9 @@ export function AeoScore({ data }: AeoScoreProps) {
           <div key={item.category}>
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-white/70">{item.category}</span>
-              <span className={`text-xs font-medium ${scoreTextColor(item.score)}`}>
+              <span
+                className={`text-xs font-medium ${scoreTextColor(item.score)}`}
+              >
                 {item.score}
               </span>
             </div>

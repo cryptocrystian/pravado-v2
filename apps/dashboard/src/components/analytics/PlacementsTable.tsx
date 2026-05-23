@@ -6,8 +6,9 @@
  *           rounded-2xl → rounded-xl, text-emerald-500 → text-semantic-success.
  */
 
-import { mockPlacements, mockPRSummary } from './analytics-mock-data';
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
+
+import { mockPlacements, mockPRSummary } from './analytics-mock-data';
 
 export function PlacementsTable() {
   return (
@@ -32,7 +33,11 @@ export function PlacementsTable() {
         </div>
         <div className="bg-panel border border-border-subtle rounded-xl p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-1">
-            EVI from PR <InfoTooltip content="The portion of your EVI score driven by PR placements. When journalists cite your brand and AI engines pick up that coverage, it directly boosts your visibility score." size={11} />
+            EVI from PR{' '}
+            <InfoTooltip
+              content="The portion of your EVI score driven by PR placements. When journalists cite your brand and AI engines pick up that coverage, it directly boosts your visibility score."
+              size={11}
+            />
           </p>
           <p className="text-2xl font-bold text-semantic-success tabular-nums">
             {mockPRSummary.eviFromPR}

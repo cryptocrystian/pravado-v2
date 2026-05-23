@@ -43,7 +43,9 @@ async function request<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    const error = await response
+      .json()
+      .catch(() => ({ error: 'Request failed' }));
     throw new Error(error.error || `HTTP ${response.status}`);
   }
 
@@ -74,9 +76,7 @@ function buildQueryString(params: Record<string, any>): string {
 /**
  * Generate a persona using LLM from source text
  */
-export async function generatePersona(
-  context: GenerationContext
-): Promise<{
+export async function generatePersona(context: GenerationContext): Promise<{
   persona: AudiencePersona;
   traits: AudiencePersonaTrait[];
   insights: AudiencePersonaInsight[];
@@ -126,7 +126,9 @@ export async function deletePersona(personaId: string): Promise<void> {
 /**
  * Get a single persona with full details
  */
-export async function getPersona(personaId: string): Promise<PersonaDetailResponse> {
+export async function getPersona(
+  personaId: string
+): Promise<PersonaDetailResponse> {
   return request(`/api/v1/personas/${personaId}`);
 }
 

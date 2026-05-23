@@ -13,7 +13,13 @@ import { z } from 'zod';
 /**
  * Reputation time window options
  */
-export const reputationTimeWindowSchema = z.enum(['24h', '7d', '30d', '90d', 'all']);
+export const reputationTimeWindowSchema = z.enum([
+  '24h',
+  '7d',
+  '30d',
+  '90d',
+  'all',
+]);
 
 /**
  * Reputation component types
@@ -34,7 +40,11 @@ export const reputationTrendDirectionSchema = z.enum(['up', 'down', 'flat']);
 /**
  * Alert severity levels
  */
-export const reputationAlertSeveritySchema = z.enum(['info', 'warning', 'critical']);
+export const reputationAlertSeveritySchema = z.enum([
+  'info',
+  'warning',
+  'critical',
+]);
 
 /**
  * Source systems for reputation events
@@ -77,7 +87,12 @@ export const reputationSignalTypeSchema = z.enum([
 /**
  * Event severity levels
  */
-export const reputationEventSeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
+export const reputationEventSeveritySchema = z.enum([
+  'low',
+  'medium',
+  'high',
+  'critical',
+]);
 
 /**
  * Trend granularity options
@@ -403,32 +418,68 @@ export const scoreBreakdownSchema = z.object({
 // TYPE EXPORTS
 // ============================================================================
 
-export type ReputationTimeWindowInput = z.input<typeof reputationTimeWindowSchema>;
-export type ReputationTimeWindowOutput = z.output<typeof reputationTimeWindowSchema>;
+export type ReputationTimeWindowInput = z.input<
+  typeof reputationTimeWindowSchema
+>;
+export type ReputationTimeWindowOutput = z.output<
+  typeof reputationTimeWindowSchema
+>;
 
-export type GetReputationDashboardQueryInput = z.input<typeof getReputationDashboardQuerySchema>;
-export type GetReputationDashboardQueryOutput = z.output<typeof getReputationDashboardQuerySchema>;
+export type GetReputationDashboardQueryInput = z.input<
+  typeof getReputationDashboardQuerySchema
+>;
+export type GetReputationDashboardQueryOutput = z.output<
+  typeof getReputationDashboardQuerySchema
+>;
 
-export type GetReputationTrendQueryInput = z.input<typeof getReputationTrendQuerySchema>;
-export type GetReputationTrendQueryOutput = z.output<typeof getReputationTrendQuerySchema>;
+export type GetReputationTrendQueryInput = z.input<
+  typeof getReputationTrendQuerySchema
+>;
+export type GetReputationTrendQueryOutput = z.output<
+  typeof getReputationTrendQuerySchema
+>;
 
-export type GetReputationEventsQueryInput = z.input<typeof getReputationEventsQuerySchema>;
-export type GetReputationEventsQueryOutput = z.output<typeof getReputationEventsQuerySchema>;
+export type GetReputationEventsQueryInput = z.input<
+  typeof getReputationEventsQuerySchema
+>;
+export type GetReputationEventsQueryOutput = z.output<
+  typeof getReputationEventsQuerySchema
+>;
 
-export type GetReputationAlertsQueryInput = z.input<typeof getReputationAlertsQuerySchema>;
-export type GetReputationAlertsQueryOutput = z.output<typeof getReputationAlertsQuerySchema>;
+export type GetReputationAlertsQueryInput = z.input<
+  typeof getReputationAlertsQuerySchema
+>;
+export type GetReputationAlertsQueryOutput = z.output<
+  typeof getReputationAlertsQuerySchema
+>;
 
-export type RecalculateReputationBodyInput = z.input<typeof recalculateReputationBodySchema>;
-export type RecalculateReputationBodyOutput = z.output<typeof recalculateReputationBodySchema>;
+export type RecalculateReputationBodyInput = z.input<
+  typeof recalculateReputationBodySchema
+>;
+export type RecalculateReputationBodyOutput = z.output<
+  typeof recalculateReputationBodySchema
+>;
 
-export type UpdateReputationConfigBodyInput = z.input<typeof updateReputationConfigBodySchema>;
-export type UpdateReputationConfigBodyOutput = z.output<typeof updateReputationConfigBodySchema>;
+export type UpdateReputationConfigBodyInput = z.input<
+  typeof updateReputationConfigBodySchema
+>;
+export type UpdateReputationConfigBodyOutput = z.output<
+  typeof updateReputationConfigBodySchema
+>;
 
-export type CreateReputationEventBodyInput = z.input<typeof createReputationEventBodySchema>;
-export type CreateReputationEventBodyOutput = z.output<typeof createReputationEventBodySchema>;
+export type CreateReputationEventBodyInput = z.input<
+  typeof createReputationEventBodySchema
+>;
+export type CreateReputationEventBodyOutput = z.output<
+  typeof createReputationEventBodySchema
+>;
 
-export type AcknowledgeAlertBodyInput = z.input<typeof acknowledgeAlertBodySchema>;
-export type AcknowledgeAlertBodyOutput = z.output<typeof acknowledgeAlertBodySchema>;
+export type AcknowledgeAlertBodyInput = z.input<
+  typeof acknowledgeAlertBodySchema
+>;
+export type AcknowledgeAlertBodyOutput = z.output<
+  typeof acknowledgeAlertBodySchema
+>;
 
 export type ResolveAlertBodyInput = z.input<typeof resolveAlertBodySchema>;
 export type ResolveAlertBodyOutput = z.output<typeof resolveAlertBodySchema>;

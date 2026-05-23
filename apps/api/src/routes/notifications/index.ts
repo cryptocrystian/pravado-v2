@@ -1,6 +1,7 @@
-import type { FastifyInstance } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import { createClient } from '@supabase/supabase-js';
+import type { FastifyInstance } from 'fastify';
+
 import { requireUser } from '../../middleware/requireUser';
 
 const logger = createLogger('api:notifications');
@@ -41,28 +42,31 @@ export async function notificationRoutes(server: FastifyInstance) {
       const user = (request as any).user;
       const orgId = (request as any).orgId;
 
-      const { error } = await supabase
-        .from('device_push_tokens')
-        .upsert(
-          {
-            user_id: user.id,
-            org_id: orgId || null,
-            expo_push_token,
-            device_type,
-            last_seen: new Date().toISOString(),
-          },
-          { onConflict: 'user_id,expo_push_token' }
-        );
+      const { error } = await supabase.from('device_push_tokens').upsert(
+        {
+          user_id: user.id,
+          org_id: orgId || null,
+          expo_push_token,
+          device_type,
+          last_seen: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,expo_push_token' }
+      );
 
       if (error) {
-        logger.error('Failed to register device token', { error: error.message });
+        logger.error('Failed to register device token', {
+          error: error.message,
+        });
         return reply.code(500).send({
           success: false,
           error: { message: 'Failed to register device' },
         });
       }
 
-      logger.info('Device token registered', { userId: user.id, deviceType: device_type });
+      logger.info('Device token registered', {
+        userId: user.id,
+        deviceType: device_type,
+      });
 
       return { success: true };
     }

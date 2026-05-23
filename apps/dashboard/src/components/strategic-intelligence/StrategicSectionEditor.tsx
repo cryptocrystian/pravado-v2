@@ -5,18 +5,6 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  type StrategicSection,
-  getSectionTypeLabel,
-  getSectionIcon,
-  formatRelativeTime,
-} from '@/lib/strategicIntelligenceApi';
 import {
   Edit,
   Eye,
@@ -45,6 +33,19 @@ import {
   Lightbulb,
   Paperclip,
 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  type StrategicSection,
+  getSectionTypeLabel,
+  getSectionIcon,
+  formatRelativeTime,
+} from '@/lib/strategicIntelligenceApi';
 
 interface StrategicSectionEditorProps {
   section: StrategicSection;
@@ -135,9 +136,7 @@ export function StrategicSectionEditor({
             <CardTitle className="text-lg">
               {section.title || getSectionTypeLabel(section.sectionType)}
             </CardTitle>
-            <Badge variant={getStatusBadgeVariant()}>
-              {section.status}
-            </Badge>
+            <Badge variant={getStatusBadgeVariant()}>{section.status}</Badge>
             {section.isEdited && (
               <Badge variant="outline" className="text-xs">
                 Edited
@@ -196,7 +195,10 @@ export function StrategicSectionEditor({
         <CardContent>
           {isEditing ? (
             <div className="space-y-4">
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'preview' | 'edit')}>
+              <Tabs
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as 'preview' | 'edit')}
+              >
                 <TabsList>
                   <TabsTrigger value="edit">
                     <Edit className="h-4 w-4 mr-2" />
@@ -221,14 +223,20 @@ export function StrategicSectionEditor({
                   <div
                     className="prose prose-sm max-w-none dark:prose-invert min-h-[300px] p-4 border rounded-md"
                     dangerouslySetInnerHTML={{
-                      __html: section.contentHtml || '<p class="text-white/50">No content yet</p>',
+                      __html:
+                        section.contentHtml ||
+                        '<p class="text-white/50">No content yet</p>',
                     }}
                   />
                 </TabsContent>
               </Tabs>
 
               <div className="flex items-center justify-end gap-2">
-                <Button variant="outline" onClick={handleCancel} disabled={isUpdating}>
+                <Button
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isUpdating}
+                >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
@@ -251,7 +259,9 @@ export function StrategicSectionEditor({
             <div
               className="prose prose-sm max-w-none dark:prose-invert"
               dangerouslySetInnerHTML={{
-                __html: section.contentHtml || '<p class="text-white/50">No content generated yet. Click Generate to create content for this section.</p>',
+                __html:
+                  section.contentHtml ||
+                  '<p class="text-white/50">No content generated yet. Click Generate to create content for this section.</p>',
               }}
             />
           )}
@@ -262,10 +272,15 @@ export function StrategicSectionEditor({
               <span>{section.tokensUsed.toLocaleString()} tokens</span>
             )}
             {section.generationDurationMs && (
-              <span>{(section.generationDurationMs / 1000).toFixed(1)}s generation time</span>
+              <span>
+                {(section.generationDurationMs / 1000).toFixed(1)}s generation
+                time
+              </span>
             )}
             {section.lastRegeneratedAt && (
-              <span>Last regenerated {formatRelativeTime(section.lastRegeneratedAt)}</span>
+              <span>
+                Last regenerated {formatRelativeTime(section.lastRegeneratedAt)}
+              </span>
             )}
             {section.editedAt && section.editedBy && (
               <span>Edited {formatRelativeTime(section.editedAt)}</span>

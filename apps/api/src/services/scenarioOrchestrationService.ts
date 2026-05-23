@@ -6,8 +6,6 @@
  * orchestration, conditional triggers, and branching outcomes.
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
-import { createLogger, routeLLM } from '@pravado/utils';
 import type {
   ScenarioSuite,
   ScenarioSuiteItem,
@@ -53,6 +51,8 @@ import type {
   RiskMapNode,
   RiskMapEdge,
 } from '@pravado/types';
+import { createLogger, routeLLM } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 import * as aiSimulationService from './aiScenarioSimulationService';
 
@@ -97,8 +97,12 @@ function mapRowToSuiteItem(row: Record<string, unknown>): ScenarioSuiteItem {
     orderIndex: row.order_index as number,
     dependsOnItemId: row.depends_on_item_id as string | null,
     triggerConditionType: row.trigger_condition_type as TriggerConditionType,
-    triggerCondition: (row.trigger_condition || { type: 'always' }) as TriggerCondition,
-    executionConfig: row.execution_config as SuiteItemExecutionConfig | undefined,
+    triggerCondition: (row.trigger_condition || {
+      type: 'always',
+    }) as TriggerCondition,
+    executionConfig: row.execution_config as
+      | SuiteItemExecutionConfig
+      | undefined,
     label: row.label as string | null,
     notes: row.notes as string | null,
     createdAt: new Date(row.created_at as string),
@@ -134,7 +138,9 @@ function mapRowToSuiteRun(row: Record<string, unknown>): ScenarioSuiteRun {
   };
 }
 
-function mapRowToSuiteRunItem(row: Record<string, unknown>): ScenarioSuiteRunItem {
+function mapRowToSuiteRunItem(
+  row: Record<string, unknown>
+): ScenarioSuiteRunItem {
   return {
     id: row.id as string,
     orgId: row.org_id as string,
@@ -145,7 +151,9 @@ function mapRowToSuiteRunItem(row: Record<string, unknown>): ScenarioSuiteRunIte
     status: row.status as ScenarioSuiteItemStatus,
     conditionEvaluated: row.condition_evaluated as boolean,
     conditionResult: row.condition_result as boolean | null,
-    conditionDetails: row.condition_details as Record<string, unknown> | undefined,
+    conditionDetails: row.condition_details as
+      | Record<string, unknown>
+      | undefined,
     tokensUsed: row.tokens_used as number | null,
     stepsExecuted: row.steps_executed as number | null,
     durationMs: row.duration_ms as number | null,
@@ -161,7 +169,9 @@ function mapRowToSuiteRunItem(row: Record<string, unknown>): ScenarioSuiteRunIte
   };
 }
 
-function mapRowToAuditEvent(row: Record<string, unknown>): ScenarioSuiteAuditEvent {
+function mapRowToAuditEvent(
+  row: Record<string, unknown>
+): ScenarioSuiteAuditEvent {
   return {
     id: row.id as string,
     orgId: row.org_id as string,
@@ -186,7 +196,10 @@ export async function createSuite(
   ctx: ScenarioOrchestrationContext,
   input: CreateScenarioSuiteInput
 ): Promise<CreateScenarioSuiteResponse> {
-  logger.info('Creating scenario suite', { orgId: ctx.orgId, name: input.name });
+  logger.info('Creating scenario suite', {
+    orgId: ctx.orgId,
+    name: input.name,
+  });
 
   const { data: suiteData, error: suiteError } = await ctx.supabase
     .from('scenario_suites')
@@ -327,7 +340,8 @@ export async function updateSuite(
   };
 
   if (input.name !== undefined) updateData.name = input.name;
-  if (input.description !== undefined) updateData.description = input.description;
+  if (input.description !== undefined)
+    updateData.description = input.description;
   if (input.status !== undefined) updateData.status = input.status;
   if (input.config !== undefined) updateData.config = input.config;
   if (input.metadata !== undefined) updateData.metadata = input.metadata;
@@ -454,10 +468,14 @@ export async function updateSuiteItem(
   const updateData: Record<string, unknown> = {};
 
   if (input.orderIndex !== undefined) updateData.order_index = input.orderIndex;
-  if (input.dependsOnItemId !== undefined) updateData.depends_on_item_id = input.dependsOnItemId;
-  if (input.triggerConditionType !== undefined) updateData.trigger_condition_type = input.triggerConditionType;
-  if (input.triggerCondition !== undefined) updateData.trigger_condition = input.triggerCondition;
-  if (input.executionConfig !== undefined) updateData.execution_config = input.executionConfig;
+  if (input.dependsOnItemId !== undefined)
+    updateData.depends_on_item_id = input.dependsOnItemId;
+  if (input.triggerConditionType !== undefined)
+    updateData.trigger_condition_type = input.triggerConditionType;
+  if (input.triggerCondition !== undefined)
+    updateData.trigger_condition = input.triggerCondition;
+  if (input.executionConfig !== undefined)
+    updateData.execution_config = input.executionConfig;
   if (input.label !== undefined) updateData.label = input.label;
   if (input.notes !== undefined) updateData.notes = input.notes;
 
@@ -629,9 +647,13 @@ export async function advanceSuiteRun(
     throw new Error('Run not found');
   }
 
-  let run = mapRowToSuiteRun(runData);
+  const run = mapRowToSuiteRun(runData);
 
-  if (run.status === 'completed' || run.status === 'failed' || run.status === 'aborted') {
+  if (
+    run.status === 'completed' ||
+    run.status === 'failed' ||
+    run.status === 'aborted'
+  ) {
     throw new Error('Run is already finished');
   }
 
@@ -676,7 +698,10 @@ export async function advanceSuiteRun(
     let conditionMet = true;
     const conditionDetails: Record<string, unknown> = {};
 
-    if (!input.skipConditionCheck && suiteItem.triggerConditionType !== 'always') {
+    if (
+      !input.skipConditionCheck &&
+      suiteItem.triggerConditionType !== 'always'
+    ) {
       const evalResult = await evaluateCondition(
         ctx,
         runId,
@@ -753,7 +778,8 @@ export async function advanceSuiteRun(
 
       // Get simulation context for S71 service
       const simContext: aiSimulationService.AIScenarioSimulationContext = {
-        supabase: ctx.supabase as aiSimulationService.AIScenarioSimulationContext['supabase'],
+        supabase:
+          ctx.supabase as aiSimulationService.AIScenarioSimulationContext['supabase'],
         orgId: ctx.orgId,
         userId: ctx.userId,
       };
@@ -782,7 +808,9 @@ export async function advanceSuiteRun(
       const durationMs = Date.now() - startTime;
 
       // Update run item with results
-      const runTokensUsed = (completedRun.run as unknown as { tokensUsed?: number }).tokensUsed || 0;
+      const runTokensUsed =
+        (completedRun.run as unknown as { tokensUsed?: number }).tokensUsed ||
+        0;
       await ctx.supabase
         .from('scenario_suite_run_items')
         .update({
@@ -804,7 +832,8 @@ export async function advanceSuiteRun(
           completed_items: run.completedItems + 1,
           current_item_index: run.currentItemIndex + 1,
           total_tokens_used: run.totalTokensUsed + runTokensUsed,
-          total_steps_executed: run.totalStepsExecuted + completedRun.run.currentStep,
+          total_steps_executed:
+            run.totalStepsExecuted + completedRun.run.currentStep,
         })
         .eq('id', runId);
 
@@ -838,7 +867,10 @@ export async function advanceSuiteRun(
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      logger.error('Item execution failed', { error: err, runItemId: runItem.id });
+      logger.error('Item execution failed', {
+        error: err,
+        runItemId: runItem.id,
+      });
 
       await ctx.supabase
         .from('scenario_suite_run_items')
@@ -893,7 +925,10 @@ export async function advanceSuiteRun(
     .order('order_index', { ascending: true })
     .limit(1);
 
-  const nextItem = nextItems && nextItems.length > 0 ? mapRowToSuiteRunItem(nextItems[0]) : null;
+  const nextItem =
+    nextItems && nextItems.length > 0
+      ? mapRowToSuiteRunItem(nextItems[0])
+      : null;
 
   // Check if complete
   if (!nextItem) {
@@ -932,7 +967,11 @@ export async function abortSuiteRun(
 
   const run = mapRowToSuiteRun(runData);
 
-  if (run.status === 'completed' || run.status === 'failed' || run.status === 'aborted') {
+  if (
+    run.status === 'completed' ||
+    run.status === 'failed' ||
+    run.status === 'aborted'
+  ) {
     throw new Error('Run is already finished');
   }
 
@@ -1018,7 +1057,10 @@ async function finalizeSuiteRun(
 
   if (suiteResponse.suite.config.narrativeEnabled) {
     try {
-      const narrativeResult = await generateSuiteNarrative(ctx, { runId, format: 'summary' });
+      const narrativeResult = await generateSuiteNarrative(ctx, {
+        runId,
+        format: 'summary',
+      });
       narrative = narrativeResult.narrative;
     } catch (err) {
       logger.warn('Failed to generate narrative', { error: err });
@@ -1122,7 +1164,10 @@ async function evaluateCondition(
   }
 
   if (!sourceItem) {
-    return { met: true, details: { reason: 'no_source_item', defaultTrue: true } };
+    return {
+      met: true,
+      details: { reason: 'no_source_item', defaultTrue: true },
+    };
   }
 
   switch (conditionType) {
@@ -1132,7 +1177,10 @@ async function evaluateCondition(
       const itemRisk = sourceItem.riskLevel;
 
       if (!itemRisk) {
-        return { met: false, details: { reason: 'no_risk_level', itemRisk: null } };
+        return {
+          met: false,
+          details: { reason: 'no_risk_level', itemRisk: null },
+        };
       }
 
       const riskOrder: Record<AIScenarioRiskLevel, number> = {
@@ -1178,7 +1226,7 @@ async function evaluateCondition(
     case 'keyword_match': {
       const keywords = (cond.keywords || []) as string[];
       const matchMode = (cond.matchMode || 'any') as string;
-      const caseSensitive = cond.caseSensitive as boolean || false;
+      const caseSensitive = (cond.caseSensitive as boolean) || false;
 
       // Get simulation run turns
       if (!sourceItem.simulationRunId) {
@@ -1195,7 +1243,9 @@ async function evaluateCondition(
       }
 
       const allContent = turns.map((t) => t.content).join(' ');
-      const searchContent = caseSensitive ? allContent : allContent.toLowerCase();
+      const searchContent = caseSensitive
+        ? allContent
+        : allContent.toLowerCase();
       const searchKeywords = caseSensitive
         ? keywords
         : keywords.map((k) => k.toLowerCase());
@@ -1233,7 +1283,10 @@ async function evaluateCondition(
       const minSeverity = cond.minSeverity as AIScenarioRiskLevel | undefined;
 
       const summary = sourceItem.outcomeSummary || {};
-      const outcomes = (summary.outcomes || []) as { type: string; severity?: string }[];
+      const outcomes = (summary.outcomes || []) as {
+        type: string;
+        severity?: string;
+      }[];
 
       const matchingOutcomes = outcomes.filter((o) => o.type === outcomeType);
 
@@ -1269,7 +1322,11 @@ async function evaluateCondition(
       // These would require more complex evaluation - default to true for now
       return {
         met: true,
-        details: { type: conditionType, defaultTrue: true, note: 'Complex evaluation not implemented' },
+        details: {
+          type: conditionType,
+          defaultTrue: true,
+          note: 'Complex evaluation not implemented',
+        },
       };
 
     default:
@@ -1340,8 +1397,13 @@ export async function listSuiteRuns(
     dbQuery = dbQuery.eq('status', query.status);
   }
 
-  dbQuery = dbQuery.order('started_at', { ascending: query.sortOrder === 'asc' });
-  dbQuery = dbQuery.range(query.offset || 0, (query.offset || 0) + (query.limit || 20) - 1);
+  dbQuery = dbQuery.order('started_at', {
+    ascending: query.sortOrder === 'asc',
+  });
+  dbQuery = dbQuery.range(
+    query.offset || 0,
+    (query.offset || 0) + (query.limit || 20) - 1
+  );
 
   const { data, error, count } = await dbQuery;
 
@@ -1466,7 +1528,11 @@ Generate a ${input.format || 'summary'} narrative.`;
  */
 export async function generateSuiteRiskMap(
   ctx: ScenarioOrchestrationContext,
-  input: { runId: string; includeOpportunities?: boolean; includeMitigations?: boolean }
+  input: {
+    runId: string;
+    includeOpportunities?: boolean;
+    includeMitigations?: boolean;
+  }
 ): Promise<GenerateSuiteRiskMapResponse> {
   const runResponse = await getSuiteRun(ctx, input.runId);
   const { run, items } = runResponse;
@@ -1479,7 +1545,9 @@ export async function generateSuiteRiskMap(
   const edges: RiskMapEdge[] = [];
 
   for (const item of items) {
-    const suiteItem = suiteResponse.items.find((si) => si.id === item.suiteItemId);
+    const suiteItem = suiteResponse.items.find(
+      (si) => si.id === item.suiteItemId
+    );
 
     // Add simulation node
     nodes.push({
@@ -1503,7 +1571,12 @@ export async function generateSuiteRiskMap(
         nodes.push({
           id: outcomeId,
           label: outcome.description?.substring(0, 50) || 'Outcome',
-          type: outcome.type === 'risk' ? 'risk' : outcome.type === 'opportunity' ? 'opportunity' : 'outcome',
+          type:
+            outcome.type === 'risk'
+              ? 'risk'
+              : outcome.type === 'opportunity'
+                ? 'opportunity'
+                : 'outcome',
           riskLevel: outcome.severity as AIScenarioRiskLevel | undefined,
         });
 
@@ -1548,7 +1621,9 @@ export async function generateSuiteRiskMap(
           factor: outcome.description,
           severity: (outcome.severity || 'medium') as AIScenarioRiskLevel,
           source: `Item ${item.orderIndex + 1}`,
-          mitigations: input.includeMitigations ? outcome.mitigations : undefined,
+          mitigations: input.includeMitigations
+            ? outcome.mitigations
+            : undefined,
         });
       } else if (outcome.type === 'opportunity' && input.includeOpportunities) {
         opportunities.push({
@@ -1671,7 +1746,8 @@ export async function getSuiteRunMetrics(
     failedItems: run.failedItems,
     skippedItems: run.skippedItems,
     conditionMetItems: items.filter((i) => i.conditionResult === true).length,
-    conditionUnmetItems: items.filter((i) => i.conditionResult === false).length,
+    conditionUnmetItems: items.filter((i) => i.conditionResult === false)
+      .length,
     totalTokensUsed: run.totalTokensUsed,
     totalStepsExecuted: run.totalStepsExecuted,
     totalDurationMs,
@@ -1704,7 +1780,9 @@ export async function getSuiteStats(
   // Get all runs
   const { data: runs } = await ctx.supabase
     .from('scenario_suite_runs')
-    .select('status, aggregate_risk_level, total_items, completed_at, started_at')
+    .select(
+      'status, aggregate_risk_level, total_items, completed_at, started_at'
+    )
     .eq('org_id', ctx.orgId);
 
   // Get item condition types
@@ -1782,7 +1860,8 @@ export async function getSuiteStats(
     totalRuns: runs?.length || 0,
     runsByStatus,
     averageItemsPerSuite: totalSuites > 0 ? totalItems / totalSuites : 0,
-    averageRunDurationMs: completedRuns > 0 ? totalDurationMs / completedRuns : 0,
+    averageRunDurationMs:
+      completedRuns > 0 ? totalDurationMs / completedRuns : 0,
     mostUsedConditionType,
     riskDistribution,
   };
@@ -1845,8 +1924,13 @@ export async function listAuditEvents(
   if (query.suiteRunId) dbQuery = dbQuery.eq('suite_run_id', query.suiteRunId);
   if (query.eventType) dbQuery = dbQuery.eq('event_type', query.eventType);
 
-  dbQuery = dbQuery.order('created_at', { ascending: query.sortOrder === 'asc' });
-  dbQuery = dbQuery.range(query.offset || 0, (query.offset || 0) + (query.limit || 50) - 1);
+  dbQuery = dbQuery.order('created_at', {
+    ascending: query.sortOrder === 'asc',
+  });
+  dbQuery = dbQuery.range(
+    query.offset || 0,
+    (query.offset || 0) + (query.limit || 50) - 1
+  );
 
   const { data, error, count } = await dbQuery;
 
@@ -1868,7 +1952,9 @@ export async function listAuditEvents(
 /**
  * Compute aggregate risk level from array of risk levels
  */
-function computeAggregateRisk(levels: AIScenarioRiskLevel[]): AIScenarioRiskLevel {
+function computeAggregateRisk(
+  levels: AIScenarioRiskLevel[]
+): AIScenarioRiskLevel {
   if (levels.length === 0) return 'low';
 
   const riskOrder: Record<AIScenarioRiskLevel, number> = {

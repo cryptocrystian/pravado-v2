@@ -35,14 +35,16 @@ export const CiteMindMark = Mark.create<CiteMindMarkOptions>({
     return {
       severity: {
         default: 'warning',
-        parseHTML: (element: HTMLElement) => element.getAttribute('data-severity') || 'warning',
+        parseHTML: (element: HTMLElement) =>
+          element.getAttribute('data-severity') || 'warning',
         renderHTML: (attributes: Record<string, string>) => ({
           'data-severity': attributes.severity,
         }),
       },
       message: {
         default: null,
-        parseHTML: (element: HTMLElement) => element.getAttribute('data-message'),
+        parseHTML: (element: HTMLElement) =>
+          element.getAttribute('data-message'),
         renderHTML: (attributes: Record<string, string | null>) => {
           if (!attributes.message) return {};
           return { 'data-message': attributes.message };
@@ -61,7 +63,10 @@ export const CiteMindMark = Mark.create<CiteMindMarkOptions>({
 
   renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, string> }) {
     const severity = HTMLAttributes['data-severity'] || 'warning';
-    const className = severity === 'error' ? 'citemind-flag citemind-flag-error' : 'citemind-flag';
+    const className =
+      severity === 'error'
+        ? 'citemind-flag citemind-flag-error'
+        : 'citemind-flag';
 
     return [
       'span',

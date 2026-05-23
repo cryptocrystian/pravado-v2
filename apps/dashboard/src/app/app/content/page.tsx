@@ -19,14 +19,21 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useCallback, useRef } from 'react';
-import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
-import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
-import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
-import { ContentCalendarView } from '@/components/content/views/ContentCalendarView';
-import { ContentInsightsView } from '@/components/content/views/ContentInsightsView';
-import { ContentEditorView } from '@/components/content/views/ContentEditorView';
-import type { ContentView, ContentType, AutomationMode, EditorInitData, CreationContentType } from '@/components/content/types';
+
 import { CONTENT_OVERVIEW_MOCK } from '@/components/content/content-mock-data';
+import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
+import type {
+  ContentView,
+  ContentType,
+  AutomationMode,
+  EditorInitData,
+  CreationContentType,
+} from '@/components/content/types';
+import { ContentCalendarView } from '@/components/content/views/ContentCalendarView';
+import { ContentEditorView } from '@/components/content/views/ContentEditorView';
+import { ContentInsightsView } from '@/components/content/views/ContentInsightsView';
+import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
+import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
 
 // ============================================
 // MODULE-SCOPE CONSTANTS
@@ -44,16 +51,31 @@ const PROPOSAL_TYPE_MAP: Record<string, CreationContentType> = {
 export default function ContentSurfacePage() {
   const [activeView, setActiveView] = useState<ContentView>('work-queue');
   const [mode, setMode] = useState<AutomationMode>('copilot');
-  const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(null);
+  const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(
+    null
+  );
   const [editorWordCount, setEditorWordCount] = useState(0);
   const [editorTitle, setEditorTitle] = useState('');
 
-  const openCreationRef = useRef<((data: Record<string, string>, contentType?: CreationContentType, stage?: 1 | 2) => void) | null>(null);
+  const openCreationRef = useRef<
+    | ((
+        data: Record<string, string>,
+        contentType?: CreationContentType,
+        stage?: 1 | 2
+      ) => void)
+    | null
+  >(null);
 
   // Stable callback — useCallback prevents new fn reference on every render,
   // which would cause the shell's registerOpenCreation useEffect to loop.
   const handleRegisterOpenCreation = useCallback(
-    (fn: (data: Record<string, string>, contentType?: CreationContentType, stage?: 1 | 2) => void) => {
+    (
+      fn: (
+        data: Record<string, string>,
+        contentType?: CreationContentType,
+        stage?: 1 | 2
+      ) => void
+    ) => {
       openCreationRef.current = fn;
     },
     [] // empty deps — ref assignment never needs to change
@@ -107,20 +129,25 @@ export default function ContentSurfacePage() {
             mode={mode}
             onCreateManual={handleCreateManual}
             onCreateFromBrief={(proposalId) => {
-              const proposal = CONTENT_OVERVIEW_MOCK.proposals.find(p => p.id === proposalId);
+              const proposal = CONTENT_OVERVIEW_MOCK.proposals.find(
+                (p) => p.id === proposalId
+              );
               if (!proposal) return;
-              openCreationRef.current?.({
-                title: proposal.title,
-                topic: proposal.topicCluster,
-              }, PROPOSAL_TYPE_MAP[proposal.type]);
+              openCreationRef.current?.(
+                {
+                  title: proposal.title,
+                  topic: proposal.topicCluster,
+                },
+                PROPOSAL_TYPE_MAP[proposal.type]
+              );
             }}
             onViewAllProposals={() => {
               // TODO: open proposals drawer or route to briefs
             }}
             onViewAsset={(assetId) => {
               const title =
-                CONTENT_OVERVIEW_MOCK.recentAssets.find(a => a.id === assetId)?.title ??
-                'Untitled Document';
+                CONTENT_OVERVIEW_MOCK.recentAssets.find((a) => a.id === assetId)
+                  ?.title ?? 'Untitled Document';
               openEditorFor(title);
             }}
             onResolveException={() => {
@@ -135,7 +162,13 @@ export default function ContentSurfacePage() {
           <ContentLibraryView
             assets={CONTENT_OVERVIEW_MOCK.recentAssets}
             isLoading={false}
-            availableEntities={['Brand', 'AEO Strategy', 'Enterprise', 'PR Technology', 'AI Marketing']}
+            availableEntities={[
+              'Brand',
+              'AEO Strategy',
+              'Enterprise',
+              'PR Technology',
+              'AI Marketing',
+            ]}
             onCreateAsset={() => handleCreateContent('article')}
           />
         );
@@ -153,8 +186,10 @@ export default function ContentSurfacePage() {
         return (
           <ContentInsightsView
             signals={{
-              authorityContributionScore: CONTENT_OVERVIEW_MOCK.avgCiteMindScore,
-              citationEligibilityScore: CONTENT_OVERVIEW_MOCK.avgCitationEligibility,
+              authorityContributionScore:
+                CONTENT_OVERVIEW_MOCK.avgCiteMindScore,
+              citationEligibilityScore:
+                CONTENT_OVERVIEW_MOCK.avgCitationEligibility,
               aiIngestionLikelihood: CONTENT_OVERVIEW_MOCK.avgAiIngestion,
               crossPillarImpact: CONTENT_OVERVIEW_MOCK.avgCrossPillarImpact,
               competitiveAuthorityDelta: 2.1,

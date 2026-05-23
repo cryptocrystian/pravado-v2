@@ -18,7 +18,9 @@ test.describe('PR Pitch Sequences Page', () => {
     });
 
     test('should display main content area', async ({ page }) => {
-      await expect(page.getByText(/Select a sequence or create a new one/i)).toBeVisible();
+      await expect(
+        page.getByText(/Select a sequence or create a new one/i)
+      ).toBeVisible();
     });
 
     test('should have create new sequence button', async ({ page }) => {
@@ -59,7 +61,9 @@ test.describe('PR Pitch Sequences Page', () => {
       await expect(page.getByText('Follow-up 1')).toBeVisible();
     });
 
-    test('should show wait days field for follow-up steps', async ({ page }) => {
+    test('should show wait days field for follow-up steps', async ({
+      page,
+    }) => {
       await page.getByRole('button', { name: /New/i }).click();
 
       await page.getByText('Add Follow-up').click();
@@ -73,11 +77,15 @@ test.describe('PR Pitch Sequences Page', () => {
       await page.getByRole('button', { name: /New/i }).click();
 
       // Try to submit without name
-      const submitButton = page.getByRole('button', { name: /Create Sequence/i });
+      const submitButton = page.getByRole('button', {
+        name: /Create Sequence/i,
+      });
       await expect(submitButton).toBeDisabled();
 
       // Fill name
-      await page.getByPlaceholder('Q1 Product Launch Outreach').fill('Test Sequence');
+      await page
+        .getByPlaceholder('Q1 Product Launch Outreach')
+        .fill('Test Sequence');
       await expect(submitButton).toBeEnabled();
     });
   });
@@ -125,10 +133,14 @@ test.describe('PR Pitch Sequences Page', () => {
   });
 
   test.describe('View Mode Toggle', () => {
-    test('should have Editor and Contacts tabs when sequence selected', async ({ page }) => {
+    test('should have Editor and Contacts tabs when sequence selected', async ({
+      page,
+    }) => {
       // Create a sequence first (mock or actual)
       await page.getByRole('button', { name: /New/i }).click();
-      await page.getByPlaceholder('Q1 Product Launch Outreach').fill('Test Sequence');
+      await page
+        .getByPlaceholder('Q1 Product Launch Outreach')
+        .fill('Test Sequence');
 
       // Check for view mode buttons (they appear after sequence is created)
       // In create mode, these may not be visible yet
@@ -187,14 +199,18 @@ test.describe('PR Pitch Sequences Page', () => {
       await page.keyboard.press('Tab');
 
       // Should be able to navigate with keyboard
-      const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
+      const focusedElement = await page.evaluate(
+        () => document.activeElement?.tagName
+      );
       expect(['BUTTON', 'INPUT', 'SELECT', 'A']).toContain(focusedElement);
     });
   });
 });
 
 test.describe('Pitch Preview Drawer', () => {
-  test('should open drawer when clicking preview on a contact', async ({ page }) => {
+  test('should open drawer when clicking preview on a contact', async ({
+    page,
+  }) => {
     // This test would need a sequence with contacts
     // For now, we test that the drawer structure exists
     await page.goto('/app/pr/pitches');
@@ -209,7 +225,9 @@ test.describe('Contact Management', () => {
     await page.goto('/app/pr/pitches');
   });
 
-  test('should display add journalists section in contacts view', async ({ page }) => {
+  test('should display add journalists section in contacts view', async ({
+    page,
+  }) => {
     // Create a sequence and switch to contacts view
     await page.getByRole('button', { name: /New/i }).click();
 

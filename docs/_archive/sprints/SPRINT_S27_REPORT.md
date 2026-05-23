@@ -15,6 +15,7 @@ Successfully implemented internal observability system for tracking LLM usage, p
 **File**: `apps/api/supabase/migrations/34_create_llm_usage_ledger.sql`
 
 Created `llm_usage_ledger` table:
+
 - Append-only ledger tracking all LLM API calls
 - Fields: provider, model, tokens (prompt/completion/total), cost_usd (future), latency, status, error_code
 - Indexes optimized for org+time queries
@@ -25,6 +26,7 @@ Created `llm_usage_ledger` table:
 **File**: `packages/types/src/llm.ts`
 
 Added types:
+
 - `LlmUsageLedgerEntry` - Full ledger entry with all fields
 - `CreateLlmUsageLedgerEntry` - DTO for creating entries
 - Extended `LlmRequest` with `orgId`, `runId`, `stepRunId` for tracking context
@@ -34,6 +36,7 @@ Added types:
 **File**: `packages/utils/src/llmRouter.ts`
 
 Enhanced LLM router to write to ledger:
+
 - Added Supabase client support via constructor config
 - Implemented `writeLedgerEntry()` method (best-effort, non-blocking)
 - Added timing tracking to `generate()` method
@@ -48,22 +51,26 @@ Enhanced LLM router to write to ledger:
 Implemented metrics aggregation service with methods:
 
 **`getOrgExecutionStats(orgId, period)`**:
+
 - Run counts by state (queued/running/success/failed/canceled)
 - Average runtime for successful runs
 - Step failure counts grouped by type
 
 **`getQueueStats()`**:
+
 - Pending job counts (total and by type)
 - Average wait time for queued jobs
 - Retry attempt statistics (min/max/avg)
 
 **`getLlmUsageSummary(orgId, period)`**:
+
 - Total tokens and API calls
 - Error rate across all calls
 - Token/call breakdown by provider+model
 - Average latency per provider+model
 
 **`getRecentFailures(orgId, limit)`**:
+
 - Last N failed playbook runs
 - Includes playbook names and timestamps
 
@@ -74,11 +81,13 @@ Implemented metrics aggregation service with methods:
 Implemented authenticated REST endpoints:
 
 **`GET /api/v1/ops/overview?period=24h|7d`**:
+
 - Returns org-scoped execution stats + LLM usage + recent failures
 - Requires authentication
 - Validates user has org access
 
 **`GET /api/v1/ops/queue`**:
+
 - Returns global queue statistics (non-sensitive)
 - Requires authentication
 
@@ -91,16 +100,19 @@ Implemented authenticated REST endpoints:
 Built internal dashboard with sections:
 
 **System Health Cards** (4 metrics):
+
 - Total Runs (24h) with success rate %
 - Queue Pending with average wait time
 - LLM Calls (24h) with error rate %
 - Total Tokens (24h)
 
 **LLM Usage by Provider/Model**:
+
 - Table showing token counts, call counts, avg latency
 - Grouped by provider+model combinations
 
 **Recent Failures**:
+
 - Last 10 failed playbook runs
 - Displays playbook name, run ID, timestamp
 
@@ -109,6 +121,7 @@ Built internal dashboard with sections:
 **File**: `apps/api/tests/ops.test.ts`
 
 Created basic endpoint tests:
+
 - Authentication requirement for `/overview`
 - Authentication requirement for `/queue`
 - Query parameter validation for `/overview?period=7d`
@@ -120,6 +133,7 @@ Created basic endpoint tests:
 **File**: `docs/product/ops_observability_v1.md`
 
 Comprehensive documentation covering:
+
 - Component descriptions and schemas
 - Usage examples for internal teams
 - Key metrics exposed (execution/LLM/queue)
@@ -142,20 +156,24 @@ Verified all required checks pass:
 ## Technical Decisions
 
 ### Best-Effort Logging
+
 - Ledger writes wrapped in try-catch to never fail LLM requests
 - Uses `.catch(() => {})` pattern to swallow ledger write errors
 - Logs warnings if writes fail but continues execution
 
 ### Import Patterns
+
 - Used local `getUserOrgId()` helper function per route file (consistent with existing codebase pattern)
 - Alphabetical import ordering enforced by ESLint
 
 ### Type Safety
+
 - Avoided `any` types where possible in new Sprint S27 code
 - Used `as Error` pattern for catch blocks
 - Prefixed unused parameters with `_` (e.g., `_request`)
 
 ### Queue Stats
+
 - Removed unused `workerStats` and `queueStats` variables
 - Calculate pending job count directly from `pendingJobs.length`
 - Returns empty stats when queue/workerPool not available
@@ -163,6 +181,7 @@ Verified all required checks pass:
 ## Files Changed/Created
 
 ### Created:
+
 - `apps/api/supabase/migrations/34_create_llm_usage_ledger.sql`
 - `apps/api/src/services/opsMetricsService.ts`
 - `apps/api/src/routes/ops/index.ts`
@@ -172,6 +191,7 @@ Verified all required checks pass:
 - `SPRINT_S27_REPORT.md` (this file)
 
 ### Modified:
+
 - `packages/types/src/llm.ts` - Added ledger types
 - `packages/utils/src/llmRouter.ts` - Added ledger writing
 - `packages/utils/package.json` - Added Supabase dependency
@@ -192,12 +212,14 @@ Current Sprint S27 limitations (intentional, to be addressed in future sprints):
 ## Future Work (S28+)
 
 ### Sprint S28 - Billing & Pricing:
+
 - Add cost calculation using provider pricing tables
 - Populate `cost_usd` field in ledger
 - Add cost breakdowns to dashboard
 - Implement budget alerts
 
 ### Future Enhancements:
+
 - Sampling for high-volume scenarios
 - Retention policies for ledger data
 - Historical trend charts (weekly/monthly)
@@ -211,12 +233,14 @@ Current Sprint S27 limitations (intentional, to be addressed in future sprints):
 To verify Sprint S27 implementation:
 
 1. **Database Migration**:
+
    ```bash
    # Run migration 34 on Supabase instance
    # Verify llm_usage_ledger table exists with proper RLS
    ```
 
 2. **API Endpoints**:
+
    ```bash
    # Test authentication requirement
    curl http://localhost:4000/api/v1/ops/overview
@@ -228,6 +252,7 @@ To verify Sprint S27 implementation:
    ```
 
 3. **Dashboard**:
+
    ```bash
    # Navigate to /app/ops in dashboard
    # Should display system health cards, LLM usage, and recent failures

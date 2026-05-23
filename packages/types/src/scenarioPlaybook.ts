@@ -137,22 +137,29 @@ export const SCENARIO_TYPE_LABELS: Record<ScenarioType, string> = {
   [ScenarioType.CUSTOM]: 'Custom Simulation',
 };
 
-export const SCENARIO_PLAYBOOK_STATUS_LABELS: Record<ScenarioPlaybookStatus, string> = {
+export const SCENARIO_PLAYBOOK_STATUS_LABELS: Record<
+  ScenarioPlaybookStatus,
+  string
+> = {
   [ScenarioPlaybookStatus.DRAFT]: 'Draft',
   [ScenarioPlaybookStatus.ACTIVE]: 'Active',
   [ScenarioPlaybookStatus.ARCHIVED]: 'Archived',
   [ScenarioPlaybookStatus.DEPRECATED]: 'Deprecated',
 };
 
-export const SCENARIO_TRIGGER_TYPE_LABELS: Record<ScenarioTriggerType, string> = {
-  [ScenarioTriggerType.MANUAL]: 'Manual',
-  [ScenarioTriggerType.SIGNAL_BASED]: 'Signal-Based',
-  [ScenarioTriggerType.SCHEDULED]: 'Scheduled',
-  [ScenarioTriggerType.THRESHOLD_BASED]: 'Threshold-Based',
-  [ScenarioTriggerType.EVENT_DRIVEN]: 'Event-Driven',
-};
+export const SCENARIO_TRIGGER_TYPE_LABELS: Record<ScenarioTriggerType, string> =
+  {
+    [ScenarioTriggerType.MANUAL]: 'Manual',
+    [ScenarioTriggerType.SIGNAL_BASED]: 'Signal-Based',
+    [ScenarioTriggerType.SCHEDULED]: 'Scheduled',
+    [ScenarioTriggerType.THRESHOLD_BASED]: 'Threshold-Based',
+    [ScenarioTriggerType.EVENT_DRIVEN]: 'Event-Driven',
+  };
 
-export const SCENARIO_STEP_ACTION_TYPE_LABELS: Record<ScenarioStepActionType, string> = {
+export const SCENARIO_STEP_ACTION_TYPE_LABELS: Record<
+  ScenarioStepActionType,
+  string
+> = {
   [ScenarioStepActionType.OUTREACH]: 'Outreach',
   [ScenarioStepActionType.CRISIS_RESPONSE]: 'Crisis Response',
   [ScenarioStepActionType.GOVERNANCE]: 'Governance',
@@ -891,7 +898,13 @@ export interface ScenarioListPlaybooksResponse {
  * Stats activity item for recent activity feed
  */
 export interface ScenarioStatsActivityItem {
-  type: 'run_completed' | 'run_started' | 'run_failed' | 'scenario_created' | 'playbook_created' | string;
+  type:
+    | 'run_completed'
+    | 'run_started'
+    | 'run_failed'
+    | 'scenario_created'
+    | 'playbook_created'
+    | string;
   description: string;
   timestamp: string;
 }

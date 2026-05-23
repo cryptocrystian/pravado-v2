@@ -3,7 +3,14 @@
  * Comprehensive test suite for performance analytics engine
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from '@jest/globals';
 import { MediaPerformanceService } from '../src/services/mediaPerformanceService';
 import { supabase } from '../src/config/supabase';
 import type {
@@ -383,7 +390,10 @@ describe('MediaPerformanceService', () => {
         expect(insight.llmModel).toBeDefined();
         expect(insight.category).toBe('trend');
       } catch (error: any) {
-        if (error.message.includes('LLM') || error.message.includes('API key')) {
+        if (
+          error.message.includes('LLM') ||
+          error.message.includes('API key')
+        ) {
           console.log('Skipping LLM test - LLM not configured');
         } else {
           throw error;

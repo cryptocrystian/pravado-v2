@@ -43,7 +43,9 @@ describe('Strategic Intelligence E2E Tests', () => {
 
   describe('Feature Flag Check', () => {
     it('should have ENABLE_STRATEGIC_INTELLIGENCE feature flag enabled', async () => {
-      const { response } = await apiRequest('/api/v1/strategic-intelligence/reports');
+      const { response } = await apiRequest(
+        '/api/v1/strategic-intelligence/reports'
+      );
 
       // If feature is disabled, we'd get a 403
       expect(response.status).not.toBe(404);
@@ -61,17 +63,24 @@ describe('Strategic Intelligence E2E Tests', () => {
         periodEnd: '2025-03-31T23:59:59.999Z',
         fiscalQuarter: 'Q1',
         fiscalYear: 2025,
-        sectionTypes: ['executive_summary', 'strategic_outlook', 'competitive_positioning'],
+        sectionTypes: [
+          'executive_summary',
+          'strategic_outlook',
+          'competitive_positioning',
+        ],
         tone: 'executive',
         targetLength: 'comprehensive',
         includeCharts: true,
         includeRecommendations: true,
       };
 
-      const { response, data } = await apiRequest('/api/v1/strategic-intelligence/reports', {
-        method: 'POST',
-        body: reportData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/strategic-intelligence/reports',
+        {
+          method: 'POST',
+          body: reportData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -222,7 +231,8 @@ describe('Strategic Intelligence E2E Tests', () => {
       }
 
       const updateData = {
-        contentMd: '# Updated Executive Summary\n\nThis is the updated strategic content.',
+        contentMd:
+          '# Updated Executive Summary\n\nThis is the updated strategic content.',
       };
 
       const { response, data } = await apiRequest(
@@ -309,7 +319,9 @@ describe('Strategic Intelligence E2E Tests', () => {
     });
 
     it('should list sources', async () => {
-      const { response, data } = await apiRequest('/api/v1/strategic-intelligence/sources');
+      const { response, data } = await apiRequest(
+        '/api/v1/strategic-intelligence/sources'
+      );
 
       if (response.ok) {
         expect(data.sources).toBeDefined();
@@ -414,7 +426,9 @@ describe('Strategic Intelligence E2E Tests', () => {
 
   describe('Statistics', () => {
     it('should get report statistics', async () => {
-      const { response, data } = await apiRequest('/api/v1/strategic-intelligence/stats');
+      const { response, data } = await apiRequest(
+        '/api/v1/strategic-intelligence/stats'
+      );
 
       if (response.ok) {
         expect(data.stats.totalReports).toBeDefined();
@@ -432,10 +446,13 @@ describe('Strategic Intelligence E2E Tests', () => {
         return;
       }
 
-      const { response, data } = await apiRequest('/api/v1/strategic-intelligence/compare', {
-        method: 'POST',
-        body: { currentReportId: createdReportId },
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/strategic-intelligence/compare',
+        {
+          method: 'POST',
+          body: { currentReportId: createdReportId },
+        }
+      );
 
       if (response.ok) {
         expect(data.comparison.currentPeriod).toBeDefined();
@@ -487,7 +504,9 @@ describe('Strategic Intelligence E2E Tests', () => {
     });
 
     it('should list all audit logs', async () => {
-      const { response, data } = await apiRequest('/api/v1/strategic-intelligence/audit-logs');
+      const { response, data } = await apiRequest(
+        '/api/v1/strategic-intelligence/audit-logs'
+      );
 
       if (response.ok) {
         expect(Array.isArray(data.logs)).toBe(true);
@@ -509,10 +528,13 @@ describe('Strategic Intelligence E2E Tests', () => {
         description: 'Test',
       };
 
-      const { response } = await apiRequest('/api/v1/strategic-intelligence/reports', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/strategic-intelligence/reports',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -526,10 +548,13 @@ describe('Strategic Intelligence E2E Tests', () => {
         periodEnd: '2025-03-31T23:59:59.999Z',
       };
 
-      const { response } = await apiRequest('/api/v1/strategic-intelligence/reports', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/strategic-intelligence/reports',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -543,10 +568,13 @@ describe('Strategic Intelligence E2E Tests', () => {
         periodEnd: '2025-03-31T23:59:59.999Z',
       };
 
-      const { response } = await apiRequest('/api/v1/strategic-intelligence/reports', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/strategic-intelligence/reports',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -587,7 +615,15 @@ describe('Strategic Intelligence UI Flow Tests', () => {
 
     it('should have filtering capabilities', () => {
       const filterOptions = {
-        status: ['all', 'draft', 'generating', 'review', 'approved', 'published', 'archived'],
+        status: [
+          'all',
+          'draft',
+          'generating',
+          'review',
+          'approved',
+          'published',
+          'archived',
+        ],
         format: [
           'all',
           'quarterly_strategic_review',
@@ -668,7 +704,13 @@ describe('Strategic Intelligence UI Flow Tests', () => {
 
   describe('Create Dialog', () => {
     it('should have all required form fields', () => {
-      const requiredFields = ['title', 'format', 'audience', 'periodStart', 'periodEnd'];
+      const requiredFields = [
+        'title',
+        'format',
+        'audience',
+        'periodStart',
+        'periodEnd',
+      ];
 
       const optionalFields = [
         'description',

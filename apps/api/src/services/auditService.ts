@@ -71,7 +71,10 @@ export class AuditService {
       } = options;
 
       // Get default severity from event metadata if not provided
-      const severity = options.severity ?? AUDIT_EVENT_METADATA[eventType]?.defaultSeverity ?? 'info';
+      const severity =
+        options.severity ??
+        AUDIT_EVENT_METADATA[eventType]?.defaultSeverity ??
+        'info';
 
       const record = {
         org_id: orgId,
@@ -119,7 +122,10 @@ export class AuditService {
   logEventAsync(options: LogEventOptions): void {
     // Fire and forget - don't await
     this.logEvent(options).catch((error) => {
-      logger.error('Async audit logging failed', { error, eventType: options.eventType });
+      logger.error('Async audit logging failed', {
+        error,
+        eventType: options.eventType,
+      });
     });
   }
 
@@ -216,7 +222,9 @@ export class AuditService {
       // Filter by search term in context (post-query for JSONB)
       const filteredEntries = searchTerm
         ? entries.filter((entry) =>
-            JSON.stringify(entry.context).toLowerCase().includes(searchTerm.toLowerCase())
+            JSON.stringify(entry.context)
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
           )
         : entries;
 
@@ -225,9 +233,10 @@ export class AuditService {
       const hasMore = offset + filteredEntries.length < total;
 
       // Generate next cursor from last entry
-      const nextCursor = hasMore && filteredEntries.length > 0
-        ? filteredEntries[filteredEntries.length - 1].createdAt
-        : undefined;
+      const nextCursor =
+        hasMore && filteredEntries.length > 0
+          ? filteredEntries[filteredEntries.length - 1].createdAt
+          : undefined;
 
       return {
         entries: filteredEntries,
@@ -252,7 +261,10 @@ export class AuditService {
    * @param id - Audit log entry ID
    * @returns Audit log entry or null
    */
-  async getAuditEntry(orgId: string, id: string): Promise<AuditLogEntry | null> {
+  async getAuditEntry(
+    orgId: string,
+    id: string
+  ): Promise<AuditLogEntry | null> {
     try {
       const { data, error } = await this.supabase
         .from('audit_log')
@@ -442,7 +454,9 @@ export function initAuditService(supabase: SupabaseClient): AuditService {
  */
 export function getAuditService(): AuditService {
   if (!auditServiceInstance) {
-    throw new Error('AuditService not initialized. Call initAuditService() first.');
+    throw new Error(
+      'AuditService not initialized. Call initAuditService() first.'
+    );
   }
   return auditServiceInstance;
 }

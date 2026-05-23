@@ -21,7 +21,14 @@ export function BrandName({ name, showTM = true, className }: BrandNameProps) {
     <span className={className}>
       {name}
       {showTM && (
-        <sup style={{ fontSize: '0.6em', verticalAlign: 'super', marginLeft: '0.05em', opacity: 0.8 }}>
+        <sup
+          style={{
+            fontSize: '0.6em',
+            verticalAlign: 'super',
+            marginLeft: '0.05em',
+            opacity: 0.8,
+          }}
+        >
           &trade;
         </sup>
       )}

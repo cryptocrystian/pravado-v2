@@ -34,8 +34,8 @@ export function PRGenerationResult({
               release.status === 'complete'
                 ? 'bg-semantic-success/10 text-semantic-success'
                 : release.status === 'generating'
-                ? 'bg-brand-cyan/10 text-brand-cyan'
-                : 'bg-slate-3 text-white/60'
+                  ? 'bg-brand-cyan/10 text-brand-cyan'
+                  : 'bg-slate-3 text-white/60'
             }`}
           >
             {release.status === 'complete' ? 'Complete' : release.status}
@@ -72,7 +72,9 @@ export function PRGenerationResult({
         )}
 
         {release.dateline && (
-          <p className="text-sm font-semibold text-white/70">{release.dateline}</p>
+          <p className="text-sm font-semibold text-white/70">
+            {release.dateline}
+          </p>
         )}
 
         <div className="max-w-none">
@@ -114,7 +116,9 @@ export function PRGenerationResult({
 
       {release.angle && (
         <div className="bg-slate-3/30 rounded-lg border border-border-subtle p-4">
-          <h4 className="text-sm font-semibold text-white/70 mb-2">Selected Angle</h4>
+          <h4 className="text-sm font-semibold text-white/70 mb-2">
+            Selected Angle
+          </h4>
           <p className="text-white/60">{release.angle}</p>
         </div>
       )}
@@ -175,7 +179,9 @@ function SEOSummaryPanel({ seoSummary }: { seoSummary: PRSEOSummary }) {
 
       {seoSummary.suggestions.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-white/70 mb-2">Suggestions</h4>
+          <h4 className="text-sm font-medium text-white/70 mb-2">
+            Suggestions
+          </h4>
           <ul className="space-y-2">
             {seoSummary.suggestions.map((suggestion, index) => (
               <li
@@ -184,8 +190,8 @@ function SEOSummaryPanel({ seoSummary }: { seoSummary: PRSEOSummary }) {
                   suggestion.priority === 'high'
                     ? 'bg-semantic-danger/10 text-semantic-danger'
                     : suggestion.priority === 'medium'
-                    ? 'bg-semantic-warning/10 text-semantic-warning'
-                    : 'bg-slate-3/50 text-white/60'
+                      ? 'bg-semantic-warning/10 text-semantic-warning'
+                      : 'bg-slate-3/50 text-white/60'
                 }`}
               >
                 <span
@@ -193,8 +199,8 @@ function SEOSummaryPanel({ seoSummary }: { seoSummary: PRSEOSummary }) {
                     suggestion.priority === 'high'
                       ? 'bg-semantic-danger'
                       : suggestion.priority === 'medium'
-                      ? 'bg-semantic-warning'
-                      : 'bg-white/30'
+                        ? 'bg-semantic-warning'
+                        : 'bg-white/30'
                   }`}
                 />
                 {suggestion.message}

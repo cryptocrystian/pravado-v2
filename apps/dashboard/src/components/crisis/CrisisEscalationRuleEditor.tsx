@@ -7,7 +7,15 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisEscalationRule,
+  CreateEscalationRuleRequest,
+  UpdateEscalationRuleRequest,
+  CrisisSeverity,
+  EscalationRuleType,
+  EscalationConditions,
+  EscalationAction,
+} from '@pravado/types';
 import {
   Plus,
   Edit2,
@@ -19,22 +27,23 @@ import {
   RefreshCw,
   Shield,
 } from 'lucide-react';
-import type {
-  CrisisEscalationRule,
-  CreateEscalationRuleRequest,
-  UpdateEscalationRuleRequest,
-  CrisisSeverity,
-  EscalationRuleType,
-  EscalationConditions,
-  EscalationAction,
-} from '@pravado/types';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
@@ -51,28 +60,29 @@ import {
   SheetDescription,
   SheetFooter,
 } from '@/components/ui/sheet';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 interface CrisisEscalationRuleEditorProps {
   rules: CrisisEscalationRule[];
   onCreate: (input: CreateEscalationRuleRequest) => Promise<void>;
-  onUpdate: (ruleId: string, updates: UpdateEscalationRuleRequest) => Promise<void>;
+  onUpdate: (
+    ruleId: string,
+    updates: UpdateEscalationRuleRequest
+  ) => Promise<void>;
   onDelete: (ruleId: string) => Promise<void>;
   isLoading?: boolean;
   onRefresh?: () => void;
   className?: string;
 }
 
-const SEVERITY_OPTIONS: CrisisSeverity[] = ['low', 'medium', 'high', 'critical', 'severe'];
+const SEVERITY_OPTIONS: CrisisSeverity[] = [
+  'low',
+  'medium',
+  'high',
+  'critical',
+  'severe',
+];
 const RULE_TYPE_OPTIONS: { value: EscalationRuleType; label: string }[] = [
   { value: 'threshold', label: 'Threshold-Based' },
   { value: 'pattern', label: 'Pattern-Based' },
@@ -98,13 +108,17 @@ export default function CrisisEscalationRuleEditor({
   className = '',
 }: CrisisEscalationRuleEditorProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [editingRule, setEditingRule] = useState<CrisisEscalationRule | null>(null);
+  const [editingRule, setEditingRule] = useState<CrisisEscalationRule | null>(
+    null
+  );
   const [isCreating, setIsCreating] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // Form state
-  const [formData, setFormData] = useState<Partial<CreateEscalationRuleRequest>>({});
+  const [formData, setFormData] = useState<
+    Partial<CreateEscalationRuleRequest>
+  >({});
 
   const resetForm = () => {
     setFormData({
@@ -181,7 +195,8 @@ export default function CrisisEscalationRuleEditor({
 
   const formatConditions = (conditions: EscalationConditions): string => {
     const parts: string[] = [];
-    if (conditions.severityGte) parts.push(`Severity >= ${conditions.severityGte}`);
+    if (conditions.severityGte)
+      parts.push(`Severity >= ${conditions.severityGte}`);
     if (conditions.sentimentLte !== undefined)
       parts.push(`Sentiment <= ${conditions.sentimentLte}`);
     if (conditions.mentionVelocityGte !== undefined)
@@ -194,7 +209,9 @@ export default function CrisisEscalationRuleEditor({
   };
 
   const formatActions = (actions: EscalationAction[]): string => {
-    return actions.map((a) => a.type.replace('_', ' ')).join(', ') || 'No actions';
+    return (
+      actions.map((a) => a.type.replace('_', ' ')).join(', ') || 'No actions'
+    );
   };
 
   return (
@@ -215,7 +232,9 @@ export default function CrisisEscalationRuleEditor({
                   onClick={onRefresh}
                   disabled={isLoading}
                 >
-                  <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
+                  <RefreshCw
+                    className={cn('h-4 w-4', isLoading && 'animate-spin')}
+                  />
                 </Button>
               )}
               <Button size="sm" onClick={openCreateSheet}>
@@ -316,7 +335,9 @@ export default function CrisisEscalationRuleEditor({
                             </div>
                             <div>
                               <span className="text-white/50">Cooldown:</span>
-                              <span className="ml-1">{rule.cooldownMinutes}min</span>
+                              <span className="ml-1">
+                                {rule.cooldownMinutes}min
+                              </span>
                             </div>
                             <div>
                               <span className="text-white/50">Triggers:</span>
@@ -326,7 +347,9 @@ export default function CrisisEscalationRuleEditor({
                               <div>
                                 <span className="text-white/50">Last:</span>
                                 <span className="ml-1">
-                                  {new Date(rule.lastTriggeredAt).toLocaleDateString()}
+                                  {new Date(
+                                    rule.lastTriggeredAt
+                                  ).toLocaleDateString()}
                                 </span>
                               </div>
                             )}
@@ -420,7 +443,9 @@ export default function CrisisEscalationRuleEditor({
               <Input
                 id="name"
                 value={formData.name || ''}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="e.g., Critical Severity Auto-Escalate"
               />
             </div>
@@ -445,7 +470,10 @@ export default function CrisisEscalationRuleEditor({
               <Select
                 value={formData.ruleType || 'threshold'}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, ruleType: value as EscalationRuleType })
+                  setFormData({
+                    ...formData,
+                    ruleType: value as EscalationRuleType,
+                  })
                 }
               >
                 <SelectTrigger>
@@ -467,7 +495,10 @@ export default function CrisisEscalationRuleEditor({
               <Select
                 value={String(formData.escalationLevel || 1)}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, escalationLevel: parseInt(value, 10) })
+                  setFormData({
+                    ...formData,
+                    escalationLevel: parseInt(value, 10),
+                  })
                 }
               >
                 <SelectTrigger>

@@ -50,7 +50,9 @@ export class AIDraftService {
   /**
    * Generate a pitch draft for a journalist
    */
-  async generatePitchDraft(context: PitchDraftContext): Promise<GeneratedDraft> {
+  async generatePitchDraft(
+    context: PitchDraftContext
+  ): Promise<GeneratedDraft> {
     const systemPrompt = this.buildSystemPrompt(context);
     const userPrompt = this.buildPitchPrompt(context);
 
@@ -64,7 +66,10 @@ export class AIDraftService {
           properties: {
             subject: { type: 'string', description: 'Email subject line' },
             bodyText: { type: 'string', description: 'Plain text email body' },
-            reasoning: { type: 'string', description: 'Brief explanation of the approach' },
+            reasoning: {
+              type: 'string',
+              description: 'Brief explanation of the approach',
+            },
           },
           required: ['subject', 'bodyText', 'reasoning'],
         },
@@ -94,7 +99,9 @@ export class AIDraftService {
   /**
    * Generate a response to coverage
    */
-  async generateResponseDraft(context: PitchDraftContext): Promise<GeneratedDraft> {
+  async generateResponseDraft(
+    context: PitchDraftContext
+  ): Promise<GeneratedDraft> {
     const systemPrompt = this.buildSystemPrompt(context);
     const userPrompt = this.buildResponsePrompt(context);
 
@@ -108,7 +115,10 @@ export class AIDraftService {
           properties: {
             subject: { type: 'string', description: 'Email subject line' },
             bodyText: { type: 'string', description: 'Plain text email body' },
-            reasoning: { type: 'string', description: 'Brief explanation of the approach' },
+            reasoning: {
+              type: 'string',
+              description: 'Brief explanation of the approach',
+            },
           },
           required: ['subject', 'bodyText', 'reasoning'],
         },
@@ -215,7 +225,11 @@ Be brief and genuine.`;
   /**
    * Parse JSON response from LLM
    */
-  private parseJsonResponse(content: string): { subject: string; bodyText: string; reasoning: string } {
+  private parseJsonResponse(content: string): {
+    subject: string;
+    bodyText: string;
+    reasoning: string;
+  } {
     try {
       // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -239,7 +253,7 @@ Be brief and genuine.`;
   private textToHtml(text: string): string {
     return text
       .split('\n')
-      .map(line => line.trim() ? `<p>${line}</p>` : '')
+      .map((line) => (line.trim() ? `<p>${line}</p>` : ''))
       .filter(Boolean)
       .join('\n');
   }
@@ -248,12 +262,14 @@ Be brief and genuine.`;
    * Generate fallback draft when LLM fails
    */
   private generateFallbackDraft(context: PitchDraftContext): GeneratedDraft {
-    const subject = context.action === 'respond'
-      ? `Re: Your recent coverage`
-      : `${context.brandName} - Story Opportunity`;
+    const subject =
+      context.action === 'respond'
+        ? `Re: Your recent coverage`
+        : `${context.brandName} - Story Opportunity`;
 
-    const bodyText = context.action === 'respond'
-      ? `Hi ${context.journalistName},
+    const bodyText =
+      context.action === 'respond'
+        ? `Hi ${context.journalistName},
 
 I wanted to reach out regarding your recent coverage${context.coverageTitle ? ` on "${context.coverageTitle}"` : ''}.
 
@@ -262,7 +278,7 @@ At ${context.brandName}, we have some additional insights that might interest yo
 Would you be open to a brief conversation?
 
 Best regards`
-      : `Hi ${context.journalistName},
+        : `Hi ${context.journalistName},
 
 I'm reaching out from ${context.brandName} with a story opportunity that aligns with your coverage${context.journalistBeat ? ` of ${context.journalistBeat}` : ''}.
 

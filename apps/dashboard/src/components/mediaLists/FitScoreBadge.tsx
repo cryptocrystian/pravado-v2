@@ -22,7 +22,11 @@ const sizeClasses = {
   lg: 'text-base px-3 py-1.5',
 };
 
-export function FitScoreBadge({ score, size = 'md', showLabel = false }: FitScoreBadgeProps) {
+export function FitScoreBadge({
+  score,
+  size = 'md',
+  showLabel = false,
+}: FitScoreBadgeProps) {
   const percentage = Math.round(score * 100);
   const colorClass = getScoreColor(score);
 

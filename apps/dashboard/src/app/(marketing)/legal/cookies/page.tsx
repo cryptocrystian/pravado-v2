@@ -17,8 +17,8 @@ export default function CookiesPage() {
         This Cookie Policy explains how Saipien Labs LLC (&quot;Pravado&quot;,
         &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) uses cookies and
         similar tracking technologies when you use the Pravado platform at{' '}
-        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink>{' '}
-        (the &quot;Service&quot;). This policy should be read alongside our{' '}
+        <LegalLink href="https://app.pravado.io">app.pravado.io</LegalLink> (the
+        &quot;Service&quot;). This policy should be read alongside our{' '}
         <LegalLink href="/legal/privacy">Privacy Policy</LegalLink>.
       </P>
 
@@ -78,7 +78,9 @@ export default function CookiesPage() {
             </tr>
             <tr style={{ borderTop: '1px solid #1F1F28' }}>
               <td className="px-4 py-2">
-                <code className="text-white">sb-*-auth-token-code-verifier</code>
+                <code className="text-white">
+                  sb-*-auth-token-code-verifier
+                </code>
               </td>
               <td className="px-4 py-2">Supabase</td>
               <td className="px-4 py-2">
@@ -122,7 +124,9 @@ export default function CookiesPage() {
                 <code className="text-white">pravado-sidebar-state</code>
               </td>
               <td className="px-4 py-2">localStorage</td>
-              <td className="px-4 py-2">Remembers sidebar expanded/collapsed state.</td>
+              <td className="px-4 py-2">
+                Remembers sidebar expanded/collapsed state.
+              </td>
               <td className="px-4 py-2">Persistent</td>
             </tr>
             <tr style={{ borderTop: '1px solid #1F1F28' }}>

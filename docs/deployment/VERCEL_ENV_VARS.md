@@ -6,19 +6,19 @@ Set these in the Vercel Dashboard for the `dashboard` project, environment: **Pr
 
 ## Required Variables
 
-| Variable | Value |
-|----------|-------|
-| `NEXT_PUBLIC_SUPABASE_URL` | `<NEXT_PUBLIC_SUPABASE_URL from Vercel env>` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `<NEXT_PUBLIC_SUPABASE_ANON_KEY from Vercel env>` |
-| `NEXT_PUBLIC_API_URL` | `<NEXT_PUBLIC_API_URL from Vercel env>` |
-| `NEXT_PUBLIC_APP_URL` | `<NEXT_PUBLIC_APP_URL from Vercel env>` |
-| `NEXT_PUBLIC_POSTHOG_KEY` | `<NEXT_PUBLIC_POSTHOG_KEY from Vercel env>` |
-| `NEXT_PUBLIC_POSTHOG_HOST` | `<NEXT_PUBLIC_POSTHOG_HOST from Vercel env>` |
-| `NEXT_PUBLIC_SENTRY_DSN` | `<NEXT_PUBLIC_SENTRY_DSN from Vercel env>` |
+| Variable                             | Value                                                  |
+| ------------------------------------ | ------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`           | `<NEXT_PUBLIC_SUPABASE_URL from Vercel env>`           |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | `<NEXT_PUBLIC_SUPABASE_ANON_KEY from Vercel env>`      |
+| `NEXT_PUBLIC_API_URL`                | `<NEXT_PUBLIC_API_URL from Vercel env>`                |
+| `NEXT_PUBLIC_APP_URL`                | `<NEXT_PUBLIC_APP_URL from Vercel env>`                |
+| `NEXT_PUBLIC_POSTHOG_KEY`            | `<NEXT_PUBLIC_POSTHOG_KEY from Vercel env>`            |
+| `NEXT_PUBLIC_POSTHOG_HOST`           | `<NEXT_PUBLIC_POSTHOG_HOST from Vercel env>`           |
+| `NEXT_PUBLIC_SENTRY_DSN`             | `<NEXT_PUBLIC_SENTRY_DSN from Vercel env>`             |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `<NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY from Vercel env>` |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | `<NEXT_PUBLIC_GOOGLE_CLIENT_ID from Vercel env>` |
-| `NEXT_PUBLIC_BETA_INVITE_REQUIRED` | `true` |
-| `NEXT_PUBLIC_MSW_ENABLED` | `false` |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`       | `<NEXT_PUBLIC_GOOGLE_CLIENT_ID from Vercel env>`       |
+| `NEXT_PUBLIC_BETA_INVITE_REQUIRED`   | `true`                                                 |
+| `NEXT_PUBLIC_MSW_ENABLED`            | `false`                                                |
 
 ## Notes
 

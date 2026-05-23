@@ -11,11 +11,15 @@ import { z } from 'zod';
 export const briefGenerationInputSchema = z.object({
   contentItemId: z.string().uuid().optional(),
   targetKeyword: z.string().min(1).max(200).optional(),
-  targetIntent: z.enum(['informational', 'navigational', 'commercial', 'transactional']).optional(),
+  targetIntent: z
+    .enum(['informational', 'navigational', 'commercial', 'transactional'])
+    .optional(),
   personalityId: z.string().uuid().optional(),
 });
 
-export type BriefGenerationInputParams = z.infer<typeof briefGenerationInputSchema>;
+export type BriefGenerationInputParams = z.infer<
+  typeof briefGenerationInputSchema
+>;
 
 // ========================================
 // GENERATED BRIEF OUTPUT SCHEMA
@@ -34,7 +38,9 @@ export const generatedBriefOutputSchema = z.object({
   updatedAt: z.string(),
 });
 
-export type GeneratedBriefOutputParams = z.infer<typeof generatedBriefOutputSchema>;
+export type GeneratedBriefOutputParams = z.infer<
+  typeof generatedBriefOutputSchema
+>;
 
 // ========================================
 // LIST GENERATED BRIEFS QUERY SCHEMA
@@ -46,4 +52,6 @@ export const listGeneratedBriefsQuerySchema = z.object({
   contentItemId: z.string().uuid().optional(),
 });
 
-export type ListGeneratedBriefsQueryParams = z.infer<typeof listGeneratedBriefsQuerySchema>;
+export type ListGeneratedBriefsQueryParams = z.infer<
+  typeof listGeneratedBriefsQuerySchema
+>;

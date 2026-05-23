@@ -149,9 +149,12 @@ export interface CheckoutSessionResult {
  * Includes renewal dates, overage projections, and recommendations
  */
 export async function getBillingSummaryEnriched(): Promise<OrgBillingSummaryEnriched | null> {
-  const response = await apiRequest<OrgBillingSummaryEnriched>('/api/billing/org/summary', {
-    method: 'GET',
-  });
+  const response = await apiRequest<OrgBillingSummaryEnriched>(
+    '/api/billing/org/summary',
+    {
+      method: 'GET',
+    }
+  );
 
   if (response.success && response.data) {
     return response.data;
@@ -178,7 +181,9 @@ export async function getAvailablePlans(): Promise<BillingPlan[]> {
 /**
  * Get plan details by slug (S33)
  */
-export async function getPlanDetails(slug: string): Promise<BillingPlan | null> {
+export async function getPlanDetails(
+  slug: string
+): Promise<BillingPlan | null> {
   const response = await apiRequest<BillingPlan>(`/api/billing/plans/${slug}`, {
     method: 'GET',
   });
@@ -194,7 +199,9 @@ export async function getPlanDetails(slug: string): Promise<BillingPlan | null> 
  * Switch to a different plan (S33)
  * Throws error if downgrade would violate usage guardrails
  */
-export async function switchPlan(targetPlanSlug: string): Promise<ApiResponse<SwitchPlanResult>> {
+export async function switchPlan(
+  targetPlanSlug: string
+): Promise<ApiResponse<SwitchPlanResult>> {
   return apiRequest<SwitchPlanResult>('/api/billing/org/switch-plan', {
     method: 'POST',
     body: JSON.stringify({ targetPlanSlug }),
@@ -218,7 +225,9 @@ export async function cancelSubscription(
  * Resume a canceled subscription
  * Note: This requires updating cancel_at_period_end via Stripe
  */
-export async function resumeSubscription(): Promise<ApiResponse<SwitchPlanResult>> {
+export async function resumeSubscription(): Promise<
+  ApiResponse<SwitchPlanResult>
+> {
   // This would call a backend endpoint to update Stripe subscription
   // For now, this is a stub that would need backend implementation
   throw new Error('Resume subscription not yet implemented in backend');
@@ -242,9 +251,12 @@ export async function createCheckoutSession(
  * Returns URL to redirect user to Stripe portal
  */
 export async function openPaymentPortal(): Promise<string | null> {
-  const response = await apiRequest<StripePortalSession>('/api/billing/org/payment-method', {
-    method: 'POST',
-  });
+  const response = await apiRequest<StripePortalSession>(
+    '/api/billing/org/payment-method',
+    {
+      method: 'POST',
+    }
+  );
 
   if (response.success && response.data) {
     return response.data.url;
@@ -282,9 +294,12 @@ export async function getUsageAlerts(
  * Acknowledge a billing alert (S32)
  */
 export async function acknowledgeAlert(alertId: string): Promise<boolean> {
-  const response = await apiRequest(`/api/billing/org/alerts/${alertId}/acknowledge`, {
-    method: 'POST',
-  });
+  const response = await apiRequest(
+    `/api/billing/org/alerts/${alertId}/acknowledge`,
+    {
+      method: 'POST',
+    }
+  );
 
   return response.success;
 }
@@ -452,9 +467,12 @@ export interface InvoiceDetails {
  * Returns last 12 months of invoices with aggregated metrics
  */
 export async function getBillingHistory(): Promise<BillingHistorySummary | null> {
-  const response = await apiRequest<BillingHistorySummary>('/api/billing/org/invoices', {
-    method: 'GET',
-  });
+  const response = await apiRequest<BillingHistorySummary>(
+    '/api/billing/org/invoices',
+    {
+      method: 'GET',
+    }
+  );
 
   if (response.success && response.data) {
     return response.data;
@@ -467,10 +485,15 @@ export async function getBillingHistory(): Promise<BillingHistorySummary | null>
  * Get detailed invoice breakdown (S34)
  * Returns full invoice details with line items and usage snapshot
  */
-export async function getInvoiceDetails(invoiceId: string): Promise<InvoiceDetails | null> {
-  const response = await apiRequest<InvoiceDetails>(`/api/billing/org/invoices/${invoiceId}`, {
-    method: 'GET',
-  });
+export async function getInvoiceDetails(
+  invoiceId: string
+): Promise<InvoiceDetails | null> {
+  const response = await apiRequest<InvoiceDetails>(
+    `/api/billing/org/invoices/${invoiceId}`,
+    {
+      method: 'GET',
+    }
+  );
 
   if (response.success && response.data) {
     return response.data;
@@ -483,16 +506,23 @@ export async function getInvoiceDetails(invoiceId: string): Promise<InvoiceDetai
  * Manually sync invoices from Stripe (S34)
  * Admin-only feature to refresh invoice cache
  */
-export async function syncInvoices(): Promise<ApiResponse<{ message: string; syncedCount: number }>> {
-  return apiRequest<{ message: string; syncedCount: number }>('/api/billing/org/invoices/sync', {
-    method: 'POST',
-  });
+export async function syncInvoices(): Promise<
+  ApiResponse<{ message: string; syncedCount: number }>
+> {
+  return apiRequest<{ message: string; syncedCount: number }>(
+    '/api/billing/org/invoices/sync',
+    {
+      method: 'POST',
+    }
+  );
 }
 
 /**
  * Helper: Get invoice status badge color (S34)
  */
-export function getInvoiceStatusColor(status: string): 'green' | 'yellow' | 'red' | 'gray' {
+export function getInvoiceStatusColor(
+  status: string
+): 'green' | 'yellow' | 'red' | 'gray' {
   switch (status.toLowerCase()) {
     case 'paid':
       return 'green';
@@ -510,12 +540,22 @@ export function getInvoiceStatusColor(status: string): 'green' | 'yellow' | 'red
 /**
  * Helper: Format date range for invoice period (S34)
  */
-export function formatInvoicePeriod(periodStart: string, periodEnd: string): string {
+export function formatInvoicePeriod(
+  periodStart: string,
+  periodEnd: string
+): string {
   const start = new Date(periodStart);
   const end = new Date(periodEnd);
 
-  const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const startStr = start.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+  const endStr = end.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   return `${startStr} - ${endStr}`;
 }

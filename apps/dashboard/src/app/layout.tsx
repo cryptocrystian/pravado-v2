@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+
 import './globals.css';
-import { ErrorBoundary } from './ErrorBoundary';
 import { PostHogProvider } from '@/providers/PostHogProvider';
+
+import { ErrorBoundary } from './ErrorBoundary';
 
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
@@ -25,7 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`dark ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-screen font-sans antialiased bg-[#0A0A0F]">
         <PostHogProvider>
           <ErrorBoundary>{children}</ErrorBoundary>

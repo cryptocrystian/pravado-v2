@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import { CaretDown, CaretRight } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import { AeoScore } from './citemind/AeoScore';
-import { EntityCoverage } from './citemind/EntityCoverage';
 import { CitationSignals } from './citemind/CitationSignals';
-import { Derivatives } from './citemind/Derivatives';
 import { CrossPillar } from './citemind/CrossPillar';
+import { Derivatives } from './citemind/Derivatives';
+import { EntityCoverage } from './citemind/EntityCoverage';
 import type {
   AeoScoreData,
   EntityItem,
@@ -24,7 +25,12 @@ interface SectionProps {
   children: React.ReactNode;
 }
 
-function Section({ title, defaultOpen = false, alwaysOpen = false, children }: SectionProps) {
+function Section({
+  title,
+  defaultOpen = false,
+  alwaysOpen = false,
+  children,
+}: SectionProps) {
   const [open, setOpen] = useState(defaultOpen || alwaysOpen);
 
   return (

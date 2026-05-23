@@ -16,76 +16,84 @@ Sprint S85 completed the Design System v2 enforcement across all major pillar pa
 ### Pages Updated
 
 #### Scenario & Simulation Suite
-| File | Changes Applied |
-|------|-----------------|
-| `/app/app/scenarios/page.tsx` | bg-page, panel-card, text-white-0, text-muted, btn-primary, btn-secondary, tab styling with brand-cyan, modal overlay with bg-slate-0/80, brand color icons |
-| `/app/app/scenarios/simulations/page.tsx` | bg-page, panel-card, text-white-0, text-muted, StatCard with DS v2 tokens, brand-iris info section |
-| `/app/app/scenarios/orchestrations/page.tsx` | bg-page, panel-card, alert-error, input-field, btn-primary, btn-ghost, loading spinner with brand-cyan, modal overlays |
+
+| File                                         | Changes Applied                                                                                                                                             |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/app/app/scenarios/page.tsx`                | bg-page, panel-card, text-white-0, text-muted, btn-primary, btn-secondary, tab styling with brand-cyan, modal overlay with bg-slate-0/80, brand color icons |
+| `/app/app/scenarios/simulations/page.tsx`    | bg-page, panel-card, text-white-0, text-muted, StatCard with DS v2 tokens, brand-iris info section                                                          |
+| `/app/app/scenarios/orchestrations/page.tsx` | bg-page, panel-card, alert-error, input-field, btn-primary, btn-ghost, loading spinner with brand-cyan, modal overlays                                      |
 
 #### Reality & Conflicts
-| File | Changes Applied |
-|------|-----------------|
-| `/app/app/reality-maps/page.tsx` | bg-page, panel-card, text-white-0, text-muted, input-field, btn-primary, btn-ghost, tabs with brand-cyan, modal overlays, semantic-danger delete button |
-| `/app/app/insight-conflicts/page.tsx` | bg-page, panel-card, text-white-0, text-muted, alert-error, btn-ghost, tabs with brand-cyan, modal overlays, brand-iris batch actions |
+
+| File                                  | Changes Applied                                                                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/app/app/reality-maps/page.tsx`      | bg-page, panel-card, text-white-0, text-muted, input-field, btn-primary, btn-ghost, tabs with brand-cyan, modal overlays, semantic-danger delete button |
+| `/app/app/insight-conflicts/page.tsx` | bg-page, panel-card, text-white-0, text-muted, alert-error, btn-ghost, tabs with brand-cyan, modal overlays, brand-iris batch actions                   |
 
 #### Risk Management
-| File | Changes Applied |
-|------|-----------------|
+
+| File                           | Changes Applied                                                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `/app/app/risk-radar/page.tsx` | bg-page, bg-slate-1 header, text-white-0, text-muted, brand-magenta icon, semantic-danger/warning/success risk colors, slate-6 icons |
 
 #### Executive Module
-| File | Changes Applied |
-|------|-----------------|
-| `/app/app/exec/page.tsx` | Already DS v2 compliant (brand-iris, text-white-0, alert-error, semantic colors) |
+
+| File                               | Changes Applied                                                                                                  |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `/app/app/exec/page.tsx`           | Already DS v2 compliant (brand-iris, text-white-0, alert-error, semantic colors)                                 |
 | `/app/app/exec/investors/page.tsx` | text-white-0, text-muted, alert-error, brand-cyan loader, brand-teal accent, semantic-success/warning stat cards |
 
 #### Core GTM Pillars
-| File | Changes Applied |
-|------|-----------------|
-| `/app/app/pr/page.tsx` | bg-page, panel-card, text-white-0, text-muted, input-field, btn-primary, brand-cyan selections, brand-iris badges, semantic-danger remove buttons |
-| `/app/app/content/page.tsx` | bg-page, bg-slate-1, text-white-0, text-muted, input-field, border-border-subtle |
+
+| File                        | Changes Applied                                                                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/app/app/pr/page.tsx`      | bg-page, panel-card, text-white-0, text-muted, input-field, btn-primary, brand-cyan selections, brand-iris badges, semantic-danger remove buttons |
+| `/app/app/content/page.tsx` | bg-page, bg-slate-1, text-white-0, text-muted, input-field, border-border-subtle                                                                  |
 
 ---
 
 ## Token Mappings Applied
 
 ### Color Replacements
-| Legacy Class | DS v2 Replacement |
-|--------------|-------------------|
-| `bg-gray-50` | `bg-page` |
-| `bg-white` | `panel-card` class or `bg-slate-1` |
-| `text-gray-900` | `text-white-0` |
-| `text-gray-600`, `text-gray-500` | `text-muted` |
-| `text-gray-400`, `text-gray-300` | `text-slate-6` |
-| `border-gray-200`, `border-gray-300` | `border-border-subtle` |
-| `bg-blue-600`, `hover:bg-blue-700` | `btn-primary` class |
-| `bg-indigo-600` | `bg-brand-iris` or `btn-primary` |
-| `text-indigo-600` | `text-brand-cyan` or `text-brand-iris` |
-| `bg-purple-100 text-purple-700` | `bg-brand-iris/10 text-brand-iris` |
-| `bg-blue-50 border-blue-200` | `bg-brand-cyan/10 border-brand-cyan/20` |
-| `bg-red-50 border-red-200 text-red-700` | `alert-error` class |
-| `text-red-600` | `text-semantic-danger` |
-| `bg-green-50 text-green-600` | `bg-semantic-success/10 text-semantic-success` |
-| `bg-yellow-50 text-yellow-600` | `bg-semantic-warning/10 text-semantic-warning` |
-| `bg-black bg-opacity-50` | `bg-slate-0/80` |
-| `focus:ring-blue-500` | `focus:ring-brand-cyan` |
+
+| Legacy Class                            | DS v2 Replacement                              |
+| --------------------------------------- | ---------------------------------------------- |
+| `bg-gray-50`                            | `bg-page`                                      |
+| `bg-white`                              | `panel-card` class or `bg-slate-1`             |
+| `text-gray-900`                         | `text-white-0`                                 |
+| `text-gray-600`, `text-gray-500`        | `text-muted`                                   |
+| `text-gray-400`, `text-gray-300`        | `text-slate-6`                                 |
+| `border-gray-200`, `border-gray-300`    | `border-border-subtle`                         |
+| `bg-blue-600`, `hover:bg-blue-700`      | `btn-primary` class                            |
+| `bg-indigo-600`                         | `bg-brand-iris` or `btn-primary`               |
+| `text-indigo-600`                       | `text-brand-cyan` or `text-brand-iris`         |
+| `bg-purple-100 text-purple-700`         | `bg-brand-iris/10 text-brand-iris`             |
+| `bg-blue-50 border-blue-200`            | `bg-brand-cyan/10 border-brand-cyan/20`        |
+| `bg-red-50 border-red-200 text-red-700` | `alert-error` class                            |
+| `text-red-600`                          | `text-semantic-danger`                         |
+| `bg-green-50 text-green-600`            | `bg-semantic-success/10 text-semantic-success` |
+| `bg-yellow-50 text-yellow-600`          | `bg-semantic-warning/10 text-semantic-warning` |
+| `bg-black bg-opacity-50`                | `bg-slate-0/80`                                |
+| `focus:ring-blue-500`                   | `focus:ring-brand-cyan`                        |
 
 ### Component Class Usage
-| Scenario | DS v2 Class |
-|----------|-------------|
-| Primary action button | `btn-primary` |
-| Secondary/Ghost button | `btn-secondary`, `btn-ghost` |
-| Form inputs | `input-field` |
-| Dashboard panels | `panel-card` |
-| Error alerts | `alert-error` |
-| Active tabs | `border-brand-cyan text-brand-cyan` |
-| Modal overlays | `bg-slate-0/80` |
+
+| Scenario               | DS v2 Class                         |
+| ---------------------- | ----------------------------------- |
+| Primary action button  | `btn-primary`                       |
+| Secondary/Ghost button | `btn-secondary`, `btn-ghost`        |
+| Form inputs            | `input-field`                       |
+| Dashboard panels       | `panel-card`                        |
+| Error alerts           | `alert-error`                       |
+| Active tabs            | `border-brand-cyan text-brand-cyan` |
+| Modal overlays         | `bg-slate-0/80`                     |
 
 ---
 
 ## Design Patterns Established
 
 ### Page Background Pattern
+
 ```tsx
 <div className="min-h-screen bg-page">
   {/* Header with slate-1 background */}
@@ -98,6 +106,7 @@ Sprint S85 completed the Design System v2 enforcement across all major pillar pa
 ```
 
 ### Tab Navigation Pattern
+
 ```tsx
 <button
   className={`px-4 py-2 text-sm font-medium border-b-2 ${
@@ -111,6 +120,7 @@ Sprint S85 completed the Design System v2 enforcement across all major pillar pa
 ```
 
 ### Modal Overlay Pattern
+
 ```tsx
 <div className="fixed inset-0 bg-slate-0/80 flex items-center justify-center z-50">
   <div className="panel-card p-6 max-w-md w-full">
@@ -125,6 +135,7 @@ Sprint S85 completed the Design System v2 enforcement across all major pillar pa
 ```
 
 ### Stat Card Pattern
+
 ```tsx
 <div className="panel-card p-4">
   <p className="text-sm font-medium text-muted">Label</p>
@@ -137,37 +148,43 @@ Sprint S85 completed the Design System v2 enforcement across all major pillar pa
 
 ## Build Verification
 
-| Check | Status |
-|-------|--------|
-| TypeScript (`tsc --noEmit`) | Passed |
-| Next.js lint | Passed (pre-existing import order issues only) |
-| DS v2 tokens applied | Verified |
-| No hardcoded grays in updated files | Verified |
+| Check                               | Status                                         |
+| ----------------------------------- | ---------------------------------------------- |
+| TypeScript (`tsc --noEmit`)         | Passed                                         |
+| Next.js lint                        | Passed (pre-existing import order issues only) |
+| DS v2 tokens applied                | Verified                                       |
+| No hardcoded grays in updated files | Verified                                       |
 
 ---
 
 ## Files Modified
 
 ### Scenario & Simulation
+
 - `apps/dashboard/src/app/app/scenarios/page.tsx`
 - `apps/dashboard/src/app/app/scenarios/simulations/page.tsx`
 - `apps/dashboard/src/app/app/scenarios/orchestrations/page.tsx`
 
 ### Reality & Conflicts
+
 - `apps/dashboard/src/app/app/reality-maps/page.tsx`
 - `apps/dashboard/src/app/app/insight-conflicts/page.tsx`
 
 ### Risk Management
+
 - `apps/dashboard/src/app/app/risk-radar/page.tsx`
 
 ### Executive Module
+
 - `apps/dashboard/src/app/app/exec/investors/page.tsx`
 
 ### Core GTM Pillars
+
 - `apps/dashboard/src/app/app/pr/page.tsx`
 - `apps/dashboard/src/app/app/content/page.tsx`
 
 ### Documentation
+
 - `docs/DESIGN_SYSTEM_ALIGNMENT_S85.md` (this file)
 
 ---
@@ -175,6 +192,7 @@ Sprint S85 completed the Design System v2 enforcement across all major pillar pa
 ## Pre-Existing Compliant Files
 
 The following files were already DS v2 compliant (no changes needed):
+
 - `apps/dashboard/src/app/app/exec/page.tsx` - Uses brand-iris, text-white-0, alert-error, semantic colors
 - `apps/dashboard/src/app/app/exec/strategy/page.tsx` - Uses shadcn components with DS v2 theming
 

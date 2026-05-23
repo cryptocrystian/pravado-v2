@@ -21,6 +21,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+
 import {
   type AutomationMode,
   type Pillar,
@@ -33,24 +34,60 @@ import { useMode } from '@/lib/ModeContext';
 // ICONS
 // ============================================
 
-function ModeIcon({ mode, className = 'w-4 h-4' }: { mode: AutomationMode; className?: string }) {
+function ModeIcon({
+  mode,
+  className = 'w-4 h-4',
+}: {
+  mode: AutomationMode;
+  className?: string;
+}) {
   if (mode === 'manual') {
     return (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+        />
       </svg>
     );
   }
   if (mode === 'copilot') {
     return (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
       </svg>
     );
   }
   return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M13 10V3L4 14h7v7l9-11h-7z"
+      />
     </svg>
   );
 }
@@ -59,7 +96,10 @@ function ModeIcon({ mode, className = 'w-4 h-4' }: { mode: AutomationMode; class
 // MODE TOKEN STYLES
 // ============================================
 
-const MODE_TOKENS: Record<AutomationMode, { bg: string; border: string; text: string }> = {
+const MODE_TOKENS: Record<
+  AutomationMode,
+  { bg: string; border: string; text: string }
+> = {
   manual: {
     bg: 'bg-white/5',
     border: 'border-white/10',
@@ -96,13 +136,18 @@ interface AutopilotExitDialogProps {
   onConfirm: () => void;
 }
 
-function AutopilotExitDialog({ targetMode, activeActionCount, onCancel, onConfirm }: AutopilotExitDialogProps) {
+function AutopilotExitDialog({
+  targetMode,
+  activeActionCount,
+  onCancel,
+  onConfirm,
+}: AutopilotExitDialogProps) {
   // Close on Escape
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onCancel();
     },
-    [onCancel],
+    [onCancel]
   );
 
   useEffect(() => {
@@ -134,7 +179,10 @@ function AutopilotExitDialog({ targetMode, activeActionCount, onCancel, onConfir
           <div className="px-6 pt-6 pb-3">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 rounded-lg bg-brand-cyan/10">
-                <ModeIcon mode="autopilot" className="w-5 h-5 text-brand-cyan" />
+                <ModeIcon
+                  mode="autopilot"
+                  className="w-5 h-5 text-brand-cyan"
+                />
               </div>
               <h3
                 id="autopilot-exit-title"
@@ -152,7 +200,9 @@ function AutopilotExitDialog({ targetMode, activeActionCount, onCancel, onConfir
                 {activeActionCount} action{activeActionCount !== 1 ? 's' : ''}
               </span>
               . Switching to{' '}
-              <span className="text-white/80 font-medium">{MODE_CONFIGS[targetMode].label}</span>{' '}
+              <span className="text-white/80 font-medium">
+                {MODE_CONFIGS[targetMode].label}
+              </span>{' '}
               will pause these.
             </p>
           </div>
@@ -197,10 +247,16 @@ interface ModeSwitcherProps {
 // COMPONENT
 // ============================================
 
-export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherProps) {
+export function ModeSwitcher({
+  pillar,
+  ceiling,
+  compact = false,
+}: ModeSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scope, setScope] = useState<'pillar' | 'global'>('pillar');
-  const [exitConfirm, setExitConfirm] = useState<{ targetMode: AutomationMode } | null>(null);
+  const [exitConfirm, setExitConfirm] = useState<{
+    targetMode: AutomationMode;
+  } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -218,7 +274,10 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
   // Close on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -238,29 +297,35 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
   }, []);
 
   /** Commit a mode change (after any confirmation) */
-  const commitModeChange = useCallback((mode: AutomationMode) => {
-    if (scope === 'global') {
-      setGlobalMode(mode);
-    } else {
-      setMode(mode);
-    }
-    setIsOpen(false);
-  }, [scope, setGlobalMode, setMode]);
+  const commitModeChange = useCallback(
+    (mode: AutomationMode) => {
+      if (scope === 'global') {
+        setGlobalMode(mode);
+      } else {
+        setMode(mode);
+      }
+      setIsOpen(false);
+    },
+    [scope, setGlobalMode, setMode]
+  );
 
   /**
    * Handle mode selection.
    * Per MODE_UX_ARCHITECTURE.md §6C: If switching FROM Autopilot,
    * show a confirmation dialog before applying the change.
    */
-  const handleModeSelect = useCallback((mode: AutomationMode) => {
-    // §6C: Confirmation only when switching FROM Autopilot to a lower mode
-    if (effectiveMode === 'autopilot' && mode !== 'autopilot') {
-      setExitConfirm({ targetMode: mode });
-      setIsOpen(false);
-      return;
-    }
-    commitModeChange(mode);
-  }, [effectiveMode, commitModeChange]);
+  const handleModeSelect = useCallback(
+    (mode: AutomationMode) => {
+      // §6C: Confirmation only when switching FROM Autopilot to a lower mode
+      if (effectiveMode === 'autopilot' && mode !== 'autopilot') {
+        setExitConfirm({ targetMode: mode });
+        setIsOpen(false);
+        return;
+      }
+      commitModeChange(mode);
+    },
+    [effectiveMode, commitModeChange]
+  );
 
   const handleExitConfirm = useCallback(() => {
     if (exitConfirm) {
@@ -291,7 +356,10 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
-          <ModeIcon mode={effectiveMode} className={`w-3.5 h-3.5 ${tokens.text}`} />
+          <ModeIcon
+            mode={effectiveMode}
+            className={`w-3.5 h-3.5 ${tokens.text}`}
+          />
           {!compact && (
             <span className={`text-xs font-medium ${tokens.text}`}>
               {config.label}
@@ -305,7 +373,10 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
           )}
           {/* Override indicator */}
           {hasOverride && !resolution.ceilingApplied && (
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-iris" title="Pillar override active" />
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-brand-iris"
+              title="Pillar override active"
+            />
           )}
           <svg
             className={`w-3 h-3 ${tokens.text} transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -313,7 +384,12 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -361,15 +437,29 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
             {ceiling && (
               <div className="px-3 py-2 border-b border-border-subtle bg-semantic-warning/5">
                 <div className="flex items-center gap-2">
-                  <svg className="w-3.5 h-3.5 text-semantic-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <svg
+                    className="w-3.5 h-3.5 text-semantic-warning"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
                   </svg>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-semantic-warning">
-                    Ceiling: <span className="normal-case font-medium tracking-normal">{MODE_CONFIGS[ceiling].label}</span>
+                    Ceiling:{' '}
+                    <span className="normal-case font-medium tracking-normal">
+                      {MODE_CONFIGS[ceiling].label}
+                    </span>
                   </span>
                 </div>
                 <p className="text-xs text-white/40 mt-1 ml-5">
-                  This surface restricts modes above {MODE_CONFIGS[ceiling].label.toLowerCase()}.
+                  This surface restricts modes above{' '}
+                  {MODE_CONFIGS[ceiling].label.toLowerCase()}.
                 </p>
               </div>
             )}
@@ -379,7 +469,10 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
               {MODE_ORDER.map((mode) => {
                 const modeConfig = MODE_CONFIGS[mode];
                 const modeTokens = MODE_TOKENS[mode];
-                const isAboveCeiling = !!(ceiling && MODE_ORDER.indexOf(mode) > MODE_ORDER.indexOf(ceiling));
+                const isAboveCeiling = !!(
+                  ceiling &&
+                  MODE_ORDER.indexOf(mode) > MODE_ORDER.indexOf(ceiling)
+                );
                 const isSelected = mode === selectedMode;
                 const isEffective = mode === effectiveMode;
 
@@ -399,16 +492,29 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
                     aria-selected={isSelected}
                   >
                     <div className={`p-1.5 rounded-lg ${modeTokens.bg}`}>
-                      <ModeIcon mode={mode} className={`w-4 h-4 ${modeTokens.text}`} />
+                      <ModeIcon
+                        mode={mode}
+                        className={`w-4 h-4 ${modeTokens.text}`}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`text-sm font-medium ${isAboveCeiling ? 'text-white/40' : 'text-white/90'}`}>
+                        <span
+                          className={`text-sm font-medium ${isAboveCeiling ? 'text-white/40' : 'text-white/90'}`}
+                        >
                           {modeConfig.label}
                         </span>
                         {isEffective && (
-                          <svg className="w-3.5 h-3.5 text-semantic-success" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          <svg
+                            className="w-3.5 h-3.5 text-semantic-success"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         )}
                         {isSelected && !isEffective && (
@@ -422,7 +528,9 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
                           </span>
                         )}
                       </div>
-                      <p className={`text-xs ${isAboveCeiling ? 'text-white/30' : 'text-white/50'}`}>
+                      <p
+                        className={`text-xs ${isAboveCeiling ? 'text-white/30' : 'text-white/50'}`}
+                      >
                         {modeConfig.shortDescription}
                       </p>
                     </div>
@@ -435,7 +543,8 @@ export function ModeSwitcher({ pillar, ceiling, compact = false }: ModeSwitcherP
             {hasOverride && (
               <div className="px-3 py-2 border-t border-border-subtle bg-slate-1">
                 <p className="text-xs text-white/40">
-                  <span className="text-brand-iris">Override active</span> for {PILLAR_LABELS[pillar]}
+                  <span className="text-brand-iris">Override active</span> for{' '}
+                  {PILLAR_LABELS[pillar]}
                 </p>
               </div>
             )}

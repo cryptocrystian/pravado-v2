@@ -32,7 +32,9 @@ async function apiFetch(endpoint: string, options?: RequestInit) {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: 'Request failed' }));
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 
@@ -75,7 +77,7 @@ export async function listDiscoveries(
 
   if (query?.status) {
     if (Array.isArray(query.status)) {
-      query.status.forEach(s => params.append('status', s));
+      query.status.forEach((s) => params.append('status', s));
     } else {
       params.append('status', query.status);
     }
@@ -83,7 +85,7 @@ export async function listDiscoveries(
 
   if (query?.sourceType) {
     if (Array.isArray(query.sourceType)) {
-      query.sourceType.forEach(st => params.append('sourceType', st));
+      query.sourceType.forEach((st) => params.append('sourceType', st));
     } else {
       params.append('sourceType', query.sourceType);
     }
@@ -94,7 +96,7 @@ export async function listDiscoveries(
   }
 
   if (query?.beats && query.beats.length > 0) {
-    query.beats.forEach(beat => params.append('beats', beat));
+    query.beats.forEach((beat) => params.append('beats', beat));
   }
 
   if (query?.hasEmail !== undefined) {
@@ -107,8 +109,10 @@ export async function listDiscoveries(
 
   if (query?.sortBy) params.append('sortBy', query.sortBy);
   if (query?.sortOrder) params.append('sortOrder', query.sortOrder);
-  if (query?.limit !== undefined) params.append('limit', query.limit.toString());
-  if (query?.offset !== undefined) params.append('offset', query.offset.toString());
+  if (query?.limit !== undefined)
+    params.append('limit', query.limit.toString());
+  if (query?.offset !== undefined)
+    params.append('offset', query.offset.toString());
 
   const queryString = params.toString();
   return apiFetch(`/${queryString ? `?${queryString}` : ''}`);
@@ -144,7 +148,9 @@ export async function updateDiscovery(
 /**
  * Delete a discovered journalist
  */
-export async function deleteDiscovery(id: string): Promise<{ success: boolean }> {
+export async function deleteDiscovery(
+  id: string
+): Promise<{ success: boolean }> {
   return apiFetch(`/${id}`, {
     method: 'DELETE',
   });

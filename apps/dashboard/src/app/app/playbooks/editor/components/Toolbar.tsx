@@ -55,7 +55,9 @@ export function Toolbar({
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-semibold">Playbook Editor</h1>
           {isDirty && (
-            <span className="text-xs text-orange-600 font-medium">● Unsaved changes</span>
+            <span className="text-xs text-orange-600 font-medium">
+              ● Unsaved changes
+            </span>
           )}
           {hasUnsavedChanges && !isDirty && (
             <span className="text-xs text-yellow-600 font-medium">
@@ -80,7 +82,12 @@ export function Toolbar({
               onClick={onShowVersionHistory}
               className="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -98,7 +105,12 @@ export function Toolbar({
               onClick={onShowVersionGraph}
               className="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -116,7 +128,12 @@ export function Toolbar({
               onClick={onShowMerge}
               className="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -166,7 +183,12 @@ export function Toolbar({
               disabled={!isDirty}
               className="px-3 py-1.5 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -187,7 +209,11 @@ export function Toolbar({
             >
               {isRunning ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -206,7 +232,11 @@ export function Toolbar({
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"

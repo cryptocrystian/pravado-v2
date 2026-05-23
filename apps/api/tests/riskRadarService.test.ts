@@ -12,28 +12,12 @@ const mockSupabase = {
 };
 
 // Create mock query builder
-function createMockQueryBuilder(data: unknown, error: unknown = null, count: number | null = null) {
-  const builder = {
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    neq: vi.fn().mockReturnThis(),
-    in: vi.fn().mockReturnThis(),
-    gte: vi.fn().mockReturnThis(),
-    lte: vi.fn().mockReturnThis(),
-    lt: vi.fn().mockReturnThis(),
-    or: vi.fn().mockReturnThis(),
-    ilike: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    range: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data, error }),
-    maybeSingle: vi.fn().mockResolvedValue({ data, error }),
-    then: (resolve: (value: { data: unknown; error: unknown; count: number | null }) => unknown) =>
-      Promise.resolve({ data, error, count }).then(resolve),
-  };
+function createMockQueryBuilder(
+  data: unknown,
+  error: unknown = null,
+  count: number | null = null
+) {
+  const builder = createMockQuery({ data, error });
   return builder;
 }
 
@@ -49,6 +33,7 @@ vi.mock('@pravado/utils', () => ({
 
 // Import after mocking
 import { RiskRadarService } from '../src/services/riskRadarService';
+import { createMockQuery } from './_helpers/supabase-mock';
 
 describe('Risk Radar Service (S60)', () => {
   let riskRadarService: RiskRadarService;
@@ -130,7 +115,11 @@ describe('Risk Radar Service (S60)', () => {
 
     describe('listSnapshots()', () => {
       it('should return list of snapshots', async () => {
-        const mockBuilder = createMockQueryBuilder([mockSnapshotRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockSnapshotRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
         const result = await riskRadarService.listSnapshots(testOrgId, {});
@@ -141,7 +130,11 @@ describe('Risk Radar Service (S60)', () => {
       });
 
       it('should filter by risk level', async () => {
-        const mockBuilder = createMockQueryBuilder([mockSnapshotRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockSnapshotRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
         await riskRadarService.listSnapshots(testOrgId, { riskLevel: 'high' });
@@ -150,7 +143,11 @@ describe('Risk Radar Service (S60)', () => {
       });
 
       it('should filter by active status', async () => {
-        const mockBuilder = createMockQueryBuilder([mockSnapshotRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockSnapshotRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
         await riskRadarService.listSnapshots(testOrgId, { isActive: true });
@@ -159,7 +156,11 @@ describe('Risk Radar Service (S60)', () => {
       });
 
       it('should support date range filtering', async () => {
-        const mockBuilder = createMockQueryBuilder([mockSnapshotRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockSnapshotRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
         await riskRadarService.listSnapshots(testOrgId, {
@@ -187,7 +188,10 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder(mockSnapshotRecord);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await riskRadarService.getSnapshot(testOrgId, 'snapshot-uuid-1');
+        const result = await riskRadarService.getSnapshot(
+          testOrgId,
+          'snapshot-uuid-1'
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('risk_radar_snapshots');
         expect(result?.id).toBe('snapshot-uuid-1');
@@ -197,7 +201,10 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder(null);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await riskRadarService.getSnapshot(testOrgId, 'non-existent');
+        const result = await riskRadarService.getSnapshot(
+          testOrgId,
+          'non-existent'
+        );
 
         expect(result).toBeNull();
       });
@@ -253,10 +260,18 @@ describe('Risk Radar Service (S60)', () => {
 
     describe('listIndicators()', () => {
       it('should return indicators for a snapshot', async () => {
-        const mockBuilder = createMockQueryBuilder([mockIndicatorRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockIndicatorRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await riskRadarService.listIndicators(testOrgId, 'snapshot-uuid-1', {});
+        const result = await riskRadarService.listIndicators(
+          testOrgId,
+          'snapshot-uuid-1',
+          {}
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('risk_radar_indicators');
         expect(result.indicators).toHaveLength(1);
@@ -264,7 +279,11 @@ describe('Risk Radar Service (S60)', () => {
       });
 
       it('should filter by indicator type', async () => {
-        const mockBuilder = createMockQueryBuilder([mockIndicatorRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockIndicatorRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
         await riskRadarService.listIndicators(testOrgId, 'snapshot-uuid-1', {
@@ -329,7 +348,8 @@ describe('Risk Radar Service (S60)', () => {
         { timestamp: '2024-01-17T00:00:00Z', value: 49, confidence: 0.85 },
         { timestamp: '2024-01-18T00:00:00Z', value: 51, confidence: 0.8 },
       ],
-      executive_summary: 'Risk expected to increase slightly over the next week.',
+      executive_summary:
+        'Risk expected to increase slightly over the next week.',
       detailed_analysis: null,
       key_assumptions: [],
       recommended_actions: [],
@@ -349,10 +369,18 @@ describe('Risk Radar Service (S60)', () => {
 
     describe('listForecasts()', () => {
       it('should return forecasts for a snapshot', async () => {
-        const mockBuilder = createMockQueryBuilder([mockForecastRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockForecastRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await riskRadarService.listForecasts(testOrgId, 'snapshot-uuid-1', {});
+        const result = await riskRadarService.listForecasts(
+          testOrgId,
+          'snapshot-uuid-1',
+          {}
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('risk_radar_forecasts');
         expect(result.forecasts).toHaveLength(1);
@@ -360,19 +388,31 @@ describe('Risk Radar Service (S60)', () => {
       });
 
       it('should filter by horizon', async () => {
-        const mockBuilder = createMockQueryBuilder([mockForecastRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockForecastRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await riskRadarService.listForecasts(testOrgId, 'snapshot-uuid-1', { horizon: '7d' });
+        await riskRadarService.listForecasts(testOrgId, 'snapshot-uuid-1', {
+          horizon: '7d',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
 
       it('should filter by current status', async () => {
-        const mockBuilder = createMockQueryBuilder([mockForecastRecord], null, 1);
+        const mockBuilder = createMockQueryBuilder(
+          [mockForecastRecord],
+          null,
+          1
+        );
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await riskRadarService.listForecasts(testOrgId, 'snapshot-uuid-1', { isCurrent: true });
+        await riskRadarService.listForecasts(testOrgId, 'snapshot-uuid-1', {
+          isCurrent: true,
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -451,7 +491,11 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder([mockDriverRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await riskRadarService.listDrivers(testOrgId, 'snapshot-uuid-1', {});
+        const result = await riskRadarService.listDrivers(
+          testOrgId,
+          'snapshot-uuid-1',
+          {}
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('risk_radar_drivers');
         expect(result.drivers).toHaveLength(1);
@@ -473,7 +517,9 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder([mockDriverRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await riskRadarService.listDrivers(testOrgId, 'snapshot-uuid-1', { urgency: 'high' });
+        await riskRadarService.listDrivers(testOrgId, 'snapshot-uuid-1', {
+          urgency: 'high',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -482,7 +528,9 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder([mockDriverRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await riskRadarService.listDrivers(testOrgId, 'snapshot-uuid-1', { isEmerging: true });
+        await riskRadarService.listDrivers(testOrgId, 'snapshot-uuid-1', {
+          isEmerging: true,
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -519,7 +567,11 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder([mockNoteRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        const result = await riskRadarService.listNotes(testOrgId, 'snapshot-uuid-1', {});
+        const result = await riskRadarService.listNotes(
+          testOrgId,
+          'snapshot-uuid-1',
+          {}
+        );
 
         expect(mockSupabase.from).toHaveBeenCalledWith('risk_radar_notes');
         expect(result.notes).toHaveLength(1);
@@ -530,7 +582,9 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder([mockNoteRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await riskRadarService.listNotes(testOrgId, 'snapshot-uuid-1', { noteType: 'observation' });
+        await riskRadarService.listNotes(testOrgId, 'snapshot-uuid-1', {
+          noteType: 'observation',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -686,7 +740,9 @@ describe('Risk Radar Service (S60)', () => {
         const mockBuilder = createMockQueryBuilder([mockAuditRecord], null, 1);
         mockSupabase.from.mockReturnValue(mockBuilder);
 
-        await riskRadarService.listAuditLogs(testOrgId, { operation: 'snapshot_created' });
+        await riskRadarService.listAuditLogs(testOrgId, {
+          operation: 'snapshot_created',
+        });
 
         expect(mockBuilder.eq).toHaveBeenCalled();
       });
@@ -745,10 +801,15 @@ describe('Risk Radar Service (S60)', () => {
 
   describe('Error Handling', () => {
     it('should handle database errors gracefully', async () => {
-      const mockBuilder = createMockQueryBuilder(null, new Error('Database connection failed'));
+      const mockBuilder = createMockQueryBuilder(
+        null,
+        new Error('Database connection failed')
+      );
       mockSupabase.from.mockReturnValue(mockBuilder);
 
-      await expect(riskRadarService.getSnapshot(testOrgId, 'snapshot-uuid-1')).rejects.toThrow();
+      await expect(
+        riskRadarService.getSnapshot(testOrgId, 'snapshot-uuid-1')
+      ).rejects.toThrow();
     });
 
     it('should validate org isolation', async () => {

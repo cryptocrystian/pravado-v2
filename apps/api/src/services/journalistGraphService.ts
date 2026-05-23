@@ -197,7 +197,8 @@ export class JournalistGraphService {
 
     // Apply sorting
     const sortColumn = query.sortBy || 'engagement_score';
-    const sortOrder = query.sortOrder === 'asc' ? { ascending: true } : { ascending: false };
+    const sortOrder =
+      query.sortOrder === 'asc' ? { ascending: true } : { ascending: false };
     dbQuery = dbQuery.order(sortColumn, sortOrder);
 
     // Apply pagination
@@ -228,14 +229,19 @@ export class JournalistGraphService {
     const updateData: Record<string, unknown> = {};
 
     if (input.fullName !== undefined) updateData.full_name = input.fullName;
-    if (input.primaryEmail !== undefined) updateData.primary_email = input.primaryEmail;
+    if (input.primaryEmail !== undefined)
+      updateData.primary_email = input.primaryEmail;
     if (input.secondaryEmails !== undefined)
       updateData.secondary_emails = input.secondaryEmails;
-    if (input.primaryOutlet !== undefined) updateData.primary_outlet = input.primaryOutlet;
+    if (input.primaryOutlet !== undefined)
+      updateData.primary_outlet = input.primaryOutlet;
     if (input.beat !== undefined) updateData.beat = input.beat;
-    if (input.twitterHandle !== undefined) updateData.twitter_handle = input.twitterHandle;
-    if (input.linkedinUrl !== undefined) updateData.linkedin_url = input.linkedinUrl;
-    if (input.websiteUrl !== undefined) updateData.website_url = input.websiteUrl;
+    if (input.twitterHandle !== undefined)
+      updateData.twitter_handle = input.twitterHandle;
+    if (input.linkedinUrl !== undefined)
+      updateData.linkedin_url = input.linkedinUrl;
+    if (input.websiteUrl !== undefined)
+      updateData.website_url = input.websiteUrl;
     if (input.metadata !== undefined) updateData.metadata = input.metadata;
 
     const { data, error } = await this.supabase
@@ -302,7 +308,8 @@ export class JournalistGraphService {
       }
 
       // Secondary email match
-      const normalizedSecondaryEmails = profile.secondaryEmails.map(normalizeEmail);
+      const normalizedSecondaryEmails =
+        profile.secondaryEmails.map(normalizeEmail);
       if (normalizedSecondaryEmails.includes(normalizedInputEmail)) {
         matchScore += 0.4;
         matchReasons.push('Secondary email match');
@@ -310,10 +317,15 @@ export class JournalistGraphService {
 
       // Name similarity
       const normalizedProfileName = normalizeName(profile.fullName);
-      const nameSimilarity = stringSimilarity(normalizedProfileName, normalizedInputName);
+      const nameSimilarity = stringSimilarity(
+        normalizedProfileName,
+        normalizedInputName
+      );
       if (nameSimilarity > 0.7) {
         matchScore += nameSimilarity * 0.3;
-        matchReasons.push(`Name similarity: ${(nameSimilarity * 100).toFixed(0)}%`);
+        matchReasons.push(
+          `Name similarity: ${(nameSimilarity * 100).toFixed(0)}%`
+        );
       }
 
       // Outlet match (if provided)
@@ -470,12 +482,18 @@ export class JournalistGraphService {
   /**
    * Merges two journalist profiles
    */
-  async mergeProfiles(orgId: string, input: MergeProfilesInput, userId?: string): Promise<{
+  async mergeProfiles(
+    orgId: string,
+    input: MergeProfilesInput,
+    userId?: string
+  ): Promise<{
     survivingProfile: JournalistProfile;
     mergeMapId: string;
   }> {
     if (!input.survivingJournalistId || !input.mergedJournalistId) {
-      throw new Error('Both survivingJournalistId and mergedJournalistId are required');
+      throw new Error(
+        'Both survivingJournalistId and mergedJournalistId are required'
+      );
     }
 
     // Get both profiles
@@ -504,7 +522,11 @@ export class JournalistGraphService {
 
     // Merge secondary emails
     const combinedEmails = Array.from(
-      new Set([...surviving.secondaryEmails, merged.primaryEmail, ...merged.secondaryEmails])
+      new Set([
+        ...surviving.secondaryEmails,
+        merged.primaryEmail,
+        ...merged.secondaryEmails,
+      ])
     ).filter((email) => email !== surviving.primaryEmail);
 
     // Update surviving profile with merged data
@@ -526,7 +548,10 @@ export class JournalistGraphService {
     // Recalculate scores for surviving profile
     await this.updateScores(input.survivingJournalistId, orgId);
 
-    const updatedProfile = await this.getProfile(input.survivingJournalistId, orgId);
+    const updatedProfile = await this.getProfile(
+      input.survivingJournalistId,
+      orgId
+    );
 
     return {
       survivingProfile: updatedProfile!,
@@ -541,7 +566,10 @@ export class JournalistGraphService {
   /**
    * Creates an activity log entry
    */
-  async createActivity(orgId: string, input: CreateActivityInput): Promise<JournalistActivity> {
+  async createActivity(
+    orgId: string,
+    input: CreateActivityInput
+  ): Promise<JournalistActivity> {
     const { data, error } = await this.supabase
       .from('journalist_activity_log')
       .insert({
@@ -618,7 +646,9 @@ export class JournalistGraphService {
     // Apply pagination
     const limit = query.limit || 50;
     const offset = query.offset || 0;
-    dbQuery = dbQuery.order('occurred_at', { ascending: false }).range(offset, offset + limit - 1);
+    dbQuery = dbQuery
+      .order('occurred_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data, error, count } = await dbQuery;
 
@@ -639,10 +669,13 @@ export class JournalistGraphService {
     journalistId: string,
     orgId: string
   ): Promise<JournalistActivitySummary> {
-    const { data, error } = await this.supabase.rpc('get_journalist_activity_summary', {
-      p_journalist_id: journalistId,
-      p_org_id: orgId,
-    });
+    const { data, error } = await this.supabase.rpc(
+      'get_journalist_activity_summary',
+      {
+        p_journalist_id: journalistId,
+        p_org_id: orgId,
+      }
+    );
 
     if (error) throw error;
 
@@ -658,8 +691,12 @@ export class JournalistGraphService {
       totalEmailsOpened: Number(summary.total_emails_opened),
       totalEmailsClicked: Number(summary.total_emails_clicked),
       totalEmailsReplied: Number(summary.total_emails_replied),
-      firstActivityAt: summary.first_activity_at ? new Date(summary.first_activity_at) : null,
-      lastActivityAt: summary.last_activity_at ? new Date(summary.last_activity_at) : null,
+      firstActivityAt: summary.first_activity_at
+        ? new Date(summary.first_activity_at)
+        : null,
+      lastActivityAt: summary.last_activity_at
+        ? new Date(summary.last_activity_at)
+        : null,
       positiveSentimentCount: Number(summary.positive_sentiment_count),
       negativeSentimentCount: Number(summary.negative_sentiment_count),
       neutralSentimentCount: Number(summary.neutral_sentiment_count),
@@ -680,15 +717,25 @@ export class JournalistGraphService {
     const summary = await this.getActivitySummary(journalistId, orgId);
 
     const responseRate =
-      summary.totalEmailsSent > 0 ? summary.totalEmailsReplied / summary.totalEmailsSent : 0;
+      summary.totalEmailsSent > 0
+        ? summary.totalEmailsReplied / summary.totalEmailsSent
+        : 0;
     const coverageRate =
-      summary.totalOutreach > 0 ? summary.totalCoverage / summary.totalOutreach : 0;
+      summary.totalOutreach > 0
+        ? summary.totalCoverage / summary.totalOutreach
+        : 0;
     const openRate =
-      summary.totalEmailsSent > 0 ? summary.totalEmailsOpened / summary.totalEmailsSent : 0;
+      summary.totalEmailsSent > 0
+        ? summary.totalEmailsOpened / summary.totalEmailsSent
+        : 0;
     const activityVolume = Math.min(summary.totalActivities / 100, 1.0);
 
     // Weighted formula: response (40%) + coverage (30%) + open (20%) + volume (10%)
-    const engagementScore = responseRate * 0.4 + coverageRate * 0.3 + openRate * 0.2 + activityVolume * 0.1;
+    const engagementScore =
+      responseRate * 0.4 +
+      coverageRate * 0.3 +
+      openRate * 0.2 +
+      activityVolume * 0.1;
 
     return {
       journalistId,
@@ -713,7 +760,9 @@ export class JournalistGraphService {
     const summary = await this.getActivitySummary(journalistId, orgId);
 
     const replyRate =
-      summary.totalEmailsSent > 0 ? summary.totalEmailsReplied / summary.totalEmailsSent : 0;
+      summary.totalEmailsSent > 0
+        ? summary.totalEmailsReplied / summary.totalEmailsSent
+        : 0;
     // openRate available: summary.totalEmailsOpened / summary.totalEmailsSent (for V2)
 
     // V1 stub: simplified responsiveness (no time-to-respond data yet)
@@ -798,13 +847,19 @@ export class JournalistGraphService {
     const outletTier = this.determineOutletTier(profile.primaryOutlet ?? null);
 
     // Determine engagement level
-    const engagementLevel = this.determineEngagementLevel(profile.engagementScore);
+    const engagementLevel = this.determineEngagementLevel(
+      profile.engagementScore
+    );
 
     // Determine coverage frequency
-    const coverageFrequency = this.determineCoverageFrequency(summary.totalCoverage);
+    const coverageFrequency = this.determineCoverageFrequency(
+      summary.totalCoverage
+    );
 
     // Determine responsiveness level
-    const responsivenessLevel = this.determineResponsivenessLevel(profile.responsivenessScore);
+    const responsivenessLevel = this.determineResponsivenessLevel(
+      profile.responsivenessScore
+    );
 
     // Calculate overall tier
     const tier = this.calculateOverallTier(
@@ -1043,14 +1098,21 @@ export class JournalistGraphService {
       throw new Error('Profile not found');
     }
 
-    const [activitySummary, recentActivities, engagementModel, responsivenessModel, relevanceModel] =
-      await Promise.all([
-        this.getActivitySummary(journalistId, orgId),
-        this.listActivities(orgId, { journalistId, limit: 10 }).then((r) => r.activities),
-        this.calculateEngagementScore(journalistId, orgId),
-        this.calculateResponsivenessScore(journalistId, orgId),
-        this.calculateRelevanceScore(journalistId, orgId),
-      ]);
+    const [
+      activitySummary,
+      recentActivities,
+      engagementModel,
+      responsivenessModel,
+      relevanceModel,
+    ] = await Promise.all([
+      this.getActivitySummary(journalistId, orgId),
+      this.listActivities(orgId, { journalistId, limit: 10 }).then(
+        (r) => r.activities
+      ),
+      this.calculateEngagementScore(journalistId, orgId),
+      this.calculateResponsivenessScore(journalistId, orgId),
+      this.calculateRelevanceScore(journalistId, orgId),
+    ]);
 
     // Get merge history
     const { data: mergeHistory } = await this.supabase
@@ -1145,7 +1207,9 @@ export class JournalistGraphService {
       twitterHandle: dbProfile.twitter_handle,
       linkedinUrl: dbProfile.linkedin_url,
       websiteUrl: dbProfile.website_url,
-      lastActivityAt: dbProfile.last_activity_at ? new Date(dbProfile.last_activity_at) : undefined,
+      lastActivityAt: dbProfile.last_activity_at
+        ? new Date(dbProfile.last_activity_at)
+        : undefined,
       engagementScore: dbProfile.engagement_score || 0,
       responsivenessScore: dbProfile.responsiveness_score || 0,
       relevanceScore: dbProfile.relevance_score || 0,
@@ -1176,6 +1240,8 @@ export class JournalistGraphService {
 /**
  * Factory function to create service instance
  */
-export function createJournalistGraphService(supabase: SupabaseClient): JournalistGraphService {
+export function createJournalistGraphService(
+  supabase: SupabaseClient
+): JournalistGraphService {
   return new JournalistGraphService(supabase);
 }

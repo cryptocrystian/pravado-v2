@@ -7,7 +7,11 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import type {
+  BriefingInsight,
+  InsightStrength,
+  BriefingSourceType,
+} from '@pravado/types';
 import {
   Lightbulb,
   ChevronDown,
@@ -21,17 +25,12 @@ import {
   Filter,
   X,
 } from 'lucide-react';
-import type { BriefingInsight, InsightStrength, BriefingSourceType } from '@pravado/types';
-import {
-  getInsightStrengthLabel,
-  getInsightStrengthColor,
-  getSourceTypeLabel,
-  getSourceTypeIcon,
-} from '@/lib/mediaBriefingApi';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useMemo } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -39,7 +38,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  getInsightStrengthLabel,
+  getInsightStrengthColor,
+  getSourceTypeLabel,
+  getSourceTypeIcon,
+} from '@/lib/mediaBriefingApi';
+import { cn } from '@/lib/utils';
 
 interface InsightPanelProps {
   insights: BriefingInsight[];
@@ -49,7 +54,12 @@ interface InsightPanelProps {
   maxHeight?: string;
 }
 
-const strengthOrder: InsightStrength[] = ['strong', 'moderate', 'weak', 'speculative'];
+const strengthOrder: InsightStrength[] = [
+  'strong',
+  'moderate',
+  'weak',
+  'speculative',
+];
 
 function getStrengthIcon(strength: InsightStrength) {
   switch (strength) {
@@ -83,12 +93,16 @@ export default function InsightPanel({
   className = '',
   maxHeight = '600px',
 }: InsightPanelProps) {
-  const [expandedStrengths, setExpandedStrengths] = useState<Set<InsightStrength>>(
-    new Set(['strong', 'moderate'])
+  const [expandedStrengths, setExpandedStrengths] = useState<
+    Set<InsightStrength>
+  >(new Set(['strong', 'moderate']));
+  const [filterStrength, setFilterStrength] = useState<InsightStrength | 'all'>(
+    'all'
   );
-  const [filterStrength, setFilterStrength] = useState<InsightStrength | 'all'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [expandedInsights, setExpandedInsights] = useState<Set<string>>(new Set());
+  const [expandedInsights, setExpandedInsights] = useState<Set<string>>(
+    new Set()
+  );
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -99,8 +113,10 @@ export default function InsightPanel({
   // Filter and group insights
   const filteredInsights = useMemo(() => {
     return insights.filter((insight) => {
-      if (filterStrength !== 'all' && insight.strength !== filterStrength) return false;
-      if (filterCategory !== 'all' && insight.category !== filterCategory) return false;
+      if (filterStrength !== 'all' && insight.strength !== filterStrength)
+        return false;
+      if (filterCategory !== 'all' && insight.category !== filterCategory)
+        return false;
       return true;
     });
   }, [insights, filterStrength, filterCategory]);
@@ -117,7 +133,9 @@ export default function InsightPanel({
     });
     // Sort each group by relevance score
     Object.keys(grouped).forEach((key) => {
-      grouped[key as InsightStrength].sort((a, b) => b.relevanceScore - a.relevanceScore);
+      grouped[key as InsightStrength].sort(
+        (a, b) => b.relevanceScore - a.relevanceScore
+      );
     });
     return grouped;
   }, [filteredInsights]);
@@ -160,7 +178,8 @@ export default function InsightPanel({
         </CardHeader>
         <CardContent>
           <div className="text-center py-6 text-white/50 text-sm">
-            No insights available yet. Generate the briefing to extract insights from your sources.
+            No insights available yet. Generate the briefing to extract insights
+            from your sources.
           </div>
         </CardContent>
       </Card>
@@ -179,7 +198,12 @@ export default function InsightPanel({
             </Badge>
           </CardTitle>
           {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2 text-xs">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="h-6 px-2 text-xs"
+            >
               <X className="h-3 w-3 mr-1" /> Clear
             </Button>
           )}
@@ -187,7 +211,10 @@ export default function InsightPanel({
 
         {/* Filters */}
         <div className="flex gap-2 mt-2">
-          <Select value={filterStrength} onValueChange={(v) => setFilterStrength(v as any)}>
+          <Select
+            value={filterStrength}
+            onValueChange={(v) => setFilterStrength(v as any)}
+          >
             <SelectTrigger className="h-8 text-xs flex-1">
               <Filter className="h-3 w-3 mr-1" />
               <SelectValue placeholder="Strength" />
@@ -236,7 +263,12 @@ export default function InsightPanel({
                   >
                     <div className="flex items-center gap-2">
                       {getStrengthIcon(strength)}
-                      <span className={cn('text-sm font-medium', getInsightStrengthColor(strength))}>
+                      <span
+                        className={cn(
+                          'text-sm font-medium',
+                          getInsightStrengthColor(strength)
+                        )}
+                      >
                         {getInsightStrengthLabel(strength)}
                       </span>
                       <Badge variant="outline" className="text-xs">
@@ -254,7 +286,9 @@ export default function InsightPanel({
                   {isExpanded && (
                     <div className="space-y-2 pl-6">
                       {strengthInsights.map((insight) => {
-                        const isInsightExpanded = expandedInsights.has(insight.id);
+                        const isInsightExpanded = expandedInsights.has(
+                          insight.id
+                        );
 
                         return (
                           <div
@@ -279,7 +313,10 @@ export default function InsightPanel({
                                   <span className="text-xs">
                                     {getSourceTypeIcon(insight.sourceType)}
                                   </span>
-                                  <Badge variant="outline" className="text-xs px-1.5 py-0">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs px-1.5 py-0"
+                                  >
                                     {insight.category}
                                   </Badge>
                                   {insight.actionable && (
@@ -300,7 +337,9 @@ export default function InsightPanel({
                             {/* Insight Content (expanded) */}
                             {isInsightExpanded && (
                               <div className="mt-2 pt-2 border-t border-gray-200 space-y-2">
-                                <p className="text-xs text-gray-600">{insight.content}</p>
+                                <p className="text-xs text-gray-600">
+                                  {insight.content}
+                                </p>
 
                                 {insight.suggestedAction && (
                                   <div className="flex items-start gap-2 bg-white/50 rounded p-2">
@@ -309,7 +348,9 @@ export default function InsightPanel({
                                       <span className="text-[11px] font-medium text-purple-700 uppercase">
                                         Suggested Action
                                       </span>
-                                      <p className="text-xs text-gray-700">{insight.suggestedAction}</p>
+                                      <p className="text-xs text-gray-700">
+                                        {insight.suggestedAction}
+                                      </p>
                                     </div>
                                   </div>
                                 )}
@@ -321,11 +362,15 @@ export default function InsightPanel({
                                     className="h-6 px-2 text-xs"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      onViewSource(insight.sourceType, insight.sourceId!);
+                                      onViewSource(
+                                        insight.sourceType,
+                                        insight.sourceId!
+                                      );
                                     }}
                                   >
                                     <ExternalLink className="h-3 w-3 mr-1" />
-                                    View {getSourceTypeLabel(insight.sourceType)}
+                                    View{' '}
+                                    {getSourceTypeLabel(insight.sourceType)}
                                   </Button>
                                 )}
                               </div>
@@ -352,10 +397,20 @@ export default function InsightPanel({
         <div className="px-4 py-2 border-t bg-gray-50 text-xs text-white/50">
           <div className="flex justify-between">
             <span>
-              {filteredInsights.filter((i) => i.actionable).length} actionable insights
+              {filteredInsights.filter((i) => i.actionable).length} actionable
+              insights
             </span>
             <span>
-              Avg relevance: {(filteredInsights.reduce((acc, i) => acc + i.relevanceScore, 0) / filteredInsights.length * 100 || 0).toFixed(0)}%
+              Avg relevance:{' '}
+              {(
+                (filteredInsights.reduce(
+                  (acc, i) => acc + i.relevanceScore,
+                  0
+                ) /
+                  filteredInsights.length) *
+                  100 || 0
+              ).toFixed(0)}
+              %
             </span>
           </div>
         </div>

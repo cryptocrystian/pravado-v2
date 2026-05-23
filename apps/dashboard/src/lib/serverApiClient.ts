@@ -39,7 +39,9 @@ export async function serverFetch<T>(
     console.warn('[serverFetch] No auth token available for:', endpoint);
   }
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const url = endpoint.startsWith('http')
+    ? endpoint
+    : `${API_BASE_URL}${endpoint}`;
 
   const response = await fetch(url, {
     ...options,
@@ -51,7 +53,7 @@ export async function serverFetch<T>(
     const errorBody = await response.json().catch(() => ({}));
     throw new Error(
       errorBody?.error?.message ||
-      `API request failed: ${response.status} ${response.statusText}`
+        `API request failed: ${response.status} ${response.statusText}`
     );
   }
 
@@ -74,7 +76,10 @@ export async function serverGet<T>(endpoint: string): Promise<T> {
 /**
  * Server-side POST request helper
  */
-export async function serverPost<T>(endpoint: string, body: unknown): Promise<T> {
+export async function serverPost<T>(
+  endpoint: string,
+  body: unknown
+): Promise<T> {
   return serverFetch<T>(endpoint, {
     method: 'POST',
     body: JSON.stringify(body),
@@ -86,12 +91,17 @@ export async function serverPost<T>(endpoint: string, body: unknown): Promise<T>
 // ============================================================================
 
 // Journalist Graph
-export async function getJournalistProfiles(params?: { limit?: number; offset?: number }) {
+export async function getJournalistProfiles(params?: {
+  limit?: number;
+  offset?: number;
+}) {
   const query = new URLSearchParams();
   if (params?.limit) query.set('limit', String(params.limit));
   if (params?.offset) query.set('offset', String(params.offset));
   const queryString = query.toString();
-  return serverGet(`/api/v1/journalist-graph/profiles${queryString ? `?${queryString}` : ''}`);
+  return serverGet(
+    `/api/v1/journalist-graph/profiles${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 export async function getJournalistProfile(id: string) {
@@ -108,28 +118,40 @@ export async function getPitches(params?: { limit?: number; offset?: number }) {
 }
 
 // PR Releases
-export async function getReleases(params?: { limit?: number; offset?: number }) {
+export async function getReleases(params?: {
+  limit?: number;
+  offset?: number;
+}) {
   const query = new URLSearchParams();
   if (params?.limit) query.set('limit', String(params.limit));
   if (params?.offset) query.set('offset', String(params.offset));
   const queryString = query.toString();
-  return serverGet(`/api/v1/pr/releases${queryString ? `?${queryString}` : ''}`);
+  return serverGet(
+    `/api/v1/pr/releases${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 // PR Outreach
-export async function getOutreachSequences(params?: { limit?: number; offset?: number }) {
+export async function getOutreachSequences(params?: {
+  limit?: number;
+  offset?: number;
+}) {
   const query = new URLSearchParams();
   if (params?.limit) query.set('limit', String(params.limit));
   if (params?.offset) query.set('offset', String(params.offset));
   const queryString = query.toString();
-  return serverGet(`/api/v1/pr-outreach/sequences${queryString ? `?${queryString}` : ''}`);
+  return serverGet(
+    `/api/v1/pr-outreach/sequences${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 export async function getOutreachStats(sequenceId?: string) {
   const query = new URLSearchParams();
   if (sequenceId) query.set('sequenceId', sequenceId);
   const queryString = query.toString();
-  return serverGet(`/api/v1/pr-outreach/stats${queryString ? `?${queryString}` : ''}`);
+  return serverGet(
+    `/api/v1/pr-outreach/stats${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 // Media Monitoring
@@ -137,12 +159,17 @@ export async function getMediaMonitoringStats() {
   return serverGet('/api/v1/media-monitoring/stats');
 }
 
-export async function getMediaArticles(params?: { limit?: number; offset?: number }) {
+export async function getMediaArticles(params?: {
+  limit?: number;
+  offset?: number;
+}) {
   const query = new URLSearchParams();
   if (params?.limit) query.set('limit', String(params.limit));
   if (params?.offset) query.set('offset', String(params.offset));
   const queryString = query.toString();
-  return serverGet(`/api/v1/media-monitoring/articles${queryString ? `?${queryString}` : ''}`);
+  return serverGet(
+    `/api/v1/media-monitoring/articles${queryString ? `?${queryString}` : ''}`
+  );
 }
 
 // Deliverability

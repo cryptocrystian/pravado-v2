@@ -7,7 +7,11 @@
 
 'use client';
 
-import React from 'react';
+import type {
+  CrisisDashboardStats,
+  CrisisSeverity,
+  CrisisTrajectory,
+} from '@pravado/types';
 import {
   AlertTriangle,
   Bell,
@@ -20,14 +24,19 @@ import {
   Clock,
   RefreshCw,
 } from 'lucide-react';
-import type { CrisisDashboardStats, CrisisSeverity, CrisisTrajectory } from '@pravado/types';
-import { SEVERITY_COLORS, TRAJECTORY_COLORS, formatTimeAgo } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  SEVERITY_COLORS,
+  TRAJECTORY_COLORS,
+  formatTimeAgo,
+} from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisDashboardStatsProps {
   stats: CrisisDashboardStats | null;
@@ -39,7 +48,13 @@ interface CrisisDashboardStatsProps {
   className?: string;
 }
 
-const SEVERITY_ORDER: CrisisSeverity[] = ['severe', 'critical', 'high', 'medium', 'low'];
+const SEVERITY_ORDER: CrisisSeverity[] = [
+  'severe',
+  'critical',
+  'high',
+  'medium',
+  'low',
+];
 const TRAJECTORY_ORDER: CrisisTrajectory[] = [
   'critical',
   'worsening',
@@ -79,7 +94,12 @@ export default function CrisisDashboardStats({
 
   if (!stats && !isLoading) {
     return (
-      <Card className={cn('flex items-center justify-center min-h-[200px]', className)}>
+      <Card
+        className={cn(
+          'flex items-center justify-center min-h-[200px]',
+          className
+        )}
+      >
         <div className="text-center text-white/50">
           <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
           <p className="text-sm">No crisis data available</p>
@@ -97,7 +117,12 @@ export default function CrisisDashboardStats({
           Crisis Dashboard
         </h2>
         {onRefresh && (
-          <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isLoading}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onRefresh}
+            disabled={isLoading}
+          >
             <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
           </Button>
         )}
@@ -109,7 +134,9 @@ export default function CrisisDashboardStats({
         <Card
           className={cn(
             'cursor-pointer hover:shadow-md transition-shadow',
-            stats?.activeIncidents && stats.activeIncidents > 0 && 'border-red-200'
+            stats?.activeIncidents &&
+              stats.activeIncidents > 0 &&
+              'border-red-200'
           )}
           onClick={onNavigateToIncidents}
         >
@@ -144,7 +171,9 @@ export default function CrisisDashboardStats({
         <Card
           className={cn(
             'cursor-pointer hover:shadow-md transition-shadow',
-            stats?.activeSignals && stats.activeSignals > 0 && 'border-orange-200'
+            stats?.activeSignals &&
+              stats.activeSignals > 0 &&
+              'border-orange-200'
           )}
           onClick={onNavigateToSignals}
         >
@@ -196,7 +225,9 @@ export default function CrisisDashboardStats({
         {/* Escalated */}
         <Card
           className={cn(
-            stats?.escalatedCount && stats.escalatedCount > 0 && 'border-red-300 bg-red-50/30'
+            stats?.escalatedCount &&
+              stats.escalatedCount > 0 &&
+              'border-red-300 bg-red-50/30'
           )}
         >
           <CardContent className="pt-4">
@@ -244,13 +275,16 @@ export default function CrisisDashboardStats({
             ) : (
               SEVERITY_ORDER.map((severity) => {
                 const count = stats?.bySeverity[severity] || 0;
-                const percentage = totalBySeverity > 0 ? (count / totalBySeverity) * 100 : 0;
+                const percentage =
+                  totalBySeverity > 0 ? (count / totalBySeverity) * 100 : 0;
                 const colors = SEVERITY_COLORS[severity];
 
                 return (
                   <div key={severity} className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
-                      <span className={cn('capitalize font-medium', colors.text)}>
+                      <span
+                        className={cn('capitalize font-medium', colors.text)}
+                      >
                         {severity}
                       </span>
                       <span className="text-white/50">{count}</span>

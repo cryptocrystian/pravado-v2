@@ -7,7 +7,12 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisIncident,
+  CrisisSignal,
+  CrisisAction,
+  CrisisBrief,
+} from '@pravado/types';
 import {
   X,
   ExternalLink,
@@ -28,12 +33,19 @@ import {
   ArrowUpRight,
   Plus,
 } from 'lucide-react';
-import type {
-  CrisisIncident,
-  CrisisSignal,
-  CrisisAction,
-  CrisisBrief,
-} from '@pravado/types';
+import React, { useState, useCallback } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   SEVERITY_COLORS,
   TRAJECTORY_COLORS,
@@ -42,20 +54,10 @@ import {
   formatTimeAgo,
 } from '@/lib/crisisApi';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import CrisisSignalList from './CrisisSignalList';
+
 import CrisisActionList from './CrisisActionList';
 import CrisisBriefPanel from './CrisisBriefPanel';
+import CrisisSignalList from './CrisisSignalList';
 
 interface CrisisIncidentDetailDrawerProps {
   incident: CrisisIncident | null;
@@ -152,7 +154,9 @@ export default function CrisisIncidentDetailDrawer({
     return reach.toString();
   };
 
-  const sheetSize = isExpanded ? 'w-[95vw] max-w-[1600px]' : 'w-[900px] max-w-[90vw]';
+  const sheetSize = isExpanded
+    ? 'w-[95vw] max-w-[1600px]'
+    : 'w-[900px] max-w-[90vw]';
 
   const linkedSignals = signals.filter((s) =>
     incident.linkedSignalIds.includes(s.id)
@@ -170,7 +174,9 @@ export default function CrisisIncidentDetailDrawer({
                 {incident.isEscalated && (
                   <AlertTriangle className="h-5 w-5 text-red-600 shrink-0" />
                 )}
-                <SheetTitle className="text-lg truncate">{incident.title}</SheetTitle>
+                <SheetTitle className="text-lg truncate">
+                  {incident.title}
+                </SheetTitle>
               </div>
               {incident.incidentCode && (
                 <SheetDescription className="font-mono text-xs">
@@ -212,7 +218,11 @@ export default function CrisisIncidentDetailDrawer({
               )}
 
               {/* Expand/Collapse */}
-              <Button variant="ghost" size="icon" onClick={() => setIsExpanded(!isExpanded)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
                 {isExpanded ? (
                   <Minimize2 className="h-4 w-4" />
                 ) : (
@@ -237,9 +247,7 @@ export default function CrisisIncidentDetailDrawer({
             </Badge>
             <div className="flex items-center gap-1">
               {getTrajectoryIcon()}
-              <span
-                className={cn('text-sm capitalize', trajectoryColors.text)}
-              >
+              <span className={cn('text-sm capitalize', trajectoryColors.text)}>
                 {incident.trajectory}
               </span>
             </div>
@@ -316,7 +324,10 @@ export default function CrisisIncidentDetailDrawer({
                             Overall
                           </div>
                           <div className="text-xl font-bold">
-                            {(incident.llmRiskAssessment.overallRisk * 100).toFixed(0)}%
+                            {(
+                              incident.llmRiskAssessment.overallRisk * 100
+                            ).toFixed(0)}
+                            %
                           </div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded text-center">
@@ -324,7 +335,10 @@ export default function CrisisIncidentDetailDrawer({
                             Reputation
                           </div>
                           <div className="text-xl font-bold">
-                            {(incident.llmRiskAssessment.reputationRisk * 100).toFixed(0)}%
+                            {(
+                              incident.llmRiskAssessment.reputationRisk * 100
+                            ).toFixed(0)}
+                            %
                           </div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded text-center">
@@ -332,7 +346,10 @@ export default function CrisisIncidentDetailDrawer({
                             Financial
                           </div>
                           <div className="text-xl font-bold">
-                            {(incident.llmRiskAssessment.financialRisk * 100).toFixed(0)}%
+                            {(
+                              incident.llmRiskAssessment.financialRisk * 100
+                            ).toFixed(0)}
+                            %
                           </div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded text-center">
@@ -340,7 +357,10 @@ export default function CrisisIncidentDetailDrawer({
                             Legal
                           </div>
                           <div className="text-xl font-bold">
-                            {(incident.llmRiskAssessment.legalRisk * 100).toFixed(0)}%
+                            {(
+                              incident.llmRiskAssessment.legalRisk * 100
+                            ).toFixed(0)}
+                            %
                           </div>
                         </div>
                       </div>
@@ -351,10 +371,16 @@ export default function CrisisIncidentDetailDrawer({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {incident.affectedProducts.length > 0 && (
                       <div>
-                        <h3 className="text-sm font-medium mb-2">Affected Products</h3>
+                        <h3 className="text-sm font-medium mb-2">
+                          Affected Products
+                        </h3>
                         <div className="flex flex-wrap gap-1">
                           {incident.affectedProducts.map((p, i) => (
-                            <Badge key={i} variant="secondary" className="bg-blue-100">
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="bg-blue-100"
+                            >
                               {p}
                             </Badge>
                           ))}
@@ -363,10 +389,16 @@ export default function CrisisIncidentDetailDrawer({
                     )}
                     {incident.affectedRegions.length > 0 && (
                       <div>
-                        <h3 className="text-sm font-medium mb-2">Affected Regions</h3>
+                        <h3 className="text-sm font-medium mb-2">
+                          Affected Regions
+                        </h3>
                         <div className="flex flex-wrap gap-1">
                           {incident.affectedRegions.map((r, i) => (
-                            <Badge key={i} variant="secondary" className="bg-purple-100">
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="bg-purple-100"
+                            >
                               {r}
                             </Badge>
                           ))}
@@ -376,9 +408,12 @@ export default function CrisisIncidentDetailDrawer({
                   </div>
 
                   {/* Keywords & Topics */}
-                  {(incident.keywords.length > 0 || incident.topics.length > 0) && (
+                  {(incident.keywords.length > 0 ||
+                    incident.topics.length > 0) && (
                     <div>
-                      <h3 className="text-sm font-medium mb-2">Keywords & Topics</h3>
+                      <h3 className="text-sm font-medium mb-2">
+                        Keywords & Topics
+                      </h3>
                       <div className="flex flex-wrap gap-1">
                         {incident.keywords.map((k, i) => (
                           <Badge key={`k-${i}`} variant="outline">
@@ -386,7 +421,11 @@ export default function CrisisIncidentDetailDrawer({
                           </Badge>
                         ))}
                         {incident.topics.map((t, i) => (
-                          <Badge key={`t-${i}`} variant="outline" className="bg-gray-100">
+                          <Badge
+                            key={`t-${i}`}
+                            variant="outline"
+                            className="bg-gray-100"
+                          >
                             #{t}
                           </Badge>
                         ))}
@@ -503,17 +542,18 @@ export default function CrisisIncidentDetailDrawer({
               )}
 
               {/* Resolve */}
-              {onResolve && ['active', 'contained'].includes(incident.status) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-green-600 border-green-300"
-                  onClick={() => onResolve()}
-                  disabled={isSaving}
-                >
-                  Resolve
-                </Button>
-              )}
+              {onResolve &&
+                ['active', 'contained'].includes(incident.status) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-green-600 border-green-300"
+                    onClick={() => onResolve()}
+                    disabled={isSaving}
+                  >
+                    Resolve
+                  </Button>
+                )}
 
               {/* Escalate */}
               {onEscalate && incident.status === 'active' && (

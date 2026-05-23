@@ -75,6 +75,7 @@ Build enriched context by aggregating data from multiple sources.
 #### Purpose
 
 Provide agents with comprehensive contextual information including:
+
 - Relevant memory snippets (vector similarity search)
 - Recent playbook executions
 - Past collaborations and escalations
@@ -137,16 +138,20 @@ const context = await agentContextEnhancer.buildEnhancedContext(
     prompt: 'Create a press release for our new product launch',
     userId: 'user-456',
     organizationId: 'org-789',
-    metadata: { campaign: 'Q1-2024' }
+    metadata: { campaign: 'Q1-2024' },
   },
   {
     maxMemorySnippets: 15,
-    timeWindowDays: 60
+    timeWindowDays: 60,
   }
 );
 
-console.log(`Context built with ${context.memorySnippets.length} memory snippets`);
-console.log(`Key entities: ${context.keyEntities?.map(e => e.name).join(', ')}`);
+console.log(
+  `Context built with ${context.memorySnippets.length} memory snippets`
+);
+console.log(
+  `Key entities: ${context.keyEntities?.map((e) => e.name).join(', ')}`
+);
 console.log(`Trending topics: ${context.trendingTopics?.join(', ')}`);
 ```
 
@@ -166,6 +171,7 @@ Use GPT-4 to generate condensed summaries of agent memory.
 #### Purpose
 
 Create searchable, concise summaries of agent memory that:
+
 - Reduce context window usage
 - Enable semantic search across agent history
 - Extract key topics, entities, and trends
@@ -220,13 +226,16 @@ const shortTermSummary = await agentContextEnhancer.summarizeAgentMemory(
   'org-789',
   {
     summaryType: 'short_term',
-    timeWindowDays: 7
+    timeWindowDays: 7,
   }
 );
 
 console.log('Summary:', shortTermSummary.summaryText);
 console.log('Topics:', shortTermSummary.topics);
-console.log('Entities:', shortTermSummary.entities.map(e => e.name));
+console.log(
+  'Entities:',
+  shortTermSummary.entities.map((e) => e.name)
+);
 console.log('Trends:', shortTermSummary.trends);
 
 // Generate long-term topical summary (last 30 days)
@@ -237,7 +246,7 @@ const topicalSummary = await agentContextEnhancer.summarizeAgentMemory(
   {
     summaryType: 'topical',
     timeWindowDays: 30,
-    maxEntries: 200
+    maxEntries: 200,
   }
 );
 ```
@@ -281,6 +290,7 @@ Replace template placeholders with enriched context data.
 #### Purpose
 
 Transform prompt templates with placeholders into fully contextualized prompts:
+
 - Replace `{{memory}}` with relevant memory snippets
 - Replace `{{entities}}` with key entities
 - Replace `{{topics}}` with trending topics
@@ -314,17 +324,17 @@ interface ContextInjectionResult {
 
 #### Supported Placeholders
 
-| Placeholder | Description | Example Output |
-|------------|-------------|----------------|
-| `{{memory}}` / `{{recentMemory}}` | Recent memory snippets | "User prefers casual tone. Previous campaign: Q4-2023 product launch" |
-| `{{playbooks}}` / `{{recentPlaybooks}}` | Recent playbook executions | "Recently executed: Press Release Writer (success), Media Pitch Generator (success)" |
-| `{{collaborations}}` | Past escalations/delegations | "Escalated to Strategist Agent on 2024-01-15 for strategic planning" |
-| `{{entities}}` / `{{keyEntities}}` | Key entities from memory | "TechCorp (organization), John Smith (person), Product X (product)" |
-| `{{topics}}` / `{{trendingTopics}}` | Trending topics | "product launches, media relations, content marketing" |
-| `{{preferences}}` | User preferences | "Tone: professional, Language: en, Timezone: America/New_York" |
-| `{{timeOfDay}}` | Current time of day | "morning" / "afternoon" / "evening" / "night" |
-| `{{dayOfWeek}}` | Current day of week | "Monday" |
-| `{{prompt}}` | Original task prompt | The user's original request |
+| Placeholder                             | Description                  | Example Output                                                                       |
+| --------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------ |
+| `{{memory}}` / `{{recentMemory}}`       | Recent memory snippets       | "User prefers casual tone. Previous campaign: Q4-2023 product launch"                |
+| `{{playbooks}}` / `{{recentPlaybooks}}` | Recent playbook executions   | "Recently executed: Press Release Writer (success), Media Pitch Generator (success)" |
+| `{{collaborations}}`                    | Past escalations/delegations | "Escalated to Strategist Agent on 2024-01-15 for strategic planning"                 |
+| `{{entities}}` / `{{keyEntities}}`      | Key entities from memory     | "TechCorp (organization), John Smith (person), Product X (product)"                  |
+| `{{topics}}` / `{{trendingTopics}}`     | Trending topics              | "product launches, media relations, content marketing"                               |
+| `{{preferences}}`                       | User preferences             | "Tone: professional, Language: en, Timezone: America/New_York"                       |
+| `{{timeOfDay}}`                         | Current time of day          | "morning" / "afternoon" / "evening" / "night"                                        |
+| `{{dayOfWeek}}`                         | Current day of week          | "Monday"                                                                             |
+| `{{prompt}}`                            | Original task prompt         | The user's original request                                                          |
 
 #### Example Usage
 
@@ -350,14 +360,11 @@ Time: {{timeOfDay}}, {{dayOfWeek}}
 `;
 
 // Build context
-const context = await agentContextEnhancer.buildEnhancedContext(
-  'agent-123',
-  {
-    prompt: 'Write a press release for our product',
-    userId: 'user-456',
-    organizationId: 'org-789'
-  }
-);
+const context = await agentContextEnhancer.buildEnhancedContext('agent-123', {
+  prompt: 'Write a press release for our product',
+  userId: 'user-456',
+  organizationId: 'org-789',
+});
 
 // Inject context into template
 const result = agentContextEnhancer.injectContextIntoPrompt(template, context);
@@ -418,6 +425,7 @@ All endpoints are available under `/api/agent-context/`
 Build enhanced context for agent task execution.
 
 **Request Body:**
+
 ```json
 {
   "agentId": "agent-123",
@@ -437,6 +445,7 @@ Build enhanced context for agent task execution.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -465,6 +474,7 @@ Build enhanced context for agent task execution.
 Inject context into prompt template.
 
 **Request Body:**
+
 ```json
 {
   "template": "You are a PR agent. Recent memory: {{memory}}. Task: {{prompt}}",
@@ -477,6 +487,7 @@ Inject context into prompt template.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -501,6 +512,7 @@ Inject context into prompt template.
 Generate GPT-4 powered memory summary.
 
 **Request Body:**
+
 ```json
 {
   "agentId": "agent-123",
@@ -513,6 +525,7 @@ Generate GPT-4 powered memory summary.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -524,8 +537,8 @@ Generate GPT-4 powered memory summary.
     "summaryText": "Over the past week, the agent focused on...",
     "topics": ["product launches", "media relations", "content creation"],
     "entities": [
-      {"name": "TechCorp", "type": "organization", "mentions": 12},
-      {"name": "John Smith", "type": "person", "mentions": 5}
+      { "name": "TechCorp", "type": "organization", "mentions": 12 },
+      { "name": "John Smith", "type": "person", "mentions": 5 }
     ],
     "trends": ["increased focus on AI coverage", "shift to video content"],
     "timePeriod": {
@@ -551,12 +564,14 @@ Generate GPT-4 powered memory summary.
 Get memory summaries for an agent.
 
 **Query Parameters:**
+
 - `scope` (optional): Filter by scope (short_term, long_term, session, historical)
 - `summaryType` (optional): Filter by type
 - `limit` (optional): Max results (default: 10)
 - `offset` (optional): Pagination offset (default: 0)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -572,10 +587,12 @@ Get memory summaries for an agent.
 Get most recent summary for an agent.
 
 **Query Parameters:**
+
 - `scope` (optional): Default "short_term"
 - `summaryType` (optional): Default "short_term"
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -588,16 +605,18 @@ Get most recent summary for an agent.
 Get top topics for an agent.
 
 **Query Parameters:**
+
 - `days` (optional): Time window in days (default: 30)
 - `limit` (optional): Max results (default: 10)
 
 **Response:**
+
 ```json
 {
   "success": true,
   "topics": [
-    {"topic": "product launches", "occurrence_count": 15},
-    {"topic": "media relations", "occurrence_count": 12}
+    { "topic": "product launches", "occurrence_count": 15 },
+    { "topic": "media relations", "occurrence_count": 12 }
   ],
   "count": 2,
   "days": 30
@@ -609,16 +628,26 @@ Get top topics for an agent.
 Get top entities for an agent.
 
 **Query Parameters:**
+
 - `days` (optional): Time window in days (default: 30)
 - `limit` (optional): Max results (default: 10)
 
 **Response:**
+
 ```json
 {
   "success": true,
   "entities": [
-    {"entity_name": "TechCorp", "entity_type": "organization", "mention_count": 25},
-    {"entity_name": "John Smith", "entity_type": "person", "mention_count": 18}
+    {
+      "entity_name": "TechCorp",
+      "entity_type": "organization",
+      "mention_count": 25
+    },
+    {
+      "entity_name": "John Smith",
+      "entity_type": "person",
+      "mention_count": 18
+    }
   ],
   "count": 2,
   "days": 30
@@ -630,15 +659,17 @@ Get top entities for an agent.
 Get trending topics for an agent (recency-weighted).
 
 **Query Parameters:**
+
 - `days` (optional): Time window in days (default: 7)
 
 **Response:**
+
 ```json
 {
   "success": true,
   "trendingTopics": [
-    {"topic": "AI coverage", "trend_score": 8.5},
-    {"topic": "video content", "trend_score": 7.2}
+    { "topic": "AI coverage", "trend_score": 8.5 },
+    { "topic": "video content", "trend_score": 7.2 }
   ],
   "count": 2,
   "days": 7
@@ -650,10 +681,12 @@ Get trending topics for an agent (recency-weighted).
 Full-text search across agent summaries.
 
 **Query Parameters:**
+
 - `q` (required): Search query
 - `limit` (optional): Max results (default: 10)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -676,10 +709,12 @@ Full-text search across agent summaries.
 Get summaries for a specific time range.
 
 **Query Parameters:**
+
 - `start` (required): Start date (ISO 8601)
 - `end` (required): End date (ISO 8601)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -769,12 +804,14 @@ The migration includes several PostgreSQL helper functions:
 ### 1. Context Building
 
 **Do:**
+
 - ✅ Use caching by reusing agents and prompts when possible
 - ✅ Limit time windows to relevant periods (7-30 days for most use cases)
 - ✅ Specify `maxMemorySnippets` based on your context window
 - ✅ Include only necessary data sources (set includeMemory, includePlaybooks flags)
 
 **Don't:**
+
 - ❌ Request unlimited memory snippets (risks context overflow)
 - ❌ Use excessively long time windows (degrades performance)
 - ❌ Build context on every request without caching
@@ -782,12 +819,14 @@ The migration includes several PostgreSQL helper functions:
 ### 2. Memory Summarization
 
 **Do:**
+
 - ✅ Generate summaries periodically (e.g., daily for short-term, weekly for long-term)
 - ✅ Use appropriate `summaryType` for your use case (topical, entity_based)
 - ✅ Allow summaries to be reused (don't use `forceRegenerate` unnecessarily)
 - ✅ Monitor GPT-4 costs and usage
 
 **Don't:**
+
 - ❌ Generate summaries on every request (expensive and slow)
 - ❌ Summarize empty or minimal memory (wait for sufficient data)
 - ❌ Use very large `maxEntries` values (impacts GPT-4 context window)
@@ -795,12 +834,14 @@ The migration includes several PostgreSQL helper functions:
 ### 3. Prompt Injection
 
 **Do:**
+
 - ✅ Design templates with clear placeholder conventions
 - ✅ Monitor token usage to stay within context limits
 - ✅ Test templates with real context data
 - ✅ Provide fallback text for missing context
 
 **Don't:**
+
 - ❌ Inject excessively large context (causes token overflow)
 - ❌ Use unclear placeholder names
 - ❌ Inject sensitive data without filtering
@@ -812,27 +853,32 @@ The migration includes several PostgreSQL helper functions:
 ### Caching Strategy
 
 **Context Caching:**
+
 - TTL: 5 minutes
 - Key: `${agentId}:${prompt.slice(0, 50)}`
 - Storage: In-memory Map (consider Redis for production)
 
 **Summary Caching:**
+
 - Checks for summaries created within last hour
 - Use `forceRegenerate: true` to bypass
 
 ### Query Optimization
 
 **Parallel Fetching:**
+
 ```typescript
-const [memorySnippets, recentPlaybooks, collaborations, preferences] = await Promise.all([
-  fetchMemory(),
-  fetchPlaybooks(),
-  fetchCollaborations(),
-  fetchPreferences()
-]);
+const [memorySnippets, recentPlaybooks, collaborations, preferences] =
+  await Promise.all([
+    fetchMemory(),
+    fetchPlaybooks(),
+    fetchCollaborations(),
+    fetchPreferences(),
+  ]);
 ```
 
 **Limited Windows:**
+
 - Default 30 days for memory queries
 - Default 100 entries for summarization
 - Indexed queries on `created_at`, `agent_id`
@@ -840,11 +886,13 @@ const [memorySnippets, recentPlaybooks, collaborations, preferences] = await Pro
 ### Database Performance
 
 **Indexes:**
+
 - B-tree indexes on agent_id, created_at for fast lookups
 - GIN indexes on JSONB, arrays for entity/topic queries
 - Full-text search index on summary_text
 
 **Row Level Security:**
+
 - All queries filtered by organization_id
 - Uses PostgreSQL RLS policies
 
@@ -857,18 +905,22 @@ const [memorySnippets, recentPlaybooks, collaborations, preferences] = await Pro
 ```typescript
 import { agentContextEnhancer } from '../services/agentContextEnhancer';
 
-async function generatePersonalizedContent(agentId: string, userId: string, prompt: string) {
+async function generatePersonalizedContent(
+  agentId: string,
+  userId: string,
+  prompt: string
+) {
   // 1. Build enhanced context
   const context = await agentContextEnhancer.buildEnhancedContext(
     agentId,
     {
       prompt,
       userId,
-      organizationId: 'org-123'
+      organizationId: 'org-123',
     },
     {
       maxMemorySnippets: 20,
-      timeWindowDays: 60
+      timeWindowDays: 60,
     }
   );
 
@@ -895,10 +947,8 @@ Write content that aligns with the user's preferences and builds on past interac
   `;
 
   // 3. Inject context
-  const { prompt: enrichedPrompt, tokensUsed } = agentContextEnhancer.injectContextIntoPrompt(
-    template,
-    context
-  );
+  const { prompt: enrichedPrompt, tokensUsed } =
+    agentContextEnhancer.injectContextIntoPrompt(template, context);
 
   // 4. Send to LLM
   const response = await callLLM(enrichedPrompt);
@@ -926,7 +976,7 @@ async function dailySummarizationJob() {
         {
           summaryType: 'short_term',
           timeWindowDays: 7,
-          maxEntries: 100
+          maxEntries: 100,
         }
       );
 
@@ -956,7 +1006,7 @@ async function routeToSpecializedAgent(taskPrompt: string, userId: string) {
     {
       prompt: taskPrompt,
       userId,
-      organizationId: 'org-123'
+      organizationId: 'org-123',
     }
   );
 
@@ -967,7 +1017,9 @@ async function routeToSpecializedAgent(taskPrompt: string, userId: string) {
     return 'media-relations-agent';
   } else if (trendingTopics?.includes('content creation')) {
     return 'content-writer-agent';
-  } else if (recentPlaybooks.some(p => p.playbookName.includes('Strategic'))) {
+  } else if (
+    recentPlaybooks.some((p) => p.playbookName.includes('Strategic'))
+  ) {
     return 'strategy-agent';
   }
 
@@ -1002,7 +1054,7 @@ async function getTrendAnalytics(agentId: string, days: number = 30) {
   return {
     topTopics: topicsResult.rows,
     topEntities: entitiesResult.rows,
-    trending: trendingResult.rows
+    trending: trendingResult.rows,
   };
 }
 ```
@@ -1019,6 +1071,7 @@ node verify-sprint43-phase3.5.3.js
 ```
 
 **Expected Output:**
+
 ```
 ✓ All checks passed! Sprint 43 Phase 3.5.3 implementation is complete.
 Passed: 90/90 (100%)
@@ -1029,21 +1082,27 @@ Passed: 90/90 (100%)
 ## Files Created
 
 ### TypeScript Types
+
 - `packages/shared-types/src/agent-context.ts` - Type definitions for enhanced context
 
 ### Database
+
 - `apps/api/src/database/migrations/20251102233024_create_agent_memory_summaries.sql` - Migration for summaries table
 
 ### Services
+
 - `apps/api/src/services/agentContextEnhancer.ts` - Core context enhancement service
 
 ### API Routes
+
 - `apps/api/src/routes/agent-context.ts` - REST API endpoints
 
 ### Verification
+
 - `apps/api/verify-sprint43-phase3.5.3.js` - Implementation verification script
 
 ### Documentation
+
 - `docs/agent_memory_contextual_awareness.md` - This document
 
 ---
@@ -1051,17 +1110,20 @@ Passed: 90/90 (100%)
 ## Next Steps
 
 1. **Deploy Database Migration**
+
    ```bash
    psql -d pravado -f apps/api/src/database/migrations/20251102233024_create_agent_memory_summaries.sql
    ```
 
 2. **Configure Environment Variables**
+
    ```bash
    OPENAI_API_KEY=your-key-here
    ```
 
 3. **Register Routes**
    Add to your Express app:
+
    ```typescript
    import agentContextRoutes from './routes/agent-context';
    app.use('/api/agent-context', agentContextRoutes);

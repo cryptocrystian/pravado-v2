@@ -11,7 +11,6 @@
  * - Timeline query and aggregation
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   BatchCreateTimelineEventsInput,
   BatchCreateTimelineEventsResult,
@@ -34,6 +33,7 @@ import type {
   TimelineStats,
   UpdateTimelineEventInput,
 } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // =============================================
 // Utility Functions
@@ -148,13 +148,18 @@ export class JournalistTimelineService {
       event_type: input.eventType,
       title: input.title,
       description: input.description,
-      event_timestamp: input.eventTimestamp ? formatDateForSQL(input.eventTimestamp) : undefined,
+      event_timestamp: input.eventTimestamp
+        ? formatDateForSQL(input.eventTimestamp)
+        : undefined,
       source_system: input.sourceSystem,
       source_id: input.sourceId,
       payload: input.payload || {},
       metadata: input.metadata || {},
-      relevance_score: input.relevanceScore ?? getDefaultRelevanceScore(input.eventType),
-      relationship_impact: input.relationshipImpact ?? getDefaultRelationshipImpact(input.eventType),
+      relevance_score:
+        input.relevanceScore ?? getDefaultRelevanceScore(input.eventType),
+      relationship_impact:
+        input.relationshipImpact ??
+        getDefaultRelationshipImpact(input.eventType),
       sentiment: input.sentiment ?? getDefaultSentiment(input.eventType),
       cluster_id: input.clusterId,
       cluster_type: input.clusterType,
@@ -167,7 +172,8 @@ export class JournalistTimelineService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to create timeline event: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to create timeline event: ${error.message}`);
 
     return this.mapDatabaseEventToType(data);
   }
@@ -175,7 +181,10 @@ export class JournalistTimelineService {
   /**
    * Gets a single timeline event by ID
    */
-  async getEvent(orgId: string, eventId: string): Promise<JournalistTimelineEvent | null> {
+  async getEvent(
+    orgId: string,
+    eventId: string
+  ): Promise<JournalistTimelineEvent | null> {
     const { data, error } = await this.supabase
       .from('journalist_relationship_events')
       .select('*')
@@ -201,12 +210,16 @@ export class JournalistTimelineService {
   ): Promise<JournalistTimelineEvent> {
     const updateData: any = {};
     if (input.title !== undefined) updateData.title = input.title;
-    if (input.description !== undefined) updateData.description = input.description;
-    if (input.relevanceScore !== undefined) updateData.relevance_score = input.relevanceScore;
-    if (input.relationshipImpact !== undefined) updateData.relationship_impact = input.relationshipImpact;
+    if (input.description !== undefined)
+      updateData.description = input.description;
+    if (input.relevanceScore !== undefined)
+      updateData.relevance_score = input.relevanceScore;
+    if (input.relationshipImpact !== undefined)
+      updateData.relationship_impact = input.relationshipImpact;
     if (input.sentiment !== undefined) updateData.sentiment = input.sentiment;
     if (input.clusterId !== undefined) updateData.cluster_id = input.clusterId;
-    if (input.clusterType !== undefined) updateData.cluster_type = input.clusterType;
+    if (input.clusterType !== undefined)
+      updateData.cluster_type = input.clusterType;
     if (input.payload !== undefined) updateData.payload = input.payload;
     if (input.metadata !== undefined) updateData.metadata = input.metadata;
 
@@ -218,7 +231,8 @@ export class JournalistTimelineService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to update timeline event: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to update timeline event: ${error.message}`);
 
     return this.mapDatabaseEventToType(data);
   }
@@ -233,7 +247,8 @@ export class JournalistTimelineService {
       .eq('org_id', orgId)
       .eq('id', eventId);
 
-    if (error) throw new Error(`Failed to delete timeline event: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to delete timeline event: ${error.message}`);
   }
 
   // =============================================
@@ -243,7 +258,10 @@ export class JournalistTimelineService {
   /**
    * Lists timeline events with filtering, sorting, and pagination
    */
-  async listEvents(orgId: string, query: TimelineQuery): Promise<TimelineListResponse> {
+  async listEvents(
+    orgId: string,
+    query: TimelineQuery
+  ): Promise<TimelineListResponse> {
     let supabaseQuery = this.supabase
       .from('journalist_relationship_events')
       .select('*', { count: 'exact' })
@@ -278,23 +296,38 @@ export class JournalistTimelineService {
     if (query.last30Days) {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      supabaseQuery = supabaseQuery.gte('event_timestamp', formatDateForSQL(thirtyDaysAgo));
+      supabaseQuery = supabaseQuery.gte(
+        'event_timestamp',
+        formatDateForSQL(thirtyDaysAgo)
+      );
     } else if (query.last90Days) {
       const ninetyDaysAgo = new Date();
       ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-      supabaseQuery = supabaseQuery.gte('event_timestamp', formatDateForSQL(ninetyDaysAgo));
+      supabaseQuery = supabaseQuery.gte(
+        'event_timestamp',
+        formatDateForSQL(ninetyDaysAgo)
+      );
     } else if (query.startDate || query.endDate) {
       if (query.startDate) {
-        supabaseQuery = supabaseQuery.gte('event_timestamp', formatDateForSQL(query.startDate));
+        supabaseQuery = supabaseQuery.gte(
+          'event_timestamp',
+          formatDateForSQL(query.startDate)
+        );
       }
       if (query.endDate) {
-        supabaseQuery = supabaseQuery.lte('event_timestamp', formatDateForSQL(query.endDate));
+        supabaseQuery = supabaseQuery.lte(
+          'event_timestamp',
+          formatDateForSQL(query.endDate)
+        );
       }
     }
 
     // Relevance score filter
     if (query.minRelevanceScore !== undefined) {
-      supabaseQuery = supabaseQuery.gte('relevance_score', query.minRelevanceScore);
+      supabaseQuery = supabaseQuery.gte(
+        'relevance_score',
+        query.minRelevanceScore
+      );
     }
 
     // Has cluster filter
@@ -309,13 +342,17 @@ export class JournalistTimelineService {
     // Search query (full-text search in title and description)
     if (query.searchQuery) {
       const searchPattern = buildSearchQuery(query.searchQuery);
-      supabaseQuery = supabaseQuery.or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`);
+      supabaseQuery = supabaseQuery.or(
+        `title.ilike.${searchPattern},description.ilike.${searchPattern}`
+      );
     }
 
     // Sorting
     const sortBy = query.sortBy || 'event_timestamp';
     const sortOrder = query.sortOrder || 'desc';
-    supabaseQuery = supabaseQuery.order(sortBy, { ascending: sortOrder === 'asc' });
+    supabaseQuery = supabaseQuery.order(sortBy, {
+      ascending: sortOrder === 'asc',
+    });
 
     // Pagination
     const limit = query.limit || 20;
@@ -324,7 +361,8 @@ export class JournalistTimelineService {
 
     const { data, error, count } = await supabaseQuery;
 
-    if (error) throw new Error(`Failed to list timeline events: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to list timeline events: ${error.message}`);
 
     const events = data.map((row) => this.mapDatabaseEventToType(row));
     const total = count || 0;
@@ -355,19 +393,32 @@ export class JournalistTimelineService {
    * Gets timeline statistics for a journalist
    */
   async getStats(orgId: string, journalistId: string): Promise<TimelineStats> {
-    const { data, error } = await this.supabase.rpc('get_journalist_timeline_stats', {
-      p_org_id: orgId,
-      p_journalist_id: journalistId,
-    });
+    const { data, error } = await this.supabase.rpc(
+      'get_journalist_timeline_stats',
+      {
+        p_org_id: orgId,
+        p_journalist_id: journalistId,
+      }
+    );
 
-    if (error) throw new Error(`Failed to get timeline stats: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to get timeline stats: ${error.message}`);
 
     return {
       totalEvents: data.total_events,
-      lastInteraction: data.last_interaction ? new Date(data.last_interaction) : undefined,
-      firstInteraction: data.first_interaction ? new Date(data.first_interaction) : undefined,
+      lastInteraction: data.last_interaction
+        ? new Date(data.last_interaction)
+        : undefined,
+      firstInteraction: data.first_interaction
+        ? new Date(data.first_interaction)
+        : undefined,
       eventTypeCounts: data.event_type_counts || {},
-      sentimentDistribution: data.sentiment_distribution || { positive: 0, neutral: 0, negative: 0, unknown: 0 },
+      sentimentDistribution: data.sentiment_distribution || {
+        positive: 0,
+        neutral: 0,
+        negative: 0,
+        unknown: 0,
+      },
       avgRelevanceScore: data.avg_relevance_score,
       avgRelationshipImpact: data.avg_relationship_impact,
       totalClusters: data.total_clusters,
@@ -379,7 +430,10 @@ export class JournalistTimelineService {
   /**
    * Calculates relationship health score for a journalist
    */
-  async calculateHealthScore(orgId: string, journalistId: string): Promise<RelationshipHealthScore> {
+  async calculateHealthScore(
+    orgId: string,
+    journalistId: string
+  ): Promise<RelationshipHealthScore> {
     // Get the base score from database function
     const { data: scoreData, error: scoreError } = await this.supabase.rpc(
       'calculate_relationship_health_score',
@@ -389,7 +443,10 @@ export class JournalistTimelineService {
       }
     );
 
-    if (scoreError) throw new Error(`Failed to calculate health score: ${scoreError.message}`);
+    if (scoreError)
+      throw new Error(
+        `Failed to calculate health score: ${scoreError.message}`
+      );
 
     const score = scoreData as number;
 
@@ -417,7 +474,9 @@ export class JournalistTimelineService {
   /**
    * Calculates detailed breakdown of health score
    */
-  private calculateHealthScoreBreakdown(stats: TimelineStats): RelationshipHealthScore['breakdown'] {
+  private calculateHealthScoreBreakdown(
+    stats: TimelineStats
+  ): RelationshipHealthScore['breakdown'] {
     // Recency (0-25 points)
     let recency = 0;
     if (stats.lastInteraction) {
@@ -438,16 +497,21 @@ export class JournalistTimelineService {
       stats.sentimentDistribution.neutral +
       stats.sentimentDistribution.negative +
       stats.sentimentDistribution.unknown;
-    const sentiment = totalSentiment > 0 ? (stats.sentimentDistribution.positive / totalSentiment) * 15 : 0;
+    const sentiment =
+      totalSentiment > 0
+        ? (stats.sentimentDistribution.positive / totalSentiment) * 15
+        : 0;
 
     // Engagement (0-20 points) - based on reply events
     const replyEvents =
-      (stats.eventTypeCounts['pitch_replied'] || 0) + (stats.eventTypeCounts['outreach_replied'] || 0);
+      (stats.eventTypeCounts['pitch_replied'] || 0) +
+      (stats.eventTypeCounts['outreach_replied'] || 0);
     const engagement = Math.min(replyEvents * 2, 20);
 
     // Coverage (0-10 points)
     const coverageEvents =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
     const coverage = Math.min(coverageEvents * 2, 10);
 
     // Impact (0-10 points)
@@ -455,7 +519,9 @@ export class JournalistTimelineService {
 
     // Penalty (0 to -10 points)
     const penalty =
-      totalSentiment > 0 ? (stats.sentimentDistribution.negative / totalSentiment) * -10 : 0;
+      totalSentiment > 0
+        ? (stats.sentimentDistribution.negative / totalSentiment) * -10
+        : 0;
 
     return {
       recency,
@@ -471,7 +537,9 @@ export class JournalistTimelineService {
   /**
    * Calculates health score trend
    */
-  private calculateHealthTrend(stats: TimelineStats): 'improving' | 'stable' | 'declining' {
+  private calculateHealthTrend(
+    stats: TimelineStats
+  ): 'improving' | 'stable' | 'declining' {
     const recent30 = stats.recent30Days;
     const recent90 = stats.recent90Days;
     const total = stats.totalEvents;
@@ -490,7 +558,10 @@ export class JournalistTimelineService {
   /**
    * Generates health score recommendations
    */
-  private generateHealthRecommendations(stats: TimelineStats, score: number): string[] {
+  private generateHealthRecommendations(
+    stats: TimelineStats,
+    score: number
+  ): string[] {
     const recommendations: string[] = [];
 
     // Recency recommendations
@@ -499,42 +570,60 @@ export class JournalistTimelineService {
         (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
       );
       if (daysSinceLastInteraction > 30) {
-        recommendations.push('No recent interactions. Consider reaching out with a personalized pitch.');
+        recommendations.push(
+          'No recent interactions. Consider reaching out with a personalized pitch.'
+        );
       }
     }
 
     // Activity recommendations
     if (stats.recent30Days === 0) {
-      recommendations.push('No activity in the last 30 days. Schedule a follow-up or share relevant content.');
+      recommendations.push(
+        'No activity in the last 30 days. Schedule a follow-up or share relevant content.'
+      );
     }
 
     // Coverage recommendations
     const coverageEvents =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
     if (coverageEvents === 0 && stats.totalEvents > 5) {
-      recommendations.push('No coverage achieved yet. Review pitch angles and journalist beat alignment.');
+      recommendations.push(
+        'No coverage achieved yet. Review pitch angles and journalist beat alignment.'
+      );
     }
 
     // Sentiment recommendations
     const negativeRatio =
       stats.sentimentDistribution.negative /
-      (stats.sentimentDistribution.positive + stats.sentimentDistribution.neutral + stats.sentimentDistribution.negative || 1);
+      (stats.sentimentDistribution.positive +
+        stats.sentimentDistribution.neutral +
+        stats.sentimentDistribution.negative || 1);
     if (negativeRatio > 0.3) {
-      recommendations.push('High negative sentiment detected. Review communication approach and relevance.');
+      recommendations.push(
+        'High negative sentiment detected. Review communication approach and relevance.'
+      );
     }
 
     // Engagement recommendations
     const replyEvents =
-      (stats.eventTypeCounts['pitch_replied'] || 0) + (stats.eventTypeCounts['outreach_replied'] || 0);
+      (stats.eventTypeCounts['pitch_replied'] || 0) +
+      (stats.eventTypeCounts['outreach_replied'] || 0);
     if (replyEvents === 0 && stats.totalEvents > 5) {
-      recommendations.push('No replies received. Consider improving subject lines and personalization.');
+      recommendations.push(
+        'No replies received. Consider improving subject lines and personalization.'
+      );
     }
 
     // Overall score recommendations
     if (score < 30) {
-      recommendations.push('Low relationship health. Focus on rebuilding rapport with value-first communication.');
+      recommendations.push(
+        'Low relationship health. Focus on rebuilding rapport with value-first communication.'
+      );
     } else if (score > 70) {
-      recommendations.push('Strong relationship. Good time to pitch premium stories or request introductions.');
+      recommendations.push(
+        'Strong relationship. Good time to pitch premium stories or request introductions.'
+      );
     }
 
     return recommendations;
@@ -559,7 +648,8 @@ export class JournalistTimelineService {
       .lte('event_timestamp', formatDateForSQL(endDate))
       .order('event_timestamp', { ascending: true });
 
-    if (error) throw new Error(`Failed to get timeline aggregation: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to get timeline aggregation: ${error.message}`);
 
     // Group events by period
     const dataPoints = this.groupEventsByPeriod(data, period);
@@ -575,7 +665,10 @@ export class JournalistTimelineService {
   /**
    * Groups events by time period for aggregation
    */
-  private groupEventsByPeriod(events: any[], period: 'day' | 'week' | 'month'): TimelineAggregationDataPoint[] {
+  private groupEventsByPeriod(
+    events: any[],
+    period: 'day' | 'week' | 'month'
+  ): TimelineAggregationDataPoint[] {
     const grouped = new Map<string, any[]>();
 
     for (const event of events) {
@@ -601,12 +694,18 @@ export class JournalistTimelineService {
     // Convert to data points
     const dataPoints: TimelineAggregationDataPoint[] = [];
     for (const [dateKey, periodEvents] of grouped.entries()) {
-      const positiveSentiment = periodEvents.filter((e) => e.sentiment === 'positive').length;
-      const negativeSentiment = periodEvents.filter((e) => e.sentiment === 'negative').length;
+      const positiveSentiment = periodEvents.filter(
+        (e) => e.sentiment === 'positive'
+      ).length;
+      const negativeSentiment = periodEvents.filter(
+        (e) => e.sentiment === 'negative'
+      ).length;
       const avgRelevanceScore =
-        periodEvents.reduce((sum, e) => sum + e.relevance_score, 0) / periodEvents.length;
+        periodEvents.reduce((sum, e) => sum + e.relevance_score, 0) /
+        periodEvents.length;
       const avgRelationshipImpact =
-        periodEvents.reduce((sum, e) => sum + e.relationship_impact, 0) / periodEvents.length;
+        periodEvents.reduce((sum, e) => sum + e.relationship_impact, 0) /
+        periodEvents.length;
 
       const eventTypeCounts: Record<TimelineEventType, number> = {} as any;
       for (const event of periodEvents) {
@@ -635,13 +734,20 @@ export class JournalistTimelineService {
   /**
    * Auto-clusters related events for a journalist
    */
-  async autoClusterEvents(orgId: string, journalistId: string): Promise<number> {
-    const { data, error } = await this.supabase.rpc('auto_cluster_timeline_events', {
-      p_org_id: orgId,
-      p_journalist_id: journalistId,
-    });
+  async autoClusterEvents(
+    orgId: string,
+    journalistId: string
+  ): Promise<number> {
+    const { data, error } = await this.supabase.rpc(
+      'auto_cluster_timeline_events',
+      {
+        p_org_id: orgId,
+        p_journalist_id: journalistId,
+      }
+    );
 
-    if (error) throw new Error(`Failed to auto-cluster events: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to auto-cluster events: ${error.message}`);
 
     return data as number;
   }
@@ -675,8 +781,11 @@ export class JournalistTimelineService {
       events,
       startDate: events[0].eventTimestamp,
       endDate: events[events.length - 1].eventTimestamp,
-      relevanceScore: events.reduce((sum, e) => sum + e.relevanceScore, 0) / events.length,
-      relationshipImpact: events.reduce((sum, e) => sum + e.relationshipImpact, 0) / events.length,
+      relevanceScore:
+        events.reduce((sum, e) => sum + e.relevanceScore, 0) / events.length,
+      relationshipImpact:
+        events.reduce((sum, e) => sum + e.relationshipImpact, 0) /
+        events.length,
     };
   }
 
@@ -703,7 +812,9 @@ export class JournalistTimelineService {
   /**
    * Generates a description for a cluster based on its events
    */
-  private generateClusterDescription(events: JournalistTimelineEvent[]): string {
+  private generateClusterDescription(
+    events: JournalistTimelineEvent[]
+  ): string {
     if (events.length === 0) return '';
 
     const eventTypes = new Set(events.map((e) => e.eventType));
@@ -820,7 +931,10 @@ export class JournalistTimelineService {
    * Receives events pushed from upstream systems (S38-S48)
    * This is the primary ingestion method for automated event creation
    */
-  async pushSystemEvent(orgId: string, event: SystemEventPush): Promise<JournalistTimelineEvent> {
+  async pushSystemEvent(
+    orgId: string,
+    event: SystemEventPush
+  ): Promise<JournalistTimelineEvent> {
     return this.createEvent(orgId, {
       journalistId: event.journalistId,
       eventType: event.eventType,
@@ -845,7 +959,10 @@ export class JournalistTimelineService {
    * Generates an AI-powered narrative summary of journalist relationship
    * This will be enhanced with LLM integration in a separate method
    */
-  async generateNarrative(orgId: string, input: GenerateNarrativeInput): Promise<JournalistNarrative> {
+  async generateNarrative(
+    orgId: string,
+    input: GenerateNarrativeInput
+  ): Promise<JournalistNarrative> {
     // Get timeline events for the specified timeframe
     const query: TimelineQuery = {
       journalistId: input.journalistId,
@@ -865,7 +982,10 @@ export class JournalistTimelineService {
     const journalistName = 'Journalist'; // TODO: Query journalist_profiles
 
     // Generate executive summary
-    const executiveSummary = this.generateExecutiveSummary(stats, timeline.events);
+    const executiveSummary = this.generateExecutiveSummary(
+      stats,
+      timeline.events
+    );
 
     // Generate highlights
     const highlights = this.generateHighlights(timeline.events);
@@ -873,28 +993,40 @@ export class JournalistTimelineService {
     // Calculate sentiment
     const overallSentiment = this.calculateOverallSentiment(stats);
     const sentimentTrend = this.calculateHealthTrend(stats);
-    const sentimentExplanation = this.generateSentimentExplanation(stats, overallSentiment);
+    const sentimentExplanation = this.generateSentimentExplanation(
+      stats,
+      overallSentiment
+    );
 
     // Calculate activity level
     const activityLevel = this.calculateActivityLevel(stats);
     const lastInteractionDays = stats.lastInteraction
-      ? Math.floor((Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : 0;
 
     // Coverage summary
     const coverageCount =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
     const coverageEvents = timeline.events.filter(
-      (e) => e.eventType === 'media_mention' || e.eventType === 'coverage_published'
+      (e) =>
+        e.eventType === 'media_mention' || e.eventType === 'coverage_published'
     );
-    const lastCoverageDate = coverageEvents.length > 0 ? coverageEvents[0].eventTimestamp : undefined;
+    const lastCoverageDate =
+      coverageEvents.length > 0 ? coverageEvents[0].eventTimestamp : undefined;
     const coverageSummary = this.generateCoverageSummary(coverageEvents);
 
     // Engagement metrics
-    const { replyRate, openRate, clickRate } = this.calculateEngagementMetrics(stats);
+    const { replyRate, openRate, clickRate } =
+      this.calculateEngagementMetrics(stats);
 
     // Recommendations
-    const healthScore = await this.calculateHealthScore(orgId, input.journalistId);
+    const healthScore = await this.calculateHealthScore(
+      orgId,
+      input.journalistId
+    );
     const recommendations = this.generateNarrativeRecommendations(
       stats,
       healthScore,
@@ -928,14 +1060,20 @@ export class JournalistTimelineService {
   /**
    * Generates executive summary text
    */
-  private generateExecutiveSummary(stats: TimelineStats, _events: JournalistTimelineEvent[]): string {
+  private generateExecutiveSummary(
+    stats: TimelineStats,
+    _events: JournalistTimelineEvent[]
+  ): string {
     const totalEvents = stats.totalEvents;
     const lastInteractionDays = stats.lastInteraction
-      ? Math.floor((Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor(
+          (Date.now() - stats.lastInteraction.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : 999;
 
     const coverageCount =
-      (stats.eventTypeCounts['media_mention'] || 0) + (stats.eventTypeCounts['coverage_published'] || 0);
+      (stats.eventTypeCounts['media_mention'] || 0) +
+      (stats.eventTypeCounts['coverage_published'] || 0);
 
     let summary = `${totalEvents} total interactions recorded. `;
 
@@ -957,7 +1095,9 @@ export class JournalistTimelineService {
   /**
    * Generates narrative highlights from events
    */
-  private generateHighlights(events: JournalistTimelineEvent[]): NarrativeHighlight[] {
+  private generateHighlights(
+    events: JournalistTimelineEvent[]
+  ): NarrativeHighlight[] {
     // Get high-relevance events
     const importantEvents = events
       .filter((e) => e.relevanceScore >= 0.7)
@@ -967,10 +1107,11 @@ export class JournalistTimelineService {
         eventType: e.eventType,
         title: e.title,
         description: e.description || '',
-        importance: (e.relevanceScore >= 0.8 ? 'high' : e.relevanceScore >= 0.6 ? 'medium' : 'low') as
-          | 'high'
-          | 'medium'
-          | 'low',
+        importance: (e.relevanceScore >= 0.8
+          ? 'high'
+          : e.relevanceScore >= 0.6
+            ? 'medium'
+            : 'low') as 'high' | 'medium' | 'low',
       }));
 
     return importantEvents;
@@ -993,7 +1134,10 @@ export class JournalistTimelineService {
   /**
    * Generates sentiment explanation
    */
-  private generateSentimentExplanation(stats: TimelineStats, overall: TimelineSentiment): string {
+  private generateSentimentExplanation(
+    stats: TimelineStats,
+    overall: TimelineSentiment
+  ): string {
     const { positive, neutral, negative } = stats.sentimentDistribution;
     const total = positive + neutral + negative;
 
@@ -1020,7 +1164,9 @@ export class JournalistTimelineService {
   /**
    * Generates coverage summary
    */
-  private generateCoverageSummary(coverageEvents: JournalistTimelineEvent[]): string | undefined {
+  private generateCoverageSummary(
+    coverageEvents: JournalistTimelineEvent[]
+  ): string | undefined {
     if (coverageEvents.length === 0) return undefined;
 
     return `${coverageEvents.length} coverage mention${coverageEvents.length > 1 ? 's' : ''} tracked.`;
@@ -1035,13 +1181,17 @@ export class JournalistTimelineService {
     clickRate: number;
   } {
     const sentEvents =
-      (stats.eventTypeCounts['pitch_sent'] || 0) + (stats.eventTypeCounts['outreach_sent'] || 0);
+      (stats.eventTypeCounts['pitch_sent'] || 0) +
+      (stats.eventTypeCounts['outreach_sent'] || 0);
     const replyEvents =
-      (stats.eventTypeCounts['pitch_replied'] || 0) + (stats.eventTypeCounts['outreach_replied'] || 0);
+      (stats.eventTypeCounts['pitch_replied'] || 0) +
+      (stats.eventTypeCounts['outreach_replied'] || 0);
     const openEvents =
-      (stats.eventTypeCounts['pitch_opened'] || 0) + (stats.eventTypeCounts['outreach_opened'] || 0);
+      (stats.eventTypeCounts['pitch_opened'] || 0) +
+      (stats.eventTypeCounts['outreach_opened'] || 0);
     const clickEvents =
-      (stats.eventTypeCounts['pitch_clicked'] || 0) + (stats.eventTypeCounts['outreach_clicked'] || 0);
+      (stats.eventTypeCounts['pitch_clicked'] || 0) +
+      (stats.eventTypeCounts['outreach_clicked'] || 0);
 
     return {
       replyRate: sentEvents > 0 ? replyEvents / sentEvents : 0,
@@ -1066,7 +1216,12 @@ export class JournalistTimelineService {
     for (const rec of healthScore.recommendations) {
       recommendations.push({
         type: 'action',
-        priority: healthScore.score < 30 ? 'high' : healthScore.score > 70 ? 'low' : 'medium',
+        priority:
+          healthScore.score < 30
+            ? 'high'
+            : healthScore.score > 70
+              ? 'low'
+              : 'medium',
         title: 'Health Score Recommendation',
         description: rec,
       });

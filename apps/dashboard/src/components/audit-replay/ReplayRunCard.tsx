@@ -6,7 +6,11 @@
  */
 
 import type { AuditReplayRun } from '@/lib/auditReplayApi';
-import { formatDuration, getReplayStatusColor, getReplayStatusLabel } from '@/lib/auditReplayApi';
+import {
+  formatDuration,
+  getReplayStatusColor,
+  getReplayStatusLabel,
+} from '@/lib/auditReplayApi';
 
 interface ReplayRunCardProps {
   run: AuditReplayRun;

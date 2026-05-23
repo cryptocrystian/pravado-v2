@@ -5,8 +5,13 @@
  * Displays simulation run details with agent turns
  */
 
+import type {
+  AIScenarioRun,
+  AIScenarioAgent,
+  AIScenarioTurn,
+} from '@pravado/types';
 import { useState, useEffect, useRef } from 'react';
-import type { AIScenarioRun, AIScenarioAgent, AIScenarioTurn } from '@pravado/types';
+
 import {
   getRunDetail,
   stepRun,
@@ -56,7 +61,10 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
       setAgents(detail.agents);
 
       // Also fetch all turns
-      const turnsResult = await listTurns(runId, { limit: 100, sortOrder: 'asc' });
+      const turnsResult = await listTurns(runId, {
+        limit: 100,
+        sortOrder: 'asc',
+      });
       setTurns(turnsResult.turns);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load run');
@@ -103,7 +111,9 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
       await runToCompletion(runId, { maxSteps: 10 });
       await fetchRunDetail();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to run to completion');
+      setError(
+        err instanceof Error ? err.message : 'Failed to run to completion'
+      );
     } finally {
       setStepping(false);
     }
@@ -120,7 +130,8 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
     }
   };
 
-  const getAgentById = (agentId: string) => agents.find((a) => a.id === agentId);
+  const getAgentById = (agentId: string) =>
+    agents.find((a) => a.id === agentId);
 
   if (loading) {
     return (
@@ -131,14 +142,11 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
   }
 
   if (!run) {
-    return (
-      <div className="text-center py-12 text-gray-500">
-        Run not found
-      </div>
-    );
+    return <div className="text-center py-12 text-gray-500">Run not found</div>;
   }
 
-  const statusColor = RUN_STATUS_COLORS[run.status] || RUN_STATUS_COLORS.starting;
+  const statusColor =
+    RUN_STATUS_COLORS[run.status] || RUN_STATUS_COLORS.starting;
   const isRunning = run.status === 'in_progress' || run.status === 'starting';
   const canStep = isRunning && run.currentStep < run.maxSteps;
 
@@ -151,7 +159,9 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
             {run.runLabel || `Run #${run.runNumber}`}
           </h2>
           <div className="flex items-center gap-3 mt-1">
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}
+            >
               {run.status}
             </span>
             <span className="text-sm text-gray-500">
@@ -231,12 +241,16 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
 
         {turns.map((turn) => {
           const agent = getAgentById(turn.speakerAgentId);
-          const colors = agent ? ROLE_COLORS[agent.roleType] || ROLE_COLORS.system : ROLE_COLORS.system;
+          const colors = agent
+            ? ROLE_COLORS[agent.roleType] || ROLE_COLORS.system
+            : ROLE_COLORS.system;
 
           return (
             <div key={turn.id} className="flex gap-3">
               {/* Avatar */}
-              <div className={`flex-shrink-0 w-10 h-10 rounded-full ${colors.bg} flex items-center justify-center`}>
+              <div
+                className={`flex-shrink-0 w-10 h-10 rounded-full ${colors.bg} flex items-center justify-center`}
+              >
                 <span className={`text-sm font-medium ${colors.text}`}>
                   {(agent?.displayName || '?')[0]}
                 </span>
@@ -270,11 +284,15 @@ export function RunViewer({ runId, onClose }: RunViewerProps) {
 
       {/* Risk indicator */}
       {run.riskLevel && run.riskLevel !== 'low' && (
-        <div className={`px-4 py-2 text-sm font-medium ${
-          run.riskLevel === 'critical' ? 'bg-red-100 text-red-800' :
-          run.riskLevel === 'high' ? 'bg-orange-100 text-orange-800' :
-          'bg-yellow-100 text-yellow-800'
-        }`}>
+        <div
+          className={`px-4 py-2 text-sm font-medium ${
+            run.riskLevel === 'critical'
+              ? 'bg-red-100 text-red-800'
+              : run.riskLevel === 'high'
+                ? 'bg-orange-100 text-orange-800'
+                : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
           Risk Level: {run.riskLevel.toUpperCase()}
         </div>
       )}

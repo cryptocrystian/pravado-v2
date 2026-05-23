@@ -62,7 +62,7 @@ const REQUIRED_PATTERNS = [
   {
     file: 'ActionCard.tsx',
     patterns: [
-      { regex: /action-card-v[3456]/, description: 'Action card v3/v4/v5/v6 CSS class marker' },
+      { regex: /action-card-v[3-9]/, description: 'Action card v3+ CSS class marker' },
       { regex: /densityLevel|DensityLevel/, description: 'Density level support' },
       { regex: /onPrimaryAction|onReview/, description: 'On-card CTA handlers (v5+: onReview replaces onSecondaryAction)' },
       { regex: /group-hover:opacity/, description: 'Hover opacity transitions (v6: no-layout-shift)' },

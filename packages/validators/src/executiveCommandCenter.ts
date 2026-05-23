@@ -12,7 +12,12 @@ import { z } from 'zod';
 /**
  * Time window for dashboard analysis
  */
-export const execDashboardTimeWindowSchema = z.enum(['24h', '7d', '30d', '90d']);
+export const execDashboardTimeWindowSchema = z.enum([
+  '24h',
+  '7d',
+  '30d',
+  '90d',
+]);
 
 /**
  * Primary focus area for dashboard
@@ -338,10 +343,18 @@ export const execNarrativeIdParamSchema = z.object({
 // TYPE EXPORTS
 // ============================================================================
 
-export type CreateExecDashboardInput = z.infer<typeof createExecDashboardSchema>;
-export type UpdateExecDashboardInput = z.infer<typeof updateExecDashboardSchema>;
-export type RefreshExecDashboardInput = z.infer<typeof refreshExecDashboardSchema>;
-export type GenerateExecNarrativeInput = z.infer<typeof generateExecNarrativeSchema>;
+export type CreateExecDashboardInput = z.infer<
+  typeof createExecDashboardSchema
+>;
+export type UpdateExecDashboardInput = z.infer<
+  typeof updateExecDashboardSchema
+>;
+export type RefreshExecDashboardInput = z.infer<
+  typeof refreshExecDashboardSchema
+>;
+export type GenerateExecNarrativeInput = z.infer<
+  typeof generateExecNarrativeSchema
+>;
 export type ListExecDashboardsInput = z.infer<typeof listExecDashboardsSchema>;
 export type ListExecInsightsInput = z.infer<typeof listExecInsightsSchema>;
 export type ListExecKpisInput = z.infer<typeof listExecKpisSchema>;
@@ -349,5 +362,7 @@ export type ListExecNarrativesInput = z.infer<typeof listExecNarrativesSchema>;
 export type ListExecAuditLogInput = z.infer<typeof listExecAuditLogSchema>;
 export type CreateExecInsightInput = z.infer<typeof createExecInsightSchema>;
 export type CreateExecKpiInput = z.infer<typeof createExecKpiSchema>;
-export type ExecDashboardFiltersInput = z.infer<typeof execDashboardFiltersSchema>;
+export type ExecDashboardFiltersInput = z.infer<
+  typeof execDashboardFiltersSchema
+>;
 export type ExecKpiTrendInput = z.infer<typeof execKpiTrendSchema>;

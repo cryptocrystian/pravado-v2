@@ -16,16 +16,16 @@ Sprint S87 was scoped to implement production-grade billing with Stripe. Upon di
 
 ### Billing Infrastructure Components
 
-| Component | Location | Purpose |
-|-----------|----------|---------|
-| **Database Schema** | `migrations/35-39_*.sql` | Billing plans, org states, usage, overages, alerts, invoices |
-| **Types** | `packages/types/src/billing.ts` | TypeScript interfaces for all billing entities |
-| **Validators** | `packages/validators/src/billing.ts` | Zod schemas for API request/response validation |
-| **StripeService** | `apps/api/src/services/stripeService.ts` | Stripe API integration (1039 lines) |
-| **BillingService** | `apps/api/src/services/billingService.ts` | Business logic (2100 lines) |
-| **Billing Routes** | `apps/api/src/routes/billing/index.ts` | REST API endpoints (1288 lines) |
-| **Frontend API** | `apps/dashboard/src/lib/billingApi.ts` | Dashboard API client (524 lines) |
-| **Billing Page** | `apps/dashboard/src/app/app/billing/page.tsx` | Self-service portal (445 lines) |
+| Component           | Location                                      | Purpose                                                      |
+| ------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| **Database Schema** | `migrations/35-39_*.sql`                      | Billing plans, org states, usage, overages, alerts, invoices |
+| **Types**           | `packages/types/src/billing.ts`               | TypeScript interfaces for all billing entities               |
+| **Validators**      | `packages/validators/src/billing.ts`          | Zod schemas for API request/response validation              |
+| **StripeService**   | `apps/api/src/services/stripeService.ts`      | Stripe API integration (1039 lines)                          |
+| **BillingService**  | `apps/api/src/services/billingService.ts`     | Business logic (2100 lines)                                  |
+| **Billing Routes**  | `apps/api/src/routes/billing/index.ts`        | REST API endpoints (1288 lines)                              |
+| **Frontend API**    | `apps/dashboard/src/lib/billingApi.ts`        | Dashboard API client (524 lines)                             |
+| **Billing Page**    | `apps/dashboard/src/app/app/billing/page.tsx` | Self-service portal (445 lines)                              |
 
 ---
 
@@ -64,13 +64,13 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here
 
 All billing feature flags are defined in `packages/feature-flags/src/flags.ts`:
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `ENABLE_STRIPE_BILLING` | `true` | Enable Stripe integration |
-| `ENABLE_BILLING_HARD_LIMITS` | `true` | Throw errors when quotas exceeded |
-| `ENABLE_OVERAGE_BILLING` | `true` | Track and bill for overages |
-| `ENABLE_USAGE_ALERTS` | `true` | Generate usage threshold alerts |
-| `ENABLE_ADMIN_INVOICE_SYNC` | `true` | Manual invoice sync from Stripe |
+| Flag                         | Default | Description                       |
+| ---------------------------- | ------- | --------------------------------- |
+| `ENABLE_STRIPE_BILLING`      | `true`  | Enable Stripe integration         |
+| `ENABLE_BILLING_HARD_LIMITS` | `true`  | Throw errors when quotas exceeded |
+| `ENABLE_OVERAGE_BILLING`     | `true`  | Track and bill for overages       |
+| `ENABLE_USAGE_ALERTS`        | `true`  | Generate usage threshold alerts   |
+| `ENABLE_ADMIN_INVOICE_SYNC`  | `true`  | Manual invoice sync from Stripe   |
 
 ---
 
@@ -80,11 +80,11 @@ All billing feature flags are defined in `packages/feature-flags/src/flags.ts`:
 
 The system expects three billing plans seeded in the database:
 
-| Plan | Slug | Monthly Price | Included Tokens | Playbook Runs | Seats |
-|------|------|---------------|-----------------|---------------|-------|
-| Starter | `starter` | $10 | 100,000 | 10 | 1 |
-| Growth | `growth` | $50 | 500,000 | 50 | 5 |
-| Enterprise | `enterprise` | $500 | 5,000,000 | 500 | 50 |
+| Plan       | Slug         | Monthly Price | Included Tokens | Playbook Runs | Seats |
+| ---------- | ------------ | ------------- | --------------- | ------------- | ----- |
+| Starter    | `starter`    | $10           | 100,000         | 10            | 1     |
+| Growth     | `growth`     | $50           | 500,000         | 50            | 5     |
+| Enterprise | `enterprise` | $500          | 5,000,000       | 500           | 50    |
 
 ### Seeding Plans
 
@@ -143,52 +143,52 @@ In [Stripe Dashboard](https://dashboard.stripe.com):
 
 ### Plans
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/billing/plans` | List all active plans |
-| GET | `/api/v1/billing/plans/:slug` | Get plan by slug |
+| Method | Endpoint                      | Description           |
+| ------ | ----------------------------- | --------------------- |
+| GET    | `/api/v1/billing/plans`       | List all active plans |
+| GET    | `/api/v1/billing/plans/:slug` | Get plan by slug      |
 
 ### Organization Billing
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/billing/org/summary` | Get current org billing summary |
-| POST | `/api/v1/billing/org/plan` | Set org plan (admin) |
-| POST | `/api/v1/billing/org/check` | Check quota availability |
-| POST | `/api/v1/billing/org/switch-plan` | Switch to different plan |
-| POST | `/api/v1/billing/org/create-checkout` | Create Stripe checkout session |
-| POST | `/api/v1/billing/org/cancel` | Cancel subscription |
-| POST | `/api/v1/billing/org/resume` | Resume canceled subscription |
-| POST | `/api/v1/billing/org/payment-method` | Open Stripe Customer Portal |
+| Method | Endpoint                              | Description                     |
+| ------ | ------------------------------------- | ------------------------------- |
+| GET    | `/api/v1/billing/org/summary`         | Get current org billing summary |
+| POST   | `/api/v1/billing/org/plan`            | Set org plan (admin)            |
+| POST   | `/api/v1/billing/org/check`           | Check quota availability        |
+| POST   | `/api/v1/billing/org/switch-plan`     | Switch to different plan        |
+| POST   | `/api/v1/billing/org/create-checkout` | Create Stripe checkout session  |
+| POST   | `/api/v1/billing/org/cancel`          | Cancel subscription             |
+| POST   | `/api/v1/billing/org/resume`          | Resume canceled subscription    |
+| POST   | `/api/v1/billing/org/payment-method`  | Open Stripe Customer Portal     |
 
 ### Overages
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/billing/org/overages` | Get overage summary |
-| POST | `/api/v1/billing/org/overages/recalculate` | Recalculate overages |
+| Method | Endpoint                                   | Description          |
+| ------ | ------------------------------------------ | -------------------- |
+| GET    | `/api/v1/billing/org/overages`             | Get overage summary  |
+| POST   | `/api/v1/billing/org/overages/recalculate` | Recalculate overages |
 
 ### Alerts
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/billing/alerts` | List billing alerts |
-| POST | `/api/v1/billing/alerts/generate` | Generate usage alerts |
-| POST | `/api/v1/billing/alerts/:alertId/acknowledge` | Acknowledge alert |
+| Method | Endpoint                                      | Description           |
+| ------ | --------------------------------------------- | --------------------- |
+| GET    | `/api/v1/billing/alerts`                      | List billing alerts   |
+| POST   | `/api/v1/billing/alerts/generate`             | Generate usage alerts |
+| POST   | `/api/v1/billing/alerts/:alertId/acknowledge` | Acknowledge alert     |
 
 ### Invoices
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/billing/org/invoices` | Get invoice history |
-| GET | `/api/v1/billing/org/invoices/:id` | Get invoice details |
-| POST | `/api/v1/billing/org/invoices/sync` | Sync invoices from Stripe |
+| Method | Endpoint                            | Description               |
+| ------ | ----------------------------------- | ------------------------- |
+| GET    | `/api/v1/billing/org/invoices`      | Get invoice history       |
+| GET    | `/api/v1/billing/org/invoices/:id`  | Get invoice details       |
+| POST   | `/api/v1/billing/org/invoices/sync` | Sync invoices from Stripe |
 
 ### Webhook
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/billing/stripe/webhook` | Stripe webhook handler |
+| Method | Endpoint                         | Description            |
+| ------ | -------------------------------- | ---------------------- |
+| POST   | `/api/v1/billing/stripe/webhook` | Stripe webhook handler |
 
 ---
 
@@ -215,17 +215,18 @@ async enforceOrgQuotaOrThrow(
 
 ### Services Using Enforcement
 
-| Service | File | Enforced Resources |
-|---------|------|-------------------|
-| Playbook Execution | `playbookExecutionEngineV2.ts` | Tokens, Runs |
-| Narrative Generator | `narrativeGeneratorService.ts` | Tokens |
-| Brief Generator | `briefGeneratorService.ts` | Tokens |
-| Content Rewrite | `contentRewriteService.ts` | Tokens |
-| Playbook Routes | `routes/playbooks/index.ts` | Runs |
+| Service             | File                           | Enforced Resources |
+| ------------------- | ------------------------------ | ------------------ |
+| Playbook Execution  | `playbookExecutionEngineV2.ts` | Tokens, Runs       |
+| Narrative Generator | `narrativeGeneratorService.ts` | Tokens             |
+| Brief Generator     | `briefGeneratorService.ts`     | Tokens             |
+| Content Rewrite     | `contentRewriteService.ts`     | Tokens             |
+| Playbook Routes     | `routes/playbooks/index.ts`    | Runs               |
 
 ### Graceful Degradation
 
 When `ENABLE_BILLING_HARD_LIMITS` is `false`, the system:
+
 - Logs quota warnings but doesn't block
 - Continues to track usage
 - Generates alerts but allows operations
@@ -238,17 +239,17 @@ When `ENABLE_BILLING_HARD_LIMITS` is `false`, the system:
 
 Located in `apps/dashboard/src/app/app/billing/`:
 
-| Component | Purpose |
-|-----------|---------|
-| `page.tsx` | Main billing portal |
-| `UsageBar` | Visual usage progress bars |
-| `PlanRecommendationBadge` | Upgrade recommendations |
-| `TrialBanner` | Trial countdown display |
-| `OverageBreakdown` | Overage cost breakdown |
-| `StripePortalButton` | Link to Stripe portal |
-| `BillingPlanCard` | Plan comparison cards |
-| `CancelSubscriptionModal` | Cancellation confirmation |
-| `DowngradeBlockedDialog` | Usage-blocked downgrade warning |
+| Component                 | Purpose                         |
+| ------------------------- | ------------------------------- |
+| `page.tsx`                | Main billing portal             |
+| `UsageBar`                | Visual usage progress bars      |
+| `PlanRecommendationBadge` | Upgrade recommendations         |
+| `TrialBanner`             | Trial countdown display         |
+| `OverageBreakdown`        | Overage cost breakdown          |
+| `StripePortalButton`      | Link to Stripe portal           |
+| `BillingPlanCard`         | Plan comparison cards           |
+| `CancelSubscriptionModal` | Cancellation confirmation       |
+| `DowngradeBlockedDialog`  | Usage-blocked downgrade warning |
 
 ### User Flow
 
@@ -281,6 +282,7 @@ pnpm --filter @pravado/api test billingPlanManagement
 ### Stripe Test Mode
 
 For development, use Stripe test mode:
+
 - `STRIPE_SECRET_KEY=sk_test_...`
 - Test cards: `4242 4242 4242 4242`
 
@@ -324,16 +326,16 @@ For development, use Stripe test mode:
 
 ## Sprint History
 
-| Sprint | Feature |
-|--------|---------|
-| S28 | Billing schema, quota kernel, BillingService core |
-| S29 | Hard limit enforcement (`enforceOrgQuotaOrThrow`) |
-| S30 | Stripe integration, checkout, webhooks |
-| S31 | Overage billing calculations |
-| S32 | Usage alerts and notifications |
-| S33 | Self-service plan management UI |
-| S34 | Invoice history and sync |
-| S87 | Activation documentation (this sprint) |
+| Sprint | Feature                                           |
+| ------ | ------------------------------------------------- |
+| S28    | Billing schema, quota kernel, BillingService core |
+| S29    | Hard limit enforcement (`enforceOrgQuotaOrThrow`) |
+| S30    | Stripe integration, checkout, webhooks            |
+| S31    | Overage billing calculations                      |
+| S32    | Usage alerts and notifications                    |
+| S33    | Self-service plan management UI                   |
+| S34    | Invoice history and sync                          |
+| S87    | Activation documentation (this sprint)            |
 
 ---
 

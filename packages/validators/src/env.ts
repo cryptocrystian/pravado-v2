@@ -5,14 +5,18 @@
 import { z } from 'zod';
 
 export const baseEnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
 });
 
 export const apiEnvSchema = baseEnvSchema.extend({
   API_PORT: z.coerce.number().min(1).max(65535).default(3001),
   API_HOST: z.string().default('localhost'),
   // Deployment environment (staging vs production) - separate from NODE_ENV
-  DEPLOYMENT_ENV: z.enum(['development', 'staging', 'production']).default('development'),
+  DEPLOYMENT_ENV: z
+    .enum(['development', 'staging', 'production'])
+    .default('development'),
   DATABASE_URL: z.string().url().optional(),
   REDIS_URL: z.string().url().optional(),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),

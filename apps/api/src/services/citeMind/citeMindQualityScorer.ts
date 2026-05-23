@@ -16,9 +16,8 @@
  * - overall <  55: blocked (red)
  */
 
+import { createLogger, LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createLogger } from '@pravado/utils';
-import { LlmRouter } from '@pravado/utils';
 
 const logger = createLogger('citemind:scorer');
 
@@ -57,11 +56,11 @@ interface ContentItemData {
 // ============================================================================
 
 const WEIGHTS = {
-  entity_density: 0.20,
-  claim_verifiability: 0.20,
+  entity_density: 0.2,
+  claim_verifiability: 0.2,
   structural_clarity: 0.15,
-  topical_authority: 0.20,
-  schema_markup: 0.10,
+  topical_authority: 0.2,
+  schema_markup: 0.1,
   citation_pattern: 0.15,
 } as const;
 
@@ -90,10 +89,12 @@ export async function scoreContentItem(
     .single();
 
   if (error || !item) {
-    throw new Error(`Content item ${contentItemId} not found: ${error?.message}`);
+    throw new Error(
+      `Content item ${contentItemId} not found: ${error?.message}`
+    );
   }
 
-  const content = (item as ContentItemData);
+  const content = item as ContentItemData;
   const body = content.body || '';
   const words = body.split(/\s+/).filter(Boolean);
   const wordCount = words.length;
@@ -102,25 +103,33 @@ export async function scoreContentItem(
   const entityDensity = scoreEntityDensity(body, wordCount);
   const claimVerifiability = scoreClaimVerifiability(body, wordCount);
   const structuralClarity = scoreStructuralClarity(body, content.title);
-  const topicalAuthority = await scoreTopicalAuthority(supabase, content, orgId);
-  const schemaMarkup = await scoreSchemaMarkup(supabase, contentItemId, content.metadata);
+  const topicalAuthority = await scoreTopicalAuthority(
+    supabase,
+    content,
+    orgId
+  );
+  const schemaMarkup = await scoreSchemaMarkup(
+    supabase,
+    contentItemId,
+    content.metadata
+  );
   const citationPattern = scoreCitationPattern(body, content.title);
 
   // Calculate overall weighted score
-  const overall = Math.round(
-    (entityDensity.score * WEIGHTS.entity_density +
-     claimVerifiability.score * WEIGHTS.claim_verifiability +
-     structuralClarity.score * WEIGHTS.structural_clarity +
-     topicalAuthority.score * WEIGHTS.topical_authority +
-     schemaMarkup.score * WEIGHTS.schema_markup +
-     citationPattern.score * WEIGHTS.citation_pattern) * 100
-  ) / 100;
+  const overall =
+    Math.round(
+      (entityDensity.score * WEIGHTS.entity_density +
+        claimVerifiability.score * WEIGHTS.claim_verifiability +
+        structuralClarity.score * WEIGHTS.structural_clarity +
+        topicalAuthority.score * WEIGHTS.topical_authority +
+        schemaMarkup.score * WEIGHTS.schema_markup +
+        citationPattern.score * WEIGHTS.citation_pattern) *
+        100
+    ) / 100;
 
   // Determine gate status
   const gateStatus: 'passed' | 'warning' | 'blocked' =
-    overall >= 75 ? 'passed' :
-    overall >= 55 ? 'warning' :
-    'blocked';
+    overall >= 75 ? 'passed' : overall >= 55 ? 'warning' : 'blocked';
 
   // Generate recommendations from lowest-scoring factors
   const recommendations = generateTemplateRecommendations({
@@ -210,7 +219,9 @@ export async function generateLLMRecommendations(
 ): Promise<string[]> {
   // Check LLM budget
   const now = new Date();
-  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+  const monthStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
+  ).toISOString();
 
   const { data } = await supabase
     .from('llm_usage_ledger')
@@ -219,21 +230,26 @@ export async function generateLLMRecommendations(
     .gte('created_at', monthStart);
 
   const totalTokens = (data ?? []).reduce(
-    (sum: number, row: { tokens_total: number }) => sum + (row.tokens_total || 0),
+    (sum: number, row: { tokens_total: number }) =>
+      sum + (row.tokens_total || 0),
     0
   );
 
   if (totalTokens >= 500_000) {
-    logger.info(`Org ${orgId} exceeded LLM budget, using template recommendations`);
+    logger.info(
+      `Org ${orgId} exceeded LLM budget, using template recommendations`
+    );
     return scoreResult.recommendations;
   }
 
   try {
     const router = new LlmRouter({
       provider: 'anthropic',
-      anthropicApiKey: process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
+      anthropicApiKey:
+        process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
       anthropicModel: 'claude-sonnet-4-20250514',
-      openaiApiKey: process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      openaiApiKey:
+        process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
       openaiModel: 'gpt-4o-mini',
       supabase,
       enableLedger: true,
@@ -252,7 +268,9 @@ Generate 2-3 specific recommendations as a JSON array of strings.`,
       maxTokens: 300,
     });
 
-    const parsed = JSON.parse(result.completion.match(/\[[\s\S]*\]/)?.[0] || '[]');
+    const parsed = JSON.parse(
+      result.completion.match(/\[[\s\S]*\]/)?.[0] || '[]'
+    );
     if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed.map(String).slice(0, 3);
     }
@@ -267,31 +285,42 @@ Generate 2-3 specific recommendations as a JSON array of strings.`,
 // Factor 1: Entity Density (weight: 0.20)
 // ============================================================================
 
-function scoreEntityDensity(body: string, wordCount: number): { score: number; details: Record<string, unknown> } {
-  if (wordCount === 0) return { score: 0, details: { entities: 0, density: 0, reason: 'empty content' } };
+function scoreEntityDensity(
+  body: string,
+  wordCount: number
+): { score: number; details: Record<string, unknown> } {
+  if (wordCount === 0)
+    return {
+      score: 0,
+      details: { entities: 0, density: 0, reason: 'empty content' },
+    };
 
   // Count named entities using heuristics
   const entities = new Set<string>();
 
   // Capitalized phrases (2+ words starting with capitals, not at sentence start)
-  const capitalizedPhrases = body.match(/(?<=[.!?]\s+\w+\s+|,\s+)[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g) || [];
-  capitalizedPhrases.forEach(p => entities.add(p));
+  const capitalizedPhrases =
+    body.match(/(?<=[.!?]\s+\w+\s+|,\s+)[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g) || [];
+  capitalizedPhrases.forEach((p) => entities.add(p));
 
   // Standalone capitalized words in mid-sentence
   const midSentenceCaps = body.match(/(?<=\s)[A-Z][a-z]{2,}(?=\s[a-z])/g) || [];
-  midSentenceCaps.forEach(w => entities.add(w));
+  midSentenceCaps.forEach((w) => entities.add(w));
 
   // Numbers with units (e.g., "73%", "$5.2 million", "2024")
-  const numbersWithUnits = body.match(/\$?\d[\d,.]*\s*(%|million|billion|trillion|percent|users|customers|companies|employees)/gi) || [];
-  numbersWithUnits.forEach(n => entities.add(n.trim()));
+  const numbersWithUnits =
+    body.match(
+      /\$?\d[\d,.]*\s*(%|million|billion|trillion|percent|users|customers|companies|employees)/gi
+    ) || [];
+  numbersWithUnits.forEach((n) => entities.add(n.trim()));
 
   // Year patterns
   const years = body.match(/\b(19|20)\d{2}\b/g) || [];
-  years.forEach(y => entities.add(y));
+  years.forEach((y) => entities.add(y));
 
   // Quoted statistics
   const quotedStats = body.match(/"[^"]*\d+[^"]*"/g) || [];
-  quotedStats.forEach(q => entities.add(q));
+  quotedStats.forEach((q) => entities.add(q));
 
   const entityCount = entities.size;
   const densityPer1000 = wordCount > 0 ? (entityCount / wordCount) * 1000 : 0;
@@ -325,8 +354,12 @@ function scoreEntityDensity(body: string, wordCount: number): { score: number; d
 // Factor 2: Claim Verifiability (weight: 0.20)
 // ============================================================================
 
-function scoreClaimVerifiability(body: string, wordCount: number): { score: number; details: Record<string, unknown> } {
-  if (wordCount === 0) return { score: 0, details: { claims: 0, reason: 'empty content' } };
+function scoreClaimVerifiability(
+  body: string,
+  wordCount: number
+): { score: number; details: Record<string, unknown> } {
+  if (wordCount === 0)
+    return { score: 0, details: { claims: 0, reason: 'empty content' } };
 
   let claimCount = 0;
   const claimTypes: string[] = [];
@@ -337,12 +370,17 @@ function scoreClaimVerifiability(body: string, wordCount: number): { score: numb
   if (percentages.length > 0) claimTypes.push('percentages');
 
   // Year references: "In 2024...", "since 2020"
-  const yearRefs = body.match(/\b(in|since|during|by|before|after|from)\s+(19|20)\d{2}\b/gi) || [];
+  const yearRefs =
+    body.match(/\b(in|since|during|by|before|after|from)\s+(19|20)\d{2}\b/gi) ||
+    [];
   claimCount += yearRefs.length;
   if (yearRefs.length > 0) claimTypes.push('date_references');
 
   // Attribution: "according to", "research shows", "study found"
-  const attributions = body.match(/\b(according to|research (shows|found|suggests|indicates)|study (found|shows|reveals)|data (shows|suggests|indicates)|report (by|from)|survey (of|by|found))\b/gi) || [];
+  const attributions =
+    body.match(
+      /\b(according to|research (shows|found|suggests|indicates)|study (found|shows|reveals)|data (shows|suggests|indicates)|report (by|from)|survey (of|by|found))\b/gi
+    ) || [];
   claimCount += attributions.length;
   if (attributions.length > 0) claimTypes.push('attributions');
 
@@ -352,7 +390,10 @@ function scoreClaimVerifiability(body: string, wordCount: number): { score: numb
   if (quotes.length > 0) claimTypes.push('quoted_text');
 
   // Specific numbers with context: "X million", "$X"
-  const specificNumbers = body.match(/\b\d[\d,.]+\s*(million|billion|trillion|thousand|users|customers|downloads|visits)\b/gi) || [];
+  const specificNumbers =
+    body.match(
+      /\b\d[\d,.]+\s*(million|billion|trillion|thousand|users|customers|downloads|visits)\b/gi
+    ) || [];
   claimCount += specificNumbers.length;
   if (specificNumbers.length > 0) claimTypes.push('specific_numbers');
 
@@ -376,8 +417,12 @@ function scoreClaimVerifiability(body: string, wordCount: number): { score: numb
 // Factor 3: Structural Clarity (weight: 0.15)
 // ============================================================================
 
-function scoreStructuralClarity(body: string, _title: string): { score: number; details: Record<string, unknown> } {
-  if (!body || body.length === 0) return { score: 0, details: { reason: 'empty content' } };
+function scoreStructuralClarity(
+  body: string,
+  _title: string
+): { score: number; details: Record<string, unknown> } {
+  if (!body || body.length === 0)
+    return { score: 0, details: { reason: 'empty content' } };
 
   let points = 0;
   const criteria: Record<string, boolean> = {};
@@ -390,10 +435,12 @@ function scoreStructuralClarity(body: string, _title: string): { score: number; 
   if (hasHeadings) points += 25;
 
   // Criterion 2: Short paragraphs (avg < 150 words per paragraph)
-  const paragraphs = body.split(/\n\s*\n/).filter(p => p.trim().length > 0);
-  const avgParagraphWords = paragraphs.length > 0
-    ? paragraphs.reduce((sum, p) => sum + p.split(/\s+/).length, 0) / paragraphs.length
-    : 0;
+  const paragraphs = body.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
+  const avgParagraphWords =
+    paragraphs.length > 0
+      ? paragraphs.reduce((sum, p) => sum + p.split(/\s+/).length, 0) /
+        paragraphs.length
+      : 0;
   criteria.short_paragraphs = avgParagraphWords < 150 && avgParagraphWords > 0;
   if (criteria.short_paragraphs) points += 25;
 
@@ -408,8 +455,9 @@ function scoreStructuralClarity(body: string, _title: string): { score: number; 
   // Criterion 4: Answer-first structure (direct answer in first 100 words)
   const first100Words = body.split(/\s+/).slice(0, 100).join(' ');
   const hasAnswerFirst =
-    /\bis\b|\bare\b|\bcan\b|\bshould\b|\bmeans\b|\brefers to\b|\bdefined as\b/i.test(first100Words) &&
-    first100Words.length > 50;
+    /\bis\b|\bare\b|\bcan\b|\bshould\b|\bmeans\b|\brefers to\b|\bdefined as\b/i.test(
+      first100Words
+    ) && first100Words.length > 50;
   criteria.answer_first = hasAnswerFirst;
   if (hasAnswerFirst) points += 25;
 
@@ -433,7 +481,13 @@ async function scoreTopicalAuthority(
   orgId: string
 ): Promise<{ score: number; details: Record<string, unknown> }> {
   if (!content.primary_topic_id) {
-    return { score: 50, details: { reason: 'no_topic_assigned', note: 'Neutral score — no topic cluster linked' } };
+    return {
+      score: 50,
+      details: {
+        reason: 'no_topic_assigned',
+        note: 'Neutral score — no topic cluster linked',
+      },
+    };
   }
 
   // Get the topic and its cluster
@@ -451,10 +505,16 @@ async function scoreTopicalAuthority(
   if (!topic.cluster_id) {
     // No cluster — check if content mentions the topic name
     const body = (content.body || '').toLowerCase();
-    const topicInContent = body.includes((topic.topic_name || '').toLowerCase());
+    const topicInContent = body.includes(
+      (topic.topic_name || '').toLowerCase()
+    );
     return {
       score: topicInContent ? 70 : 40,
-      details: { reason: 'no_cluster', topic_name: topic.topic_name, topic_in_content: topicInContent },
+      details: {
+        reason: 'no_cluster',
+        topic_name: topic.topic_name,
+        topic_in_content: topicInContent,
+      },
     };
   }
 
@@ -470,8 +530,8 @@ async function scoreTopicalAuthority(
 
   // Calculate keyword overlap
   const body = (content.body || '').toLowerCase();
-  const matchingTopics = clusterTopics.filter(
-    (t: { topic_name: string }) => body.includes(t.topic_name.toLowerCase())
+  const matchingTopics = clusterTopics.filter((t: { topic_name: string }) =>
+    body.includes(t.topic_name.toLowerCase())
   );
 
   const coverage = (matchingTopics.length / clusterTopics.length) * 100;
@@ -482,7 +542,9 @@ async function scoreTopicalAuthority(
       cluster_topics_total: clusterTopics.length,
       matching_topics: matchingTopics.length,
       coverage_pct: Math.round(coverage),
-      sample_matched: matchingTopics.slice(0, 5).map((t: { topic_name: string }) => t.topic_name),
+      sample_matched: matchingTopics
+        .slice(0, 5)
+        .map((t: { topic_name: string }) => t.topic_name),
     },
   };
 }
@@ -506,20 +568,30 @@ async function scoreSchemaMarkup(
   const hasDbSchema = schemas && schemas.length > 0;
 
   // Check metadata for JSON-LD
-  const hasMetadataSchema = metadata &&
-    (metadata['json_ld'] || metadata['jsonLd'] || metadata['structured_data'] || metadata['schema']);
+  const hasMetadataSchema =
+    metadata &&
+    (metadata['json_ld'] ||
+      metadata['jsonLd'] ||
+      metadata['structured_data'] ||
+      metadata['schema']);
 
   if (hasDbSchema) {
     return {
       score: 100,
-      details: { source: 'citemind_schemas', schema_type: schemas[0].schema_type },
+      details: {
+        source: 'citemind_schemas',
+        schema_type: schemas[0].schema_type,
+      },
     };
   }
 
   if (hasMetadataSchema) {
     return {
       score: 50,
-      details: { source: 'metadata_partial', note: 'Schema exists in metadata but not validated by CiteMind' },
+      details: {
+        source: 'metadata_partial',
+        note: 'Schema exists in metadata but not validated by CiteMind',
+      },
     };
   }
 
@@ -533,8 +605,12 @@ async function scoreSchemaMarkup(
 // Factor 6: Citation Pattern (weight: 0.15)
 // ============================================================================
 
-function scoreCitationPattern(body: string, title: string): { score: number; details: Record<string, unknown> } {
-  if (!body || body.length === 0) return { score: 0, details: { reason: 'empty content' } };
+function scoreCitationPattern(
+  body: string,
+  title: string
+): { score: number; details: Record<string, unknown> } {
+  if (!body || body.length === 0)
+    return { score: 0, details: { reason: 'empty content' } };
 
   let points = 0;
   const patterns: Record<string, boolean> = {};
@@ -542,16 +618,18 @@ function scoreCitationPattern(body: string, title: string): { score: number; det
   // Pattern 1: Question-answer structure
   const hasQA =
     /\?[\s\n]/m.test(body) && // has questions
-    (
-      /#{2,3}\s+.*\?/m.test(body) || // question in heading
-      /\bwhat\s+is\b|\bhow\s+to\b|\bwhy\s+(do|does|is|are)\b|\bwhen\s+(should|to|do)\b/i.test(title) // question in title
-    );
+    (/#{2,3}\s+.*\?/m.test(body) || // question in heading
+      /\bwhat\s+is\b|\bhow\s+to\b|\bwhy\s+(do|does|is|are)\b|\bwhen\s+(should|to|do)\b/i.test(
+        title
+      )); // question in title
   patterns.question_answer = hasQA;
   if (hasQA) points += 25;
 
   // Pattern 2: Summary/takeaway section
   const hasSummary =
-    /\b(key takeaway|summary|conclusion|in summary|bottom line|tl;?dr|main points)\b/i.test(body) ||
+    /\b(key takeaway|summary|conclusion|in summary|bottom line|tl;?dr|main points)\b/i.test(
+      body
+    ) ||
     /#{2,3}\s*(summary|conclusion|key takeaway|final thoughts)/im.test(body);
   patterns.summary_section = hasSummary;
   if (hasSummary) points += 25;
@@ -565,8 +643,12 @@ function scoreCitationPattern(body: string, title: string): { score: number; det
 
   // Pattern 4: Original data/unique finding
   const hasOriginalData =
-    /\b(our (research|data|study|analysis|survey|findings)|we (found|discovered|analyzed|surveyed|measured))\b/i.test(body) ||
-    /\b(original (research|data)|proprietary|exclusive|first-of-its-kind)\b/i.test(body);
+    /\b(our (research|data|study|analysis|survey|findings)|we (found|discovered|analyzed|surveyed|measured))\b/i.test(
+      body
+    ) ||
+    /\b(original (research|data)|proprietary|exclusive|first-of-its-kind)\b/i.test(
+      body
+    );
   patterns.original_data = hasOriginalData;
   if (hasOriginalData) points += 25;
 
@@ -580,29 +662,49 @@ function scoreCitationPattern(body: string, title: string): { score: number; det
 // Template recommendations (no LLM needed)
 // ============================================================================
 
-function generateTemplateRecommendations(scores: Record<string, number>): string[] {
+function generateTemplateRecommendations(
+  scores: Record<string, number>
+): string[] {
   const recs: Array<{ score: number; rec: string }> = [];
 
   if (scores.entity_density < 60) {
-    recs.push({ score: scores.entity_density, rec: 'Add more named entities (people, companies, products, dates, statistics) to increase AI citability. Target 8-15 entities per 1000 words.' });
+    recs.push({
+      score: scores.entity_density,
+      rec: 'Add more named entities (people, companies, products, dates, statistics) to increase AI citability. Target 8-15 entities per 1000 words.',
+    });
   }
   if (scores.claim_verifiability < 60) {
-    recs.push({ score: scores.claim_verifiability, rec: 'Include more verifiable claims: statistics with sources, specific dates, named studies, or attributed quotes. Target 1 verifiable claim per 200 words.' });
+    recs.push({
+      score: scores.claim_verifiability,
+      rec: 'Include more verifiable claims: statistics with sources, specific dates, named studies, or attributed quotes. Target 1 verifiable claim per 200 words.',
+    });
   }
   if (scores.structural_clarity < 60) {
-    recs.push({ score: scores.structural_clarity, rec: 'Improve structure: add headings (H2/H3), use bullet/numbered lists, keep paragraphs under 150 words, and lead with a direct answer.' });
+    recs.push({
+      score: scores.structural_clarity,
+      rec: 'Improve structure: add headings (H2/H3), use bullet/numbered lists, keep paragraphs under 150 words, and lead with a direct answer.',
+    });
   }
   if (scores.topical_authority < 60) {
-    recs.push({ score: scores.topical_authority, rec: 'Broaden topical coverage: reference more keywords from your topic cluster to demonstrate comprehensive authority on this subject.' });
+    recs.push({
+      score: scores.topical_authority,
+      rec: 'Broaden topical coverage: reference more keywords from your topic cluster to demonstrate comprehensive authority on this subject.',
+    });
   }
   if (scores.schema_markup < 60) {
-    recs.push({ score: scores.schema_markup, rec: 'Generate JSON-LD structured data for this content to help AI engines understand and cite it properly.' });
+    recs.push({
+      score: scores.schema_markup,
+      rec: 'Generate JSON-LD structured data for this content to help AI engines understand and cite it properly.',
+    });
   }
   if (scores.citation_pattern < 60) {
-    recs.push({ score: scores.citation_pattern, rec: 'Structure content for AI citation: add Q&A sections, include a summary/key takeaways section, use numbered steps for processes, or present original data.' });
+    recs.push({
+      score: scores.citation_pattern,
+      rec: 'Structure content for AI citation: add Q&A sections, include a summary/key takeaways section, use numbered steps for processes, or present original data.',
+    });
   }
 
   // Sort by lowest score first, return top 3
   recs.sort((a, b) => a.score - b.score);
-  return recs.slice(0, 3).map(r => r.rec);
+  return recs.slice(0, 3).map((r) => r.rec);
 }

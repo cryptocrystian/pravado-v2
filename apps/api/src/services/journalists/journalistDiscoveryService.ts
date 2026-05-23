@@ -45,7 +45,11 @@ export async function discoverByTopics(
   orgId: string,
   topics: string[]
 ): Promise<DiscoverResult> {
-  const result: DiscoverResult = { discovered: [], saved: 0, already_exists: 0 };
+  const result: DiscoverResult = {
+    discovered: [],
+    saved: 0,
+    already_exists: 0,
+  };
 
   if (!topics.length) return result;
 
@@ -54,7 +58,9 @@ export async function discoverByTopics(
 
   if (!publications.length) {
     // If no industry match, try topics as publication domains directly
-    logger.info(`No industry match for topics: ${topics.join(', ')} — trying as domains`);
+    logger.info(
+      `No industry match for topics: ${topics.join(', ')} — trying as domains`
+    );
     return result;
   }
 
@@ -65,7 +71,9 @@ export async function discoverByTopics(
     .eq('org_id', orgId)
     .not('email', 'is', null);
 
-  const existingEmails = new Set((existing ?? []).map((j: { email: string }) => j.email?.toLowerCase()));
+  const existingEmails = new Set(
+    (existing ?? []).map((j: { email: string }) => j.email?.toLowerCase())
+  );
 
   // Search up to 5 publications (rate limiting)
   const pubsToSearch = publications.slice(0, 5);

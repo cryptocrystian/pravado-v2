@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ReputationTrendDirection } from '@pravado/types';
+import { ArrowUp, ArrowDown, Minus, TrendingUp } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getScoreColor,
   getScoreLabel,
@@ -14,8 +17,6 @@ import {
   formatDelta,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ReputationTrendDirection } from '@pravado/types';
-import { ArrowUp, ArrowDown, Minus, TrendingUp } from 'lucide-react';
 
 interface ReputationScoreCardProps {
   score: number | null | undefined;
@@ -45,9 +46,12 @@ export function ReputationScoreCard({
   const calculatedDelta =
     scoreDelta !== undefined
       ? scoreDelta
-      : score !== null && score !== undefined && previousScore !== null && previousScore !== undefined
-      ? score - previousScore
-      : null;
+      : score !== null &&
+          score !== undefined &&
+          previousScore !== null &&
+          previousScore !== undefined
+        ? score - previousScore
+        : null;
 
   // Determine trend if not provided
   const determinedTrend =
@@ -56,12 +60,13 @@ export function ReputationScoreCard({
       ? Math.abs(calculatedDelta) < 2
         ? 'flat'
         : calculatedDelta > 0
-        ? 'up'
-        : 'down'
+          ? 'up'
+          : 'down'
       : 'flat');
 
   const trendColorClass = getTrendColor(determinedTrend);
-  const { text: deltaText, colorClass: deltaColorClass } = formatDelta(calculatedDelta);
+  const { text: deltaText, colorClass: deltaColorClass } =
+    formatDelta(calculatedDelta);
 
   // Color classes for styling (scoreBgClasses available for V2 styling)
   const badgeBgClasses: Record<string, string> = {
@@ -79,10 +84,15 @@ export function ReputationScoreCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-gray-600" />
-            <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              {title}
+            </CardTitle>
           </div>
           {scoreLabel !== 'N/A' && (
-            <Badge variant="outline" className={cn('text-xs', badgeBgClasses[scoreColorClass])}>
+            <Badge
+              variant="outline"
+              className={cn('text-xs', badgeBgClasses[scoreColorClass])}
+            >
               {scoreLabel}
             </Badge>
           )}
@@ -101,17 +111,27 @@ export function ReputationScoreCard({
         </div>
 
         {/* Trend Indicator */}
-        {showTrend && calculatedDelta !== null && calculatedDelta !== undefined && (
-          <div className="flex items-center gap-1">
-            {determinedTrend === 'up' && <ArrowUp className={cn('h-4 w-4', trendColorClass)} />}
-            {determinedTrend === 'down' && <ArrowDown className={cn('h-4 w-4', trendColorClass)} />}
-            {determinedTrend === 'flat' && <Minus className={cn('h-4 w-4', trendColorClass)} />}
-            <span className={cn('text-sm font-medium', deltaColorClass)}>
-              {deltaText}
-            </span>
-            <span className="text-xs text-gray-500">from previous period</span>
-          </div>
-        )}
+        {showTrend &&
+          calculatedDelta !== null &&
+          calculatedDelta !== undefined && (
+            <div className="flex items-center gap-1">
+              {determinedTrend === 'up' && (
+                <ArrowUp className={cn('h-4 w-4', trendColorClass)} />
+              )}
+              {determinedTrend === 'down' && (
+                <ArrowDown className={cn('h-4 w-4', trendColorClass)} />
+              )}
+              {determinedTrend === 'flat' && (
+                <Minus className={cn('h-4 w-4', trendColorClass)} />
+              )}
+              <span className={cn('text-sm font-medium', deltaColorClass)}>
+                {deltaText}
+              </span>
+              <span className="text-xs text-gray-500">
+                from previous period
+              </span>
+            </div>
+          )}
 
         {/* Score Progress Bar */}
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -122,12 +142,12 @@ export function ReputationScoreCard({
                 ? score >= 80
                   ? 'bg-green-500'
                   : score >= 60
-                  ? 'bg-blue-500'
-                  : score >= 40
-                  ? 'bg-yellow-500'
-                  : score >= 20
-                  ? 'bg-orange-500'
-                  : 'bg-red-500'
+                    ? 'bg-blue-500'
+                    : score >= 40
+                      ? 'bg-yellow-500'
+                      : score >= 20
+                        ? 'bg-orange-500'
+                        : 'bg-red-500'
                 : 'bg-gray-300'
             )}
             style={{ width: `${score ?? 0}%` }}

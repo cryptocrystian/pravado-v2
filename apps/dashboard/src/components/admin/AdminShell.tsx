@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
+
+import { PravadoLogoIcon } from '@/components/brand/PravadoLogo';
 
 const ADMIN_NAV = [
   { label: 'Overview', href: '/app/admin' },
@@ -26,11 +27,19 @@ export function AdminShell({ children, userEmail }: AdminShellProps) {
   return (
     <div className="flex h-screen" style={{ background: '#0A0A0F' }}>
       {/* Sidebar */}
-      <aside className="w-56 flex flex-col shrink-0" style={{ background: '#13131A', borderRight: '1px solid #1F1F28' }}>
+      <aside
+        className="w-56 flex flex-col shrink-0"
+        style={{ background: '#13131A', borderRight: '1px solid #1F1F28' }}
+      >
         {/* Logo area */}
-        <div className="h-14 flex items-center gap-2 px-3" style={{ borderBottom: '1px solid #1F1F28' }}>
+        <div
+          className="h-14 flex items-center gap-2 px-3"
+          style={{ borderBottom: '1px solid #1F1F28' }}
+        >
           <PravadoLogoIcon size={22} />
-          <span className="text-sm font-bold text-white/90 tracking-[0.1em]">PRAVADO</span>
+          <span className="text-sm font-bold text-white/90 tracking-[0.1em]">
+            PRAVADO
+          </span>
           <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-semantic-danger/20 text-semantic-danger">
             Admin
           </span>
@@ -38,10 +47,11 @@ export function AdminShell({ children, userEmail }: AdminShellProps) {
 
         {/* Nav links */}
         <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-          {ADMIN_NAV.map(item => {
-            const active = item.href === '/app/admin'
-              ? pathname === '/app/admin'
-              : pathname?.startsWith(item.href);
+          {ADMIN_NAV.map((item) => {
+            const active =
+              item.href === '/app/admin'
+                ? pathname === '/app/admin'
+                : pathname?.startsWith(item.href);
             return (
               <Link
                 key={item.href}
@@ -61,16 +71,17 @@ export function AdminShell({ children, userEmail }: AdminShellProps) {
         {/* Bottom: user info */}
         <div className="px-3 py-3" style={{ borderTop: '1px solid #1F1F28' }}>
           <p className="text-[11px] text-white/30 truncate">{userEmail}</p>
-          <Link href="/app/command-center" className="text-[11px] text-brand-cyan hover:text-brand-cyan/80 mt-1 block">
+          <Link
+            href="/app/command-center"
+            className="text-[11px] text-brand-cyan hover:text-brand-cyan/80 mt-1 block"
+          >
             &larr; Back to App
           </Link>
         </div>
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }

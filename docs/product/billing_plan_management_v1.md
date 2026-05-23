@@ -83,9 +83,11 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 **Description:** Retrieve plan details by slug
 **Auth:** Required (`requireUser` preHandler)
 **Params:**
+
 - `slug` (string): Plan slug (starter, growth, enterprise, etc.)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -108,6 +110,7 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 ```
 
 **Errors:**
+
 - `404 PLAN_NOT_FOUND`: Plan slug doesn't exist
 
 ---
@@ -117,6 +120,7 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 **Description:** Switch organization to a different plan
 **Auth:** Required (`requireUser` preHandler)
 **Body:**
+
 ```json
 {
   "targetPlanSlug": "growth"
@@ -124,6 +128,7 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -136,6 +141,7 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 ```
 
 **Errors:**
+
 - `422 UPGRADE_REQUIRED`: Downgrade blocked due to current usage exceeding target limits
   ```json
   {
@@ -167,6 +173,7 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 **Body:** `{}`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -177,13 +184,15 @@ Sprint S33 implements self-service plan management capabilities, allowing organi
 ```
 
 **Errors:**
+
 - `503 FEATURE_DISABLED`: Stripe billing not enabled
 
 **Usage:**
+
 ```typescript
 const response = await fetch('/api/v1/billing/org/payment-method', {
   method: 'POST',
-  headers: { 'Authorization': `Bearer ${token}` }
+  headers: { Authorization: `Bearer ${token}` },
 });
 const { url } = await response.json();
 window.location.href = url; // Redirect to Stripe portal
@@ -196,13 +205,15 @@ window.location.href = url; // Redirect to Stripe portal
 **Description:** Cancel subscription (at period end or immediately)
 **Auth:** Required (`requireUser` preHandler)
 **Body:**
+
 ```json
 {
-  "immediate": false  // Optional, defaults to false
+  "immediate": false // Optional, defaults to false
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -214,6 +225,7 @@ window.location.href = url; // Redirect to Stripe portal
 ```
 
 **Errors:**
+
 - `503 FEATURE_DISABLED`: Stripe billing not enabled
 
 ---
@@ -233,6 +245,7 @@ export interface OrgBillingSummaryEnriched extends OrgBillingSummaryWithAlerts {
 ```
 
 **Type Hierarchy:**
+
 ```
 OrgBillingSummary (S28)
   └─ OrgBillingSummaryWithStripe (S30)
@@ -278,11 +291,14 @@ if (recommendedPlan) {
 ### Backend: Build Enriched Summary
 
 ```typescript
-const enrichedSummary = await billingService.buildOrgBillingSummaryEnriched('org-123');
+const enrichedSummary =
+  await billingService.buildOrgBillingSummaryEnriched('org-123');
 
 if (enrichedSummary) {
   console.log(`Days until renewal: ${enrichedSummary.daysUntilRenewal}`);
-  console.log(`Projected overage: $${(enrichedSummary.projectedOverageCost / 100).toFixed(2)}`);
+  console.log(
+    `Projected overage: $${(enrichedSummary.projectedOverageCost / 100).toFixed(2)}`
+  );
 
   if (enrichedSummary.recommendedPlanSlug) {
     console.log(`Recommended plan: ${enrichedSummary.recommendedPlanSlug}`);
@@ -299,9 +315,9 @@ async function handlePlanSwitch(targetPlan: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ targetPlanSlug: targetPlan })
+      body: JSON.stringify({ targetPlanSlug: targetPlan }),
     });
 
     const result = await response.json();
@@ -310,9 +326,10 @@ async function handlePlanSwitch(targetPlan: string) {
       // Show downgrade blocked dialog
       showDialog({
         title: 'Cannot Downgrade',
-        message: `Your current usage (${result.error.details.currentUsage} tokens) ` +
-                `exceeds the ${targetPlan} plan limit (${result.error.details.limit} tokens). ` +
-                `Please reduce your usage before downgrading.`
+        message:
+          `Your current usage (${result.error.details.currentUsage} tokens) ` +
+          `exceeds the ${targetPlan} plan limit (${result.error.details.limit} tokens). ` +
+          `Please reduce your usage before downgrading.`,
       });
       return;
     }
@@ -336,20 +353,26 @@ async function handlePlanSwitch(targetPlan: string) {
 When switching plans, the system validates whether a downgrade is safe:
 
 1. **Retrieve current usage:**
+
    ```typescript
    const summary = await billingService.buildOrgBillingSummary(orgId);
    ```
 
 2. **Check if downgrade:**
+
    ```typescript
-   const isDowngrade = targetPlan.monthlyPriceCents < currentPlan.monthlyPriceCents;
+   const isDowngrade =
+     targetPlan.monthlyPriceCents < currentPlan.monthlyPriceCents;
    ```
 
 3. **Validate usage against target plan limits:**
+
    ```typescript
    if (isDowngrade) {
-     const wouldExceedTokens = targetPlan.includedTokensMonthly < summary.tokensUsed;
-     const wouldExceedRuns = targetPlan.includedPlaybookRunsMonthly < summary.playbookRuns;
+     const wouldExceedTokens =
+       targetPlan.includedTokensMonthly < summary.tokensUsed;
+     const wouldExceedRuns =
+       targetPlan.includedPlaybookRunsMonthly < summary.playbookRuns;
      const wouldExceedSeats = targetPlan.includedSeats < summary.seats;
 
      if (wouldExceedTokens || wouldExceedRuns || wouldExceedSeats) {
@@ -362,7 +385,7 @@ When switching plans, the system validates whether a downgrade is safe:
          billingStatus: summary.billingStatus,
          planSlug: currentPlan.slug,
          periodStart: summary.currentPeriodStart,
-         periodEnd: summary.currentPeriodEnd
+         periodEnd: summary.currentPeriodEnd,
        });
      }
    }
@@ -491,12 +514,14 @@ logger.error('Failed to switch plan', { error, orgId, targetPlanSlug });
 ### Alerts
 
 Plan changes trigger billing alerts (S32):
+
 - `plan_upgraded`: Severity `info`, includes old/new plan metadata
 - `plan_downgraded`: Severity `warning`, includes old/new plan metadata
 
 ### Metrics
 
 Track:
+
 - Plan switch success/failure rates
 - Downgrade block frequency
 - Recommendation acceptance rates

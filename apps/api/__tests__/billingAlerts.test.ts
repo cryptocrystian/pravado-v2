@@ -49,7 +49,9 @@ const createMockSupabase = () => {
         org_id: 'org-trial',
         plan_id: 'plan-1',
         billing_status: 'trial',
-        trial_ends_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+        trial_ends_at: new Date(
+          Date.now() + 3 * 24 * 60 * 60 * 1000
+        ).toISOString(), // 3 days from now
         current_period_start: '2024-01-01T00:00:00Z',
         current_period_end: '2024-02-01T00:00:00Z',
         soft_token_limit_monthly: null,
@@ -92,7 +94,9 @@ const createMockSupabase = () => {
             eq: (column: string, value: any) => ({
               eq: (col2: string, val2: any) => ({
                 single: async () => ({
-                  data: mockData.plans.find((p: any) => p[column] === value && p[col2] === val2),
+                  data: mockData.plans.find(
+                    (p: any) => p[column] === value && p[col2] === val2
+                  ),
                   error: null,
                 }),
               }),
@@ -185,13 +189,17 @@ const createMockSupabase = () => {
               }),
               order: (col: string, opts: any) => ({
                 limit: (n: number) => ({
-                  async (): Promise<{ data: any; error: any }> {
-                    const filtered = mockData.alerts.filter((a: any) => a[column] === value);
+                  async(): Promise<{ data: any; error: any }> {
+                    const filtered = mockData.alerts.filter(
+                      (a: any) => a[column] === value
+                    );
                     return { data: filtered.slice(0, n), error: null };
                   },
                 }),
-                async (): Promise<{ data: any; error: any }> {
-                  const filtered = mockData.alerts.filter((a: any) => a[column] === value);
+                async(): Promise<{ data: any; error: any }> {
+                  const filtered = mockData.alerts.filter(
+                    (a: any) => a[column] === value
+                  );
                   return { data: filtered, error: null };
                 },
               }),
@@ -199,8 +207,10 @@ const createMockSupabase = () => {
           }),
           update: (data: any) => ({
             eq: (column: string, value: any) => ({
-              async (): Promise<{ error: any }> {
-                const alert = mockData.alerts.find((a: any) => a[column] === value);
+              async(): Promise<{ error: any }> {
+                const alert = mockData.alerts.find(
+                  (a: any) => a[column] === value
+                );
                 if (alert) {
                   Object.assign(alert, data);
                 }
@@ -237,16 +247,24 @@ describe('BillingService - Usage Alerts (S32)', () => {
       const alerts = await billingService.generateUsageAlerts('org-1');
 
       expect(alerts).toHaveLength(2); // Tokens + playbook runs at 80%
-      expect(alerts.some((a) => a.alertType === 'usage_soft_warning')).toBe(true);
-      expect(alerts.find((a) => a.message.includes('Token usage'))?.severity).toBe('warning');
+      expect(alerts.some((a) => a.alertType === 'usage_soft_warning')).toBe(
+        true
+      );
+      expect(
+        alerts.find((a) => a.message.includes('Token usage'))?.severity
+      ).toBe('warning');
     });
 
     it('should generate usage_hard_warning alert at 100%+ token usage', async () => {
       const alerts = await billingService.generateUsageAlerts('org-over-limit');
 
       expect(alerts.length).toBeGreaterThan(0);
-      expect(alerts.some((a) => a.alertType === 'usage_hard_warning')).toBe(true);
-      expect(alerts.find((a) => a.alertType === 'usage_hard_warning')?.severity).toBe('critical');
+      expect(alerts.some((a) => a.alertType === 'usage_hard_warning')).toBe(
+        true
+      );
+      expect(
+        alerts.find((a) => a.alertType === 'usage_hard_warning')?.severity
+      ).toBe('critical');
     });
 
     it('should generate trial_expiring alert when trial ends in ≤5 days', async () => {
@@ -277,7 +295,8 @@ describe('BillingService - Usage Alerts (S32)', () => {
     });
 
     it('should return empty array if no billing summary available', async () => {
-      const alerts = await billingService.generateUsageAlerts('org-nonexistent');
+      const alerts =
+        await billingService.generateUsageAlerts('org-nonexistent');
 
       expect(alerts).toEqual([]);
     });
@@ -308,7 +327,9 @@ describe('BillingService - Usage Alerts (S32)', () => {
     });
 
     it('should limit number of alerts returned', async () => {
-      const alerts = await billingService.getAlertsForOrg('org-1', { limit: 1 });
+      const alerts = await billingService.getAlertsForOrg('org-1', {
+        limit: 1,
+      });
 
       expect(alerts.length).toBeLessThanOrEqual(1);
     });
@@ -368,7 +389,9 @@ describe('BillingService - Usage Alerts (S32)', () => {
       const summary = await billingService.getAlertSummaryForOrg('org-1');
 
       const totalBySeverity =
-        summary.bySeverity.info + summary.bySeverity.warning + summary.bySeverity.critical;
+        summary.bySeverity.info +
+        summary.bySeverity.warning +
+        summary.bySeverity.critical;
 
       expect(totalBySeverity).toBe(summary.total);
     });
@@ -389,7 +412,8 @@ describe('BillingService - Usage Alerts (S32)', () => {
     });
 
     it('should return empty summary for org with no alerts', async () => {
-      const summary = await billingService.getAlertSummaryForOrg('org-no-alerts');
+      const summary =
+        await billingService.getAlertSummaryForOrg('org-no-alerts');
 
       expect(summary.total).toBe(0);
       expect(summary.unacknowledged).toBe(0);
@@ -403,14 +427,18 @@ describe('BillingService - Usage Alerts (S32)', () => {
     it('should assign warning severity for 80-99% usage', async () => {
       const alerts = await billingService.generateUsageAlerts('org-1');
 
-      const softWarning = alerts.find((a) => a.alertType === 'usage_soft_warning');
+      const softWarning = alerts.find(
+        (a) => a.alertType === 'usage_soft_warning'
+      );
       expect(softWarning?.severity).toBe('warning');
     });
 
     it('should assign critical severity for 100%+ usage', async () => {
       const alerts = await billingService.generateUsageAlerts('org-over-limit');
 
-      const hardWarning = alerts.find((a) => a.alertType === 'usage_hard_warning');
+      const hardWarning = alerts.find(
+        (a) => a.alertType === 'usage_hard_warning'
+      );
       expect(hardWarning?.severity).toBe('critical');
     });
 
@@ -428,7 +456,8 @@ describe('BillingService - Usage Alerts (S32)', () => {
       const alerts = await billingService.generateUsageAlerts('org-1');
 
       const tokenAlert = alerts.find(
-        (a) => a.alertType === 'usage_soft_warning' && a.message.includes('Token')
+        (a) =>
+          a.alertType === 'usage_soft_warning' && a.message.includes('Token')
       );
       expect(tokenAlert?.message).toMatch(/80%/);
     });
@@ -437,7 +466,8 @@ describe('BillingService - Usage Alerts (S32)', () => {
       const alerts = await billingService.generateUsageAlerts('org-1');
 
       const tokenAlert = alerts.find(
-        (a) => a.alertType === 'usage_soft_warning' && a.message.includes('Token')
+        (a) =>
+          a.alertType === 'usage_soft_warning' && a.message.includes('Token')
       );
       expect(tokenAlert?.message).toMatch(/400,000/);
       expect(tokenAlert?.message).toMatch(/500,000/);

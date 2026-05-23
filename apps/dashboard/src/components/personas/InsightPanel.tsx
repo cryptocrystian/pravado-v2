@@ -5,10 +5,6 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AudiencePersonaInsight } from '@pravado/types';
 import {
   AlertCircle,
@@ -18,6 +14,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface InsightPanelProps {
   insights: AudiencePersonaInsight[];
@@ -30,7 +31,9 @@ type SortBy = 'confidence' | 'impact' | 'recent';
 export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
   const [activeTab, setActiveTab] = useState<TabValue>('all');
   const [sortBy, setSortBy] = useState<SortBy>('confidence');
-  const [expandedInsights, setExpandedInsights] = useState<Set<string>>(new Set());
+  const [expandedInsights, setExpandedInsights] = useState<Set<string>>(
+    new Set()
+  );
 
   // Filter insights based on active tab
   const filteredInsights = useMemo(() => {
@@ -45,11 +48,18 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
     const sorted = [...filteredInsights];
     switch (sortBy) {
       case 'confidence':
-        return sorted.sort((a, b) => (b.confidenceScore || 0) - (a.confidenceScore || 0));
+        return sorted.sort(
+          (a, b) => (b.confidenceScore || 0) - (a.confidenceScore || 0)
+        );
       case 'impact':
-        return sorted.sort((a, b) => (b.impactScore || 0) - (a.impactScore || 0));
+        return sorted.sort(
+          (a, b) => (b.impactScore || 0) - (a.impactScore || 0)
+        );
       case 'recent':
-        return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return sorted.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       default:
         return sorted;
     }
@@ -88,7 +98,11 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
           <Badge variant="outline">{insights.length}</Badge>
         </div>
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as TabValue)}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="by-source">By Source</TabsTrigger>
@@ -133,13 +147,18 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
             sortedInsights.map((insight) => {
               const isExpanded = expandedInsights.has(insight.id);
               return (
-                <div key={insight.id} className="border rounded-lg p-3 hover:bg-muted/50 transition-colors">
+                <div
+                  key={insight.id}
+                  className="border rounded-lg p-3 hover:bg-muted/50 transition-colors"
+                >
                   <div
                     className="flex items-start justify-between cursor-pointer"
                     onClick={() => toggleExpanded(insight.id)}
                   >
                     <div className="flex items-start gap-3 flex-1">
-                      <div className="mt-1">{getIconForType(insight.insightType)}</div>
+                      <div className="mt-1">
+                        {getIconForType(insight.insightType)}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm">{insight.title}</h4>
                         <p className="text-xs text-white/50 line-clamp-1">
@@ -162,7 +181,8 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
                       <div className="flex flex-wrap gap-2">
                         {insight.confidenceScore && (
                           <Badge variant="secondary" className="text-xs">
-                            Confidence: {(insight.confidenceScore * 100).toFixed(0)}%
+                            Confidence:{' '}
+                            {(insight.confidenceScore * 100).toFixed(0)}%
                           </Badge>
                         )}
                         {insight.impactScore && (
@@ -179,29 +199,38 @@ export function InsightPanel({ insights, onInsightClick }: InsightPanelProps) {
 
                       {insight.evidence && insight.evidence.length > 0 && (
                         <div className="mt-2">
-                          <h5 className="text-xs font-medium mb-1">Evidence:</h5>
+                          <h5 className="text-xs font-medium mb-1">
+                            Evidence:
+                          </h5>
                           <ul className="text-xs space-y-1 text-white/50">
-                            {insight.evidence.map((ev: Record<string, any>, idx: number) => (
-                              <li key={idx} className="list-disc list-inside">
-                                {typeof ev === 'string' ? ev : JSON.stringify(ev)}
-                              </li>
-                            ))}
+                            {insight.evidence.map(
+                              (ev: Record<string, any>, idx: number) => (
+                                <li key={idx} className="list-disc list-inside">
+                                  {typeof ev === 'string'
+                                    ? ev
+                                    : JSON.stringify(ev)}
+                                </li>
+                              )
+                            )}
                           </ul>
                         </div>
                       )}
 
-                      {insight.recommendedActions && insight.recommendedActions.length > 0 && (
-                        <div className="mt-2">
-                          <h5 className="text-xs font-medium mb-1">Recommended Actions:</h5>
-                          <ul className="text-xs space-y-1 text-white/50">
-                            {insight.recommendedActions.map((action, idx) => (
-                              <li key={idx} className="list-disc list-inside">
-                                {action}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {insight.recommendedActions &&
+                        insight.recommendedActions.length > 0 && (
+                          <div className="mt-2">
+                            <h5 className="text-xs font-medium mb-1">
+                              Recommended Actions:
+                            </h5>
+                            <ul className="text-xs space-y-1 text-white/50">
+                              {insight.recommendedActions.map((action, idx) => (
+                                <li key={idx} className="list-disc list-inside">
+                                  {action}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
 
                       <Button
                         size="sm"

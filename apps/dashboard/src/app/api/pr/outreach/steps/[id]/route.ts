@@ -25,7 +25,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/steps/[id]] PATCH Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/steps/[id]] PATCH Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -39,7 +43,11 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/steps/[id]] DELETE Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/steps/[id]] DELETE Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

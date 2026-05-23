@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -14,12 +15,10 @@
  */
 
 import { useState } from 'react';
+
 import type { DistributionTrack, DistributionTrackInfo } from '../types';
 import { ImpactStrip } from './ImpactStrip';
-import {
-  glowEffects,
-  buttonStyles,
-} from '../prWorkSurfaceStyles';
+import { glowEffects, buttonStyles } from '../prWorkSurfaceStyles';
 
 // ============================================
 // TRACK CONFIGURATIONS (V1.1)
@@ -30,7 +29,8 @@ const TRACK_CONFIGS: DistributionTrackInfo[] = [
     track: 'citemind_aeo',
     isPrimary: true,
     headline: 'CiteMind AEO',
-    description: 'AI-optimized distribution via CiteMind Newsroom — the modern path to earned visibility',
+    description:
+      'AI-optimized distribution via CiteMind Newsroom — the modern path to earned visibility',
     features: [
       'NewsArticle schema generation',
       'Instant IndexNow submission',
@@ -57,7 +57,8 @@ const TRACK_CONFIGS: DistributionTrackInfo[] = [
     track: 'legacy_wire',
     isPrimary: false,
     headline: 'Traditional Wire',
-    description: 'Legacy PR wire distribution through traditional channels — for when you need mass media reach',
+    description:
+      'Legacy PR wire distribution through traditional channels — for when you need mass media reach',
     features: [
       'AP/Reuters syndication',
       'Print media reach',
@@ -82,7 +83,11 @@ const TRACK_CONFIGS: DistributionTrackInfo[] = [
 
 function CiteMindFlowVisual() {
   const steps = [
-    { label: 'Schema', icon: '{ }', description: 'NewsArticle markup generated' },
+    {
+      label: 'Schema',
+      icon: '{ }',
+      description: 'NewsArticle markup generated',
+    },
     { label: 'Publish', icon: '📰', description: 'Published to Newsroom' },
     { label: 'Index', icon: '🔔', description: 'IndexNow submitted' },
     { label: 'Track', icon: '📊', description: 'Citation monitoring begins' },
@@ -102,12 +107,26 @@ function CiteMindFlowVisual() {
               <div className="w-10 h-10 rounded-full bg-slate-2 border border-brand-cyan/30 flex items-center justify-center text-lg">
                 {step.icon}
               </div>
-              <span className="text-xs text-white/95 font-medium mt-1">{step.label}</span>
-              <span className="text-[13px] text-white/55 text-center max-w-[80px]">{step.description}</span>
+              <span className="text-xs text-white/95 font-medium mt-1">
+                {step.label}
+              </span>
+              <span className="text-[13px] text-white/55 text-center max-w-[80px]">
+                {step.description}
+              </span>
             </div>
             {index < steps.length - 1 && (
-              <svg className="w-6 h-6 text-brand-cyan/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="w-6 h-6 text-brand-cyan/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             )}
           </div>
@@ -121,21 +140,39 @@ function CiteMindFlowVisual() {
 // WHY CHOOSE THIS TRACK EXPLAINER
 // ============================================
 
-function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function TrackExplainer({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-page/70 backdrop-blur-sm">
       <div className="w-full max-w-2xl p-6 rounded-2xl bg-panel border border-border-subtle shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-white/95">Why Choose Each Track?</h3>
+          <h3 className="text-lg font-semibold text-white/95">
+            Why Choose Each Track?
+          </h3>
           <button
             type="button"
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
           >
-            <svg className="w-5 h-5 text-white/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-white/55"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -147,29 +184,58 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <span className="px-2 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
                 Recommended
               </span>
-              <span className="text-sm font-semibold text-brand-cyan">CiteMind AEO</span>
+              <span className="text-sm font-semibold text-brand-cyan">
+                CiteMind AEO
+              </span>
             </div>
             <p className="text-sm text-white/55 mb-4">
-              Best for maximizing AI visibility and long-term search presence. Uses semantic
-              markup to help AI systems understand and cite your content.
+              Best for maximizing AI visibility and long-term search presence.
+              Uses semantic markup to help AI systems understand and cite your
+              content.
             </p>
             <div className="space-y-2">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-white/50">Best For:</div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+                Best For:
+              </div>
               <ul className="space-y-1 text-xs text-white/55">
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-brand-cyan"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   Product announcements & updates
                 </li>
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-brand-cyan"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   Thought leadership content
                 </li>
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-brand-cyan"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   Building long-term authority
                 </li>
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-brand-cyan" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-brand-cyan"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   AI answer engine optimization
                 </li>
               </ul>
@@ -182,29 +248,57 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <span className="px-2 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-warning/15 text-semantic-warning border border-semantic-warning/30">
                 Add-on
               </span>
-              <span className="text-sm font-semibold text-white/70">Traditional Wire</span>
+              <span className="text-sm font-semibold text-white/70">
+                Traditional Wire
+              </span>
             </div>
             <p className="text-sm text-white/55 mb-4">
-              Best for time-sensitive announcements requiring immediate mass media reach
-              and regulatory compliance scenarios.
+              Best for time-sensitive announcements requiring immediate mass
+              media reach and regulatory compliance scenarios.
             </p>
             <div className="space-y-2">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-white/50">Best For:</div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+                Best For:
+              </div>
               <ul className="space-y-1 text-xs text-white/55">
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-semantic-warning" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-semantic-warning"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   SEC/financial disclosures
                 </li>
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-semantic-warning" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-semantic-warning"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   Major acquisitions/IPO news
                 </li>
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-semantic-warning" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-semantic-warning"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   Crisis communications
                 </li>
                 <li className="flex items-center gap-2">
-                  <svg className="w-3 h-3 text-semantic-warning" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                  <svg
+                    className="w-3 h-3 text-semantic-warning"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
                   Broad print/broadcast reach
                 </li>
               </ul>
@@ -214,9 +308,11 @@ function TrackExplainer({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 
         <div className="mt-6 p-4 rounded-lg bg-brand-iris/5 border border-brand-iris/20">
           <p className="text-xs text-white/55">
-            <strong className="text-brand-iris">Pro tip:</strong> Most announcements benefit most from CiteMind AEO alone.
-            Only add Traditional Wire when you specifically need immediate mass media syndication or regulatory compliance.
-            Using both together is generally unnecessary and can dilute your narrative control.
+            <strong className="text-brand-iris">Pro tip:</strong> Most
+            announcements benefit most from CiteMind AEO alone. Only add
+            Traditional Wire when you specifically need immediate mass media
+            syndication or regulatory compliance. Using both together is
+            generally unnecessary and can dilute your narrative control.
           </p>
         </div>
 
@@ -244,7 +340,11 @@ interface Props {
   disabled?: boolean;
 }
 
-export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute, disabled }: Props) {
+export function DistributionDecisionMatrix({
+  releaseId: _releaseId,
+  onDistribute,
+  disabled,
+}: Props) {
   const [selectedTracks, setSelectedTracks] = useState<Set<DistributionTrack>>(
     new Set(['citemind_aeo'])
   );
@@ -300,7 +400,9 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white/95">Distribution Channels</h3>
+          <h3 className="text-lg font-semibold text-white/95">
+            Distribution Channels
+          </h3>
           <p className="text-sm text-white/55 mt-1">
             Select distribution tracks for your press release
           </p>
@@ -315,7 +417,9 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
           </button>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-cyan/10 border border-brand-cyan/20">
             <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse" />
-            <span className="text-xs text-brand-cyan font-medium">Manual distribution only</span>
+            <span className="text-xs text-brand-cyan font-medium">
+              Manual distribution only
+            </span>
           </div>
         </div>
       </div>
@@ -350,19 +454,35 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               }`}
             >
               {selectedTracks.has('citemind_aeo') && (
-                <svg className="w-4 h-4 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-4 h-4 text-white/90"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               )}
             </div>
 
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h4 className="text-xl font-semibold text-white/95">{citeMindTrack.headline}</h4>
-                <span className="text-sm font-medium text-semantic-success">{citeMindTrack.costDescription}</span>
+                <h4 className="text-xl font-semibold text-white/95">
+                  {citeMindTrack.headline}
+                </h4>
+                <span className="text-sm font-medium text-semantic-success">
+                  {citeMindTrack.costDescription}
+                </span>
               </div>
 
-              <p className="text-sm text-white/55 mb-4">{citeMindTrack.description}</p>
+              <p className="text-sm text-white/55 mb-4">
+                {citeMindTrack.description}
+              </p>
 
               {/* CiteMind Flow Visual */}
               <CiteMindFlowVisual />
@@ -370,9 +490,22 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               {/* Features */}
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {citeMindTrack.features.map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm text-white/55">
-                    <svg className="w-4 h-4 text-brand-cyan shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <div
+                    key={feature}
+                    className="flex items-center gap-2 text-sm text-white/55"
+                  >
+                    <svg
+                      className="w-4 h-4 text-brand-cyan shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     {feature}
                   </div>
@@ -427,26 +560,55 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               }`}
             >
               {selectedTracks.has('legacy_wire') && (
-                <svg className="w-3 h-3 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-3 h-3 text-white/90"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               )}
             </div>
 
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-1">
-                <h4 className="font-semibold text-white/95">{legacyTrack.headline}</h4>
-                <span className="text-sm font-medium text-semantic-warning">{legacyTrack.costDescription}</span>
+                <h4 className="font-semibold text-white/95">
+                  {legacyTrack.headline}
+                </h4>
+                <span className="text-sm font-medium text-semantic-warning">
+                  {legacyTrack.costDescription}
+                </span>
               </div>
 
-              <p className="text-sm text-white/55 mb-3">{legacyTrack.description}</p>
+              <p className="text-sm text-white/55 mb-3">
+                {legacyTrack.description}
+              </p>
 
               {/* Features */}
               <div className="flex flex-wrap gap-3 mb-3">
                 {legacyTrack.features.map((feature) => (
-                  <span key={feature} className="text-xs text-white/55 flex items-center gap-1.5">
-                    <svg className="w-3 h-3 text-white/40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <span
+                    key={feature}
+                    className="text-xs text-white/55 flex items-center gap-1.5"
+                  >
+                    <svg
+                      className="w-3 h-3 text-white/40 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     {feature}
                   </span>
@@ -456,16 +618,22 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
               {/* Expected Outcomes */}
               {selectedTracks.has('legacy_wire') && (
                 <div className="p-3 rounded-lg bg-semantic-warning/10 border border-semantic-warning/20">
-                  <div className="text-xs font-medium text-semantic-warning mb-1">Expected Outcomes:</div>
+                  <div className="text-xs font-medium text-semantic-warning mb-1">
+                    Expected Outcomes:
+                  </div>
                   <ul className="text-xs text-white/55 space-y-1">
                     {legacyTrack.expectedOutcomes.map((outcome) => (
                       <li key={outcome}>• {outcome}</li>
                     ))}
                   </ul>
                   {legacyConfirmed ? (
-                    <div className="mt-2 text-xs text-semantic-success">✓ Wire distribution confirmed</div>
+                    <div className="mt-2 text-xs text-semantic-success">
+                      ✓ Wire distribution confirmed
+                    </div>
                   ) : (
-                    <div className="mt-2 text-xs text-semantic-warning">⚠ Requires confirmation before distribution</div>
+                    <div className="mt-2 text-xs text-semantic-warning">
+                      ⚠ Requires confirmation before distribution
+                    </div>
                   )}
                 </div>
               )}
@@ -496,14 +664,27 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
       {/* Manual Execution Notice */}
       <div className="p-4 rounded-xl bg-brand-cyan/5 border border-brand-cyan/20">
         <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-brand-cyan shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-brand-cyan shrink-0 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <div>
-            <p className="text-sm text-brand-cyan font-medium">No Automatic Distribution</p>
+            <p className="text-sm text-brand-cyan font-medium">
+              No Automatic Distribution
+            </p>
             <p className="text-xs text-white/55 mt-1">
-              All distribution requires your explicit action. Press releases will not be sent without clicking "Distribute Now".
-              CiteMind audio content generation is manual-only in V1.
+              All distribution requires your explicit action. Press releases
+              will not be sent without clicking "Distribute Now". CiteMind audio
+              content generation is manual-only in V1.
             </p>
           </div>
         </div>
@@ -515,22 +696,36 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
           <div className="w-full max-w-md p-6 rounded-2xl bg-panel border border-border-subtle shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 rounded-lg bg-semantic-warning/15">
-                <svg className="w-6 h-6 text-semantic-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-6 h-6 text-semantic-warning"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-white/95">Confirm Wire Distribution</h3>
+              <h3 className="text-lg font-semibold text-white/95">
+                Confirm Wire Distribution
+              </h3>
             </div>
 
             <p className="text-sm text-white/55 mb-4">
-              Traditional wire distribution costs <strong className="text-white/90">$499.00</strong> per release
-              and cannot be undone once sent. This will distribute your press release to major wire services
-              including AP and Reuters.
+              Traditional wire distribution costs{' '}
+              <strong className="text-white/90">$499.00</strong> per release and
+              cannot be undone once sent. This will distribute your press
+              release to major wire services including AP and Reuters.
             </p>
 
             <div className="p-3 rounded-lg bg-semantic-warning/10 border border-semantic-warning/20 mb-6">
               <p className="text-xs text-semantic-warning">
-                By confirming, you acknowledge this charge and that wire distribution is immediate and irreversible.
+                By confirming, you acknowledge this charge and that wire
+                distribution is immediate and irreversible.
               </p>
             </div>
 
@@ -555,7 +750,10 @@ export function DistributionDecisionMatrix({ releaseId: _releaseId, onDistribute
       )}
 
       {/* Track Explainer Modal */}
-      <TrackExplainer isOpen={showExplainer} onClose={() => setShowExplainer(false)} />
+      <TrackExplainer
+        isOpen={showExplainer}
+        onClose={() => setShowExplainer(false)}
+      />
     </div>
   );
 }

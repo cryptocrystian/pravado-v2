@@ -3,10 +3,16 @@
  * Tests for AI-powered press release generation engine
  */
 
-import type { PRGeneratedReleaseRecord, PRGenerationInput } from '@pravado/types';
+import type {
+  PRGeneratedReleaseRecord,
+  PRGenerationInput,
+} from '@pravado/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PressReleaseService, prGenerationEmitter } from '../src/services/pressReleaseService';
+import {
+  PressReleaseService,
+  prGenerationEmitter,
+} from '../src/services/pressReleaseService';
 
 // Mock Supabase client
 const createMockSupabase = () => {
@@ -51,7 +57,9 @@ describe('PressReleaseService', () => {
 
   beforeEach(() => {
     mockSupabase = createMockSupabase();
-    service = new PressReleaseService(mockSupabase as never, undefined, { debugMode: false });
+    service = new PressReleaseService(mockSupabase as never, undefined, {
+      debugMode: false,
+    });
   });
 
   describe('Context Assembly', () => {
@@ -146,7 +154,9 @@ describe('PressReleaseService', () => {
       const context = await service.assembleContext('org-123', input);
       const result = await service.findAngles(context);
 
-      const sortedAngles = [...result.angles].sort((a, b) => b.totalScore - a.totalScore);
+      const sortedAngles = [...result.angles].sort(
+        (a, b) => b.totalScore - a.totalScore
+      );
       expect(result.selectedAngle.totalScore).toBe(sortedAngles[0].totalScore);
       expect(result.selectedAngle.isSelected).toBe(true);
     });
@@ -165,7 +175,7 @@ describe('PressReleaseService', () => {
       // Selected angle should contain the preferred angle keyword
       expect(
         result.selectedAngle.angleTitle.toLowerCase().includes('innovation') ||
-        result.selectedAngle.isSelected
+          result.selectedAngle.isSelected
       ).toBe(true);
     });
   });
@@ -181,7 +191,10 @@ describe('PressReleaseService', () => {
 
       const context = await service.assembleContext('org-123', input);
       const angleResult = await service.findAngles(context);
-      const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
+      const headlineResult = await service.generateHeadlines(
+        context,
+        angleResult.selectedAngle
+      );
 
       expect(headlineResult.variants.length).toBeGreaterThanOrEqual(5);
       expect(headlineResult.selectedHeadline).toBeDefined();
@@ -197,7 +210,10 @@ describe('PressReleaseService', () => {
 
       const context = await service.assembleContext('org-123', input);
       const angleResult = await service.findAngles(context);
-      const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
+      const headlineResult = await service.generateHeadlines(
+        context,
+        angleResult.selectedAngle
+      );
 
       headlineResult.variants.forEach((variant) => {
         expect(variant.seoScore).toBeGreaterThanOrEqual(0);
@@ -217,10 +233,17 @@ describe('PressReleaseService', () => {
 
       const context = await service.assembleContext('org-123', input);
       const angleResult = await service.findAngles(context);
-      const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
+      const headlineResult = await service.generateHeadlines(
+        context,
+        angleResult.selectedAngle
+      );
 
-      const sortedVariants = [...headlineResult.variants].sort((a, b) => b.score - a.score);
-      expect(headlineResult.selectedHeadline.score).toBe(sortedVariants[0].score);
+      const sortedVariants = [...headlineResult.variants].sort(
+        (a, b) => b.score - a.score
+      );
+      expect(headlineResult.selectedHeadline.score).toBe(
+        sortedVariants[0].score
+      );
     });
   });
 
@@ -236,8 +259,15 @@ describe('PressReleaseService', () => {
 
       const context = await service.assembleContext('org-123', input);
       const angleResult = await service.findAngles(context);
-      const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
-      const draft = await service.generateDraft(context, angleResult.selectedAngle, headlineResult.selectedHeadline);
+      const headlineResult = await service.generateHeadlines(
+        context,
+        angleResult.selectedAngle
+      );
+      const draft = await service.generateDraft(
+        context,
+        angleResult.selectedAngle,
+        headlineResult.selectedHeadline
+      );
 
       expect(draft.headline).toBeTruthy();
       expect(draft.subheadline).toBeTruthy();
@@ -262,8 +292,15 @@ describe('PressReleaseService', () => {
 
       const context = await service.assembleContext('org-123', input);
       const angleResult = await service.findAngles(context);
-      const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
-      const draft = await service.generateDraft(context, angleResult.selectedAngle, headlineResult.selectedHeadline);
+      const headlineResult = await service.generateHeadlines(
+        context,
+        angleResult.selectedAngle
+      );
+      const draft = await service.generateDraft(
+        context,
+        angleResult.selectedAngle,
+        headlineResult.selectedHeadline
+      );
 
       expect(draft.quote1).toBeTruthy();
       expect(draft.quote1Attribution).toContain('Jane Smith');
@@ -351,9 +388,15 @@ describe('PressReleaseService', () => {
       const eventHandler = vi.fn();
       prGenerationEmitter.on('pr:test-123', eventHandler);
 
-      prGenerationEmitter.emit('pr:test-123', { type: 'started', releaseId: 'test-123' });
+      prGenerationEmitter.emit('pr:test-123', {
+        type: 'started',
+        releaseId: 'test-123',
+      });
 
-      expect(eventHandler).toHaveBeenCalledWith({ type: 'started', releaseId: 'test-123' });
+      expect(eventHandler).toHaveBeenCalledWith({
+        type: 'started',
+        releaseId: 'test-123',
+      });
 
       prGenerationEmitter.off('pr:test-123', eventHandler);
     });
@@ -363,9 +406,20 @@ describe('PressReleaseService', () => {
       const eventHandler = (event: unknown) => events.push(event);
       prGenerationEmitter.on('pr:progress-test', eventHandler);
 
-      prGenerationEmitter.emit('pr:progress-test', { type: 'progress', step: 'context', progress: 10 });
-      prGenerationEmitter.emit('pr:progress-test', { type: 'progress', step: 'angles', progress: 30 });
-      prGenerationEmitter.emit('pr:progress-test', { type: 'completed', releaseId: 'progress-test' });
+      prGenerationEmitter.emit('pr:progress-test', {
+        type: 'progress',
+        step: 'context',
+        progress: 10,
+      });
+      prGenerationEmitter.emit('pr:progress-test', {
+        type: 'progress',
+        step: 'angles',
+        progress: 30,
+      });
+      prGenerationEmitter.emit('pr:progress-test', {
+        type: 'completed',
+        releaseId: 'progress-test',
+      });
 
       expect(events.length).toBe(3);
       expect((events[0] as { progress: number }).progress).toBe(10);
@@ -383,7 +437,11 @@ describe('PressReleaseService', () => {
         org_id: 'org-123',
         user_id: 'user-123',
         status: 'complete',
-        input_json: { newsType: 'other', announcement: 'Test', companyName: 'Co' },
+        input_json: {
+          newsType: 'other',
+          announcement: 'Test',
+          companyName: 'Co',
+        },
         headline: 'Test Headline',
         subheadline: null,
         angle: null,
@@ -426,7 +484,11 @@ describe('PressReleaseService', () => {
         single: vi.fn().mockResolvedValue({ data: mockRelease, error: null }),
       });
 
-      const similar = await service.findSimilarReleases('release-123', 'org-123', 5);
+      const similar = await service.findSimilarReleases(
+        'release-123',
+        'org-123',
+        5
+      );
 
       expect(Array.isArray(similar)).toBe(true);
     });
@@ -450,7 +512,10 @@ describe('Headline Scoring Heuristics', () => {
 
     const context = await service.assembleContext('org-123', input);
     const angleResult = await service.findAngles(context);
-    const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
+    const headlineResult = await service.generateHeadlines(
+      context,
+      angleResult.selectedAngle
+    );
 
     // Headlines with words like "launches", "announces", "unveils" should score higher on virality
     const headlinesWithPowerWords = headlineResult.variants.filter(
@@ -461,7 +526,9 @@ describe('Headline Scoring Heuristics', () => {
     );
 
     if (headlinesWithPowerWords.length > 0) {
-      expect(headlinesWithPowerWords[0].viralityScore).toBeGreaterThanOrEqual(50);
+      expect(headlinesWithPowerWords[0].viralityScore).toBeGreaterThanOrEqual(
+        50
+      );
     }
   });
 
@@ -474,7 +541,10 @@ describe('Headline Scoring Heuristics', () => {
 
     const context = await service.assembleContext('org-123', input);
     const angleResult = await service.findAngles(context);
-    const headlineResult = await service.generateHeadlines(context, angleResult.selectedAngle);
+    const headlineResult = await service.generateHeadlines(
+      context,
+      angleResult.selectedAngle
+    );
 
     const headlinesWithCompany = headlineResult.variants.filter((v) =>
       v.headline.includes('SpecificCompanyName')
@@ -506,7 +576,8 @@ describe('Angle Scoring Rubric', () => {
 
     // Funding is a high-newsworthiness event
     const avgNewsworthiness =
-      result.angles.reduce((sum, a) => sum + a.newsworthinessScore, 0) / result.angles.length;
+      result.angles.reduce((sum, a) => sum + a.newsworthinessScore, 0) /
+      result.angles.length;
     expect(avgNewsworthiness).toBeGreaterThanOrEqual(50);
   });
 

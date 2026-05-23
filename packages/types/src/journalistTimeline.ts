@@ -96,15 +96,15 @@ export interface JournalistTimelineEvent {
 
   // Source tracking
   sourceSystem: TimelineSourceSystem;
-  sourceId?: string;  // ID in source system
+  sourceId?: string; // ID in source system
 
   // Event data
-  payload: Record<string, any>;  // Heterogeneous data from different systems
+  payload: Record<string, any>; // Heterogeneous data from different systems
   metadata: Record<string, any>;
 
   // Scoring & relevance
-  relevanceScore: number;  // 0-1
-  relationshipImpact: number;  // -1 to 1
+  relevanceScore: number; // 0-1
+  relationshipImpact: number; // -1 to 1
   sentiment: TimelineSentiment;
 
   // Clustering
@@ -128,14 +128,14 @@ export interface CreateTimelineEventInput {
   eventType: TimelineEventType;
   title: string;
   description?: string;
-  eventTimestamp?: Date;  // Defaults to now
+  eventTimestamp?: Date; // Defaults to now
   sourceSystem: TimelineSourceSystem;
   sourceId?: string;
   payload?: Record<string, any>;
   metadata?: Record<string, any>;
-  relevanceScore?: number;  // Default 0.5
-  relationshipImpact?: number;  // Default 0
-  sentiment?: TimelineSentiment;  // Default 'unknown'
+  relevanceScore?: number; // Default 0.5
+  relationshipImpact?: number; // Default 0
+  sentiment?: TimelineSentiment; // Default 'unknown'
   clusterId?: string;
   clusterType?: TimelineClusterType;
 }
@@ -166,7 +166,7 @@ export interface CreateManualNoteInput {
 // ===================================
 
 export interface TimelineQuery {
-  journalistId?: string;  // Required for most queries
+  journalistId?: string; // Required for most queries
   eventTypes?: TimelineEventType[];
   sourceSystems?: TimelineSourceSystem[];
   sentiments?: TimelineSentiment[];
@@ -181,14 +181,18 @@ export interface TimelineQuery {
   // Filtering
   minRelevanceScore?: number;
   hasCluster?: boolean;
-  searchQuery?: string;  // Full-text search in title/description
+  searchQuery?: string; // Full-text search in title/description
 
   // Sorting
-  sortBy?: 'event_timestamp' | 'relevance_score' | 'relationship_impact' | 'created_at';
+  sortBy?:
+    | 'event_timestamp'
+    | 'relevance_score'
+    | 'relationship_impact'
+    | 'created_at';
   sortOrder?: 'asc' | 'desc';
 
   // Pagination
-  limit?: number;  // Default 20, max 100
+  limit?: number; // Default 20, max 100
   offset?: number;
 }
 
@@ -226,17 +230,17 @@ export interface TimelineStats {
 }
 
 export interface RelationshipHealthScore {
-  score: number;  // 0-100
+  score: number; // 0-100
   trend: 'improving' | 'stable' | 'declining';
   lastCalculated: Date;
   breakdown: {
-    recency: number;  // 0-25 points
-    activity: number;  // 0-15 points
-    sentiment: number;  // 0-15 points
-    engagement: number;  // 0-20 points (replies, clicks)
-    coverage: number;  // 0-10 points
-    impact: number;  // 0-10 points
-    penalty: number;  // 0 to -10 points (negative sentiment)
+    recency: number; // 0-25 points
+    activity: number; // 0-15 points
+    sentiment: number; // 0-15 points
+    engagement: number; // 0-20 points (replies, clicks)
+    coverage: number; // 0-10 points
+    impact: number; // 0-10 points
+    penalty: number; // 0 to -10 points (negative sentiment)
   };
   recommendations: string[];
 }
@@ -259,7 +263,7 @@ export interface JournalistNarrative {
   timeframe: string;
 
   // Executive summary
-  executiveSummary: string;  // LLM-generated 2-3 sentence overview
+  executiveSummary: string; // LLM-generated 2-3 sentence overview
 
   // Key highlights
   highlights: NarrativeHighlight[];
@@ -280,15 +284,15 @@ export interface JournalistNarrative {
   coverageSummary?: string;
 
   // Engagement metrics
-  replyRate: number;  // 0-1
-  openRate: number;  // 0-1
-  clickRate: number;  // 0-1
+  replyRate: number; // 0-1
+  openRate: number; // 0-1
+  clickRate: number; // 0-1
 
   // Recommendations
   recommendations: NarrativeRecommendation[];
 
   // Health score
-  healthScore: number;  // 0-100
+  healthScore: number; // 0-100
 }
 
 export interface NarrativeHighlight {
@@ -358,7 +362,7 @@ export interface TimelineAggregationDataPoint {
 export interface BatchCreateTimelineEventsInput {
   events: CreateTimelineEventInput[];
   autoCluster?: boolean;
-  skipDuplicates?: boolean;  // Check by source_system + source_id
+  skipDuplicates?: boolean; // Check by source_system + source_id
 }
 
 export interface BatchCreateTimelineEventsResult {
@@ -380,8 +384,8 @@ export interface TimelineEventTypeMetadata {
   sourceSystem: TimelineSourceSystem;
   displayName: string;
   description: string;
-  icon: string;  // Icon identifier
-  colorClass: string;  // Tailwind color class
+  icon: string; // Icon identifier
+  colorClass: string; // Tailwind color class
   defaultRelevance: number;
   defaultImpact: number;
   defaultSentiment: TimelineSentiment;

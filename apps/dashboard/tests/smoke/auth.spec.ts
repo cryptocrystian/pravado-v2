@@ -21,7 +21,9 @@ test.describe('Auth flows', () => {
     await expect(page.locator('input[type="password"]')).toBeVisible();
   });
 
-  test('magic link: submits email and shows success message', async ({ page }) => {
+  test('magic link: submits email and shows success message', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/login`);
     await page.fill('input[type="email"]', 'smoketest@example.com');
     await page.getByText('Send Magic Link').click();
@@ -35,7 +37,9 @@ test.describe('Auth flows', () => {
   test('Google OAuth button initiates redirect', async ({ page }) => {
     await page.goto(`${BASE}/login`);
     const [response] = await Promise.all([
-      page.waitForNavigation({ waitUntil: 'commit', timeout: 5000 }).catch(() => null),
+      page
+        .waitForNavigation({ waitUntil: 'commit', timeout: 5000 })
+        .catch(() => null),
       page.getByText('Continue with Google').click(),
     ]);
     // Should either navigate to Google or Supabase auth endpoint
@@ -46,18 +50,24 @@ test.describe('Auth flows', () => {
   });
 
   test('callback page with invalid token shows error UI', async ({ page }) => {
-    await page.goto(`${BASE}/callback?error=invalid_token&error_description=Test+error`);
+    await page.goto(
+      `${BASE}/callback?error=invalid_token&error_description=Test+error`
+    );
     await expect(page.getByText('Authentication Error')).toBeVisible();
     await expect(page.getByText('Back to Sign In')).toBeVisible();
   });
 
-  test('protected routes redirect to login when unauthenticated', async ({ page }) => {
+  test('protected routes redirect to login when unauthenticated', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/app/command-center`);
     await page.waitForURL('**/login**', { timeout: 5000 });
     expect(page.url()).toContain('/login');
   });
 
-  test('onboarding redirects to login when unauthenticated', async ({ page }) => {
+  test('onboarding redirects to login when unauthenticated', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/onboarding/ai-intro`);
     await page.waitForURL('**/login**', { timeout: 5000 });
     expect(page.url()).toContain('/login');

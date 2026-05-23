@@ -16,13 +16,13 @@ Sprint S74.1 resolved all pre-existing TypeScript duplicate export conflicts in 
 
 The S74 readiness analysis identified **14 duplicate export errors** in `@pravado/types`:
 
-| Conflicting Type | Source 1 | Source 2 |
-|------------------|----------|----------|
-| `GraphNode` | `agents.ts:797` | `scenarioRealityMap.ts:614` |
-| `GraphEdge` | `agents.ts:810` | `scenarioRealityMap.ts:634` |
-| `RiskFactor` | `crisis.ts:348` | `scenarioRealityMap.ts:308` |
-| `RiskAssessment` | `crisis.ts:335` | `scenarioRealityMap.ts:1140` |
-| `ActionRecommendation` | `crisis.ts:370` | `scenarioRealityMap.ts:378` |
+| Conflicting Type       | Source 1        | Source 2                     |
+| ---------------------- | --------------- | ---------------------------- |
+| `GraphNode`            | `agents.ts:797` | `scenarioRealityMap.ts:614`  |
+| `GraphEdge`            | `agents.ts:810` | `scenarioRealityMap.ts:634`  |
+| `RiskFactor`           | `crisis.ts:348` | `scenarioRealityMap.ts:308`  |
+| `RiskAssessment`       | `crisis.ts:335` | `scenarioRealityMap.ts:1140` |
+| `ActionRecommendation` | `crisis.ts:370` | `scenarioRealityMap.ts:378`  |
 
 Additionally, `scenarioRealityMap.ts` lines 1250-1260 contained a redundant `export type {}` block that re-exported types already exported at their declaration points.
 
@@ -43,13 +43,13 @@ Additionally, `scenarioRealityMap.ts` lines 1250-1260 contained a redundant `exp
 
 ### 1. `packages/types/src/scenarioRealityMap.ts`
 
-| Old Type | New Type |
-|----------|----------|
-| `RiskFactor` | `RealityMapRiskFactor` |
+| Old Type               | New Type                         |
+| ---------------------- | -------------------------------- |
+| `RiskFactor`           | `RealityMapRiskFactor`           |
 | `ActionRecommendation` | `RealityMapActionRecommendation` |
-| `GraphNode` | `RealityMapGraphNode` |
-| `GraphEdge` | `RealityMapGraphEdge` |
-| `RiskAssessment` | `RealityMapRiskAssessment` |
+| `GraphNode`            | `RealityMapGraphNode`            |
+| `GraphEdge`            | `RealityMapGraphEdge`            |
+| `RiskAssessment`       | `RealityMapRiskAssessment`       |
 
 **Lines removed**: 1246-1260 (redundant `export type {}` block)
 
@@ -57,11 +57,11 @@ Additionally, `scenarioRealityMap.ts` lines 1250-1260 contained a redundant `exp
 
 ### 2. Dashboard Component Updates
 
-| File | Change |
-|------|--------|
-| `RealityAnalysisPanel.tsx` | Import `RealityMapRiskFactor`, `DetectedContradiction`, `DetectedCorrelation` |
-| `RealityMapGraph.tsx` | Import `RealityMapGraphNode`, `RealityMapGraphEdge` |
-| `RealityNodeDetailDrawer.tsx` | Import `RealityMapGraphNode`, `RealityMapRiskFactor` |
+| File                          | Change                                                                        |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `RealityAnalysisPanel.tsx`    | Import `RealityMapRiskFactor`, `DetectedContradiction`, `DetectedCorrelation` |
+| `RealityMapGraph.tsx`         | Import `RealityMapGraphNode`, `RealityMapGraphEdge`                           |
+| `RealityNodeDetailDrawer.tsx` | Import `RealityMapGraphNode`, `RealityMapRiskFactor`                          |
 
 ---
 
@@ -69,16 +69,17 @@ Additionally, `scenarioRealityMap.ts` lines 1250-1260 contained a redundant `exp
 
 ### Package Compilation Status
 
-| Package | Status | Notes |
-|---------|--------|-------|
-| `@pravado/types` | PASS | No duplicate export errors |
-| `@pravado/validators` | PASS | Clean compilation |
-| `@pravado/api` | 178 errors | Pre-existing issues (missing validators, feature flags) |
-| `@pravado/dashboard` | 128 errors | Pre-existing issues (unused imports, type mismatches) |
+| Package               | Status     | Notes                                                   |
+| --------------------- | ---------- | ------------------------------------------------------- |
+| `@pravado/types`      | PASS       | No duplicate export errors                              |
+| `@pravado/validators` | PASS       | Clean compilation                                       |
+| `@pravado/api`        | 178 errors | Pre-existing issues (missing validators, feature flags) |
+| `@pravado/dashboard`  | 128 errors | Pre-existing issues (unused imports, type mismatches)   |
 
 ### S74 Insight Conflicts Component Status
 
 All S74 insight-conflict components compile with only **unused import warnings** (TS6133, TS6196):
+
 - No blocking type errors
 - No missing export errors
 - No duplicate declaration errors
@@ -87,12 +88,12 @@ All S74 insight-conflict components compile with only **unused import warnings**
 
 ## Files Modified
 
-| File | Lines Changed |
-|------|---------------|
-| `packages/types/src/scenarioRealityMap.ts` | ~25 edits (type renames, internal refs, removed exports) |
-| `apps/dashboard/src/components/reality-maps/RealityAnalysisPanel.tsx` | 2 lines |
-| `apps/dashboard/src/components/reality-maps/RealityMapGraph.tsx` | 4 lines |
-| `apps/dashboard/src/components/reality-maps/RealityNodeDetailDrawer.tsx` | 5 lines |
+| File                                                                     | Lines Changed                                            |
+| ------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `packages/types/src/scenarioRealityMap.ts`                               | ~25 edits (type renames, internal refs, removed exports) |
+| `apps/dashboard/src/components/reality-maps/RealityAnalysisPanel.tsx`    | 2 lines                                                  |
+| `apps/dashboard/src/components/reality-maps/RealityMapGraph.tsx`         | 4 lines                                                  |
+| `apps/dashboard/src/components/reality-maps/RealityNodeDetailDrawer.tsx` | 5 lines                                                  |
 
 **Total**: 4 files, ~35 lines changed
 
@@ -103,12 +104,14 @@ All S74 insight-conflict components compile with only **unused import warnings**
 The following issues exist in the codebase but are **NOT related to S74.1**:
 
 ### API Issues (from S73/S74)
+
 - Missing validator exports for insight conflicts, reality maps, scenario orchestrations
 - Missing feature flags: `ENABLE_INSIGHT_CONFLICTS`, `ENABLE_REALITY_MAPS`, `ENABLE_SCENARIO_ORCHESTRATION`
 - Missing `../lib/supabase` module
 - Fastify `httpErrors` type issues
 
 ### Dashboard Issues (from S73)
+
 - Reality maps page type mismatches (`GraphNode` vs `RealityMapGraphNode` callbacks)
 - RealityAnalysisPanel property access issues (`aggregatedRisks`, `outcomeDistribution`, etc.)
 - Unused imports in various components
@@ -117,12 +120,12 @@ The following issues exist in the codebase but are **NOT related to S74.1**:
 
 ## Backward Compatibility
 
-| Consumer | Compatibility |
-|----------|---------------|
-| `crisis.ts` types | Unchanged - full backward compatibility |
-| `agents.ts` types | Unchanged - full backward compatibility |
-| S73 reality-maps components | Updated - using new prefixed names |
-| S74 insight-conflict components | Compatible - no changes needed |
+| Consumer                        | Compatibility                           |
+| ------------------------------- | --------------------------------------- |
+| `crisis.ts` types               | Unchanged - full backward compatibility |
+| `agents.ts` types               | Unchanged - full backward compatibility |
+| S73 reality-maps components     | Updated - using new prefixed names      |
+| S74 insight-conflict components | Compatible - no changes needed          |
 
 ---
 

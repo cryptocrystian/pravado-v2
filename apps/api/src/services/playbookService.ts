@@ -9,7 +9,10 @@ import type {
   PlaybookDefinitionDTO,
   PlaybookStatus,
 } from '@pravado/types';
-import { validatePlaybookStructure, type PlaybookStepInput } from '@pravado/validators';
+import {
+  validatePlaybookStructure,
+  type PlaybookStepInput,
+} from '@pravado/validators';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface CreatePlaybookData {
@@ -195,9 +198,12 @@ export class PlaybookService {
     const updateData: Record<string, unknown> = {};
     if (data.name !== undefined) updateData.name = data.name;
     if (data.status !== undefined) updateData.status = data.status;
-    if (data.inputSchema !== undefined) updateData.input_schema = data.inputSchema;
-    if (data.outputSchema !== undefined) updateData.output_schema = data.outputSchema;
-    if (data.timeoutSeconds !== undefined) updateData.timeout_seconds = data.timeoutSeconds;
+    if (data.inputSchema !== undefined)
+      updateData.input_schema = data.inputSchema;
+    if (data.outputSchema !== undefined)
+      updateData.output_schema = data.outputSchema;
+    if (data.timeoutSeconds !== undefined)
+      updateData.timeout_seconds = data.timeoutSeconds;
     if (data.maxRetries !== undefined) updateData.max_retries = data.maxRetries;
     if (data.tags !== undefined) updateData.tags = data.tags;
 
@@ -263,7 +269,9 @@ export class PlaybookService {
     const validation = validatePlaybookStructure(steps);
 
     if (!validation.valid) {
-      throw new Error(`Invalid playbook structure: ${validation.errors.join(', ')}`);
+      throw new Error(
+        `Invalid playbook structure: ${validation.errors.join(', ')}`
+      );
     }
 
     // Additional validation: ensure at least one step exists
@@ -277,8 +285,13 @@ export class PlaybookService {
     if (sortedByPosition.length > 0) {
       // Optionally validate that positions are sequential
       const positions = sortedByPosition.map((s) => s.position);
-      const expectedPositions = Array.from({ length: positions.length }, (_, i) => i);
-      const positionsMatch = positions.every((p, i) => p === expectedPositions[i]);
+      const expectedPositions = Array.from(
+        { length: positions.length },
+        (_, i) => i
+      );
+      const positionsMatch = positions.every(
+        (p, i) => p === expectedPositions[i]
+      );
 
       if (!positionsMatch) {
         throw new Error('Step positions must be sequential starting from 0');
@@ -358,7 +371,9 @@ export class PlaybookService {
       .order('version', { ascending: false });
 
     if (versionsError) {
-      throw new Error(`Failed to list playbook versions: ${versionsError.message}`);
+      throw new Error(
+        `Failed to list playbook versions: ${versionsError.message}`
+      );
     }
 
     return (versions || []).map((v) => ({
@@ -394,7 +409,8 @@ export class PlaybookService {
       .order('version', { ascending: false })
       .limit(1);
 
-    const nextVersion = versions && versions.length > 0 ? versions[0].version + 1 : 1;
+    const nextVersion =
+      versions && versions.length > 0 ? versions[0].version + 1 : 1;
 
     // Create new playbook with incremented version
     const { data: newPlaybook, error: playbookError } = await this.supabase

@@ -5,7 +5,6 @@
  * Displays a single scenario playbook with its details and actions
  */
 
-import { useState } from 'react';
 import type {
   ScenarioPlaybook,
   ScenarioRiskLevel,
@@ -18,6 +17,7 @@ import {
   SCENARIO_PLAYBOOK_STATUS_LABELS,
   SCENARIO_TRIGGER_TYPE_LABELS,
 } from '@pravado/types';
+import { useState } from 'react';
 
 interface PlaybookCardProps {
   playbook: ScenarioPlaybook;
@@ -38,10 +38,18 @@ export function PlaybookCard({
 }: PlaybookCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const riskColor = RISK_LEVEL_COLORS[playbook.riskLevel as ScenarioRiskLevel] || 'bg-gray-100';
-  const statusLabel = SCENARIO_PLAYBOOK_STATUS_LABELS[playbook.status as ScenarioPlaybookStatus] || playbook.status;
-  const triggerLabel = SCENARIO_TRIGGER_TYPE_LABELS[playbook.triggerType as ScenarioTriggerType] || playbook.triggerType;
-  const riskLabel = SCENARIO_RISK_LEVEL_LABELS[playbook.riskLevel as ScenarioRiskLevel] || playbook.riskLevel;
+  const riskColor =
+    RISK_LEVEL_COLORS[playbook.riskLevel as ScenarioRiskLevel] || 'bg-gray-100';
+  const statusLabel =
+    SCENARIO_PLAYBOOK_STATUS_LABELS[
+      playbook.status as ScenarioPlaybookStatus
+    ] || playbook.status;
+  const triggerLabel =
+    SCENARIO_TRIGGER_TYPE_LABELS[playbook.triggerType as ScenarioTriggerType] ||
+    playbook.triggerType;
+  const riskLabel =
+    SCENARIO_RISK_LEVEL_LABELS[playbook.riskLevel as ScenarioRiskLevel] ||
+    playbook.riskLevel;
 
   const isActive = playbook.status === 'active';
   const isDraft = playbook.status === 'draft';
@@ -78,13 +86,25 @@ export function PlaybookCard({
 
           <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
             <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
               {triggerLabel}
             </span>
 
-            <span className={`inline-flex items-center px-2 py-0.5 rounded ${riskColor}`}>
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded ${riskColor}`}
+            >
               {riskLabel} Risk
             </span>
 
@@ -94,9 +114,7 @@ export function PlaybookCard({
               </span>
             )}
 
-            <span className="text-gray-400">
-              v{playbook.version}
-            </span>
+            <span className="text-gray-400">v{playbook.version}</span>
           </div>
 
           {playbook.tags && playbook.tags.length > 0 && (
@@ -123,7 +141,11 @@ export function PlaybookCard({
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-1 rounded-full hover:bg-gray-100"
           >
-            <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
               <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
             </svg>
           </button>
@@ -193,12 +215,11 @@ export function PlaybookCard({
       </div>
 
       <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-        <span>
-          Updated {new Date(playbook.updatedAt).toLocaleDateString()}
-        </span>
+        <span>Updated {new Date(playbook.updatedAt).toLocaleDateString()}</span>
         {playbook.targetSystems && playbook.targetSystems.length > 0 && (
           <span>
-            {playbook.targetSystems.length} target system{playbook.targetSystems.length !== 1 ? 's' : ''}
+            {playbook.targetSystems.length} target system
+            {playbook.targetSystems.length !== 1 ? 's' : ''}
           </span>
         )}
       </div>

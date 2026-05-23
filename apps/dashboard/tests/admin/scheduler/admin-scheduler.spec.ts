@@ -13,7 +13,9 @@ test.describe('Admin Scheduler Page', () => {
   test.describe('Page Layout', () => {
     test('should display page title and description', async ({ page }) => {
       await expect(page.getByText('Scheduler Dashboard')).toBeVisible();
-      await expect(page.getByText('Manage scheduled background tasks')).toBeVisible();
+      await expect(
+        page.getByText('Manage scheduled background tasks')
+      ).toBeVisible();
     });
 
     test('should display statistics cards', async ({ page }) => {
@@ -56,7 +58,10 @@ test.describe('Admin Scheduler Page', () => {
         })
       );
 
-      expect(anyTaskVisible || (await page.getByText('No scheduler tasks found').isVisible())).toBeTruthy();
+      expect(
+        anyTaskVisible ||
+          (await page.getByText('No scheduler tasks found').isVisible())
+      ).toBeTruthy();
     });
 
     test('should show task descriptions', async ({ page }) => {
@@ -82,7 +87,9 @@ test.describe('Admin Scheduler Page', () => {
     test('should display Run Now buttons', async ({ page }) => {
       // Run Now buttons should be present or show empty state
       const hasRunButtons = await page.getByText('Run Now').count();
-      const hasEmptyState = await page.getByText('No scheduler tasks found').isVisible();
+      const hasEmptyState = await page
+        .getByText('No scheduler tasks found')
+        .isVisible();
 
       expect(hasRunButtons >= 0 || hasEmptyState).toBeTruthy();
     });
@@ -100,7 +107,9 @@ test.describe('Admin Scheduler Page', () => {
         expect(true).toBe(true);
       } else {
         // If no buttons, verify empty state
-        expect(await page.getByText('No scheduler tasks found').isVisible()).toBeTruthy();
+        expect(
+          await page.getByText('No scheduler tasks found').isVisible()
+        ).toBeTruthy();
       }
     });
   });
@@ -108,7 +117,9 @@ test.describe('Admin Scheduler Page', () => {
   test.describe('Statistics Display', () => {
     test('should show numeric values in stat cards', async ({ page }) => {
       // All stat cards should show numbers (0 or greater)
-      const statCards = await page.locator('.bg-white.rounded-lg.shadow').count();
+      const statCards = await page
+        .locator('.bg-white.rounded-lg.shadow')
+        .count();
       expect(statCards).toBeGreaterThanOrEqual(6); // 6 stat cards expected
     });
 
@@ -175,7 +186,9 @@ test.describe('Admin Scheduler Page', () => {
 
       // Should show loading indicator briefly
       try {
-        await page.waitForSelector('text=Loading scheduler...', { timeout: 500 });
+        await page.waitForSelector('text=Loading scheduler...', {
+          timeout: 500,
+        });
       } catch {
         // Loading might be too fast, that's okay
       }

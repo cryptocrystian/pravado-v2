@@ -3,7 +3,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateGraph, type PlaybookGraph } from '../src/services/playbookGraphService';
+import {
+  validateGraph,
+  type PlaybookGraph,
+} from '../src/services/playbookGraphService';
 
 describe('Graph Validation (S20)', () => {
   describe('Empty Graph', () => {
@@ -25,8 +28,18 @@ describe('Graph Validation (S20)', () => {
     it('should reject graph with no entry point', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
         ],
         edges: [
           { id: 'a-b', source: 'a', target: 'b' },
@@ -43,9 +56,24 @@ describe('Graph Validation (S20)', () => {
     it('should reject graph with multiple entry points', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
-          { id: 'c', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'C', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
+          {
+            id: 'c',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'C', config: {} },
+          },
         ],
         edges: [{ id: 'b-c', source: 'b', target: 'c' }],
       };
@@ -53,14 +81,26 @@ describe('Graph Validation (S20)', () => {
       const result = validateGraph(graph);
 
       expect(result.valid).toBe(false);
-      expect(result.issues.some((i) => i.code === 'MULTIPLE_ENTRY_POINTS')).toBe(true);
+      expect(
+        result.issues.some((i) => i.code === 'MULTIPLE_ENTRY_POINTS')
+      ).toBe(true);
     });
 
     it('should accept graph with exactly one entry point', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
         ],
         edges: [{ id: 'a-b', source: 'a', target: 'b' }],
       };
@@ -75,13 +115,26 @@ describe('Graph Validation (S20)', () => {
     it('should reject graph with duplicate node IDs', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'a', type: 'DATA', position: { x: 0, y: 0 }, data: { label: 'A2', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'a',
+            type: 'DATA',
+            position: { x: 0, y: 0 },
+            data: { label: 'A2', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
         ],
-        edges: [
-          { id: 'a-b', source: 'a', target: 'b' },
-        ],
+        edges: [{ id: 'a-b', source: 'a', target: 'b' }],
       };
 
       const result = validateGraph(graph);
@@ -95,9 +148,24 @@ describe('Graph Validation (S20)', () => {
     it('should reject graph with orphaned nodes', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
-          { id: 'c', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'C', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
+          {
+            id: 'c',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'C', config: {} },
+          },
         ],
         edges: [{ id: 'a-b', source: 'a', target: 'b' }],
       };
@@ -111,7 +179,12 @@ describe('Graph Validation (S20)', () => {
     it('should accept single node graph without edges', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
         ],
         edges: [],
       };
@@ -126,8 +199,18 @@ describe('Graph Validation (S20)', () => {
     it('should reject graph with simple cycle', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
         ],
         edges: [
           { id: 'a-b', source: 'a', target: 'b' },
@@ -144,9 +227,24 @@ describe('Graph Validation (S20)', () => {
     it('should reject graph with complex cycle', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
-          { id: 'c', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'C', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
+          {
+            id: 'c',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'C', config: {} },
+          },
         ],
         edges: [
           { id: 'a-b', source: 'a', target: 'b' },
@@ -164,9 +262,24 @@ describe('Graph Validation (S20)', () => {
     it('should accept acyclic graph', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'b', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'B', config: {} } },
-          { id: 'c', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'C', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'b',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'B', config: {} },
+          },
+          {
+            id: 'c',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'C', config: {} },
+          },
         ],
         edges: [
           { id: 'a-b', source: 'a', target: 'b' },
@@ -184,9 +297,24 @@ describe('Graph Validation (S20)', () => {
     it('should warn about incomplete branch nodes', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
-          { id: 'branch', type: 'BRANCH', position: { x: 0, y: 0 }, data: { label: 'Branch', config: {} } },
-          { id: 'c', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'C', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
+          {
+            id: 'branch',
+            type: 'BRANCH',
+            position: { x: 0, y: 0 },
+            data: { label: 'Branch', config: {} },
+          },
+          {
+            id: 'c',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'C', config: {} },
+          },
         ],
         edges: [
           { id: 'a-branch', source: 'a', target: 'branch' },
@@ -196,7 +324,11 @@ describe('Graph Validation (S20)', () => {
 
       const result = validateGraph(graph);
 
-      expect(result.issues.some((i) => i.code === 'INCOMPLETE_BRANCH' && i.severity === 'warning')).toBe(true);
+      expect(
+        result.issues.some(
+          (i) => i.code === 'INCOMPLETE_BRANCH' && i.severity === 'warning'
+        )
+      ).toBe(true);
     });
   });
 
@@ -204,11 +336,14 @@ describe('Graph Validation (S20)', () => {
     it('should reject edges referencing non-existent nodes', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'a', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'A', config: {} } },
+          {
+            id: 'a',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'A', config: {} },
+          },
         ],
-        edges: [
-          { id: 'a-nonexistent', source: 'a', target: 'nonexistent' },
-        ],
+        edges: [{ id: 'a-nonexistent', source: 'a', target: 'nonexistent' }],
       };
 
       const result = validateGraph(graph);
@@ -222,9 +357,24 @@ describe('Graph Validation (S20)', () => {
     it('should accept simple linear graph', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'step1', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'Step 1', config: {} } },
-          { id: 'step2', type: 'DATA', position: { x: 100, y: 0 }, data: { label: 'Step 2', config: {} } },
-          { id: 'step3', type: 'API', position: { x: 200, y: 0 }, data: { label: 'Step 3', config: {} } },
+          {
+            id: 'step1',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'Step 1', config: {} },
+          },
+          {
+            id: 'step2',
+            type: 'DATA',
+            position: { x: 100, y: 0 },
+            data: { label: 'Step 2', config: {} },
+          },
+          {
+            id: 'step3',
+            type: 'API',
+            position: { x: 200, y: 0 },
+            data: { label: 'Step 3', config: {} },
+          },
         ],
         edges: [
           { id: 'step1-step2', source: 'step1', target: 'step2' },
@@ -236,16 +386,38 @@ describe('Graph Validation (S20)', () => {
 
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
-      expect(result.issues.filter((i) => i.severity === 'error')).toHaveLength(0);
+      expect(result.issues.filter((i) => i.severity === 'error')).toHaveLength(
+        0
+      );
     });
 
     it('should accept parallel branches', () => {
       const graph: PlaybookGraph = {
         nodes: [
-          { id: 'start', type: 'AGENT', position: { x: 0, y: 0 }, data: { label: 'Start', config: {} } },
-          { id: 'branch1', type: 'AGENT', position: { x: 100, y: -50 }, data: { label: 'Branch 1', config: {} } },
-          { id: 'branch2', type: 'AGENT', position: { x: 100, y: 50 }, data: { label: 'Branch 2', config: {} } },
-          { id: 'end', type: 'AGENT', position: { x: 200, y: 0 }, data: { label: 'End', config: {} } },
+          {
+            id: 'start',
+            type: 'AGENT',
+            position: { x: 0, y: 0 },
+            data: { label: 'Start', config: {} },
+          },
+          {
+            id: 'branch1',
+            type: 'AGENT',
+            position: { x: 100, y: -50 },
+            data: { label: 'Branch 1', config: {} },
+          },
+          {
+            id: 'branch2',
+            type: 'AGENT',
+            position: { x: 100, y: 50 },
+            data: { label: 'Branch 2', config: {} },
+          },
+          {
+            id: 'end',
+            type: 'AGENT',
+            position: { x: 200, y: 0 },
+            data: { label: 'End', config: {} },
+          },
         ],
         edges: [
           { id: 'start-branch1', source: 'start', target: 'branch1' },

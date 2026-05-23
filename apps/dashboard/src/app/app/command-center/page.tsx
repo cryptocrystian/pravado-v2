@@ -14,10 +14,10 @@
 
 import { useState, useEffect } from 'react';
 
-import { TriPaneShell } from '@/components/command-center/TriPaneShell';
 import { ActionStreamPane } from '@/components/command-center/ActionStreamPane';
 import { IntelligenceCanvasPane } from '@/components/command-center/IntelligenceCanvasPane';
 import { StrategyPanelPane } from '@/components/command-center/StrategyPanelPane';
+import { TriPaneShell } from '@/components/command-center/TriPaneShell';
 
 // ── Hooks ──
 
@@ -25,7 +25,9 @@ function useGreeting() {
   const [greeting, setGreeting] = useState('Good afternoon');
   useEffect(() => {
     const h = new Date().getHours();
-    setGreeting(h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
+    setGreeting(
+      h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+    );
   }, []);
   return greeting;
 }
@@ -42,7 +44,7 @@ function useFormattedDate() {
         year: 'numeric',
       }) +
         ' \u00b7 ' +
-        now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+        now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
     );
   }, []);
   return str;
@@ -55,7 +57,10 @@ export default function CommandCenterPage() {
   const date = useFormattedDate();
 
   return (
-    <div className="flex flex-col bg-page" style={{ height: 'calc(100vh - 80px)' }}>
+    <div
+      className="flex flex-col bg-page"
+      style={{ height: 'calc(100vh - 80px)' }}
+    >
       <div className="flex-1 min-h-0">
         <TriPaneShell
           greeting={greeting}

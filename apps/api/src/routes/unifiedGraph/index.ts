@@ -3,8 +3,21 @@
  * Global Insight Fabric & Unified Intelligence Graph V1
  */
 
-import { FastifyPluginAsync } from 'fastify';
 import { isEnabled } from '@pravado/feature-flags';
+import {
+  CreateNodeInput,
+  UpdateNodeInput,
+  ListNodesInput,
+  CreateEdgeInput,
+  UpdateEdgeInput,
+  ListEdgesInput,
+  MergeNodesInput,
+  GraphQueryInput,
+  GenerateSnapshotInput,
+  ExplainPathInput,
+  GenerateEmbeddingsInput,
+  ComputeMetricsInput,
+} from '@pravado/types';
 import {
   createNodeSchema,
   updateNodeSchema,
@@ -24,20 +37,8 @@ import {
   computeMetricsSchema,
   listAuditLogsSchema,
 } from '@pravado/validators';
-import {
-  CreateNodeInput,
-  UpdateNodeInput,
-  ListNodesInput,
-  CreateEdgeInput,
-  UpdateEdgeInput,
-  ListEdgesInput,
-  MergeNodesInput,
-  GraphQueryInput,
-  GenerateSnapshotInput,
-  ExplainPathInput,
-  GenerateEmbeddingsInput,
-  ComputeMetricsInput,
-} from '@pravado/types';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as graphService from '../../services/unifiedIntelligenceGraphService';
 
 const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
@@ -52,7 +53,11 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Helper to get service context
-  const getContext = (request: { supabase: unknown; orgId: string; userId: string }) => ({
+  const getContext = (request: {
+    supabase: unknown;
+    orgId: string;
+    userId: string;
+  }) => ({
     supabase: request.supabase as graphService.ServiceContext['supabase'],
     orgId: request.orgId,
     userId: request.userId,
@@ -65,7 +70,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Create node
   fastify.post('/nodes', async (request, reply) => {
     try {
-      const input = createNodeSchema.parse(request.body) as unknown as CreateNodeInput;
+      const input = createNodeSchema.parse(
+        request.body
+      ) as unknown as CreateNodeInput;
       const ctx = getContext(request as never);
       const node = await graphService.createNode(ctx, input);
       return reply.status(201).send(node);
@@ -78,7 +85,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // List nodes
   fastify.get('/nodes', async (request, reply) => {
     try {
-      const input = listNodesSchema.parse(request.query) as unknown as ListNodesInput;
+      const input = listNodesSchema.parse(
+        request.query
+      ) as unknown as ListNodesInput;
       const ctx = getContext(request as never);
       const result = await graphService.listNodes(ctx, input);
       return reply.send(result);
@@ -124,7 +133,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.patch('/nodes/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
-      const input = updateNodeSchema.parse(request.body) as unknown as UpdateNodeInput;
+      const input = updateNodeSchema.parse(
+        request.body
+      ) as unknown as UpdateNodeInput;
       const ctx = getContext(request as never);
       const node = await graphService.updateNode(ctx, id, input);
       return reply.send(node);
@@ -177,7 +188,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Create edge
   fastify.post('/edges', async (request, reply) => {
     try {
-      const input = createEdgeSchema.parse(request.body) as unknown as CreateEdgeInput;
+      const input = createEdgeSchema.parse(
+        request.body
+      ) as unknown as CreateEdgeInput;
       const ctx = getContext(request as never);
       const edge = await graphService.createEdge(ctx, input);
       return reply.status(201).send(edge);
@@ -190,7 +203,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // List edges
   fastify.get('/edges', async (request, reply) => {
     try {
-      const input = listEdgesSchema.parse(request.query) as unknown as ListEdgesInput;
+      const input = listEdgesSchema.parse(
+        request.query
+      ) as unknown as ListEdgesInput;
       const ctx = getContext(request as never);
       const result = await graphService.listEdges(ctx, input);
       return reply.send(result);
@@ -236,7 +251,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.patch('/edges/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
-      const input = updateEdgeSchema.parse(request.body) as unknown as UpdateEdgeInput;
+      const input = updateEdgeSchema.parse(
+        request.body
+      ) as unknown as UpdateEdgeInput;
       const ctx = getContext(request as never);
       const edge = await graphService.updateEdge(ctx, id, input);
       return reply.send(edge);
@@ -266,7 +283,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Merge nodes
   fastify.post('/merge', async (request, reply) => {
     try {
-      const input = mergeNodesSchema.parse(request.body) as unknown as MergeNodesInput;
+      const input = mergeNodesSchema.parse(
+        request.body
+      ) as unknown as MergeNodesInput;
       const ctx = getContext(request as never);
       const result = await graphService.mergeNodes(ctx, input);
       return reply.send(result);
@@ -283,7 +302,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Query graph
   fastify.post('/query', async (request, reply) => {
     try {
-      const input = unifiedGraphQuerySchema.parse(request.body) as unknown as GraphQueryInput;
+      const input = unifiedGraphQuerySchema.parse(
+        request.body
+      ) as unknown as GraphQueryInput;
       const ctx = getContext(request as never);
       const result = await graphService.queryGraph(ctx, input);
       return reply.send(result);
@@ -315,7 +336,12 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
         maxDepth?: number;
       };
       const ctx = getContext(request as never);
-      const path = await graphService.findShortestPath(ctx, startNodeId, endNodeId, maxDepth);
+      const path = await graphService.findShortestPath(
+        ctx,
+        startNodeId,
+        endNodeId,
+        maxDepth
+      );
       if (!path) {
         return reply.status(404).send({ error: 'No path found' });
       }
@@ -329,7 +355,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Explain path (LLM-powered)
   fastify.post('/explain-path', async (request, reply) => {
     try {
-      const input = explainPathSchema.parse(request.body) as unknown as ExplainPathInput;
+      const input = explainPathSchema.parse(
+        request.body
+      ) as unknown as ExplainPathInput;
       const ctx = getContext(request as never);
       const result = await graphService.explainPath(ctx, input);
       if (!result) {
@@ -374,7 +402,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Compute metrics
   fastify.post('/metrics/compute', async (request, reply) => {
     try {
-      const input = computeMetricsSchema.parse(request.body) as unknown as ComputeMetricsInput;
+      const input = computeMetricsSchema.parse(
+        request.body
+      ) as unknown as ComputeMetricsInput;
       const ctx = getContext(request as never);
       const result = await graphService.computeMetrics(ctx, input);
       return reply.send(result);
@@ -391,7 +421,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Generate embeddings
   fastify.post('/embeddings', async (request, reply) => {
     try {
-      const input = generateEmbeddingsSchema.parse(request.body) as unknown as GenerateEmbeddingsInput;
+      const input = generateEmbeddingsSchema.parse(
+        request.body
+      ) as unknown as GenerateEmbeddingsInput;
       const ctx = getContext(request as never);
       const result = await graphService.generateEmbeddings(ctx, input);
       return reply.send(result);
@@ -408,7 +440,9 @@ const unifiedGraphRoutes: FastifyPluginAsync = async (fastify) => {
   // Create snapshot
   fastify.post('/snapshots', async (request, reply) => {
     try {
-      const input = generateSnapshotSchema.parse(request.body) as unknown as GenerateSnapshotInput;
+      const input = generateSnapshotSchema.parse(
+        request.body
+      ) as unknown as GenerateSnapshotInput;
       const ctx = getContext(request as never);
       const snapshot = await graphService.createSnapshot(ctx, input);
       return reply.status(201).send(snapshot);

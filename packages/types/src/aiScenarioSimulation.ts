@@ -26,11 +26,12 @@ export const AI_SIMULATION_MODE_LABELS: Record<AISimulationMode, string> = {
   what_if: 'What-If Exploration',
 };
 
-export const AI_SIMULATION_MODE_DESCRIPTIONS: Record<AISimulationMode, string> = {
-  single_run: 'Execute a single simulation run with defined parameters',
-  multi_run: 'Run multiple parallel simulations for comparison analysis',
-  what_if: 'Explore branching scenarios with user intervention points',
-};
+export const AI_SIMULATION_MODE_DESCRIPTIONS: Record<AISimulationMode, string> =
+  {
+    single_run: 'Execute a single simulation run with defined parameters',
+    multi_run: 'Run multiple parallel simulations for comparison analysis',
+    what_if: 'Explore branching scenarios with user intervention points',
+  };
 
 /**
  * Simulation lifecycle status
@@ -125,7 +126,7 @@ export const AI_AGENT_ROLE_TYPE_LABELS: Record<AIAgentRoleType, string> = {
   regulator: 'Regulator',
   market_analyst: 'Market Analyst',
   system: 'System Narrator',
-  critic: 'Devil\'s Advocate',
+  critic: "Devil's Advocate",
 };
 
 export const AI_AGENT_ROLE_TYPE_ICONS: Record<AIAgentRoleType, string> = {
@@ -166,17 +167,18 @@ export const AI_SCENARIO_CHANNELS: AIScenarioChannelType[] = [
   'analyst_report',
 ];
 
-export const AI_SCENARIO_CHANNEL_LABELS: Record<AIScenarioChannelType, string> = {
-  press: 'Press Release',
-  email: 'Email',
-  social: 'Social Media',
-  internal_meeting: 'Internal Meeting',
-  board: 'Board Communication',
-  investor_call: 'Investor Call',
-  public_statement: 'Public Statement',
-  private_message: 'Private Message',
-  analyst_report: 'Analyst Report',
-};
+export const AI_SCENARIO_CHANNEL_LABELS: Record<AIScenarioChannelType, string> =
+  {
+    press: 'Press Release',
+    email: 'Email',
+    social: 'Social Media',
+    internal_meeting: 'Internal Meeting',
+    board: 'Board Communication',
+    investor_call: 'Investor Call',
+    public_statement: 'Public Statement',
+    private_message: 'Private Message',
+    analyst_report: 'Analyst Report',
+  };
 
 /**
  * Simulation objective types
@@ -206,7 +208,10 @@ export const AI_SCENARIO_OBJECTIVES: AIScenarioObjectiveType[] = [
   'custom',
 ];
 
-export const AI_SCENARIO_OBJECTIVE_LABELS: Record<AIScenarioObjectiveType, string> = {
+export const AI_SCENARIO_OBJECTIVE_LABELS: Record<
+  AIScenarioObjectiveType,
+  string
+> = {
   crisis_comms: 'Crisis Communications',
   investor_relations: 'Investor Relations',
   reputation: 'Reputation Management',
@@ -219,7 +224,10 @@ export const AI_SCENARIO_OBJECTIVE_LABELS: Record<AIScenarioObjectiveType, strin
   custom: 'Custom Objective',
 };
 
-export const AI_SCENARIO_OBJECTIVE_DESCRIPTIONS: Record<AIScenarioObjectiveType, string> = {
+export const AI_SCENARIO_OBJECTIVE_DESCRIPTIONS: Record<
+  AIScenarioObjectiveType,
+  string
+> = {
   crisis_comms: 'Simulate crisis scenarios and communication strategies',
   investor_relations: 'Prepare for investor Q&A and stakeholder communications',
   reputation: 'Model reputation impact and response strategies',
@@ -244,14 +252,20 @@ export const AI_SCENARIO_RISK_LEVELS: AIScenarioRiskLevel[] = [
   'critical',
 ];
 
-export const AI_SCENARIO_RISK_LEVEL_LABELS: Record<AIScenarioRiskLevel, string> = {
+export const AI_SCENARIO_RISK_LEVEL_LABELS: Record<
+  AIScenarioRiskLevel,
+  string
+> = {
   low: 'Low Risk',
   medium: 'Medium Risk',
   high: 'High Risk',
   critical: 'Critical Risk',
 };
 
-export const AI_SCENARIO_RISK_LEVEL_COLORS: Record<AIScenarioRiskLevel, string> = {
+export const AI_SCENARIO_RISK_LEVEL_COLORS: Record<
+  AIScenarioRiskLevel,
+  string
+> = {
   low: 'green',
   medium: 'yellow',
   high: 'orange',
@@ -269,7 +283,10 @@ export const AI_SCENARIO_OUTCOME_TYPES: AIScenarioOutcomeType[] = [
   'neutral',
 ];
 
-export const AI_SCENARIO_OUTCOME_TYPE_LABELS: Record<AIScenarioOutcomeType, string> = {
+export const AI_SCENARIO_OUTCOME_TYPE_LABELS: Record<
+  AIScenarioOutcomeType,
+  string
+> = {
   risk: 'Risk',
   opportunity: 'Opportunity',
   neutral: 'Neutral',
@@ -356,11 +373,14 @@ export interface AIScenarioRunSummary {
     description: string;
     impact: string;
   }>;
-  agentSummaries?: Record<string, {
-    turnCount: number;
-    primaryThemes: string[];
-    sentiment: string;
-  }>;
+  agentSummaries?: Record<
+    string,
+    {
+      turnCount: number;
+      primaryThemes: string[];
+      sentiment: string;
+    }
+  >;
   overallAssessment?: string;
   riskProgression?: Array<{
     stepIndex: number;
@@ -455,7 +475,12 @@ export interface AIContextSnapshot {
  * Source references for simulation seeding
  */
 export interface AIScenarioSeedSource {
-  sourceType: 'playbook' | 'narrative' | 'risk_snapshot' | 'crisis_incident' | 'custom';
+  sourceType:
+    | 'playbook'
+    | 'narrative'
+    | 'risk_snapshot'
+    | 'crisis_incident'
+    | 'custom';
   sourceId?: string;
   sourceName?: string;
   snapshotData?: Record<string, unknown>;
@@ -986,12 +1011,15 @@ export interface AIScenarioRunStats {
     riskLevel: AIScenarioRiskLevel;
     timestamp: Date;
   }>;
-  metricsSummary: Record<string, {
-    min: number;
-    max: number;
-    avg: number;
-    latest: number;
-  }>;
+  metricsSummary: Record<
+    string,
+    {
+      min: number;
+      max: number;
+      avg: number;
+      latest: number;
+    }
+  >;
   outcomesSummary: {
     risks: number;
     opportunities: number;
@@ -1027,7 +1055,13 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
       responseLength: 'moderate',
     },
     description: 'Chief Executive Officer perspective',
-    suitableFor: ['crisis_comms', 'investor_relations', 'earnings', 'leadership_change', 'm_and_a'],
+    suitableFor: [
+      'crisis_comms',
+      'investor_relations',
+      'earnings',
+      'leadership_change',
+      'm_and_a',
+    ],
   },
   {
     agentKey: 'cfo',
@@ -1036,7 +1070,11 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
     defaultConfig: {
       style: 'analytical',
       tone: 'measured',
-      priorities: ['financial performance', 'risk management', 'investor confidence'],
+      priorities: [
+        'financial performance',
+        'risk management',
+        'investor confidence',
+      ],
       responseLength: 'detailed',
     },
     description: 'Chief Financial Officer perspective',
@@ -1049,7 +1087,11 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
     defaultConfig: {
       style: 'creative',
       tone: 'optimistic',
-      priorities: ['brand perception', 'market positioning', 'customer engagement'],
+      priorities: [
+        'brand perception',
+        'market positioning',
+        'customer engagement',
+      ],
       responseLength: 'moderate',
     },
     description: 'Chief Marketing Officer perspective',
@@ -1076,7 +1118,11 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
     defaultConfig: {
       style: 'aggressive',
       tone: 'demanding',
-      priorities: ['shareholder returns', 'governance', 'operational efficiency'],
+      priorities: [
+        'shareholder returns',
+        'governance',
+        'operational efficiency',
+      ],
       aggressiveness: 0.9,
       responseLength: 'moderate',
     },
@@ -1117,7 +1163,11 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
     defaultConfig: {
       style: 'analytical',
       tone: 'neutral',
-      priorities: ['financial metrics', 'market trends', 'competitive positioning'],
+      priorities: [
+        'financial metrics',
+        'market trends',
+        'competitive positioning',
+      ],
       responseLength: 'detailed',
     },
     description: 'Equity research analyst',
@@ -1151,17 +1201,26 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
   },
   {
     agentKey: 'devils_advocate',
-    displayName: 'Devil\'s Advocate',
+    displayName: "Devil's Advocate",
     roleType: 'critic',
     defaultConfig: {
       style: 'contrarian',
       tone: 'challenging',
-      priorities: ['stress testing', 'finding weaknesses', 'alternative perspectives'],
+      priorities: [
+        'stress testing',
+        'finding weaknesses',
+        'alternative perspectives',
+      ],
       aggressiveness: 0.8,
       responseLength: 'moderate',
     },
     description: 'Internal critic to stress-test strategies',
-    suitableFor: ['crisis_comms', 'investor_relations', 'go_to_market', 'regulatory'],
+    suitableFor: [
+      'crisis_comms',
+      'investor_relations',
+      'go_to_market',
+      'regulatory',
+    ],
   },
   {
     agentKey: 'narrator',
@@ -1174,7 +1233,18 @@ export const AI_AGENT_PRESETS: AIAgentPreset[] = [
       responseLength: 'brief',
     },
     description: 'System narrator providing context and transitions',
-    suitableFor: ['crisis_comms', 'investor_relations', 'reputation', 'go_to_market', 'regulatory', 'competitive', 'earnings', 'leadership_change', 'm_and_a', 'custom'],
+    suitableFor: [
+      'crisis_comms',
+      'investor_relations',
+      'reputation',
+      'go_to_market',
+      'regulatory',
+      'competitive',
+      'earnings',
+      'leadership_change',
+      'm_and_a',
+      'custom',
+    ],
   },
 ];
 

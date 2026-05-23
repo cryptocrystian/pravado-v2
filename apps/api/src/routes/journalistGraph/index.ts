@@ -33,7 +33,10 @@ export default async function journalistGraphRoutes(fastify: FastifyInstance) {
 
   // Create Supabase client
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   /**
    * Helper to get user's org ID
@@ -459,7 +462,10 @@ export default async function journalistGraphRoutes(fastify: FastifyInstance) {
       const input = batchCreateActivitiesInputSchema.parse(request.body);
 
       const service = createJournalistGraphService(supabase);
-      const result = await service.batchCreateActivities(orgId, input.activities);
+      const result = await service.batchCreateActivities(
+        orgId,
+        input.activities
+      );
 
       return reply.send({
         success: true,
@@ -533,7 +539,10 @@ export default async function journalistGraphRoutes(fastify: FastifyInstance) {
       const input = batchUpdateScoresInputSchema.parse(request.body);
 
       const service = createJournalistGraphService(supabase);
-      const result = await service.batchUpdateScores(orgId, input.journalistIds);
+      const result = await service.batchUpdateScores(
+        orgId,
+        input.journalistIds
+      );
 
       return reply.send({
         success: true,

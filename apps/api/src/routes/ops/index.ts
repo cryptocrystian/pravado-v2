@@ -13,7 +13,10 @@ import { OpsMetricsService } from '../../services/opsMetricsService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -27,9 +30,7 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 /**
  * Register ops routes
  */
-export async function opsRoutes(
-  server: FastifyInstance
-): Promise<void> {
+export async function opsRoutes(server: FastifyInstance): Promise<void> {
   const env = validateEnv(apiEnvSchema);
   const supabase = createClient(
     env.SUPABASE_URL,
@@ -48,78 +49,70 @@ export async function opsRoutes(
     Querystring: {
       period?: '24h' | '7d';
     };
-  }>(
-    '/overview',
-    { preHandler: requireUser },
-    async (request, reply) => {
-      try {
-        const orgId = await getUserOrgId(request.user!.id!, supabase);
-        if (!orgId) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'NO_ORG_ACCESS',
-              message: 'User is not a member of any organization',
-            },
-          });
-        }
-
-        const period = request.query.period || '24h';
-
-        const [executionStats, llmUsage, recentFailures] = await Promise.all([
-          opsMetrics.getOrgExecutionStats(orgId, period),
-          opsMetrics.getLlmUsageSummary(orgId, period),
-          opsMetrics.getRecentFailures(orgId, 10),
-        ]);
-
-        return reply.send({
-          success: true,
-          data: {
-            execution: executionStats,
-            llmUsage,
-            recentFailures,
-          },
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Ops] Failed to fetch overview', { error });
-        return reply.code(500).send({
+  }>('/overview', { preHandler: requireUser }, async (request, reply) => {
+    try {
+      const orgId = await getUserOrgId(request.user!.id!, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
           success: false,
           error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to fetch overview metrics',
+            code: 'NO_ORG_ACCESS',
+            message: 'User is not a member of any organization',
           },
         });
       }
+
+      const period = request.query.period || '24h';
+
+      const [executionStats, llmUsage, recentFailures] = await Promise.all([
+        opsMetrics.getOrgExecutionStats(orgId, period),
+        opsMetrics.getLlmUsageSummary(orgId, period),
+        opsMetrics.getRecentFailures(orgId, 10),
+      ]);
+
+      return reply.send({
+        success: true,
+        data: {
+          execution: executionStats,
+          llmUsage,
+          recentFailures,
+        },
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Ops] Failed to fetch overview', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to fetch overview metrics',
+        },
+      });
     }
-  );
+  });
 
   /**
    * GET /api/v1/ops/queue
    * Get queue statistics (global, non-sensitive)
    */
-  server.get(
-    '/queue',
-    { preHandler: requireUser },
-    async (_request, reply) => {
-      try {
-        const queueStats = await opsMetrics.getQueueStats();
+  server.get('/queue', { preHandler: requireUser }, async (_request, reply) => {
+    try {
+      const queueStats = await opsMetrics.getQueueStats();
 
-        return reply.send({
-          success: true,
-          data: queueStats,
-        });
-      } catch (err) {
-        const error = err as Error;
-        console.error('[Ops] Failed to fetch queue stats', { error });
-        return reply.code(500).send({
-          success: false,
-          error: {
-            code: 'INTERNAL_ERROR',
-            message: error.message || 'Failed to fetch queue stats',
-          },
-        });
-      }
+      return reply.send({
+        success: true,
+        data: queueStats,
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('[Ops] Failed to fetch queue stats', { error });
+      return reply.code(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error.message || 'Failed to fetch queue stats',
+        },
+      });
     }
-  );
+  });
 }

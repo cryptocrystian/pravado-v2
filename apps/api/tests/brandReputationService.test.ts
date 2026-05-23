@@ -18,6 +18,7 @@ import type {
   ReputationSignalType,
   ReputationEventSeverity,
 } from '@pravado/types';
+import { createMockQuery } from './_helpers/supabase-mock';
 
 // Mock Supabase client
 const mockSupabase = {
@@ -85,13 +86,9 @@ describe('BrandReputationService', () => {
         updated_at: new Date().toISOString(),
       };
 
-      vi.mocked(mockSupabase.from).mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            maybeSingle: vi.fn().mockResolvedValue({ data: mockConfig, error: null }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValue(
+        createMockQuery({ data: mockConfig, error: null }) as any
+      );
 
       const config = await service.getOrCreateConfig(testOrgId);
 
@@ -124,21 +121,17 @@ describe('BrandReputationService', () => {
       };
 
       // First call returns null (config doesn't exist)
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({ data: null, error: null }) as any
+      );
 
       // Second call creates config
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: mockNewConfig, error: null }),
-          }),
-        }),
+        insert: vi
+          .fn()
+          .mockReturnValue(
+            createMockQuery({ data: mockNewConfig, error: null })
+          ),
       } as any);
 
       const config = await service.getOrCreateConfig(testOrgId);
@@ -175,11 +168,11 @@ describe('BrandReputationService', () => {
 
       vi.mocked(mockSupabase.from).mockReturnValue({
         update: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: mockConfig, error: null }),
-            }),
-          }),
+          eq: vi
+            .fn()
+            .mockReturnValue(
+              createMockQuery({ data: mockConfig, error: null })
+            ),
         }),
       } as any);
 
@@ -216,11 +209,9 @@ describe('BrandReputationService', () => {
       };
 
       vi.mocked(mockSupabase.from).mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: mockEvent, error: null }),
-          }),
-        }),
+        insert: vi
+          .fn()
+          .mockReturnValue(createMockQuery({ data: mockEvent, error: null })),
       } as any);
 
       const event = await service.recordEvent(testOrgId, {
@@ -272,17 +263,14 @@ describe('BrandReputationService', () => {
         },
       ];
 
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              range: vi.fn().mockResolvedValue({ data: mockEvents, error: null, count: 2 }),
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({ data: mockEvents, error: null, count: 2 }) as any
+      );
 
-      const result = await service.getEvents(testOrgId, { limit: 20, offset: 0 });
+      const result = await service.getEvents(testOrgId, {
+        limit: 20,
+        offset: 0,
+      });
 
       expect(result.events).toHaveLength(2);
       expect(result.total).toBe(2);
@@ -314,17 +302,9 @@ describe('BrandReputationService', () => {
         },
       ];
 
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockReturnValue({
-                range: vi.fn().mockResolvedValue({ data: mockAlerts, error: null, count: 1 }),
-              }),
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({ data: mockAlerts, error: null, count: 1 }) as any
+      );
 
       const result = await service.getAlerts(testOrgId, { isResolved: false });
 
@@ -355,16 +335,21 @@ describe('BrandReputationService', () => {
       vi.mocked(mockSupabase.from).mockReturnValue({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              select: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: mockAlert, error: null }),
-              }),
-            }),
+            eq: vi
+              .fn()
+              .mockReturnValue(
+                createMockQuery({ data: mockAlert, error: null })
+              ),
           }),
         }),
       } as any);
 
-      const alert = await service.acknowledgeAlert(testOrgId, testUserId, 'alert-1', 'Investigating');
+      const alert = await service.acknowledgeAlert(
+        testOrgId,
+        testUserId,
+        'alert-1',
+        'Investigating'
+      );
 
       expect(alert).toBeDefined();
       expect(alert.isAcknowledged).toBe(true);
@@ -394,11 +379,11 @@ describe('BrandReputationService', () => {
       vi.mocked(mockSupabase.from).mockReturnValue({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              select: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: mockAlert, error: null }),
-              }),
-            }),
+            eq: vi
+              .fn()
+              .mockReturnValue(
+                createMockQuery({ data: mockAlert, error: null })
+              ),
           }),
         }),
       } as any);
@@ -455,17 +440,9 @@ describe('BrandReputationService', () => {
         created_at: new Date().toISOString(),
       };
 
-      vi.mocked(mockSupabase.from).mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              limit: vi.fn().mockReturnValue({
-                maybeSingle: vi.fn().mockResolvedValue({ data: mockSnapshot, error: null }),
-              }),
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValue(
+        createMockQuery({ data: mockSnapshot, error: null }) as any
+      );
 
       const snapshot = await service.getLatestSnapshot(testOrgId);
 
@@ -491,7 +468,9 @@ describe('BrandReputationService', () => {
           competitive_position_score: 68,
           engagement_score: 72,
           active_crisis_count: 0,
-          created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+          created_at: new Date(
+            Date.now() - 6 * 24 * 60 * 60 * 1000
+          ).toISOString(),
         },
         {
           id: 'snap-2',
@@ -503,7 +482,9 @@ describe('BrandReputationService', () => {
           competitive_position_score: 70,
           engagement_score: 74,
           active_crisis_count: 0,
-          created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          created_at: new Date(
+            Date.now() - 3 * 24 * 60 * 60 * 1000
+          ).toISOString(),
         },
         {
           id: 'snap-3',
@@ -519,19 +500,14 @@ describe('BrandReputationService', () => {
         },
       ];
 
-      vi.mocked(mockSupabase.from).mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            gte: vi.fn().mockReturnValue({
-              lte: vi.fn().mockReturnValue({
-                order: vi.fn().mockResolvedValue({ data: mockSnapshots, error: null }),
-              }),
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValue(
+        createMockQuery({ data: mockSnapshots, error: null }) as any
+      );
 
-      const trend = await service.getTrend(testOrgId, '7d' as ReputationTimeWindow);
+      const trend = await service.getTrend(
+        testOrgId,
+        '7d' as ReputationTimeWindow
+      );
 
       expect(trend).toBeDefined();
       expect(trend.trendPoints).toHaveLength(3);
@@ -549,57 +525,33 @@ describe('BrandReputationService', () => {
       const recentTimestamp = new Date().toISOString();
 
       // Mock snapshot query
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              limit: vi.fn().mockReturnValue({
-                maybeSingle: vi.fn().mockResolvedValue({
-                  data: { created_at: recentTimestamp },
-                  error: null,
-                }),
-              }),
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({
+          data: { created_at: recentTimestamp },
+          error: null,
+        }) as any
+      );
 
       // Mock event query
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              limit: vi.fn().mockReturnValue({
-                maybeSingle: vi.fn().mockResolvedValue({
-                  data: { created_at: recentTimestamp },
-                  error: null,
-                }),
-              }),
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({
+          data: { created_at: recentTimestamp },
+          error: null,
+        }) as any
+      );
 
       // Mock unprocessed event count
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({ data: [], error: null, count: 0 }) as any
+      );
 
       // Mock config query
-      vi.mocked(mockSupabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            maybeSingle: vi.fn().mockResolvedValue({
-              data: { weight_sentiment: 25 },
-              error: null,
-            }),
-          }),
-        }),
-      } as any);
+      vi.mocked(mockSupabase.from).mockReturnValueOnce(
+        createMockQuery({
+          data: { weight_sentiment: 25 },
+          error: null,
+        }) as any
+      );
 
       const health = await service.getSystemHealth(testOrgId);
 
@@ -614,7 +566,9 @@ describe('BrandReputationService', () => {
   // ========================================
   describe('getWindowBoundaries', () => {
     it('should return correct boundaries for 24h window', () => {
-      const boundaries = service['getWindowBoundaries']('24h' as ReputationTimeWindow);
+      const boundaries = service['getWindowBoundaries'](
+        '24h' as ReputationTimeWindow
+      );
 
       const expectedDuration = 24;
       expect(boundaries.durationHours).toBe(expectedDuration);
@@ -622,7 +576,9 @@ describe('BrandReputationService', () => {
     });
 
     it('should return correct boundaries for 30d window', () => {
-      const boundaries = service['getWindowBoundaries']('30d' as ReputationTimeWindow);
+      const boundaries = service['getWindowBoundaries'](
+        '30d' as ReputationTimeWindow
+      );
 
       const expectedDuration = 30 * 24;
       expect(boundaries.durationHours).toBe(expectedDuration);

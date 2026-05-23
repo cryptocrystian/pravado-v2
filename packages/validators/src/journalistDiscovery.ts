@@ -34,12 +34,14 @@ export const socialPlatformSchema = z.enum([
 // Core Schemas
 // ===================================
 
-export const socialProfileLinksSchema = z.object({
-  twitter: z.string().optional(),
-  linkedin: z.string().url().optional(),
-  mastodon: z.string().optional(),
-  bluesky: z.string().optional(),
-}).passthrough();
+export const socialProfileLinksSchema = z
+  .object({
+    twitter: z.string().optional(),
+    linkedin: z.string().url().optional(),
+    mastodon: z.string().optional(),
+    bluesky: z.string().optional(),
+  })
+  .passthrough();
 
 export const discoveryConfidenceBreakdownSchema = z.object({
   nameConfidence: z.number().min(0).max(1),
@@ -98,23 +100,25 @@ export const discoveredJournalistInputSchema = z.object({
   rawPayload: z.record(z.any()).optional(),
 });
 
-export const resolveDiscoveryInputSchema = z.object({
-  action: z.enum(['merge', 'confirm', 'reject']),
-  targetJournalistId: z.string().uuid('Invalid journalist ID').optional(),
-  notes: z.string().optional(),
-}).refine(
-  (data) => {
-    // If action is 'merge', targetJournalistId is required
-    if (data.action === 'merge') {
-      return !!data.targetJournalistId;
+export const resolveDiscoveryInputSchema = z
+  .object({
+    action: z.enum(['merge', 'confirm', 'reject']),
+    targetJournalistId: z.string().uuid('Invalid journalist ID').optional(),
+    notes: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      // If action is 'merge', targetJournalistId is required
+      if (data.action === 'merge') {
+        return !!data.targetJournalistId;
+      }
+      return true;
+    },
+    {
+      message: 'targetJournalistId is required when action is "merge"',
+      path: ['targetJournalistId'],
     }
-    return true;
-  },
-  {
-    message: 'targetJournalistId is required when action is "merge"',
-    path: ['targetJournalistId'],
-  }
-);
+  );
 
 export const authorExtractionInputSchema = z.object({
   articleTitle: z.string().min(1, 'Article title is required'),
@@ -141,14 +145,12 @@ export const socialProfileInputSchema = z.object({
 
 export const discoveryQuerySchema = z.object({
   q: z.string().optional(),
-  status: z.union([
-    discoveryStatusSchema,
-    z.array(discoveryStatusSchema),
-  ]).optional(),
-  sourceType: z.union([
-    discoverySourceTypeSchema,
-    z.array(discoverySourceTypeSchema),
-  ]).optional(),
+  status: z
+    .union([discoveryStatusSchema, z.array(discoveryStatusSchema)])
+    .optional(),
+  sourceType: z
+    .union([discoverySourceTypeSchema, z.array(discoverySourceTypeSchema)])
+    .optional(),
   minConfidenceScore: z.number().min(0).max(1).optional(),
   beats: z.array(z.string()).optional(),
   hasEmail: z.boolean().optional(),
@@ -166,7 +168,10 @@ export const discoveryStatsSchema = z.object({
   mergedCount: z.number().int().nonnegative(),
   rejectedCount: z.number().int().nonnegative(),
   avgConfidenceScore: z.number().min(0).max(1),
-  sourceTypeDistribution: z.record(discoverySourceTypeSchema, z.number().int().nonnegative()),
+  sourceTypeDistribution: z.record(
+    discoverySourceTypeSchema,
+    z.number().int().nonnegative()
+  ),
 });
 
 // ===================================
@@ -202,12 +207,14 @@ export const discoveryEnrichmentResultSchema = z.object({
 export const mergePreviewSchema = z.object({
   discoveryId: z.string().uuid(),
   targetJournalistId: z.string().uuid(),
-  conflicts: z.array(z.object({
-    field: z.string(),
-    discoveryValue: z.any(),
-    existingValue: z.any(),
-    recommendation: z.enum(['keep_existing', 'use_discovery', 'merge_both']),
-  })),
+  conflicts: z.array(
+    z.object({
+      field: z.string(),
+      discoveryValue: z.any(),
+      existingValue: z.any(),
+      recommendation: z.enum(['keep_existing', 'use_discovery', 'merge_both']),
+    })
+  ),
   autoResolvable: z.boolean(),
 });
 
@@ -265,7 +272,9 @@ export const fuzzyMatchOptionsSchema = z.object({
 // ===================================
 
 export const batchDiscoveryInputSchema = z.object({
-  discoveries: z.array(discoveredJournalistInputSchema).min(1, 'At least one discovery is required'),
+  discoveries: z
+    .array(discoveredJournalistInputSchema)
+    .min(1, 'At least one discovery is required'),
   autoMergeThreshold: z.number().min(0).max(1).optional().default(0.95),
   skipDuplicates: z.boolean().optional().default(true),
 });
@@ -274,11 +283,13 @@ export const batchDiscoveryResultSchema = z.object({
   created: z.number().int().nonnegative(),
   merged: z.number().int().nonnegative(),
   skipped: z.number().int().nonnegative(),
-  errors: z.array(z.object({
-    index: z.number().int().nonnegative(),
-    error: z.string(),
-    input: discoveredJournalistInputSchema,
-  })),
+  errors: z.array(
+    z.object({
+      index: z.number().int().nonnegative(),
+      error: z.string(),
+      input: discoveredJournalistInputSchema,
+    })
+  ),
 });
 
 // ===================================
@@ -364,17 +375,25 @@ export type DiscoverySourceType = z.infer<typeof discoverySourceTypeSchema>;
 export type DiscoveryStatus = z.infer<typeof discoveryStatusSchema>;
 export type SocialPlatform = z.infer<typeof socialPlatformSchema>;
 export type SocialProfileLinks = z.infer<typeof socialProfileLinksSchema>;
-export type DiscoveryConfidenceBreakdown = z.infer<typeof discoveryConfidenceBreakdownSchema>;
+export type DiscoveryConfidenceBreakdown = z.infer<
+  typeof discoveryConfidenceBreakdownSchema
+>;
 export type SuggestedMatch = z.infer<typeof suggestedMatchSchema>;
 export type DiscoveredJournalist = z.infer<typeof discoveredJournalistSchema>;
-export type DiscoveredJournalistInput = z.infer<typeof discoveredJournalistInputSchema>;
+export type DiscoveredJournalistInput = z.infer<
+  typeof discoveredJournalistInputSchema
+>;
 export type ResolveDiscoveryInput = z.infer<typeof resolveDiscoveryInputSchema>;
 export type AuthorExtractionInput = z.infer<typeof authorExtractionInputSchema>;
 export type SocialProfileInput = z.infer<typeof socialProfileInputSchema>;
 export type DiscoveryQuery = z.infer<typeof discoveryQuerySchema>;
 export type DiscoveryStats = z.infer<typeof discoveryStatsSchema>;
-export type AuthorExtractionResult = z.infer<typeof authorExtractionResultSchema>;
-export type DiscoveryEnrichmentResult = z.infer<typeof discoveryEnrichmentResultSchema>;
+export type AuthorExtractionResult = z.infer<
+  typeof authorExtractionResultSchema
+>;
+export type DiscoveryEnrichmentResult = z.infer<
+  typeof discoveryEnrichmentResultSchema
+>;
 export type MergePreview = z.infer<typeof mergePreviewSchema>;
 export type DiscoveryListResponse = z.infer<typeof discoveryListResponseSchema>;
 export type SocialProfileAnalysis = z.infer<typeof socialProfileAnalysisSchema>;
@@ -385,6 +404,8 @@ export type BatchDiscoveryResult = z.infer<typeof batchDiscoveryResultSchema>;
 export type DiscoveryPipeline = z.infer<typeof discoveryPipelineSchema>;
 export type StaffDirectorySource = z.infer<typeof staffDirectorySourceSchema>;
 export type StaffDirectoryEntry = z.infer<typeof staffDirectoryEntrySchema>;
-export type DiscoveryValidationResult = z.infer<typeof discoveryValidationResultSchema>;
+export type DiscoveryValidationResult = z.infer<
+  typeof discoveryValidationResultSchema
+>;
 export type EnrichmentSource = z.infer<typeof enrichmentSourceSchema>;
 export type EnrichmentTask = z.infer<typeof enrichmentTaskSchema>;

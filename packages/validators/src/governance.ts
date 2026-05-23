@@ -143,109 +143,150 @@ export const governanceInsightGenerationMethodSchema = z.enum([
 /**
  * Rule condition schema - uses z.lazy() with explicit type annotation to handle recursive structure
  */
-export const governanceRuleConditionSchema: z.ZodType<GovernanceRuleCondition> = z.lazy(() =>
-  z.object({
-    field: z.string().optional(),
-    operator: z.enum(['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'matches', 'in', 'not_in']).optional(),
-    value: z.unknown().optional(),
-    threshold: z.number().optional(),
-    pattern: z.string().optional(),
-    items: z.array(z.string()).optional(),
-    timeWindow: z.object({
-      duration: z.number().int().min(1),
-      unit: z.enum(['minutes', 'hours', 'days']),
-    }).optional(),
-    conditions: z.array(governanceRuleConditionSchema).optional(),
-    logic: z.enum(['and', 'or']).optional(),
-  }).passthrough()
-);
+export const governanceRuleConditionSchema: z.ZodType<GovernanceRuleCondition> =
+  z.lazy(() =>
+    z
+      .object({
+        field: z.string().optional(),
+        operator: z
+          .enum([
+            'eq',
+            'ne',
+            'gt',
+            'gte',
+            'lt',
+            'lte',
+            'contains',
+            'matches',
+            'in',
+            'not_in',
+          ])
+          .optional(),
+        value: z.unknown().optional(),
+        threshold: z.number().optional(),
+        pattern: z.string().optional(),
+        items: z.array(z.string()).optional(),
+        timeWindow: z
+          .object({
+            duration: z.number().int().min(1),
+            unit: z.enum(['minutes', 'hours', 'days']),
+          })
+          .optional(),
+        conditions: z.array(governanceRuleConditionSchema).optional(),
+        logic: z.enum(['and', 'or']).optional(),
+      })
+      .passthrough()
+  );
 
 /**
  * Rule action schema
  */
-export const governanceRuleActionSchema = z.object({
-  type: z.enum(['create_finding', 'notify', 'block', 'escalate', 'log', 'webhook']),
-  severity: governanceSeverityLevelSchema.optional(),
-  message: z.string().optional(),
-  recipients: z.array(z.string()).optional(),
-  webhookUrl: z.string().url().optional(),
-  metadata: z.record(z.any()).optional(),
-}).passthrough();
+export const governanceRuleActionSchema = z
+  .object({
+    type: z.enum([
+      'create_finding',
+      'notify',
+      'block',
+      'escalate',
+      'log',
+      'webhook',
+    ]),
+    severity: governanceSeverityLevelSchema.optional(),
+    message: z.string().optional(),
+    recipients: z.array(z.string()).optional(),
+    webhookUrl: z.string().url().optional(),
+    metadata: z.record(z.any()).optional(),
+  })
+  .passthrough();
 
 /**
  * Affected entity schema
  */
-export const governanceAffectedEntitySchema = z.object({
-  entityType: governanceEntityTypeSchema,
-  entityId: z.string(),
-  entityName: z.string().optional(),
-  impact: z.enum(['direct', 'indirect']).optional(),
-}).passthrough();
+export const governanceAffectedEntitySchema = z
+  .object({
+    entityType: governanceEntityTypeSchema,
+    entityId: z.string(),
+    entityName: z.string().optional(),
+    impact: z.enum(['direct', 'indirect']).optional(),
+  })
+  .passthrough();
 
 /**
  * Recommended action schema
  */
-export const governanceRecommendedActionSchema = z.object({
-  action: z.string(),
-  priority: z.enum(['immediate', 'high', 'medium', 'low']),
-  assignee: z.string().optional(),
-  dueDate: z.coerce.date().optional(),
-  completed: z.boolean().optional(),
-}).passthrough();
+export const governanceRecommendedActionSchema = z
+  .object({
+    action: z.string(),
+    priority: z.enum(['immediate', 'high', 'medium', 'low']),
+    assignee: z.string().optional(),
+    dueDate: z.coerce.date().optional(),
+    completed: z.boolean().optional(),
+  })
+  .passthrough();
 
 /**
  * Contributing factor schema
  */
-export const governanceContributingFactorSchema = z.object({
-  source: z.string(),
-  factor: z.string(),
-  contribution: z.number().min(0).max(100),
-  trend: governanceScoreTrendSchema.optional(),
-}).passthrough();
+export const governanceContributingFactorSchema = z
+  .object({
+    source: z.string(),
+    factor: z.string(),
+    contribution: z.number().min(0).max(100),
+    trend: governanceScoreTrendSchema.optional(),
+  })
+  .passthrough();
 
 /**
  * Insight recommendation schema
  */
-export const governanceInsightRecommendationSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  priority: z.enum(['critical', 'high', 'medium', 'low']),
-  category: z.string().optional(),
-  estimatedImpact: z.string().optional(),
-}).passthrough();
+export const governanceInsightRecommendationSchema = z
+  .object({
+    title: z.string(),
+    description: z.string(),
+    priority: z.enum(['critical', 'high', 'medium', 'low']),
+    category: z.string().optional(),
+    estimatedImpact: z.string().optional(),
+  })
+  .passthrough();
 
 /**
  * Insight action item schema
  */
-export const governanceInsightActionItemSchema = z.object({
-  action: z.string(),
-  assignee: z.string().optional(),
-  dueDate: z.coerce.date().optional(),
-  status: z.enum(['pending', 'in_progress', 'completed']),
-}).passthrough();
+export const governanceInsightActionItemSchema = z
+  .object({
+    action: z.string(),
+    assignee: z.string().optional(),
+    dueDate: z.coerce.date().optional(),
+    status: z.enum(['pending', 'in_progress', 'completed']),
+  })
+  .passthrough();
 
 /**
  * Top risk item schema
  */
-export const governanceInsightTopRiskSchema = z.object({
-  entityType: governanceEntityTypeSchema,
-  entityId: z.string(),
-  entityName: z.string().optional(),
-  riskScore: z.number().min(0).max(100),
-  riskLevel: governanceSeverityLevelSchema,
-  primaryConcern: z.string(),
-  trend: governanceScoreTrendSchema.optional(),
-}).passthrough();
+export const governanceInsightTopRiskSchema = z
+  .object({
+    entityType: governanceEntityTypeSchema,
+    entityId: z.string(),
+    entityName: z.string().optional(),
+    riskScore: z.number().min(0).max(100),
+    riskLevel: governanceSeverityLevelSchema,
+    primaryConcern: z.string(),
+    trend: governanceScoreTrendSchema.optional(),
+  })
+  .passthrough();
 
 /**
  * Insight recipient schema
  */
-export const governanceInsightRecipientSchema = z.object({
-  userId: z.string().uuid().optional(),
-  email: z.string().email().optional(),
-  role: z.string().optional(),
-  sentAt: z.coerce.date().optional(),
-}).passthrough();
+export const governanceInsightRecipientSchema = z
+  .object({
+    userId: z.string().uuid().optional(),
+    email: z.string().email().optional(),
+    role: z.string().optional(),
+    sentAt: z.coerce.date().optional(),
+  })
+  .passthrough();
 
 // ========================================
 // Entity Schemas
@@ -426,7 +467,14 @@ export const governancePolicyVersionSchema = z.object({
  * Create policy input schema
  */
 export const createGovernancePolicyInputSchema = z.object({
-  key: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, 'Key must be lowercase alphanumeric with underscores'),
+  key: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(
+      /^[a-z0-9_]+$/,
+      'Key must be lowercase alphanumeric with underscores'
+    ),
   name: z.string().min(1).max(255),
   description: z.string().optional(),
   category: governancePolicyCategorySchema,
@@ -514,8 +562,14 @@ export const createGovernanceFindingInputSchema = z.object({
   summary: z.string().max(500),
   details: z.string().optional(),
   impactScore: z.number().int().min(0).max(100).optional(),
-  affectedEntities: z.array(governanceAffectedEntitySchema).optional().default([]),
-  recommendedActions: z.array(governanceRecommendedActionSchema).optional().default([]),
+  affectedEntities: z
+    .array(governanceAffectedEntitySchema)
+    .optional()
+    .default([]),
+  recommendedActions: z
+    .array(governanceRecommendedActionSchema)
+    .optional()
+    .default([]),
   metadata: z.record(z.any()).optional().default({}),
   eventSnapshot: z.record(z.any()).optional().default({}),
 });
@@ -547,7 +601,10 @@ export const upsertGovernanceRiskScoreInputSchema = z.object({
   relationshipRisk: z.number().int().min(0).max(100).optional(),
   competitiveRisk: z.number().int().min(0).max(100).optional(),
   breakdown: z.record(z.any()).optional().default({}),
-  contributingFactors: z.array(governanceContributingFactorSchema).optional().default([]),
+  contributingFactors: z
+    .array(governanceContributingFactorSchema)
+    .optional()
+    .default([]),
   linkedFindingIds: z.array(z.string().uuid()).optional().default([]),
   computationMethod: z.string().max(50).optional().default('weighted_average'),
   confidenceScore: z.number().min(0).max(1).optional(),
@@ -566,14 +623,22 @@ export const createGovernanceAuditInsightInputSchema = z.object({
   summary: z.string(),
   executiveSummary: z.string().optional(),
   detailedAnalysis: z.string().optional(),
-  recommendations: z.array(governanceInsightRecommendationSchema).optional().default([]),
-  actionItems: z.array(governanceInsightActionItemSchema).optional().default([]),
+  recommendations: z
+    .array(governanceInsightRecommendationSchema)
+    .optional()
+    .default([]),
+  actionItems: z
+    .array(governanceInsightActionItemSchema)
+    .optional()
+    .default([]),
   topRisks: z.array(governanceInsightTopRiskSchema).optional().default([]),
   riskDistribution: z.record(z.number()).optional().default({}),
   metricsSnapshot: z.record(z.any()).optional().default({}),
   trendAnalysis: z.record(z.any()).optional().default({}),
   linkedFindings: z.array(z.string().uuid()).optional().default([]),
-  generatedBy: governanceInsightGenerationMethodSchema.optional().default('rule_based'),
+  generatedBy: governanceInsightGenerationMethodSchema
+    .optional()
+    .default('rule_based'),
   llmModel: z.string().max(100).optional(),
   generationPrompt: z.string().optional(),
   tokensUsed: z.number().int().min(0).optional(),
@@ -587,15 +652,30 @@ export const createGovernanceAuditInsightInputSchema = z.object({
  * Policies query schema
  */
 export const governancePoliciesQuerySchema = z.object({
-  category: z.union([governancePolicyCategorySchema, z.array(governancePolicyCategorySchema)]).optional(),
-  scope: z.union([governancePolicyScopeSchema, z.array(governancePolicyScopeSchema)]).optional(),
-  severity: z.union([governanceSeverityLevelSchema, z.array(governanceSeverityLevelSchema)]).optional(),
+  category: z
+    .union([
+      governancePolicyCategorySchema,
+      z.array(governancePolicyCategorySchema),
+    ])
+    .optional(),
+  scope: z
+    .union([governancePolicyScopeSchema, z.array(governancePolicyScopeSchema)])
+    .optional(),
+  severity: z
+    .union([
+      governanceSeverityLevelSchema,
+      z.array(governanceSeverityLevelSchema),
+    ])
+    .optional(),
   isActive: z.coerce.boolean().optional(),
   isArchived: z.coerce.boolean().optional(),
   ownerUserId: z.string().uuid().optional(),
   department: z.string().optional(),
   searchQuery: z.string().max(200).optional(),
-  sortBy: z.enum(['created_at', 'updated_at', 'name', 'severity']).optional().default('created_at'),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'name', 'severity'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -606,13 +686,23 @@ export const governancePoliciesQuerySchema = z.object({
  */
 export const governanceRulesQuerySchema = z.object({
   policyId: z.string().uuid().optional(),
-  ruleType: z.union([governanceRuleTypeSchema, z.array(governanceRuleTypeSchema)]).optional(),
-  targetSystem: z.union([governanceTargetSystemSchema, z.array(governanceTargetSystemSchema)]).optional(),
+  ruleType: z
+    .union([governanceRuleTypeSchema, z.array(governanceRuleTypeSchema)])
+    .optional(),
+  targetSystem: z
+    .union([
+      governanceTargetSystemSchema,
+      z.array(governanceTargetSystemSchema),
+    ])
+    .optional(),
   isActive: z.coerce.boolean().optional(),
   evaluationMode: governanceEvaluationModeSchema.optional(),
   tags: z.array(z.string()).optional(),
   searchQuery: z.string().max(200).optional(),
-  sortBy: z.enum(['created_at', 'updated_at', 'name', 'priority']).optional().default('priority'),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'name', 'priority'])
+    .optional()
+    .default('priority'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -624,14 +714,32 @@ export const governanceRulesQuerySchema = z.object({
 export const governanceFindingsQuerySchema = z.object({
   policyId: z.string().uuid().optional(),
   ruleId: z.string().uuid().optional(),
-  sourceSystem: z.union([governanceTargetSystemSchema, z.array(governanceTargetSystemSchema)]).optional(),
-  severity: z.union([governanceSeverityLevelSchema, z.array(governanceSeverityLevelSchema)]).optional(),
-  status: z.union([governanceFindingStatusSchema, z.array(governanceFindingStatusSchema)]).optional(),
+  sourceSystem: z
+    .union([
+      governanceTargetSystemSchema,
+      z.array(governanceTargetSystemSchema),
+    ])
+    .optional(),
+  severity: z
+    .union([
+      governanceSeverityLevelSchema,
+      z.array(governanceSeverityLevelSchema),
+    ])
+    .optional(),
+  status: z
+    .union([
+      governanceFindingStatusSchema,
+      z.array(governanceFindingStatusSchema),
+    ])
+    .optional(),
   assignedTo: z.string().uuid().optional(),
   detectedAfter: z.coerce.date().optional(),
   detectedBefore: z.coerce.date().optional(),
   searchQuery: z.string().max(200).optional(),
-  sortBy: z.enum(['detected_at', 'severity', 'status', 'impact_score']).optional().default('detected_at'),
+  sortBy: z
+    .enum(['detected_at', 'severity', 'status', 'impact_score'])
+    .optional()
+    .default('detected_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -641,13 +749,23 @@ export const governanceFindingsQuerySchema = z.object({
  * Risk scores query schema
  */
 export const governanceRiskScoresQuerySchema = z.object({
-  entityType: z.union([governanceEntityTypeSchema, z.array(governanceEntityTypeSchema)]).optional(),
-  riskLevel: z.union([governanceSeverityLevelSchema, z.array(governanceSeverityLevelSchema)]).optional(),
+  entityType: z
+    .union([governanceEntityTypeSchema, z.array(governanceEntityTypeSchema)])
+    .optional(),
+  riskLevel: z
+    .union([
+      governanceSeverityLevelSchema,
+      z.array(governanceSeverityLevelSchema),
+    ])
+    .optional(),
   minOverallScore: z.coerce.number().int().min(0).max(100).optional(),
   maxOverallScore: z.coerce.number().int().min(0).max(100).optional(),
   scoreTrend: governanceScoreTrendSchema.optional(),
   isStale: z.coerce.boolean().optional(),
-  sortBy: z.enum(['overall_score', 'computed_at', 'entity_name']).optional().default('overall_score'),
+  sortBy: z
+    .enum(['overall_score', 'computed_at', 'entity_name'])
+    .optional()
+    .default('overall_score'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -658,11 +776,16 @@ export const governanceRiskScoresQuerySchema = z.object({
  */
 export const governanceAuditInsightsQuerySchema = z.object({
   insightType: z.string().optional(),
-  scope: z.union([governancePolicyScopeSchema, z.array(governancePolicyScopeSchema)]).optional(),
+  scope: z
+    .union([governancePolicyScopeSchema, z.array(governancePolicyScopeSchema)])
+    .optional(),
   timeWindowStart: z.coerce.date().optional(),
   timeWindowEnd: z.coerce.date().optional(),
   generatedBy: governanceInsightGenerationMethodSchema.optional(),
-  sortBy: z.enum(['created_at', 'time_window_start', 'title']).optional().default('created_at'),
+  sortBy: z
+    .enum(['created_at', 'time_window_start', 'title'])
+    .optional()
+    .default('created_at'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   offset: z.coerce.number().int().min(0).optional().default(0),
@@ -996,66 +1119,160 @@ export const governancePolicyVersionRecordSchema = z.object({
 // Type Exports
 // ========================================
 
-export type GovernancePolicyCategoryType = z.infer<typeof governancePolicyCategorySchema>;
-export type GovernancePolicyScopeType = z.infer<typeof governancePolicyScopeSchema>;
-export type GovernanceSeverityLevelType = z.infer<typeof governanceSeverityLevelSchema>;
+export type GovernancePolicyCategoryType = z.infer<
+  typeof governancePolicyCategorySchema
+>;
+export type GovernancePolicyScopeType = z.infer<
+  typeof governancePolicyScopeSchema
+>;
+export type GovernanceSeverityLevelType = z.infer<
+  typeof governanceSeverityLevelSchema
+>;
 export type GovernanceRuleTypeType = z.infer<typeof governanceRuleTypeSchema>;
-export type GovernanceTargetSystemType = z.infer<typeof governanceTargetSystemSchema>;
-export type GovernanceFindingStatusType = z.infer<typeof governanceFindingStatusSchema>;
-export type GovernanceEntityTypeType = z.infer<typeof governanceEntityTypeSchema>;
-export type GovernanceEvaluationModeType = z.infer<typeof governanceEvaluationModeSchema>;
-export type GovernanceScoreTrendType = z.infer<typeof governanceScoreTrendSchema>;
-export type GovernanceInsightGenerationMethodType = z.infer<typeof governanceInsightGenerationMethodSchema>;
+export type GovernanceTargetSystemType = z.infer<
+  typeof governanceTargetSystemSchema
+>;
+export type GovernanceFindingStatusType = z.infer<
+  typeof governanceFindingStatusSchema
+>;
+export type GovernanceEntityTypeType = z.infer<
+  typeof governanceEntityTypeSchema
+>;
+export type GovernanceEvaluationModeType = z.infer<
+  typeof governanceEvaluationModeSchema
+>;
+export type GovernanceScoreTrendType = z.infer<
+  typeof governanceScoreTrendSchema
+>;
+export type GovernanceInsightGenerationMethodType = z.infer<
+  typeof governanceInsightGenerationMethodSchema
+>;
 
-export type GovernanceRuleConditionType = z.infer<typeof governanceRuleConditionSchema>;
-export type GovernanceRuleActionType = z.infer<typeof governanceRuleActionSchema>;
-export type GovernanceAffectedEntityType = z.infer<typeof governanceAffectedEntitySchema>;
-export type GovernanceRecommendedActionType = z.infer<typeof governanceRecommendedActionSchema>;
-export type GovernanceContributingFactorType = z.infer<typeof governanceContributingFactorSchema>;
-export type GovernanceInsightRecommendationType = z.infer<typeof governanceInsightRecommendationSchema>;
-export type GovernanceInsightActionItemType = z.infer<typeof governanceInsightActionItemSchema>;
-export type GovernanceInsightTopRiskType = z.infer<typeof governanceInsightTopRiskSchema>;
-export type GovernanceInsightRecipientType = z.infer<typeof governanceInsightRecipientSchema>;
+export type GovernanceRuleConditionType = z.infer<
+  typeof governanceRuleConditionSchema
+>;
+export type GovernanceRuleActionType = z.infer<
+  typeof governanceRuleActionSchema
+>;
+export type GovernanceAffectedEntityType = z.infer<
+  typeof governanceAffectedEntitySchema
+>;
+export type GovernanceRecommendedActionType = z.infer<
+  typeof governanceRecommendedActionSchema
+>;
+export type GovernanceContributingFactorType = z.infer<
+  typeof governanceContributingFactorSchema
+>;
+export type GovernanceInsightRecommendationType = z.infer<
+  typeof governanceInsightRecommendationSchema
+>;
+export type GovernanceInsightActionItemType = z.infer<
+  typeof governanceInsightActionItemSchema
+>;
+export type GovernanceInsightTopRiskType = z.infer<
+  typeof governanceInsightTopRiskSchema
+>;
+export type GovernanceInsightRecipientType = z.infer<
+  typeof governanceInsightRecipientSchema
+>;
 
 export type GovernancePolicyType = z.infer<typeof governancePolicySchema>;
 export type GovernanceRuleSchemaType = z.infer<typeof governanceRuleSchema>;
 export type GovernanceFindingType = z.infer<typeof governanceFindingSchema>;
 export type GovernanceRiskScoreType = z.infer<typeof governanceRiskScoreSchema>;
-export type GovernanceAuditInsightType = z.infer<typeof governanceAuditInsightSchema>;
-export type GovernancePolicyVersionType = z.infer<typeof governancePolicyVersionSchema>;
+export type GovernanceAuditInsightType = z.infer<
+  typeof governanceAuditInsightSchema
+>;
+export type GovernancePolicyVersionType = z.infer<
+  typeof governancePolicyVersionSchema
+>;
 
-export type CreateGovernancePolicyInput = z.infer<typeof createGovernancePolicyInputSchema>;
-export type UpdateGovernancePolicyInput = z.infer<typeof updateGovernancePolicyInputSchema>;
-export type CreateGovernanceRuleInput = z.infer<typeof createGovernanceRuleInputSchema>;
-export type UpdateGovernanceRuleInput = z.infer<typeof updateGovernanceRuleInputSchema>;
-export type CreateGovernanceFindingInput = z.infer<typeof createGovernanceFindingInputSchema>;
-export type UpdateGovernanceFindingInput = z.infer<typeof updateGovernanceFindingInputSchema>;
-export type UpsertGovernanceRiskScoreInput = z.infer<typeof upsertGovernanceRiskScoreInputSchema>;
-export type CreateGovernanceAuditInsightInput = z.infer<typeof createGovernanceAuditInsightInputSchema>;
+export type CreateGovernancePolicyInput = z.infer<
+  typeof createGovernancePolicyInputSchema
+>;
+export type UpdateGovernancePolicyInput = z.infer<
+  typeof updateGovernancePolicyInputSchema
+>;
+export type CreateGovernanceRuleInput = z.infer<
+  typeof createGovernanceRuleInputSchema
+>;
+export type UpdateGovernanceRuleInput = z.infer<
+  typeof updateGovernanceRuleInputSchema
+>;
+export type CreateGovernanceFindingInput = z.infer<
+  typeof createGovernanceFindingInputSchema
+>;
+export type UpdateGovernanceFindingInput = z.infer<
+  typeof updateGovernanceFindingInputSchema
+>;
+export type UpsertGovernanceRiskScoreInput = z.infer<
+  typeof upsertGovernanceRiskScoreInputSchema
+>;
+export type CreateGovernanceAuditInsightInput = z.infer<
+  typeof createGovernanceAuditInsightInputSchema
+>;
 
-export type GovernancePoliciesQuery = z.infer<typeof governancePoliciesQuerySchema>;
+export type GovernancePoliciesQuery = z.infer<
+  typeof governancePoliciesQuerySchema
+>;
 export type GovernanceRulesQuery = z.infer<typeof governanceRulesQuerySchema>;
-export type GovernanceFindingsQuery = z.infer<typeof governanceFindingsQuerySchema>;
-export type GovernanceRiskScoresQuery = z.infer<typeof governanceRiskScoresQuerySchema>;
-export type GovernanceAuditInsightsQuery = z.infer<typeof governanceAuditInsightsQuerySchema>;
+export type GovernanceFindingsQuery = z.infer<
+  typeof governanceFindingsQuerySchema
+>;
+export type GovernanceRiskScoresQuery = z.infer<
+  typeof governanceRiskScoresQuerySchema
+>;
+export type GovernanceAuditInsightsQuery = z.infer<
+  typeof governanceAuditInsightsQuerySchema
+>;
 
-export type GovernanceEvaluationContext = z.infer<typeof governanceEvaluationContextSchema>;
-export type GovernanceEvaluationResult = z.infer<typeof governanceEvaluationResultSchema>;
-export type BatchEvaluationRequest = z.infer<typeof batchEvaluationRequestSchema>;
-export type BatchEvaluationResponse = z.infer<typeof batchEvaluationResponseSchema>;
+export type GovernanceEvaluationContext = z.infer<
+  typeof governanceEvaluationContextSchema
+>;
+export type GovernanceEvaluationResult = z.infer<
+  typeof governanceEvaluationResultSchema
+>;
+export type BatchEvaluationRequest = z.infer<
+  typeof batchEvaluationRequestSchema
+>;
+export type BatchEvaluationResponse = z.infer<
+  typeof batchEvaluationResponseSchema
+>;
 
-export type AcknowledgeFindingRequest = z.infer<typeof acknowledgeFindingRequestSchema>;
+export type AcknowledgeFindingRequest = z.infer<
+  typeof acknowledgeFindingRequestSchema
+>;
 export type ResolveFindingRequest = z.infer<typeof resolveFindingRequestSchema>;
 export type DismissFindingRequest = z.infer<typeof dismissFindingRequestSchema>;
-export type EscalateFindingRequest = z.infer<typeof escalateFindingRequestSchema>;
-export type GenerateGovernanceInsightRequest = z.infer<typeof generateGovernanceInsightRequestSchema>;
-export type DistributeGovernanceInsightRequest = z.infer<typeof distributeGovernanceInsightRequestSchema>;
-export type RecalculateRiskScoreRequest = z.infer<typeof recalculateRiskScoreRequestSchema>;
-export type BulkRecalculateRiskScoresRequest = z.infer<typeof bulkRecalculateRiskScoresRequestSchema>;
+export type EscalateFindingRequest = z.infer<
+  typeof escalateFindingRequestSchema
+>;
+export type GenerateGovernanceInsightRequest = z.infer<
+  typeof generateGovernanceInsightRequestSchema
+>;
+export type DistributeGovernanceInsightRequest = z.infer<
+  typeof distributeGovernanceInsightRequestSchema
+>;
+export type RecalculateRiskScoreRequest = z.infer<
+  typeof recalculateRiskScoreRequestSchema
+>;
+export type BulkRecalculateRiskScoresRequest = z.infer<
+  typeof bulkRecalculateRiskScoresRequestSchema
+>;
 
-export type GovernancePolicyRecord = z.infer<typeof governancePolicyRecordSchema>;
+export type GovernancePolicyRecord = z.infer<
+  typeof governancePolicyRecordSchema
+>;
 export type GovernanceRuleRecord = z.infer<typeof governanceRuleRecordSchema>;
-export type GovernanceFindingRecord = z.infer<typeof governanceFindingRecordSchema>;
-export type GovernanceRiskScoreRecord = z.infer<typeof governanceRiskScoreRecordSchema>;
-export type GovernanceAuditInsightRecord = z.infer<typeof governanceAuditInsightRecordSchema>;
-export type GovernancePolicyVersionRecord = z.infer<typeof governancePolicyVersionRecordSchema>;
+export type GovernanceFindingRecord = z.infer<
+  typeof governanceFindingRecordSchema
+>;
+export type GovernanceRiskScoreRecord = z.infer<
+  typeof governanceRiskScoreRecordSchema
+>;
+export type GovernanceAuditInsightRecord = z.infer<
+  typeof governanceAuditInsightRecordSchema
+>;
+export type GovernancePolicyVersionRecord = z.infer<
+  typeof governancePolicyVersionRecordSchema
+>;

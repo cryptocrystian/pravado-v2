@@ -10,12 +10,10 @@
  * - Delivery logs and statistics
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createClient } from '@supabase/supabase-js';
 import { FLAGS } from '@pravado/feature-flags';
-import { validateEnv, apiEnvSchema } from '@pravado/validators';
-import { createExecutiveDigestService } from '../../services/executiveDigestService';
 import {
+  validateEnv,
+  apiEnvSchema,
   createExecDigestSchema,
   updateExecDigestSchema,
   generateExecDigestSchema,
@@ -39,6 +37,10 @@ import type {
   ListExecDigestsQuery,
   UpdateSectionOrderInput,
 } from '@pravado/validators';
+import { createClient } from '@supabase/supabase-js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { createExecutiveDigestService } from '../../services/executiveDigestService';
 
 // Helper to extract orgId from headers
 function getOrgId(request: FastifyRequest): string {
@@ -63,7 +65,10 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
   }
 
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const service = createExecutiveDigestService({
     supabase,
     openaiApiKey: env.LLM_OPENAI_API_KEY || '',
@@ -83,14 +88,18 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
     try {
       const orgId = getOrgId(request);
       const validated = listExecDigestsSchema.parse(request.query);
-      const response = await service.listDigests(orgId, validated as ListExecDigestsQuery);
+      const response = await service.listDigests(
+        orgId,
+        validated as ListExecDigestsQuery
+      );
 
       return reply.send({
         success: true,
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error listing digests');
       return reply.status(500).send({
         success: false,
@@ -108,19 +117,26 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
       const orgId = getOrgId(request);
       const userId = getUserId(request);
       const validated = createExecDigestSchema.parse(request.body);
-      const digest = await service.createDigest(orgId, userId, validated as CreateExecDigestInput);
+      const digest = await service.createDigest(
+        orgId,
+        userId,
+        validated as CreateExecDigestInput
+      );
 
       return reply.status(201).send({
         success: true,
         data: digest,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error creating digest');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+      return reply
+        .status(errorMessage.includes('validation') ? 400 : 500)
+        .send({
+          success: false,
+          error: errorMessage,
+        });
     }
   });
 
@@ -138,7 +154,8 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
         data: stats,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error fetching digest stats');
       return reply.status(500).send({
         success: false,
@@ -169,7 +186,8 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
         data: response,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error fetching digest');
       return reply.status(500).send({
         success: false,
@@ -188,7 +206,12 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
       const userId = getUserId(request);
       const { id } = execDigestIdParamSchema.parse(request.params);
       const validated = updateExecDigestSchema.parse(request.body);
-      const digest = await service.updateDigest(orgId, id, userId, validated as UpdateExecDigestInput);
+      const digest = await service.updateDigest(
+        orgId,
+        id,
+        userId,
+        validated as UpdateExecDigestInput
+      );
 
       if (!digest) {
         return reply.status(404).send({
@@ -202,12 +225,15 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
         data: digest,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       server.log.error({ err: error }, 'Error updating digest');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+      return reply
+        .status(errorMessage.includes('validation') ? 400 : 500)
+        .send({
+          success: false,
+          error: errorMessage,
+        });
     }
   });
 
@@ -215,28 +241,39 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
    * DELETE /exec-digests/:id
    * Delete (archive) a digest
    */
-  server.delete('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const hardDelete = (request.query as { hard?: string }).hard === 'true';
-      const result = await service.deleteDigest(orgId, id, userId, hardDelete);
+  server.delete(
+    '/:id',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const hardDelete = (request.query as { hard?: string }).hard === 'true';
+        const result = await service.deleteDigest(
+          orgId,
+          id,
+          userId,
+          hardDelete
+        );
 
-      return reply.send({
-        success: true,
-        data: result,
-        message: result.deleted ? 'Digest permanently deleted' : 'Digest archived successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error deleting digest');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: result,
+          message: result.deleted
+            ? 'Digest permanently deleted'
+            : 'Digest archived successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error deleting digest');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // GENERATION & DELIVERY ENDPOINTS
@@ -246,63 +283,75 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
    * POST /exec-digests/:id/generate
    * Generate digest content (sections) from aggregated data
    */
-  server.post('/:id/generate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const validated = generateExecDigestSchema.parse(request.body || {});
-      const response = await service.generateDigest(
-        orgId,
-        id,
-        userId,
-        validated as GenerateExecDigestInput
-      );
+  server.post(
+    '/:id/generate',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const validated = generateExecDigestSchema.parse(request.body || {});
+        const response = await service.generateDigest(
+          orgId,
+          id,
+          userId,
+          validated as GenerateExecDigestInput
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error generating digest');
-      return reply.status(errorMessage.includes('not found') ? 404 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error generating digest');
+        return reply
+          .status(errorMessage.includes('not found') ? 404 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * POST /exec-digests/:id/deliver
    * Deliver digest to recipients via email
    */
-  server.post('/:id/deliver', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const validated = deliverExecDigestSchema.parse(request.body || {});
-      const response = await service.deliverDigest(
-        orgId,
-        id,
-        userId,
-        validated as DeliverExecDigestInput
-      );
+  server.post(
+    '/:id/deliver',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const validated = deliverExecDigestSchema.parse(request.body || {});
+        const response = await service.deliverDigest(
+          orgId,
+          id,
+          userId,
+          validated as DeliverExecDigestInput
+        );
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error delivering digest');
-      return reply.status(errorMessage.includes('not found') ? 404 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error delivering digest');
+        return reply
+          .status(errorMessage.includes('not found') ? 404 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // SECTION MANAGEMENT ENDPOINTS
@@ -312,57 +361,65 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
    * GET /exec-digests/:id/sections
    * List sections for a digest
    */
-  server.get('/:id/sections', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const response = await service.listSections(orgId, id);
+  server.get(
+    '/:id/sections',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const response = await service.listSections(orgId, id);
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing sections');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing sections');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * POST /exec-digests/:id/sections/order
    * Update section ordering
    */
-  server.post('/:id/sections/order', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const validated = updateSectionOrderSchema.parse(request.body);
-      const sections = await service.updateSectionOrder(
-        orgId,
-        id,
-        userId,
-        (validated as UpdateSectionOrderInput).sections
-      );
+  server.post(
+    '/:id/sections/order',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const validated = updateSectionOrderSchema.parse(request.body);
+        const sections = await service.updateSectionOrder(
+          orgId,
+          id,
+          userId,
+          (validated as UpdateSectionOrderInput).sections
+        );
 
-      return reply.send({
-        success: true,
-        data: { sections },
-        message: 'Section order updated successfully',
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error updating section order');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: { sections },
+          message: 'Section order updated successfully',
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error updating section order');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   // =========================================================================
   // RECIPIENT MANAGEMENT ENDPOINTS
@@ -372,61 +429,70 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
    * GET /exec-digests/:id/recipients
    * List recipients for a digest
    */
-  server.get('/:id/recipients', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const validated = listExecDigestRecipientsSchema.parse(request.query);
-      const response = await service.listRecipients(
-        orgId,
-        id,
-        { ...validated, digestId: id }
-      );
+  server.get(
+    '/:id/recipients',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const validated = listExecDigestRecipientsSchema.parse(request.query);
+        const response = await service.listRecipients(orgId, id, {
+          ...validated,
+          digestId: id,
+        });
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing recipients');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing recipients');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 
   /**
    * POST /exec-digests/:id/recipients
    * Add a recipient to a digest
    */
-  server.post('/:id/recipients', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const userId = getUserId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const validated = addExecDigestRecipientSchema.parse(request.body);
-      const recipient = await service.addRecipient(
-        orgId,
-        id,
-        userId,
-        validated as AddExecDigestRecipientInput
-      );
+  server.post(
+    '/:id/recipients',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const userId = getUserId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const validated = addExecDigestRecipientSchema.parse(request.body);
+        const recipient = await service.addRecipient(
+          orgId,
+          id,
+          userId,
+          validated as AddExecDigestRecipientInput
+        );
 
-      return reply.status(201).send({
-        success: true,
-        data: recipient,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error adding recipient');
-      return reply.status(errorMessage.includes('validation') ? 400 : 500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.status(201).send({
+          success: true,
+          data: recipient,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error adding recipient');
+        return reply
+          .status(errorMessage.includes('validation') ? 400 : 500)
+          .send({
+            success: false,
+            error: errorMessage,
+          });
+      }
     }
-  });
+  );
 
   /**
    * PATCH /exec-digests/:id/recipients/:recipientId
@@ -438,7 +504,9 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
       try {
         const orgId = getOrgId(request);
         const userId = getUserId(request);
-        const { id, recipientId } = execDigestRecipientIdParamSchema.parse(request.params);
+        const { id, recipientId } = execDigestRecipientIdParamSchema.parse(
+          request.params
+        );
         const validated = updateExecDigestRecipientSchema.parse(request.body);
         const recipient = await service.updateRecipient(
           orgId,
@@ -460,7 +528,8 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
           data: recipient,
         });
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         server.log.error({ err: error }, 'Error updating recipient');
         return reply.status(500).send({
           success: false,
@@ -480,7 +549,9 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
       try {
         const orgId = getOrgId(request);
         const userId = getUserId(request);
-        const { id, recipientId } = execDigestRecipientIdParamSchema.parse(request.params);
+        const { id, recipientId } = execDigestRecipientIdParamSchema.parse(
+          request.params
+        );
         await service.removeRecipient(orgId, id, recipientId, userId);
 
         return reply.send({
@@ -488,7 +559,8 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
           message: 'Recipient removed successfully',
         });
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         server.log.error({ err: error }, 'Error removing recipient');
         return reply.status(500).send({
           success: false,
@@ -506,30 +578,33 @@ export async function executiveDigestRoutes(server: FastifyInstance) {
    * GET /exec-digests/:id/deliveries
    * List delivery logs for a digest
    */
-  server.get('/:id/deliveries', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const orgId = getOrgId(request);
-      const { id } = execDigestIdParamSchema.parse(request.params);
-      const validated = listExecDigestDeliveryLogsSchema.parse(request.query);
-      const response = await service.listDeliveryLogs(
-        orgId,
-        id,
-        { ...validated, digestId: id }
-      );
+  server.get(
+    '/:id/deliveries',
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const orgId = getOrgId(request);
+        const { id } = execDigestIdParamSchema.parse(request.params);
+        const validated = listExecDigestDeliveryLogsSchema.parse(request.query);
+        const response = await service.listDeliveryLogs(orgId, id, {
+          ...validated,
+          digestId: id,
+        });
 
-      return reply.send({
-        success: true,
-        data: response,
-      });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      server.log.error({ err: error }, 'Error listing delivery logs');
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
+        return reply.send({
+          success: true,
+          data: response,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        server.log.error({ err: error }, 'Error listing delivery logs');
+        return reply.status(500).send({
+          success: false,
+          error: errorMessage,
+        });
+      }
     }
-  });
+  );
 }
 
 export default executiveDigestRoutes;

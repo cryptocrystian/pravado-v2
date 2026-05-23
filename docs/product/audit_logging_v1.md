@@ -24,6 +24,7 @@ The audit system captures events across all major platform areas:
 ### 2. Immutable Audit Trail
 
 All audit logs are:
+
 - **Insert-only** - No updates or deletes allowed via RLS policies
 - **Timestamped** - Automatic creation timestamps
 - **Org-isolated** - RLS ensures org-level data isolation
@@ -32,6 +33,7 @@ All audit logs are:
 ### 3. Best-Effort Logging
 
 The audit system is designed to:
+
 - Never block core application flows
 - Log asynchronously when possible
 - Gracefully handle failures without throwing errors
@@ -76,26 +78,26 @@ CREATE TABLE audit_log (
 
 Events follow a hierarchical naming convention: `category.action`
 
-| Category | Example Events |
-|----------|----------------|
-| auth | `auth.login`, `auth.logout`, `auth.login_failed` |
-| user | `user.invite_sent`, `user.role_changed` |
-| billing | `billing.plan_change`, `billing.payment_failed` |
-| llm | `llm.call`, `llm.call_failure`, `llm.timeout` |
+| Category | Example Events                                            |
+| -------- | --------------------------------------------------------- |
+| auth     | `auth.login`, `auth.logout`, `auth.login_failed`          |
+| user     | `user.invite_sent`, `user.role_changed`                   |
+| billing  | `billing.plan_change`, `billing.payment_failed`           |
+| llm      | `llm.call`, `llm.call_failure`, `llm.timeout`             |
 | playbook | `playbook.execution_started`, `playbook.execution_failed` |
-| pr | `pr.list_created`, `pr.journalist_contacted` |
-| seo | `seo.audit_generated`, `seo.keyword_analysis_completed` |
-| content | `content.created`, `content.brief_generated` |
-| system | `system.migration_executed`, `system.error` |
-| admin | `admin.user_impersonation`, `admin.data_export` |
+| pr       | `pr.list_created`, `pr.journalist_contacted`              |
+| seo      | `seo.audit_generated`, `seo.keyword_analysis_completed`   |
+| content  | `content.created`, `content.brief_generated`              |
+| system   | `system.migration_executed`, `system.error`               |
+| admin    | `admin.user_impersonation`, `admin.data_export`           |
 
 ## Severity Levels
 
-| Level | Usage |
-|-------|-------|
-| `info` | Normal operations, successful events |
-| `warning` | Attention needed but not critical |
-| `error` | Failures that need investigation |
+| Level      | Usage                                    |
+| ---------- | ---------------------------------------- |
+| `info`     | Normal operations, successful events     |
+| `warning`  | Attention needed but not critical        |
+| `error`    | Failures that need investigation         |
 | `critical` | Security-sensitive or high-impact events |
 
 ## API Endpoints
@@ -107,6 +109,7 @@ GET /api/v1/audit?severity=error&eventType=billing&limit=50
 ```
 
 Query parameters:
+
 - `eventType` - Filter by event type (comma-separated for multiple)
 - `severity` - Filter by severity level
 - `actorType` - Filter by actor type
@@ -230,6 +233,7 @@ The audit logging system is controlled by the `ENABLE_AUDIT_LOGGING` feature fla
 ## Files Created
 
 ### Backend
+
 - `apps/api/supabase/migrations/40_create_audit_log.sql` - Database schema
 - `packages/types/src/audit.ts` - TypeScript types
 - `packages/validators/src/audit.ts` - Zod validation schemas
@@ -238,10 +242,12 @@ The audit logging system is controlled by the `ENABLE_AUDIT_LOGGING` feature fla
 - `apps/api/tests/auditService.test.ts` - Unit tests
 
 ### Frontend
+
 - `apps/dashboard/src/lib/auditApi.ts` - API client
 - `apps/dashboard/src/app/app/audit/page.tsx` - Audit viewer page
 
 ### Configuration
+
 - `packages/feature-flags/src/flags.ts` - Added ENABLE_AUDIT_LOGGING flag
 
 ## Future Enhancements

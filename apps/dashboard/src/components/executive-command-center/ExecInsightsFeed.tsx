@@ -5,10 +5,21 @@
 
 'use client';
 
+import {
+  Lightbulb,
+  AlertTriangle,
+  TrendingUp,
+  ExternalLink,
+  Loader2,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -24,37 +35,64 @@ import {
   formatRelativeTime,
 } from '@/lib/executiveCommandCenterApi';
 import { cn } from '@/lib/utils';
-import {
-  Lightbulb,
-  AlertTriangle,
-  TrendingUp,
-  ExternalLink,
-  Loader2,
-  Filter,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
 
 interface ExecInsightsFeedProps {
   insights: ExecDashboardInsight[];
   loading?: boolean;
-  onFilterChange?: (filters: { sourceSystem?: ExecInsightSourceSystem; isRisk?: boolean; isOpportunity?: boolean }) => void;
+  onFilterChange?: (filters: {
+    sourceSystem?: ExecInsightSourceSystem;
+    isRisk?: boolean;
+    isOpportunity?: boolean;
+  }) => void;
   className?: string;
 }
 
-function getSeverityBadge(severity: number, isRisk: boolean, isOpportunity: boolean) {
+function getSeverityBadge(
+  severity: number,
+  isRisk: boolean,
+  isOpportunity: boolean
+) {
   if (isRisk) {
-    if (severity >= 80) return { label: 'Critical', className: 'bg-red-100 text-red-800 border-red-200' };
-    if (severity >= 60) return { label: 'High', className: 'bg-orange-100 text-orange-800 border-orange-200' };
-    if (severity >= 40) return { label: 'Medium', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
-    return { label: 'Low', className: 'bg-green-100 text-green-800 border-green-200' };
+    if (severity >= 80)
+      return {
+        label: 'Critical',
+        className: 'bg-red-100 text-red-800 border-red-200',
+      };
+    if (severity >= 60)
+      return {
+        label: 'High',
+        className: 'bg-orange-100 text-orange-800 border-orange-200',
+      };
+    if (severity >= 40)
+      return {
+        label: 'Medium',
+        className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      };
+    return {
+      label: 'Low',
+      className: 'bg-green-100 text-green-800 border-green-200',
+    };
   }
   if (isOpportunity) {
-    if (severity >= 80) return { label: 'High Impact', className: 'bg-green-100 text-green-800 border-green-200' };
-    if (severity >= 60) return { label: 'Medium Impact', className: 'bg-blue-100 text-blue-800 border-blue-200' };
-    return { label: 'Low Impact', className: 'bg-gray-100 text-gray-800 border-gray-200' };
+    if (severity >= 80)
+      return {
+        label: 'High Impact',
+        className: 'bg-green-100 text-green-800 border-green-200',
+      };
+    if (severity >= 60)
+      return {
+        label: 'Medium Impact',
+        className: 'bg-blue-100 text-blue-800 border-blue-200',
+      };
+    return {
+      label: 'Low Impact',
+      className: 'bg-gray-100 text-gray-800 border-gray-200',
+    };
   }
-  return { label: 'Info', className: 'bg-gray-100 text-gray-800 border-gray-200' };
+  return {
+    label: 'Info',
+    className: 'bg-gray-100 text-gray-800 border-gray-200',
+  };
 }
 
 export function ExecInsightsFeed({
@@ -64,8 +102,12 @@ export function ExecInsightsFeed({
   className,
 }: ExecInsightsFeedProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState<'all' | 'risks' | 'opportunities'>('all');
-  const [sourceFilter, setSourceFilter] = useState<ExecInsightSourceSystem | 'all'>('all');
+  const [filter, setFilter] = useState<'all' | 'risks' | 'opportunities'>(
+    'all'
+  );
+  const [sourceFilter, setSourceFilter] = useState<
+    ExecInsightSourceSystem | 'all'
+  >('all');
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expanded);
@@ -81,12 +123,15 @@ export function ExecInsightsFeed({
   const filteredInsights = insights.filter((insight) => {
     if (filter === 'risks' && !insight.isRisk) return false;
     if (filter === 'opportunities' && !insight.isOpportunity) return false;
-    if (sourceFilter !== 'all' && insight.sourceSystem !== sourceFilter) return false;
+    if (sourceFilter !== 'all' && insight.sourceSystem !== sourceFilter)
+      return false;
     return true;
   });
 
   // Get unique source systems for filter dropdown
-  const sourceSystems = Array.from(new Set(insights.map((i) => i.sourceSystem)));
+  const sourceSystems = Array.from(
+    new Set(insights.map((i) => i.sourceSystem))
+  );
 
   if (loading) {
     return (
@@ -115,7 +160,10 @@ export function ExecInsightsFeed({
             <Badge variant="secondary">{filteredInsights.length}</Badge>
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Select value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
+            <Select
+              value={filter}
+              onValueChange={(v) => setFilter(v as typeof filter)}
+            >
               <SelectTrigger className="w-[130px] h-8">
                 <Filter className="h-3 w-3 mr-1" />
                 <SelectValue />
@@ -166,7 +214,9 @@ export function ExecInsightsFeed({
                   'p-3 rounded-lg border transition-colors',
                   insight.isRisk && 'border-red-100 bg-red-50/30',
                   insight.isOpportunity && 'border-green-100 bg-green-50/30',
-                  !insight.isRisk && !insight.isOpportunity && 'border-gray-100 bg-gray-50/30',
+                  !insight.isRisk &&
+                    !insight.isOpportunity &&
+                    'border-gray-100 bg-gray-50/30',
                   insight.isTopInsight && 'ring-1 ring-yellow-300'
                 )}
               >
@@ -187,15 +237,24 @@ export function ExecInsightsFeed({
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <Badge
                           variant="outline"
-                          className={cn('text-xs', getSourceSystemColor(insight.sourceSystem))}
+                          className={cn(
+                            'text-xs',
+                            getSourceSystemColor(insight.sourceSystem)
+                          )}
                         >
                           {getSourceSystemLabel(insight.sourceSystem)}
                         </Badge>
-                        <Badge variant="outline" className={cn('text-xs', severityBadge.className)}>
+                        <Badge
+                          variant="outline"
+                          className={cn('text-xs', severityBadge.className)}
+                        >
                           {severityBadge.label}
                         </Badge>
                         {insight.isTopInsight && (
-                          <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200"
+                          >
                             Top Insight
                           </Badge>
                         )}
@@ -219,7 +278,9 @@ export function ExecInsightsFeed({
                 {/* Expanded Content */}
                 {isExpanded && insight.description && (
                   <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-sm text-gray-600">{insight.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {insight.description}
+                    </p>
                     {insight.linkUrl && (
                       <a
                         href={insight.linkUrl}

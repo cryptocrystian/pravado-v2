@@ -11,10 +11,13 @@ function getApiBaseUrl(): string {
   // In production/staging, NEXT_PUBLIC_API_URL must be set
   if (!apiUrl) {
     // Check if we're in a browser environment and not localhost
-    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+    if (
+      typeof window !== 'undefined' &&
+      !window.location.hostname.includes('localhost')
+    ) {
       console.error(
         '[API Config] CRITICAL: NEXT_PUBLIC_API_URL is not set in production/staging environment. ' +
-        'API calls will fail. Please set this environment variable in Vercel.'
+          'API calls will fail. Please set this environment variable in Vercel.'
       );
       // Return a placeholder that will cause clear errors rather than silent localhost calls
       return 'https://api-url-not-configured.invalid';

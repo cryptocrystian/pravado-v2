@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { ComponentScore, ReputationComponent } from '@pravado/types';
+import { ArrowUp, ArrowDown, Minus, BarChart3 } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getScoreColor,
   getComponentLabel,
@@ -14,8 +17,6 @@ import {
   getTrendColor,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { ComponentScore, ReputationComponent } from '@pravado/types';
-import { ArrowUp, ArrowDown, Minus, BarChart3 } from 'lucide-react';
 
 interface ComponentScorePanelProps {
   componentScores: ComponentScore[];
@@ -57,17 +58,25 @@ export function ComponentScorePanel({
             <div key={component.component} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">{getComponentIcon(component.component)}</span>
+                  <span className="text-lg">
+                    {getComponentIcon(component.component)}
+                  </span>
                   <span className="text-sm font-medium text-gray-700">
                     {getComponentLabel(component.component)}
                   </span>
                   {isStrongest && (
-                    <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-50 text-green-700 text-xs"
+                    >
                       Strongest
                     </Badge>
                   )}
                   {isWeakest && (
-                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
+                    <Badge
+                      variant="outline"
+                      className="bg-red-50 text-red-700 text-xs"
+                    >
                       Weakest
                     </Badge>
                   )}
@@ -76,23 +85,26 @@ export function ComponentScorePanel({
                   <span className={cn('text-lg font-bold', scoreColorClass)}>
                     {component.score.toFixed(0)}
                   </span>
-                  {component.delta !== undefined && component.delta !== null && (
-                    <div className="flex items-center gap-0.5">
-                      {component.trend === 'up' && (
-                        <ArrowUp className={cn('h-3 w-3', trendColorClass)} />
-                      )}
-                      {component.trend === 'down' && (
-                        <ArrowDown className={cn('h-3 w-3', trendColorClass)} />
-                      )}
-                      {component.trend === 'flat' && (
-                        <Minus className={cn('h-3 w-3', trendColorClass)} />
-                      )}
-                      <span className={cn('text-xs', trendColorClass)}>
-                        {component.delta > 0 ? '+' : ''}
-                        {component.delta.toFixed(1)}
-                      </span>
-                    </div>
-                  )}
+                  {component.delta !== undefined &&
+                    component.delta !== null && (
+                      <div className="flex items-center gap-0.5">
+                        {component.trend === 'up' && (
+                          <ArrowUp className={cn('h-3 w-3', trendColorClass)} />
+                        )}
+                        {component.trend === 'down' && (
+                          <ArrowDown
+                            className={cn('h-3 w-3', trendColorClass)}
+                          />
+                        )}
+                        {component.trend === 'flat' && (
+                          <Minus className={cn('h-3 w-3', trendColorClass)} />
+                        )}
+                        <span className={cn('text-xs', trendColorClass)}>
+                          {component.delta > 0 ? '+' : ''}
+                          {component.delta.toFixed(1)}
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -104,12 +116,12 @@ export function ComponentScorePanel({
                     component.score >= 80
                       ? 'bg-green-500'
                       : component.score >= 60
-                      ? 'bg-blue-500'
-                      : component.score >= 40
-                      ? 'bg-yellow-500'
-                      : component.score >= 20
-                      ? 'bg-orange-500'
-                      : 'bg-red-500'
+                        ? 'bg-blue-500'
+                        : component.score >= 40
+                          ? 'bg-yellow-500'
+                          : component.score >= 20
+                            ? 'bg-orange-500'
+                            : 'bg-red-500'
                   )}
                   style={{ width: `${component.score}%` }}
                 />
@@ -118,7 +130,9 @@ export function ComponentScorePanel({
               {/* Weight Contribution */}
               <div className="flex items-center justify-between text-xs text-gray-500">
                 <span>Weight: {component.weight}%</span>
-                <span>Contribution: {component.contribution.toFixed(1)} pts</span>
+                <span>
+                  Contribution: {component.contribution.toFixed(1)} pts
+                </span>
               </div>
             </div>
           );

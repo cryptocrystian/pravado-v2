@@ -19,9 +19,15 @@
  */
 export type ExecDigestDeliveryPeriod = 'weekly' | 'monthly';
 
-export const EXEC_DIGEST_DELIVERY_PERIODS: ExecDigestDeliveryPeriod[] = ['weekly', 'monthly'];
+export const EXEC_DIGEST_DELIVERY_PERIODS: ExecDigestDeliveryPeriod[] = [
+  'weekly',
+  'monthly',
+];
 
-export const EXEC_DIGEST_DELIVERY_PERIOD_LABELS: Record<ExecDigestDeliveryPeriod, string> = {
+export const EXEC_DIGEST_DELIVERY_PERIOD_LABELS: Record<
+  ExecDigestDeliveryPeriod,
+  string
+> = {
   weekly: 'Weekly',
   monthly: 'Monthly',
 };
@@ -33,7 +39,10 @@ export type ExecDigestTimeWindow = '7d' | '30d';
 
 export const EXEC_DIGEST_TIME_WINDOWS: ExecDigestTimeWindow[] = ['7d', '30d'];
 
-export const EXEC_DIGEST_TIME_WINDOW_LABELS: Record<ExecDigestTimeWindow, string> = {
+export const EXEC_DIGEST_TIME_WINDOW_LABELS: Record<
+  ExecDigestTimeWindow,
+  string
+> = {
   '7d': 'Last 7 Days',
   '30d': 'Last 30 Days',
 };
@@ -68,7 +77,10 @@ export const EXEC_DIGEST_SECTION_TYPES: ExecDigestSectionType[] = [
   'custom',
 ];
 
-export const EXEC_DIGEST_SECTION_TYPE_LABELS: Record<ExecDigestSectionType, string> = {
+export const EXEC_DIGEST_SECTION_TYPE_LABELS: Record<
+  ExecDigestSectionType,
+  string
+> = {
   executive_summary: 'Executive Summary',
   key_kpis: 'Key Performance Indicators',
   key_insights: 'Key Insights',
@@ -113,7 +125,10 @@ export const EXEC_DIGEST_DELIVERY_STATUSES: ExecDigestDeliveryStatus[] = [
   'error',
 ];
 
-export const EXEC_DIGEST_DELIVERY_STATUS_LABELS: Record<ExecDigestDeliveryStatus, string> = {
+export const EXEC_DIGEST_DELIVERY_STATUS_LABELS: Record<
+  ExecDigestDeliveryStatus,
+  string
+> = {
   pending: 'Pending',
   sending: 'Sending',
   success: 'Delivered',
@@ -755,35 +770,49 @@ export interface ExecDigestSectionResult {
 /**
  * Check if a string is a valid delivery period
  */
-export function isValidDeliveryPeriod(value: string): value is ExecDigestDeliveryPeriod {
-  return EXEC_DIGEST_DELIVERY_PERIODS.includes(value as ExecDigestDeliveryPeriod);
+export function isValidDeliveryPeriod(
+  value: string
+): value is ExecDigestDeliveryPeriod {
+  return EXEC_DIGEST_DELIVERY_PERIODS.includes(
+    value as ExecDigestDeliveryPeriod
+  );
 }
 
 /**
  * Check if a string is a valid time window
  */
-export function isValidTimeWindow(value: string): value is ExecDigestTimeWindow {
+export function isValidTimeWindow(
+  value: string
+): value is ExecDigestTimeWindow {
   return EXEC_DIGEST_TIME_WINDOWS.includes(value as ExecDigestTimeWindow);
 }
 
 /**
  * Check if a string is a valid section type
  */
-export function isValidSectionType(value: string): value is ExecDigestSectionType {
+export function isValidSectionType(
+  value: string
+): value is ExecDigestSectionType {
   return EXEC_DIGEST_SECTION_TYPES.includes(value as ExecDigestSectionType);
 }
 
 /**
  * Check if a string is a valid delivery status
  */
-export function isValidDeliveryStatus(value: string): value is ExecDigestDeliveryStatus {
-  return EXEC_DIGEST_DELIVERY_STATUSES.includes(value as ExecDigestDeliveryStatus);
+export function isValidDeliveryStatus(
+  value: string
+): value is ExecDigestDeliveryStatus {
+  return EXEC_DIGEST_DELIVERY_STATUSES.includes(
+    value as ExecDigestDeliveryStatus
+  );
 }
 
 /**
  * Check if a string is a valid action type
  */
-export function isValidActionType(value: string): value is ExecDigestActionType {
+export function isValidActionType(
+  value: string
+): value is ExecDigestActionType {
   return EXEC_DIGEST_ACTION_TYPES.includes(value as ExecDigestActionType);
 }
 
@@ -794,7 +823,9 @@ export function isValidActionType(value: string): value is ExecDigestActionType 
 /**
  * Get label for delivery period
  */
-export function getDeliveryPeriodLabel(period: ExecDigestDeliveryPeriod): string {
+export function getDeliveryPeriodLabel(
+  period: ExecDigestDeliveryPeriod
+): string {
   return EXEC_DIGEST_DELIVERY_PERIOD_LABELS[period] || period;
 }
 
@@ -815,7 +846,9 @@ export function getSectionTypeLabel(type: ExecDigestSectionType): string {
 /**
  * Get label for delivery status
  */
-export function getDeliveryStatusLabel(status: ExecDigestDeliveryStatus): string {
+export function getDeliveryStatusLabel(
+  status: ExecDigestDeliveryStatus
+): string {
   return EXEC_DIGEST_DELIVERY_STATUS_LABELS[status] || status;
 }
 
@@ -823,7 +856,15 @@ export function getDeliveryStatusLabel(status: ExecDigestDeliveryStatus): string
  * Get day of week label
  */
 export function getDayOfWeekLabel(day: number): string {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   return days[day] || 'Unknown';
 }
 

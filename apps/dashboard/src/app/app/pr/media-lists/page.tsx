@@ -5,19 +5,20 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import type {
   MediaListGenerationInput,
   MediaListGenerationResult,
   MediaListSummary,
   MediaListWithEntries,
 } from '@pravado/types';
-import * as mediaListsApi from '@/lib/mediaListsApi';
-import { MediaListGeneratorForm } from '@/components/mediaLists/MediaListGeneratorForm';
-import { MediaListResultPreview } from '@/components/mediaLists/MediaListResultPreview';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
 import { MediaListCard } from '@/components/mediaLists/MediaListCard';
 import { MediaListEntryTable } from '@/components/mediaLists/MediaListEntryTable';
+import { MediaListGeneratorForm } from '@/components/mediaLists/MediaListGeneratorForm';
+import { MediaListResultPreview } from '@/components/mediaLists/MediaListResultPreview';
+import * as mediaListsApi from '@/lib/mediaListsApi';
 
 type ViewMode = 'list' | 'generate' | 'preview' | 'detail';
 
@@ -25,9 +26,13 @@ export default function MediaListsPage() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [lists, setLists] = useState<MediaListSummary[]>([]);
-  const [selectedList, setSelectedList] = useState<MediaListWithEntries | null>(null);
-  const [generatedResult, setGeneratedResult] = useState<MediaListGenerationResult | null>(null);
-  const [currentInput, setCurrentInput] = useState<MediaListGenerationInput | null>(null);
+  const [selectedList, setSelectedList] = useState<MediaListWithEntries | null>(
+    null
+  );
+  const [generatedResult, setGeneratedResult] =
+    useState<MediaListGenerationResult | null>(null);
+  const [currentInput, setCurrentInput] =
+    useState<MediaListGenerationInput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -144,9 +149,12 @@ export default function MediaListsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">AI Media List Builder</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            AI Media List Builder
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Generate intelligent, hyper-targeted media lists using AI-powered fit scoring
+            Generate intelligent, hyper-targeted media lists using AI-powered
+            fit scoring
           </p>
         </div>
 
@@ -283,38 +291,56 @@ export default function MediaListsPage() {
             </div>
 
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedList.name}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {selectedList.name}
+              </h2>
               {selectedList.description && (
                 <p className="text-gray-600 mb-4">{selectedList.description}</p>
               )}
               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                <span>Topic: <strong>{selectedList.inputTopic}</strong></span>
+                <span>
+                  Topic: <strong>{selectedList.inputTopic}</strong>
+                </span>
                 {selectedList.inputMarket && (
-                  <span>Market: <strong>{selectedList.inputMarket}</strong></span>
+                  <span>
+                    Market: <strong>{selectedList.inputMarket}</strong>
+                  </span>
                 )}
                 {selectedList.inputGeography && (
-                  <span>Geography: <strong>{selectedList.inputGeography}</strong></span>
+                  <span>
+                    Geography: <strong>{selectedList.inputGeography}</strong>
+                  </span>
                 )}
               </div>
               <div className="mt-4 grid grid-cols-5 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{selectedList.totalEntries}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {selectedList.totalEntries}
+                  </div>
                   <div className="text-xs text-gray-500">Total</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{selectedList.tierACount}</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {selectedList.tierACount}
+                  </div>
                   <div className="text-xs text-gray-500">A-Tier</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{selectedList.tierBCount}</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {selectedList.tierBCount}
+                  </div>
                   <div className="text-xs text-gray-500">B-Tier</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-600">{selectedList.tierCCount}</div>
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {selectedList.tierCCount}
+                  </div>
                   <div className="text-xs text-gray-500">C-Tier</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-600">{selectedList.tierDCount}</div>
+                  <div className="text-2xl font-bold text-gray-600">
+                    {selectedList.tierDCount}
+                  </div>
                   <div className="text-xs text-gray-500">D-Tier</div>
                 </div>
               </div>

@@ -40,11 +40,7 @@
     "ENABLE_MAINTENANCE_MODE": false
   },
   "endpoints": {
-    "health": [
-      "/health/live",
-      "/health/ready",
-      "/health/info"
-    ],
+    "health": ["/health/live", "/health/ready", "/health/info"],
     "apiPrefix": "/api/v1",
     "totalRouteGroups": 45
   },

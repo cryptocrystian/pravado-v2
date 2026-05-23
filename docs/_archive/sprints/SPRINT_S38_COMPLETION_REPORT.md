@@ -12,41 +12,41 @@ Sprint S38 delivers a complete AI-Powered Press Release Engine with context-awar
 
 ### Backend (apps/api)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
+| Deliverable                                | Status   | File                                                      |
+| ------------------------------------------ | -------- | --------------------------------------------------------- |
 | Migration 43: pr_generated_releases schema | Complete | `supabase/migrations/43_create_pr_generated_releases.sql` |
-| PressReleaseService (~900 lines) | Complete | `src/services/pressReleaseService.ts` |
-| Press Release Routes | Complete | `src/routes/pressReleases/index.ts` |
-| Playbook Template | Complete | `data/playbooks/pressReleaseTemplate.ts` |
-| Backend Tests | Complete | `tests/pressReleaseService.test.ts` |
+| PressReleaseService (~900 lines)           | Complete | `src/services/pressReleaseService.ts`                     |
+| Press Release Routes                       | Complete | `src/routes/pressReleases/index.ts`                       |
+| Playbook Template                          | Complete | `data/playbooks/pressReleaseTemplate.ts`                  |
+| Backend Tests                              | Complete | `tests/pressReleaseService.test.ts`                       |
 
 ### Dashboard (apps/dashboard)
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| PRGeneratorForm | Complete | `src/components/pr-generator/PRGeneratorForm.tsx` |
-| PRGenerationResult | Complete | `src/components/pr-generator/PRGenerationResult.tsx` |
-| PRSidebarList | Complete | `src/components/pr-generator/PRSidebarList.tsx` |
-| Component Index | Complete | `src/components/pr-generator/index.ts` |
-| Press Release API Helper | Complete | `src/lib/pressReleaseApi.ts` |
-| Generator Page | Complete | `src/app/app/pr/generator/page.tsx` |
-| Detail Page | Complete | `src/app/app/pr/[id]/page.tsx` |
-| E2E Tests | Complete | `tests/pr/pr-generator.spec.ts` |
+| Deliverable              | Status   | File                                                 |
+| ------------------------ | -------- | ---------------------------------------------------- |
+| PRGeneratorForm          | Complete | `src/components/pr-generator/PRGeneratorForm.tsx`    |
+| PRGenerationResult       | Complete | `src/components/pr-generator/PRGenerationResult.tsx` |
+| PRSidebarList            | Complete | `src/components/pr-generator/PRSidebarList.tsx`      |
+| Component Index          | Complete | `src/components/pr-generator/index.ts`               |
+| Press Release API Helper | Complete | `src/lib/pressReleaseApi.ts`                         |
+| Generator Page           | Complete | `src/app/app/pr/generator/page.tsx`                  |
+| Detail Page              | Complete | `src/app/app/pr/[id]/page.tsx`                       |
+| E2E Tests                | Complete | `tests/pr/pr-generator.spec.ts`                      |
 
 ### Packages
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| Press Release Types | Complete | `packages/types/src/pressRelease.ts` |
-| Types Index Export | Complete | `packages/types/src/index.ts` |
-| Feature Flag | Complete | `packages/feature-flags/src/flags.ts` |
+| Deliverable         | Status   | File                                  |
+| ------------------- | -------- | ------------------------------------- |
+| Press Release Types | Complete | `packages/types/src/pressRelease.ts`  |
+| Types Index Export  | Complete | `packages/types/src/index.ts`         |
+| Feature Flag        | Complete | `packages/feature-flags/src/flags.ts` |
 
 ### Documentation
 
-| Deliverable | Status | File |
-|-------------|--------|------|
-| Product Specification | Complete | `docs/product/pr_generator_v1.md` |
-| Sprint Report | Complete | `docs/SPRINT_S38_COMPLETION_REPORT.md` |
+| Deliverable           | Status   | File                                   |
+| --------------------- | -------- | -------------------------------------- |
+| Product Specification | Complete | `docs/product/pr_generator_v1.md`      |
+| Sprint Report         | Complete | `docs/SPRINT_S38_COMPLETION_REPORT.md` |
 
 ## Technical Implementation
 
@@ -85,14 +85,14 @@ CREATE TABLE pr_angle_options (...);
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/pr/releases/generate` | Generate press release |
-| GET | `/api/v1/pr/releases` | List press releases |
-| GET | `/api/v1/pr/releases/:id` | Get release details |
-| POST | `/api/v1/pr/releases/:id/optimize` | Re-run optimization |
-| GET | `/api/v1/pr/releases/:id/embeddings/similar` | Find similar |
-| GET | `/api/v1/pr/releases/:id/stream` | SSE progress stream |
+| Method | Endpoint                                     | Description            |
+| ------ | -------------------------------------------- | ---------------------- |
+| POST   | `/api/v1/pr/releases/generate`               | Generate press release |
+| GET    | `/api/v1/pr/releases`                        | List press releases    |
+| GET    | `/api/v1/pr/releases/:id`                    | Get release details    |
+| POST   | `/api/v1/pr/releases/:id/optimize`           | Re-run optimization    |
+| GET    | `/api/v1/pr/releases/:id/embeddings/similar` | Find similar           |
+| GET    | `/api/v1/pr/releases/:id/stream`             | SSE progress stream    |
 
 ### Service Architecture
 
@@ -128,11 +128,13 @@ PressReleaseService
 ### Scoring Algorithms
 
 #### Angle Scoring
+
 - Newsworthiness: 40% weight
 - Uniqueness: 30% weight
 - Relevance: 30% weight
 
 #### Headline Scoring
+
 - SEO Score: 40% weight
 - Virality Score: 35% weight
 - Readability Score: 25% weight
@@ -218,18 +220,19 @@ PR Generator Page
 
 ## Code Metrics
 
-| Metric | Value |
-|--------|-------|
-| New TypeScript lines | ~3,500 |
-| New SQL lines | ~180 |
-| Backend service lines | ~1,100 |
-| Frontend component lines | ~900 |
-| Test lines | ~800 |
-| Documentation lines | ~500 |
+| Metric                   | Value  |
+| ------------------------ | ------ |
+| New TypeScript lines     | ~3,500 |
+| New SQL lines            | ~180   |
+| Backend service lines    | ~1,100 |
+| Frontend component lines | ~900   |
+| Test lines               | ~800   |
+| Documentation lines      | ~500   |
 
 ## Files Created
 
 ### Backend
+
 - `apps/api/supabase/migrations/43_create_pr_generated_releases.sql`
 - `apps/api/src/services/pressReleaseService.ts`
 - `apps/api/src/routes/pressReleases/index.ts`
@@ -237,6 +240,7 @@ PR Generator Page
 - `apps/api/tests/pressReleaseService.test.ts`
 
 ### Dashboard
+
 - `apps/dashboard/src/lib/pressReleaseApi.ts`
 - `apps/dashboard/src/components/pr-generator/PRGeneratorForm.tsx`
 - `apps/dashboard/src/components/pr-generator/PRGenerationResult.tsx`
@@ -247,9 +251,11 @@ PR Generator Page
 - `apps/dashboard/tests/pr/pr-generator.spec.ts`
 
 ### Packages
+
 - `packages/types/src/pressRelease.ts`
 
 ### Documentation
+
 - `docs/product/pr_generator_v1.md`
 - `docs/SPRINT_S38_COMPLETION_REPORT.md`
 
@@ -262,8 +268,9 @@ PR Generator Page
 ## Configuration
 
 ### Feature Flag
+
 ```typescript
-ENABLE_PR_GENERATOR: true
+ENABLE_PR_GENERATOR: true;
 ```
 
 ## Security Considerations
@@ -310,6 +317,7 @@ ENABLE_PR_GENERATOR: true
 **Sprint S39 - PR Distribution & Analytics**
 
 Suggested features:
+
 1. Direct wire service integration
 2. Email distribution lists
 3. Social media formatting

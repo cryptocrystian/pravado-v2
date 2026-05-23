@@ -15,7 +15,9 @@ import {
   getSEOSerpSnapshotSchema,
   getSEOPageAuditSchema,
   getSEOBacklinkProfileSchema,
- validateEnv, apiEnvSchema } from '@pravado/validators';
+  validateEnv,
+  apiEnvSchema,
+} from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
@@ -26,10 +28,12 @@ import { SEOOnPageService } from '../../services/seoOnPageService';
 import { SEOOpportunityService } from '../../services/seoOpportunityService';
 import { SEOSerpService } from '../../services/seoSerpService';
 
-
 export async function seoRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   // Services
   const keywordService = new SEOKeywordService(supabase);
@@ -100,7 +104,9 @@ export async function seoRoutes(server: FastifyInstance) {
       const validation = listSEOKeywordsSchema.safeParse({
         q: request.query.q,
         page: request.query.page ? parseInt(request.query.page, 10) : undefined,
-        pageSize: request.query.pageSize ? parseInt(request.query.pageSize, 10) : undefined,
+        pageSize: request.query.pageSize
+          ? parseInt(request.query.pageSize, 10)
+          : undefined,
         status: request.query.status,
         intent: request.query.intent,
         sortBy: request.query.sortBy,
@@ -118,7 +124,10 @@ export async function seoRoutes(server: FastifyInstance) {
       }
 
       try {
-        const result = await keywordService.listKeywords(orgId, validation.data);
+        const result = await keywordService.listKeywords(
+          orgId,
+          validation.data
+        );
 
         return {
           success: true,
@@ -267,8 +276,12 @@ export async function seoRoutes(server: FastifyInstance) {
 
       // Parse and validate query params
       const validation = listSEOOpportunitiesSchema.safeParse({
-        limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
-        offset: request.query.offset ? parseInt(request.query.offset, 10) : undefined,
+        limit: request.query.limit
+          ? parseInt(request.query.limit, 10)
+          : undefined,
+        offset: request.query.offset
+          ? parseInt(request.query.offset, 10)
+          : undefined,
         opportunityType: request.query.opportunityType,
         priority: request.query.priority,
         status: request.query.status,
@@ -288,7 +301,10 @@ export async function seoRoutes(server: FastifyInstance) {
       }
 
       try {
-        const opportunities = await opportunityService.listOpportunities(orgId, validation.data);
+        const opportunities = await opportunityService.listOpportunities(
+          orgId,
+          validation.data
+        );
 
         return {
           success: true,

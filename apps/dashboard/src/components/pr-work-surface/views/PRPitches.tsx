@@ -41,7 +41,15 @@ interface PitchSequenceContact {
     engagementScore: number;
     responsivenessScore: number;
   };
-  status: 'queued' | 'sending' | 'sent' | 'opened' | 'replied' | 'bounced' | 'opted_out' | 'failed';
+  status:
+    | 'queued'
+    | 'sending'
+    | 'sent'
+    | 'opened'
+    | 'replied'
+    | 'bounced'
+    | 'opted_out'
+    | 'failed';
   personalizedSubject: string | null;
   personalizedBody: string | null;
   personalizationScore: number;
@@ -116,10 +124,19 @@ function mapSequenceContactToPitch(
         email: contact.journalist.primaryEmail,
         outlet: contact.journalist.primaryOutlet ?? undefined,
         beats: contact.journalist.beat ? [contact.journalist.beat] : [],
-        topicCurrency: Math.round((contact.journalist.responsivenessScore || 0) * 100),
+        topicCurrency: Math.round(
+          (contact.journalist.responsivenessScore || 0) * 100
+        ),
         preferredChannels: ['email'],
-        relationshipStage: contact.journalist.engagementScore >= 0.6 ? 'engaged' : contact.journalist.engagementScore >= 0.4 ? 'warm' : 'cold',
-        pitchEligibilityScore: Math.round((contact.journalist.responsivenessScore || 0) * 100),
+        relationshipStage:
+          contact.journalist.engagementScore >= 0.6
+            ? 'engaged'
+            : contact.journalist.engagementScore >= 0.4
+              ? 'warm'
+              : 'cold',
+        pitchEligibilityScore: Math.round(
+          (contact.journalist.responsivenessScore || 0) * 100
+        ),
         tags: [],
       }
     : undefined;
@@ -129,7 +146,10 @@ function mapSequenceContactToPitch(
     contactId: contact.journalistId,
     sequenceId: contact.sequenceId, // Required for manual send API
     contact: mediaContact,
-    subject: contact.personalizedSubject || sequence.defaultSubject || 'Untitled Pitch',
+    subject:
+      contact.personalizedSubject ||
+      sequence.defaultSubject ||
+      'Untitled Pitch',
     body: contact.personalizedBody || '',
     personalizationScore: contact.personalizationScore || 0,
     status: statusMap[contact.status] || 'draft',
@@ -345,19 +365,34 @@ function StatusBadge({ status }: { status: PitchStatus }) {
   if (!stage) return null;
 
   return (
-    <span className={`px-2 py-0.5 text-[13px] font-medium rounded-full ${stage.bgColor.replace('/10', '/20')} ${stage.color}`}>
+    <span
+      className={`px-2 py-0.5 text-[13px] font-medium rounded-full ${stage.bgColor.replace('/10', '/20')} ${stage.color}`}
+    >
       {stage.label}
     </span>
   );
 }
 
 function PersonalizationScore({ score }: { score: number }) {
-  const color = score >= 80 ? 'text-semantic-success' : score >= 60 ? 'text-semantic-warning' : 'text-semantic-danger';
-  const bgColor = score >= 80 ? 'bg-semantic-success' : score >= 60 ? 'bg-semantic-warning' : 'bg-semantic-danger';
+  const color =
+    score >= 80
+      ? 'text-semantic-success'
+      : score >= 60
+        ? 'text-semantic-warning'
+        : 'text-semantic-danger';
+  const bgColor =
+    score >= 80
+      ? 'bg-semantic-success'
+      : score >= 60
+        ? 'bg-semantic-warning'
+        : 'bg-semantic-danger';
   return (
     <div className="flex items-center gap-1.5">
       <div className="w-12 h-1 rounded-full bg-slate-4 overflow-hidden">
-        <div className={`h-full rounded-full ${bgColor}`} style={{ width: `${score}%` }} />
+        <div
+          className={`h-full rounded-full ${bgColor}`}
+          style={{ width: `${score}%` }}
+        />
       </div>
       <span className={`text-[13px] font-medium ${color}`}>{score}</span>
     </div>
@@ -367,12 +402,22 @@ function PersonalizationScore({ score }: { score: number }) {
 function RelationshipBadge({ stage }: { stage: string }) {
   const config: Record<string, { color: string; label: string }> = {
     cold: { color: 'bg-white/10 text-white/55', label: 'Cold' },
-    warm: { color: 'bg-semantic-warning/15 text-semantic-warning', label: 'Warm' },
-    engaged: { color: 'bg-semantic-success/15 text-semantic-success', label: 'Engaged' },
+    warm: {
+      color: 'bg-semantic-warning/15 text-semantic-warning',
+      label: 'Warm',
+    },
+    engaged: {
+      color: 'bg-semantic-success/15 text-semantic-success',
+      label: 'Engaged',
+    },
     advocate: { color: 'bg-brand-iris/20 text-brand-iris', label: 'Advocate' },
   };
   const { color, label } = config[stage] || config.cold;
-  return <span className={`px-1.5 py-0.5 text-[13px] font-medium rounded ${color}`}>{label}</span>;
+  return (
+    <span className={`px-1.5 py-0.5 text-[13px] font-medium rounded ${color}`}>
+      {label}
+    </span>
+  );
 }
 
 // ============================================
@@ -388,10 +433,14 @@ interface KanbanCardProps {
 function KanbanCard({ pitch, onClick, isSelected }: KanbanCardProps) {
   // Calculate days ago on client only to avoid hydration mismatch
   const [daysAgo, setDaysAgo] = useState<number | null>(null);
-  const lastInteraction = pitch.contactId ? MOCK_LAST_INTERACTION[pitch.contactId] : null;
+  const lastInteraction = pitch.contactId
+    ? MOCK_LAST_INTERACTION[pitch.contactId]
+    : null;
 
   useEffect(() => {
-    setDaysAgo(Math.floor((Date.now() - new Date(pitch.createdAt).getTime()) / 86400000));
+    setDaysAgo(
+      Math.floor((Date.now() - new Date(pitch.createdAt).getTime()) / 86400000)
+    );
   }, [pitch.createdAt]);
 
   return (
@@ -409,27 +458,37 @@ function KanbanCard({ pitch, onClick, isSelected }: KanbanCardProps) {
           {pitch.contact?.name?.charAt(0) || '?'}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium text-white/90 truncate">{pitch.contact?.name}</div>
+          <div className="text-sm font-medium text-white/90 truncate">
+            {pitch.contact?.name}
+          </div>
           {pitch.contact?.outlet && (
-            <div className="text-[13px] text-white/55 truncate">{pitch.contact.outlet}</div>
+            <div className="text-[13px] text-white/55 truncate">
+              {pitch.contact.outlet}
+            </div>
           )}
         </div>
       </div>
 
       {/* Subject */}
-      <div className="text-[13px] text-white/55 line-clamp-2 mb-3">{pitch.subject}</div>
+      <div className="text-[13px] text-white/55 line-clamp-2 mb-3">
+        {pitch.subject}
+      </div>
 
       {/* Footer - Relationship context */}
       <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
         <div className="flex items-center gap-2">
-          {pitch.contact?.relationshipStage && <RelationshipBadge stage={pitch.contact.relationshipStage} />}
+          {pitch.contact?.relationshipStage && (
+            <RelationshipBadge stage={pitch.contact.relationshipStage} />
+          )}
           {pitch.followUpCount > 0 && (
             <span className="px-1.5 py-0.5 text-[13px] font-semibold rounded bg-semantic-warning/15 text-semantic-warning">
               +{pitch.followUpCount}
             </span>
           )}
         </div>
-        <div className="text-[13px] text-white/40">{daysAgo !== null ? `${daysAgo}d` : '—'}</div>
+        <div className="text-[13px] text-white/40">
+          {daysAgo !== null ? `${daysAgo}d` : '—'}
+        </div>
       </div>
 
       {/* Last interaction context */}
@@ -461,14 +520,30 @@ interface KanbanColumnProps {
   onSelectPitch: (pitch: Pitch) => void;
 }
 
-function KanbanColumn({ stage, pitches, selectedPitchId, onSelectPitch }: KanbanColumnProps) {
+function KanbanColumn({
+  stage,
+  pitches,
+  selectedPitchId,
+  onSelectPitch,
+}: KanbanColumnProps) {
   return (
     <div className="flex-1 min-w-[240px] max-w-[280px]">
       {/* Column Header */}
-      <div className={`p-3 rounded-t-xl border-t-2 ${stage.bgColor} border-b-0`} style={{ borderTopColor: stage.color.replace('text-', '').includes('brand') ? 'rgb(var(--brand-iris))' : undefined }}>
+      <div
+        className={`p-3 rounded-t-xl border-t-2 ${stage.bgColor} border-b-0`}
+        style={{
+          borderTopColor: stage.color.replace('text-', '').includes('brand')
+            ? 'rgb(var(--brand-iris))'
+            : undefined,
+        }}
+      >
         <div className="flex items-center justify-between mb-1">
-          <h3 className={`text-sm font-semibold ${stage.color}`}>{stage.label}</h3>
-          <span className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${stage.bgColor} ${stage.color}`}>
+          <h3 className={`text-sm font-semibold ${stage.color}`}>
+            {stage.label}
+          </h3>
+          <span
+            className={`px-1.5 py-0.5 text-[13px] font-semibold rounded ${stage.bgColor} ${stage.color}`}
+          >
             {pitches.length}
           </span>
         </div>
@@ -528,7 +603,9 @@ function ListRow({ pitch, onClick, isSelected }: ListRowProps) {
           <h3 className="font-medium text-white/90 mb-1">{pitch.subject}</h3>
           <div className="flex items-center gap-3 text-sm text-white/55">
             <span>To: {pitch.contact?.name || 'Unknown'}</span>
-            {pitch.contact?.outlet && <span className="text-brand-cyan">{pitch.contact.outlet}</span>}
+            {pitch.contact?.outlet && (
+              <span className="text-brand-cyan">{pitch.contact.outlet}</span>
+            )}
           </div>
         </div>
 
@@ -541,12 +618,18 @@ function ListRow({ pitch, onClick, isSelected }: ListRowProps) {
       {/* Timeline */}
       <div className="mt-3 pt-3 border-t border-border-subtle flex items-center gap-4 text-[13px] text-white/55">
         <span>Created {new Date(pitch.createdAt).toLocaleDateString()}</span>
-        {pitch.sentAt && <span>Sent {new Date(pitch.sentAt).toLocaleDateString()}</span>}
+        {pitch.sentAt && (
+          <span>Sent {new Date(pitch.sentAt).toLocaleDateString()}</span>
+        )}
         {pitch.openedAt && (
-          <span className="text-semantic-success">Opened {new Date(pitch.openedAt).toLocaleDateString()}</span>
+          <span className="text-semantic-success">
+            Opened {new Date(pitch.openedAt).toLocaleDateString()}
+          </span>
         )}
         {pitch.repliedAt && (
-          <span className="text-brand-iris">Replied {new Date(pitch.repliedAt).toLocaleDateString()}</span>
+          <span className="text-brand-iris">
+            Replied {new Date(pitch.repliedAt).toLocaleDateString()}
+          </span>
         )}
       </div>
     </div>
@@ -557,18 +640,36 @@ function ListRow({ pitch, onClick, isSelected }: ListRowProps) {
 // VIEW TOGGLE COMPONENT - DS3
 // ============================================
 
-function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (mode: ViewMode) => void }) {
+function ViewToggle({
+  mode,
+  onChange,
+}: {
+  mode: ViewMode;
+  onChange: (mode: ViewMode) => void;
+}) {
   return (
     <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-2 border border-border-subtle">
       <button
         type="button"
         onClick={() => onChange('kanban')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-          mode === 'kanban' ? 'bg-brand-iris/20 text-brand-iris' : 'text-white/55 hover:text-white'
+          mode === 'kanban'
+            ? 'bg-brand-iris/20 text-brand-iris'
+            : 'text-white/55 hover:text-white'
         }`}
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+          />
         </svg>
         Pipeline
       </button>
@@ -576,11 +677,23 @@ function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (mode: ViewM
         type="button"
         onClick={() => onChange('list')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-          mode === 'list' ? 'bg-brand-iris/20 text-brand-iris' : 'text-white/55 hover:text-white'
+          mode === 'list'
+            ? 'bg-brand-iris/20 text-brand-iris'
+            : 'text-white/55 hover:text-white'
         }`}
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M4 6h16M4 10h16M4 14h16M4 18h16"
+          />
         </svg>
         List
       </button>
@@ -599,7 +712,12 @@ interface ToastProps {
   variant?: 'success' | 'error' | 'info'; // 'error' maps to semantic-danger internally
 }
 
-function Toast({ message, isVisible, onClose, variant = 'success' }: ToastProps) {
+function Toast({
+  message,
+  isVisible,
+  onClose,
+  variant = 'success',
+}: ToastProps) {
   useEffect(() => {
     if (!isVisible) return;
     const timer = setTimeout(() => onClose(), 4000);
@@ -609,28 +727,66 @@ function Toast({ message, isVisible, onClose, variant = 'success' }: ToastProps)
   if (!isVisible) return null;
 
   const variantStyles = {
-    success: 'bg-semantic-success/10 border-semantic-success/30 text-semantic-success',
-    error: 'bg-semantic-danger/10 border-semantic-danger/30 text-semantic-danger',
+    success:
+      'bg-semantic-success/10 border-semantic-success/30 text-semantic-success',
+    error:
+      'bg-semantic-danger/10 border-semantic-danger/30 text-semantic-danger',
     info: 'bg-brand-iris/10 border-brand-iris/30 text-brand-iris',
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-4 fade-in duration-300">
-      <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${variantStyles[variant]} shadow-lg`}>
+      <div
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${variantStyles[variant]} shadow-lg`}
+      >
         {variant === 'success' && (
-          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg
+            className="w-5 h-5 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         )}
         {variant === 'error' && (
-          <svg className="w-5 h-5 flex-shrink-0 text-semantic-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 flex-shrink-0 text-semantic-danger"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         )}
         <span className="text-sm font-medium">{message}</span>
-        <button type="button" onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <button
+          type="button"
+          onClick={onClose}
+          className="ml-2 opacity-70 hover:opacity-100"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -648,17 +804,30 @@ interface PitchDetailPanelProps {
   onManualSendSuccess: () => void;
 }
 
-function PitchDetailPanel({ pitch, onClose, onManualSendSuccess }: PitchDetailPanelProps) {
+function PitchDetailPanel({
+  pitch,
+  onClose,
+  onManualSendSuccess,
+}: PitchDetailPanelProps) {
   const stage = PIPELINE_STAGES.find((s) => s.id === pitch.status);
   const [isSending, setIsSending] = useState(false);
-  const [toast, setToast] = useState<{ message: string; variant: 'success' | 'error' | 'info' } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: 'success' | 'error' | 'info';
+  } | null>(null);
 
   const handleManualSend = useCallback(async () => {
     if (!pitch.sequenceId || !pitch.contactId) {
       setToast({ message: 'Missing sequence or contact ID', variant: 'error' });
       // Dev-only strict mode logging
-      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_PRAVADO_STRICT_API === '1') {
-        console.error('[Manual Send] Missing required IDs:', { sequenceId: pitch.sequenceId, contactId: pitch.contactId });
+      if (
+        process.env.NODE_ENV === 'development' &&
+        process.env.NEXT_PUBLIC_PRAVADO_STRICT_API === '1'
+      ) {
+        console.error('[Manual Send] Missing required IDs:', {
+          sequenceId: pitch.sequenceId,
+          contactId: pitch.contactId,
+        });
       }
       return;
     }
@@ -707,13 +876,21 @@ function PitchDetailPanel({ pitch, onClose, onManualSendSuccess }: PitchDetailPa
       setToast({ message, variant: 'error' });
 
       // Dev-only strict mode logging
-      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_PRAVADO_STRICT_API === '1') {
+      if (
+        process.env.NODE_ENV === 'development' &&
+        process.env.NEXT_PUBLIC_PRAVADO_STRICT_API === '1'
+      ) {
         console.error('[Manual Send] Error:', message);
       }
     } finally {
       setIsSending(false);
     }
-  }, [pitch.sequenceId, pitch.contactId, pitch.followUpCount, onManualSendSuccess]);
+  }, [
+    pitch.sequenceId,
+    pitch.contactId,
+    pitch.followUpCount,
+    onManualSendSuccess,
+  ]);
 
   return (
     <div className="fixed inset-0 bg-page/70 backdrop-blur-sm z-50 flex justify-end">
@@ -721,16 +898,34 @@ function PitchDetailPanel({ pitch, onClose, onManualSendSuccess }: PitchDetailPa
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-white/95">Pitch Details</h2>
-              {stage && <span className={`px-2 py-0.5 text-[13px] font-medium rounded-full ${stage.bgColor.replace('/10', '/20')} ${stage.color}`}>{stage.label}</span>}
+              <h2 className="text-lg font-semibold text-white/95">
+                Pitch Details
+              </h2>
+              {stage && (
+                <span
+                  className={`px-2 py-0.5 text-[13px] font-medium rounded-full ${stage.bgColor.replace('/10', '/20')} ${stage.color}`}
+                >
+                  {stage.label}
+                </span>
+              )}
             </div>
             <button
               type="button"
               onClick={onClose}
               className="p-2 text-white/55 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -738,79 +933,111 @@ function PitchDetailPanel({ pitch, onClose, onManualSendSuccess }: PitchDetailPa
           <div className="space-y-6">
             {/* Contact Info */}
             <div className="p-4 rounded-xl bg-slate-1 border border-border-subtle">
-              <h4 className="text-sm font-medium text-white/55 mb-3">Recipient</h4>
+              <h4 className="text-sm font-medium text-white/55 mb-3">
+                Recipient
+              </h4>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white/90">
                   {pitch.contact?.name?.charAt(0) || '?'}
                 </div>
                 <div>
-                  <div className="font-medium text-white/90">{pitch.contact?.name || 'Unknown'}</div>
-                  {pitch.contact?.outlet && <div className="text-sm text-white/55">{pitch.contact.outlet}</div>}
+                  <div className="font-medium text-white/90">
+                    {pitch.contact?.name || 'Unknown'}
+                  </div>
+                  {pitch.contact?.outlet && (
+                    <div className="text-sm text-white/55">
+                      {pitch.contact.outlet}
+                    </div>
+                  )}
                 </div>
               </div>
               {pitch.contact && (
                 <div className="mt-3 pt-3 border-t border-border-subtle flex items-center gap-2">
                   <RelationshipBadge stage={pitch.contact.relationshipStage} />
-                  <span className="text-[13px] text-white/55">Pitch Score: {pitch.contact.pitchEligibilityScore}</span>
+                  <span className="text-[13px] text-white/55">
+                    Pitch Score: {pitch.contact.pitchEligibilityScore}
+                  </span>
                 </div>
               )}
             </div>
 
             {/* Subject & Body */}
             <div>
-              <h4 className="text-sm font-medium text-white/55 mb-2">Subject</h4>
+              <h4 className="text-sm font-medium text-white/55 mb-2">
+                Subject
+              </h4>
               <p className="text-white/90 font-medium">{pitch.subject}</p>
             </div>
 
             <div>
-              <h4 className="text-sm font-medium text-white/55 mb-2">Message Preview</h4>
+              <h4 className="text-sm font-medium text-white/55 mb-2">
+                Message Preview
+              </h4>
               <div className="p-3 rounded-lg bg-slate-2 border border-border-subtle">
-                <p className="text-sm text-white/55 whitespace-pre-wrap">{pitch.body}</p>
+                <p className="text-sm text-white/55 whitespace-pre-wrap">
+                  {pitch.body}
+                </p>
               </div>
             </div>
 
             {/* Metrics */}
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 rounded-lg bg-slate-2">
-                <div className="text-sm text-white/55 mb-1">Personalization</div>
-                <div className={`text-2xl font-bold ${pitch.personalizationScore >= 80 ? 'text-semantic-success' : pitch.personalizationScore >= 60 ? 'text-semantic-warning' : 'text-semantic-danger'}`}>
+                <div className="text-sm text-white/55 mb-1">
+                  Personalization
+                </div>
+                <div
+                  className={`text-2xl font-bold ${pitch.personalizationScore >= 80 ? 'text-semantic-success' : pitch.personalizationScore >= 60 ? 'text-semantic-warning' : 'text-semantic-danger'}`}
+                >
                   {pitch.personalizationScore}%
                 </div>
               </div>
               <div className="p-3 rounded-lg bg-slate-2">
                 <div className="text-sm text-white/55 mb-1">Follow-ups</div>
-                <div className="text-2xl font-bold text-white/95">{pitch.followUpCount}</div>
+                <div className="text-2xl font-bold text-white/95">
+                  {pitch.followUpCount}
+                </div>
               </div>
             </div>
 
             {/* Timeline */}
             <div>
-              <h4 className="text-sm font-medium text-white/55 mb-3">Timeline</h4>
+              <h4 className="text-sm font-medium text-white/55 mb-3">
+                Timeline
+              </h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <div className="w-2 h-2 rounded-full bg-white/30" />
                   <span className="text-white/55">Created</span>
-                  <span className="text-white/90">{new Date(pitch.createdAt).toLocaleDateString()}</span>
+                  <span className="text-white/90">
+                    {new Date(pitch.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
                 {pitch.sentAt && (
                   <div className="flex items-center gap-3 text-sm">
                     <div className="w-2 h-2 rounded-full bg-semantic-warning" />
                     <span className="text-white/55">Sent</span>
-                    <span className="text-white/90">{new Date(pitch.sentAt).toLocaleDateString()}</span>
+                    <span className="text-white/90">
+                      {new Date(pitch.sentAt).toLocaleDateString()}
+                    </span>
                   </div>
                 )}
                 {pitch.openedAt && (
                   <div className="flex items-center gap-3 text-sm">
                     <div className="w-2 h-2 rounded-full bg-semantic-success" />
                     <span className="text-white/55">Opened</span>
-                    <span className="text-white/90">{new Date(pitch.openedAt).toLocaleDateString()}</span>
+                    <span className="text-white/90">
+                      {new Date(pitch.openedAt).toLocaleDateString()}
+                    </span>
                   </div>
                 )}
                 {pitch.repliedAt && (
                   <div className="flex items-center gap-3 text-sm">
                     <div className="w-2 h-2 rounded-full bg-brand-iris" />
                     <span className="text-white/55">Replied</span>
-                    <span className="text-white/90">{new Date(pitch.repliedAt).toLocaleDateString()}</span>
+                    <span className="text-white/90">
+                      {new Date(pitch.repliedAt).toLocaleDateString()}
+                    </span>
                   </div>
                 )}
               </div>
@@ -835,9 +1062,24 @@ function PitchDetailPanel({ pitch, onClose, onManualSendSuccess }: PitchDetailPa
                 >
                   {isSending ? (
                     <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <svg
+                        className="w-4 h-4 animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Sending...
                     </>
@@ -950,15 +1192,27 @@ function NewPitchModal({ isOpen, onClose, onSuccess }: NewPitchModalProps) {
         <div className="flex items-center justify-between p-6 border-b border-border-subtle">
           <div>
             <h2 className="text-lg font-semibold text-white/95">New Pitch</h2>
-            <p className="text-sm text-white/55 mt-1">Create a new pitch draft</p>
+            <p className="text-sm text-white/55 mt-1">
+              Create a new pitch draft
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="p-2 text-white/55 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -972,7 +1226,10 @@ function NewPitchModal({ isOpen, onClose, onSuccess }: NewPitchModalProps) {
           )}
 
           <div>
-            <label htmlFor="pitch-contact" className="block text-sm font-medium text-white/70 mb-2">
+            <label
+              htmlFor="pitch-contact"
+              className="block text-sm font-medium text-white/70 mb-2"
+            >
               Recipient Email (optional)
             </label>
             <input
@@ -986,7 +1243,10 @@ function NewPitchModal({ isOpen, onClose, onSuccess }: NewPitchModalProps) {
           </div>
 
           <div>
-            <label htmlFor="pitch-subject" className="block text-sm font-medium text-white/70 mb-2">
+            <label
+              htmlFor="pitch-subject"
+              className="block text-sm font-medium text-white/70 mb-2"
+            >
               Subject Line *
             </label>
             <input
@@ -1001,7 +1261,10 @@ function NewPitchModal({ isOpen, onClose, onSuccess }: NewPitchModalProps) {
           </div>
 
           <div>
-            <label htmlFor="pitch-body" className="block text-sm font-medium text-white/70 mb-2">
+            <label
+              htmlFor="pitch-body"
+              className="block text-sm font-medium text-white/70 mb-2"
+            >
               Pitch Body *
             </label>
             <textarea
@@ -1031,9 +1294,24 @@ function NewPitchModal({ isOpen, onClose, onSuccess }: NewPitchModalProps) {
             >
               {isSubmitting ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Creating...
                 </>
@@ -1054,7 +1332,11 @@ function NewPitchModal({ isOpen, onClose, onSuccess }: NewPitchModalProps) {
 
 export function PRPitches() {
   // Fetch pitch sequences from real API
-  const { data: sequencesData, error: pitchesError, isLoading } = useSWR<PitchSequencesResponse>(
+  const {
+    data: sequencesData,
+    error: pitchesError,
+    isLoading,
+  } = useSWR<PitchSequencesResponse>(
     '/api/pr/pitches/sequences?limit=100',
     fetcher,
     { revalidateOnFocus: false }
@@ -1124,10 +1406,14 @@ export function PRPitches() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-white/95">Pitch Pipeline</h2>
+          <h2 className="text-base font-semibold text-white/95">
+            Pitch Pipeline
+          </h2>
           <p className="text-[13px] text-white/40 mt-0.5">
             Move pitches forward with intention
-            {isLoading && <span className="ml-2 text-brand-iris">Loading...</span>}
+            {isLoading && (
+              <span className="ml-2 text-brand-iris">Loading...</span>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -1137,8 +1423,18 @@ export function PRPitches() {
             onClick={() => setIsNewPitchModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-brand-iris text-white/95 text-sm font-medium rounded-lg hover:bg-brand-iris/90 transition-colors shadow-lg shadow-brand-iris/20"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             New Pitch
           </button>
@@ -1148,11 +1444,25 @@ export function PRPitches() {
       {/* Manual Execution Notice */}
       <div className="p-3 rounded-lg bg-brand-cyan/5 border border-brand-cyan/20">
         <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-4 h-4 text-brand-cyan"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan">MANUAL MODE ENFORCED</span>
-          <span className="text-[13px] text-white/55">All pitches require manual send action. No auto-send available.</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan">
+            MANUAL MODE ENFORCED
+          </span>
+          <span className="text-[13px] text-white/55">
+            All pitches require manual send action. No auto-send available.
+          </span>
         </div>
       </div>
 
@@ -1160,10 +1470,22 @@ export function PRPitches() {
       {pitchesError && (
         <div className="p-3 rounded-lg bg-semantic-danger/10 border border-semantic-danger/30">
           <div className="flex items-center gap-2 text-semantic-danger">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            <span className="text-xs font-medium">Failed to load pitches from server. Showing demo data.</span>
+            <span className="text-xs font-medium">
+              Failed to load pitches from server. Showing demo data.
+            </span>
           </div>
         </div>
       )}
@@ -1191,22 +1513,40 @@ export function PRPitches() {
             {[
               { id: 'all', label: 'All', count: pitches.length },
               { id: 'draft', label: 'Drafts', count: statusCounts.draft || 0 },
-              { id: 'scheduled', label: 'Ready', count: statusCounts.scheduled || 0 },
+              {
+                id: 'scheduled',
+                label: 'Ready',
+                count: statusCounts.scheduled || 0,
+              },
               { id: 'sent', label: 'Sent', count: statusCounts.sent || 0 },
-              { id: 'opened', label: 'Opened', count: statusCounts.opened || 0 },
-              { id: 'replied', label: 'Replied', count: statusCounts.replied || 0 },
+              {
+                id: 'opened',
+                label: 'Opened',
+                count: statusCounts.opened || 0,
+              },
+              {
+                id: 'replied',
+                label: 'Replied',
+                count: statusCounts.replied || 0,
+              },
             ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setListFilter(tab.id as PitchStatus | 'all')}
                 className={`px-3 py-2 text-sm font-medium transition-colors relative ${
-                  listFilter === tab.id ? 'text-white/95' : 'text-white/55 hover:text-white'
+                  listFilter === tab.id
+                    ? 'text-white/95'
+                    : 'text-white/55 hover:text-white'
                 }`}
               >
                 {tab.label}
-                <span className="ml-1.5 text-[13px] text-white/55">({tab.count})</span>
-                {listFilter === tab.id && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t" />}
+                <span className="ml-1.5 text-[13px] text-white/55">
+                  ({tab.count})
+                </span>
+                {listFilter === tab.id && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-iris rounded-t" />
+                )}
               </button>
             ))}
           </div>
@@ -1224,10 +1564,22 @@ export function PRPitches() {
 
             {filteredPitches.length === 0 && (
               <div className="p-12 text-center rounded-xl border border-dashed border-border-subtle">
-                <svg className="w-12 h-12 mx-auto text-white/55 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  className="w-12 h-12 mx-auto text-white/55 mb-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
-                <p className="text-sm text-white/55">No pitches matching this filter</p>
+                <p className="text-sm text-white/55">
+                  No pitches matching this filter
+                </p>
               </div>
             )}
           </div>
@@ -1241,7 +1593,11 @@ export function PRPitches() {
           onClose={() => setSelectedPitch(null)}
           onManualSendSuccess={() => {
             // Update local pitch status optimistically
-            setSelectedPitch((prev) => prev ? { ...prev, status: 'sent', sentAt: new Date().toISOString() } : null);
+            setSelectedPitch((prev) =>
+              prev
+                ? { ...prev, status: 'sent', sentAt: new Date().toISOString() }
+                : null
+            );
           }}
         />
       )}

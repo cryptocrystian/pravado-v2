@@ -76,8 +76,10 @@ export async function getReplayStatus(
     credentials: 'include',
   });
 
-  const result: ApiResponse<{ run: AuditReplayRun; timeline?: ReplayTimelineEvent[] }> =
-    await response.json();
+  const result: ApiResponse<{
+    run: AuditReplayRun;
+    timeline?: ReplayTimelineEvent[];
+  }> = await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to get replay status');
@@ -103,8 +105,11 @@ export async function listReplayRuns(
     credentials: 'include',
   });
 
-  const result: ApiResponse<{ runs: AuditReplayRun[]; total: number; hasMore: boolean }> =
-    await response.json();
+  const result: ApiResponse<{
+    runs: AuditReplayRun[];
+    total: number;
+    hasMore: boolean;
+  }> = await response.json();
 
   if (!result.success || !result.data) {
     throw new Error(result.error?.message || 'Failed to list replay runs');
@@ -252,7 +257,10 @@ export function getReplayStatusLabel(status: AuditReplayStatus): string {
 /**
  * Format duration in human-readable form
  */
-export function formatDuration(startTime: string, endTime?: string | null): string {
+export function formatDuration(
+  startTime: string,
+  endTime?: string | null
+): string {
   const start = new Date(startTime).getTime();
   const end = endTime ? new Date(endTime).getTime() : Date.now();
   const duration = end - start;
@@ -311,7 +319,9 @@ export function getEntityTypeColor(entityType: string): string {
 /**
  * Format diff operation for display
  */
-export function formatDiffOperation(operation: 'added' | 'removed' | 'modified'): {
+export function formatDiffOperation(
+  operation: 'added' | 'removed' | 'modified'
+): {
   label: string;
   color: string;
   icon: string;

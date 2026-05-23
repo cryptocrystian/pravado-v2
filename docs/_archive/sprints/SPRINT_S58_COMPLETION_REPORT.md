@@ -11,6 +11,7 @@
 ### Real Type Errors Fixed: 100+ errors resolved
 
 #### Types Package (`@pravado/types`)
+
 - Converted TypeScript enums to string literal types for dashboard compatibility:
   - `TrendDirection` → string literal type with const object
   - `CrisisSeverity` → string literal type with const object
@@ -43,12 +44,14 @@
   - `GetReputationInsightsQuery`
 
 #### API Package (`@pravado/api`)
+
 - Fixed `routeLLM` function export from `@pravado/utils`
 - Fixed enum import issues (regular import vs `import type`)
 - Fixed `supabase` → `this.supabase` references in services
 - Fixed null vs undefined type conversions
 
 #### Dashboard (`@pravado/dashboard`)
+
 - Created stub UI components for missing shadcn/ui modules:
   - `scroll-area.tsx`
   - `progress.tsx`
@@ -81,23 +84,25 @@
 
 ## Current Status
 
-| Package | Real Type Errors | Status |
-|---------|-----------------|--------|
-| @pravado/types | 0 | ✅ Clean |
-| @pravado/validators | 0 | ✅ Clean |
-| @pravado/utils | 0 | ✅ Clean |
-| @pravado/feature-flags | 0 | ✅ Clean |
-| @pravado/api | 0 | ✅ Clean |
-| @pravado/dashboard | 0 (88 unused var warnings) | ⚠️ Warnings only |
+| Package                | Real Type Errors           | Status           |
+| ---------------------- | -------------------------- | ---------------- |
+| @pravado/types         | 0                          | ✅ Clean         |
+| @pravado/validators    | 0                          | ✅ Clean         |
+| @pravado/utils         | 0                          | ✅ Clean         |
+| @pravado/feature-flags | 0                          | ✅ Clean         |
+| @pravado/api           | 0                          | ✅ Clean         |
+| @pravado/dashboard     | 0 (88 unused var warnings) | ⚠️ Warnings only |
 
 ## Remaining Work (Future Sprints)
 
 ### Unused Variable Warnings (~88 in dashboard)
+
 - Type-only imports that should be removed
 - Unused function parameters that need underscore prefix
 - Unused state variables
 
 ### Lint Errors (~452 in dashboard)
+
 - Import ordering issues
 - Unused variable lint violations
 - Some unresolved module imports
@@ -107,6 +112,7 @@ These are style/cleanup issues that don't affect build or functionality.
 ## Key Changes Summary
 
 1. **Enum Pattern Change**: All TypeScript enums that were causing issues with the Next.js dashboard bundler were converted to the pattern:
+
    ```typescript
    export type EnumName = 'value1' | 'value2';
    export const EnumName = {
@@ -122,6 +128,7 @@ These are style/cleanup issues that don't affect build or functionality.
 ## Files Modified
 
 ### Types Package
+
 - `packages/types/src/mediaBriefing.ts`
 - `packages/types/src/crisis.ts`
 - `packages/types/src/mediaPerformance.ts`
@@ -131,6 +138,7 @@ These are style/cleanup issues that don't affect build or functionality.
 - `packages/types/src/brandReputationAlerts.ts`
 
 ### Dashboard
+
 - `apps/dashboard/src/components/ui/*` (UI stubs)
 - `apps/dashboard/src/components/media-briefings/*`
 - `apps/dashboard/src/components/personas/*`

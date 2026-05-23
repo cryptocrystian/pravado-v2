@@ -5,15 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  IntelligenceNode,
-  getNodeTypeLabel,
-  getNodeTypeColor,
-  formatCentrality,
-} from '@/lib/unifiedGraphApi';
 import {
   CircleDot,
   Tag,
@@ -24,12 +15,22 @@ import {
   Trash2,
   Edit,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  IntelligenceNode,
+  getNodeTypeLabel,
+  getNodeTypeColor,
+  formatCentrality,
+} from '@/lib/unifiedGraphApi';
 
 interface GraphNodeCardProps {
   node: IntelligenceNode;
@@ -165,9 +166,7 @@ export function GraphNodeCard({
 
         {(node.sourceSystem || node.createdAt) && (
           <div className="flex items-center justify-between text-xs text-white/50 pt-2 border-t">
-            {node.sourceSystem && (
-              <span>Source: {node.sourceSystem}</span>
-            )}
+            {node.sourceSystem && <span>Source: {node.sourceSystem}</span>}
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>{new Date(node.createdAt).toLocaleDateString()}</span>

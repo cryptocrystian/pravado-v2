@@ -92,7 +92,10 @@ export class ContentService {
   /**
    * Get a content item by ID
    */
-  async getContentItemById(orgId: string, id: string): Promise<ContentItem | null> {
+  async getContentItemById(
+    orgId: string,
+    id: string
+  ): Promise<ContentItem | null> {
     const { data, error } = await this.supabase
       .from('content_items')
       .select('*')
@@ -118,7 +121,12 @@ export class ContentService {
     data: {
       title: string;
       slug?: string;
-      contentType: 'blog_post' | 'social_post' | 'long_form' | 'video_script' | 'newsletter';
+      contentType:
+        | 'blog_post'
+        | 'social_post'
+        | 'long_form'
+        | 'video_script'
+        | 'newsletter';
       status?: 'draft' | 'published' | 'archived';
       body?: string;
       url?: string;
@@ -130,7 +138,9 @@ export class ContentService {
     const wordCount = data.body ? this.calculateWordCount(data.body) : null;
 
     // Generate embeddings (stub)
-    const embeddings = data.body ? await this.generateEmbeddings(data.body) : null;
+    const embeddings = data.body
+      ? await this.generateEmbeddings(data.body)
+      : null;
 
     const insertData = {
       org_id: orgId,
@@ -169,7 +179,12 @@ export class ContentService {
     data: {
       title?: string;
       slug?: string;
-      contentType?: 'blog_post' | 'social_post' | 'long_form' | 'video_script' | 'newsletter';
+      contentType?:
+        | 'blog_post'
+        | 'social_post'
+        | 'long_form'
+        | 'video_script'
+        | 'newsletter';
       status?: 'draft' | 'published' | 'archived';
       body?: string;
       url?: string;
@@ -183,17 +198,23 @@ export class ContentService {
 
     if (data.title !== undefined) updateData.title = data.title;
     if (data.slug !== undefined) updateData.slug = data.slug;
-    if (data.contentType !== undefined) updateData.content_type = data.contentType;
+    if (data.contentType !== undefined)
+      updateData.content_type = data.contentType;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.url !== undefined) updateData.url = data.url;
-    if (data.primaryTopicId !== undefined) updateData.primary_topic_id = data.primaryTopicId;
+    if (data.primaryTopicId !== undefined)
+      updateData.primary_topic_id = data.primaryTopicId;
     if (data.metadata !== undefined) updateData.metadata = data.metadata;
 
     // Update body and recalculate word count + embeddings
     if (data.body !== undefined) {
       updateData.body = data.body;
-      updateData.word_count = data.body ? this.calculateWordCount(data.body) : null;
-      updateData.embeddings = data.body ? await this.generateEmbeddings(data.body) : null;
+      updateData.word_count = data.body
+        ? this.calculateWordCount(data.body)
+        : null;
+      updateData.embeddings = data.body
+        ? await this.generateEmbeddings(data.body)
+        : null;
     }
 
     const { data: item, error } = await this.supabase
@@ -280,10 +301,15 @@ export class ContentService {
       .eq('org_id', orgId)
       .limit(5);
 
-    const relatedTopics = (topicsData || []).map((row) => this.mapContentTopicFromDb(row));
+    const relatedTopics = (topicsData || []).map((row) =>
+      this.mapContentTopicFromDb(row)
+    );
 
     // Suggested keywords from SEO pillar (stub)
-    const suggestedKeywords = await this.fetchSuggestedKeywords(orgId, brief.targetKeyword);
+    const suggestedKeywords = await this.fetchSuggestedKeywords(
+      orgId,
+      brief.targetKeyword
+    );
 
     return {
       brief,
@@ -364,14 +390,20 @@ export class ContentService {
     };
 
     if (data.title !== undefined) updateData.title = data.title;
-    if (data.targetKeyword !== undefined) updateData.target_keyword = data.targetKeyword;
-    if (data.targetIntent !== undefined) updateData.target_intent = data.targetIntent;
+    if (data.targetKeyword !== undefined)
+      updateData.target_keyword = data.targetKeyword;
+    if (data.targetIntent !== undefined)
+      updateData.target_intent = data.targetIntent;
     if (data.outline !== undefined) updateData.outline = data.outline;
-    if (data.targetAudience !== undefined) updateData.target_audience = data.targetAudience;
-    if (data.targetKeywords !== undefined) updateData.target_keywords = data.targetKeywords;
+    if (data.targetAudience !== undefined)
+      updateData.target_audience = data.targetAudience;
+    if (data.targetKeywords !== undefined)
+      updateData.target_keywords = data.targetKeywords;
     if (data.tone !== undefined) updateData.tone = data.tone;
-    if (data.minWordCount !== undefined) updateData.min_word_count = data.minWordCount;
-    if (data.maxWordCount !== undefined) updateData.max_word_count = data.maxWordCount;
+    if (data.minWordCount !== undefined)
+      updateData.min_word_count = data.minWordCount;
+    if (data.maxWordCount !== undefined)
+      updateData.max_word_count = data.maxWordCount;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.metadata !== undefined) updateData.metadata = data.metadata;
 
@@ -408,7 +440,9 @@ export class ContentService {
       throw new Error(`Failed to list clusters: ${clustersError.message}`);
     }
 
-    const clusters = (clustersData || []).map((row) => this.mapClusterFromDb(row));
+    const clusters = (clustersData || []).map((row) =>
+      this.mapClusterFromDb(row)
+    );
 
     // For each cluster, get topics and representative content
     const clusterDTOs: ContentClusterDTO[] = [];
@@ -421,7 +455,9 @@ export class ContentService {
         .eq('org_id', orgId)
         .eq('cluster_id', cluster.id);
 
-      const topics = (topicsData || []).map((row) => this.mapContentTopicFromDb(row));
+      const topics = (topicsData || []).map((row) =>
+        this.mapContentTopicFromDb(row)
+      );
 
       // Get representative content (top 3 by word count)
       const { data: contentData } = await this.supabase
@@ -435,7 +471,9 @@ export class ContentService {
         .order('word_count', { ascending: false })
         .limit(3);
 
-      const representativeContent = (contentData || []).map((row) => this.mapContentItemFromDb(row));
+      const representativeContent = (contentData || []).map((row) =>
+        this.mapContentItemFromDb(row)
+      );
 
       clusterDTOs.push({
         cluster,
@@ -459,7 +497,10 @@ export class ContentService {
     // In production, this would use embeddings and clustering algorithms
 
     // Clear existing clusters
-    await this.supabase.from('content_topic_clusters').delete().eq('org_id', orgId);
+    await this.supabase
+      .from('content_topic_clusters')
+      .delete()
+      .eq('org_id', orgId);
 
     // Get all topics
     const { data: topicsData } = await this.supabase
@@ -552,7 +593,10 @@ export class ContentService {
         100,
         Math.max(
           0,
-          (searchVolume / 100) * (1 - difficulty / 100) * (1 - existingContentCount / 10) * 100
+          (searchVolume / 100) *
+            (1 - difficulty / 100) *
+            (1 - existingContentCount / 10) *
+            100
         )
       );
 
@@ -603,7 +647,10 @@ export class ContentService {
   /**
    * Fetch suggested keywords from SEO pillar (stub)
    */
-  private async fetchSuggestedKeywords(orgId: string, targetKeyword?: string | null): Promise<string[]> {
+  private async fetchSuggestedKeywords(
+    orgId: string,
+    targetKeyword?: string | null
+  ): Promise<string[]> {
     if (!targetKeyword) {
       return [];
     }

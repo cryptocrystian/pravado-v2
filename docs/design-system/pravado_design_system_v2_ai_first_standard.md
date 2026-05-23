@@ -6,7 +6,7 @@
 
 ## 1) Core Principles
 
-1. **Intelligent Presence** — The UI should feel *alive*: subtle state cues, anticipatory affordances, and legible automation modes.
+1. **Intelligent Presence** — The UI should feel _alive_: subtle state cues, anticipatory affordances, and legible automation modes.
 2. **Operator Clarity** — Information density like a trading terminal, but with crystal hierarchy and safe defaults.
 3. **Cohesive Mesh** — Cross‑pillar relationships (PR ↔ Content ↔ SEO) are visible and explorable.
 4. **Motion with Meaning** — Every animation telegraphs AI intent (thinking, routing, simulating, deploying). No decorative motion.
@@ -86,9 +86,9 @@
 - `--motion-ease-standard: cubic-bezier(.2,.8,.2,1)`
 - `--motion-ease-emphatic: cubic-bezier(.3,0,.2,1)`
 - **Micro‑patterns**
-  - *Pulse (AI on)*: opacity 0.8→1.0, scale 0.98→1, 1400ms loop
-  - *Thinking shimmer*: 8° diagonal shimmer using `--brand-cyan` 1600ms
-  - *Route connect*: thin line draw 280ms with delayed node glow
+  - _Pulse (AI on)_: opacity 0.8→1.0, scale 0.98→1, 1400ms loop
+  - _Thinking shimmer_: 8° diagonal shimmer using `--brand-cyan` 1600ms
+  - _Route connect_: thin line draw 280ms with delayed node glow
 
 ### 2.6 Z‑Index Scale
 
@@ -191,10 +191,12 @@
   --panel-bg: var(--slate-2);
   --text: var(--white-0);
   --muted: var(--slate-6);
-  --border-subtle: rgba(255,255,255,.06);
+  --border-subtle: rgba(255, 255, 255, 0.06);
   --radius: 20px;
 }
-[data-theme="dark"] { /* same as default, explicit for clarity */ }
+[data-theme='dark'] {
+  /* same as default, explicit for clarity */
+}
 ```
 
 ```js
@@ -213,31 +215,34 @@ export default {
           cyan: 'var(--brand-cyan)',
           magenta: 'var(--brand-magenta)',
           amber: 'var(--brand-amber)',
-          teal: 'var(--brand-teal)'
+          teal: 'var(--brand-teal)',
         },
         semantic: {
           info: 'var(--semantic-info)',
           success: 'var(--semantic-success)',
           warning: 'var(--semantic-warning)',
-          danger: 'var(--semantic-danger)'
-        }
+          danger: 'var(--semantic-danger)',
+        },
       },
       borderRadius: {
         DEFAULT: 'var(--radius)',
-        '2xl': '24px'
+        '2xl': '24px',
       },
       boxShadow: {
-        panel: '0 12px 28px rgba(0,0,0,.45)'
+        panel: '0 12px 28px rgba(0,0,0,.45)',
       },
       transitionTimingFunction: {
-        standard: 'var(--motion-ease-standard)'
+        standard: 'var(--motion-ease-standard)',
       },
       transitionDuration: {
-        xs: '120ms', sm: '180ms', md: '280ms', lg: '420ms'
-      }
-    }
-  }
-}
+        xs: '120ms',
+        sm: '180ms',
+        md: '280ms',
+        lg: '420ms',
+      },
+    },
+  },
+};
 ```
 
 ---
@@ -248,7 +253,10 @@ export default {
 
 ```html
 <div class="relative inline-flex items-center">
-  <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-[pulse_1400ms_ease-in-out_infinite]" aria-label="AI analyzing"></span>
+  <span
+    class="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-[pulse_1400ms_ease-in-out_infinite]"
+    aria-label="AI analyzing"
+  ></span>
   <span class="ml-2 text-muted">AI Active</span>
 </div>
 ```
@@ -256,12 +264,19 @@ export default {
 ### 7.2 Recommendation Card
 
 ```html
-<div class="bg-panel/70 backdrop-blur border border-[color:var(--border-subtle)] rounded-2xl shadow-panel p-4">
+<div
+  class="bg-panel/70 backdrop-blur border border-[color:var(--border-subtle)] rounded-2xl shadow-panel p-4"
+>
   <div class="flex items-center justify-between">
     <div class="text-sm text-muted">PR Intelligence</div>
-    <span class="text-xs px-2 py-0.5 rounded-full bg-brand-cyan/10 text-brand-cyan">94% confidence</span>
+    <span
+      class="text-xs px-2 py-0.5 rounded-full bg-brand-cyan/10 text-brand-cyan"
+      >94% confidence</span
+    >
   </div>
-  <h3 class="mt-2 text-lg font-semibold">Critical: LinkedIn post gap detected</h3>
+  <h3 class="mt-2 text-lg font-semibold">
+    Critical: LinkedIn post gap detected
+  </h3>
   <p class="mt-1 text-sm text-muted">Missing key decision‑maker touchpoints.</p>
   <div class="mt-4 flex gap-2">
     <button class="btn btn-primary">Recommend</button>
@@ -313,4 +328,3 @@ export default {
 - Component docs site (Storybook) with motion demos
 - Token plug‑in export for Figma
 - iOS/Android theme packs (RN)
-

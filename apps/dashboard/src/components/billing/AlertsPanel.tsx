@@ -110,10 +110,13 @@ export function AlertsPanel() {
       setAcknowledging((prev) => new Set(prev).add(alertId));
 
       // Gate 1A: Use route handler, not direct backend call
-      const response = await fetch(`/api/billing/alerts/${alertId}/acknowledge`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `/api/billing/alerts/${alertId}/acknowledge`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to acknowledge alert: ${response.statusText}`);
@@ -172,7 +175,9 @@ export function AlertsPanel() {
   if (error) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-6">
-        <h2 className="mb-4 text-lg font-semibold text-red-900">Billing Alerts</h2>
+        <h2 className="mb-4 text-lg font-semibold text-red-900">
+          Billing Alerts
+        </h2>
         <div className="text-red-700">
           <p className="font-medium">Failed to load alerts</p>
           <p className="mt-2 text-sm">{error}</p>
@@ -204,19 +209,27 @@ export function AlertsPanel() {
       {summary && (
         <div className="mb-6 grid grid-cols-4 gap-4">
           <div className="rounded-lg bg-gray-50 p-3">
-            <div className="text-2xl font-bold text-gray-900">{summary.total}</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {summary.total}
+            </div>
             <div className="text-sm text-gray-600">Total Alerts</div>
           </div>
           <div className="rounded-lg bg-blue-50 p-3">
-            <div className="text-2xl font-bold text-blue-900">{summary.bySeverity.info}</div>
+            <div className="text-2xl font-bold text-blue-900">
+              {summary.bySeverity.info}
+            </div>
             <div className="text-sm text-blue-700">Info</div>
           </div>
           <div className="rounded-lg bg-yellow-50 p-3">
-            <div className="text-2xl font-bold text-yellow-900">{summary.bySeverity.warning}</div>
+            <div className="text-2xl font-bold text-yellow-900">
+              {summary.bySeverity.warning}
+            </div>
             <div className="text-sm text-yellow-700">Warning</div>
           </div>
           <div className="rounded-lg bg-red-50 p-3">
-            <div className="text-2xl font-bold text-red-900">{summary.bySeverity.critical}</div>
+            <div className="text-2xl font-bold text-red-900">
+              {summary.bySeverity.critical}
+            </div>
             <div className="text-sm text-red-700">Critical</div>
           </div>
         </div>
@@ -259,7 +272,8 @@ export function AlertsPanel() {
                   </p>
                   {alert.acknowledgedAt && (
                     <p className="mt-1 text-xs font-medium opacity-75">
-                      ✓ Acknowledged {new Date(alert.acknowledgedAt).toLocaleString()}
+                      ✓ Acknowledged{' '}
+                      {new Date(alert.acknowledgedAt).toLocaleString()}
                     </p>
                   )}
                 </div>
@@ -269,7 +283,9 @@ export function AlertsPanel() {
                     disabled={acknowledging.has(alert.id)}
                     className="ml-4 rounded bg-white px-3 py-1 text-sm font-medium shadow-sm hover:bg-gray-50 disabled:opacity-50"
                   >
-                    {acknowledging.has(alert.id) ? 'Acknowledging...' : 'Acknowledge'}
+                    {acknowledging.has(alert.id)
+                      ? 'Acknowledging...'
+                      : 'Acknowledge'}
                   </button>
                 )}
               </div>

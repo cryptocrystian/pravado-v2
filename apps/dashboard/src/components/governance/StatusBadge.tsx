@@ -6,15 +6,18 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { GovernanceFindingStatus } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
 
 interface StatusBadgeProps {
   status: GovernanceFindingStatus;
   className?: string;
 }
 
-const statusConfig: Record<GovernanceFindingStatus, { label: string; className: string }> = {
+const statusConfig: Record<
+  GovernanceFindingStatus,
+  { label: string; className: string }
+> = {
   open: {
     label: 'Open',
     className: 'bg-red-100 text-red-800 border-red-200',
@@ -45,7 +48,10 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   const config = statusConfig[status] || statusConfig.open;
 
   return (
-    <Badge variant="outline" className={cn('text-xs font-medium', config.className, className)}>
+    <Badge
+      variant="outline"
+      className={cn('text-xs font-medium', config.className, className)}
+    >
       {config.label}
     </Badge>
   );

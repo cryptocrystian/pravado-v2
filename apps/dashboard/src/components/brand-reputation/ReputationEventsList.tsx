@@ -5,8 +5,11 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { BrandReputationEvent } from '@pravado/types';
+import { Activity, ArrowUp, ArrowDown, Minus, Zap } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getEventSeverityColor,
   getEventSeverityBgColor,
@@ -19,8 +22,6 @@ import {
   formatDelta,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { BrandReputationEvent } from '@pravado/types';
-import { Activity, ArrowUp, ArrowDown, Minus, Zap } from 'lucide-react';
 
 interface ReputationEventsListProps {
   events: BrandReputationEvent[];
@@ -86,7 +87,9 @@ function EventItem({ event }: EventItemProps) {
   const severityColorClass = getEventSeverityColor(event.severity);
   const severityBgClass = getEventSeverityBgColor(event.severity);
   const signalColorClass = getSignalTypeColor(event.signalType);
-  const { text: deltaText, colorClass: deltaColorClass } = formatDelta(event.delta);
+  const { text: deltaText, colorClass: deltaColorClass } = formatDelta(
+    event.delta
+  );
 
   const isPositive = event.delta > 0;
   const isNegative = event.delta < 0;
@@ -95,7 +98,9 @@ function EventItem({ event }: EventItemProps) {
     <div className={cn('p-3 rounded-lg border', severityBgClass)}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2 flex-1 min-w-0">
-          <span className="text-lg">{getSourceSystemIcon(event.sourceSystem)}</span>
+          <span className="text-lg">
+            {getSourceSystemIcon(event.sourceSystem)}
+          </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="text-sm font-medium text-gray-800">
@@ -117,7 +122,10 @@ function EventItem({ event }: EventItemProps) {
               <Badge variant="outline" className="text-xs bg-white/50">
                 {getSourceSystemLabel(event.sourceSystem)}
               </Badge>
-              <Badge variant="outline" className={cn('text-xs bg-white/50', signalColorClass)}>
+              <Badge
+                variant="outline"
+                className={cn('text-xs bg-white/50', signalColorClass)}
+              >
                 {getSignalTypeLabel(event.signalType)}
               </Badge>
               <Badge variant="outline" className="text-xs bg-white/50">
@@ -132,7 +140,12 @@ function EventItem({ event }: EventItemProps) {
 
         {/* Delta Impact */}
         <div className="flex flex-col items-end">
-          <div className={cn('flex items-center gap-0.5 font-bold text-lg', deltaColorClass)}>
+          <div
+            className={cn(
+              'flex items-center gap-0.5 font-bold text-lg',
+              deltaColorClass
+            )}
+          >
             {isPositive && <ArrowUp className="h-4 w-4" />}
             {isNegative && <ArrowDown className="h-4 w-4" />}
             {!isPositive && !isNegative && <Minus className="h-4 w-4" />}
@@ -145,11 +158,16 @@ function EventItem({ event }: EventItemProps) {
       {/* Processing Status */}
       {event.isProcessed && (
         <div className="flex items-center gap-1 mt-2 pt-2 border-t border-gray-200/50 text-xs text-gray-500">
-          <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
+          <Badge
+            variant="outline"
+            className="text-xs bg-green-50 text-green-700"
+          >
             Processed
           </Badge>
           {event.processedAt && (
-            <span className="ml-1">at {formatRelativeTime(event.processedAt)}</span>
+            <span className="ml-1">
+              at {formatRelativeTime(event.processedAt)}
+            </span>
           )}
         </div>
       )}

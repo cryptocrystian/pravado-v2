@@ -91,7 +91,8 @@ async function apiClient<T>(
 
   const headers = {
     'Content-Type': 'application/json',
-    'x-org-id': typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
+    'x-org-id':
+      typeof window !== 'undefined' ? localStorage.getItem('orgId') || '' : '',
     ...options.headers,
   };
 
@@ -147,7 +148,9 @@ export async function listReports(
 /**
  * Get a single board report with all related data
  */
-export async function getReport(reportId: string): Promise<GetExecBoardReportResponse> {
+export async function getReport(
+  reportId: string
+): Promise<GetExecBoardReportResponse> {
   const result = await apiClient<GetExecBoardReportResponse>(`/${reportId}`);
   return result.data!;
 }
@@ -155,7 +158,9 @@ export async function getReport(reportId: string): Promise<GetExecBoardReportRes
 /**
  * Create a new board report
  */
-export async function createReport(input: CreateExecBoardReportInput): Promise<ExecBoardReport> {
+export async function createReport(
+  input: CreateExecBoardReportInput
+): Promise<ExecBoardReport> {
   const result = await apiClient<ExecBoardReport>('', {
     method: 'POST',
     body: JSON.stringify(input),
@@ -185,9 +190,12 @@ export async function deleteReport(
   hardDelete: boolean = false
 ): Promise<{ archived: boolean; deleted: boolean }> {
   const endpoint = hardDelete ? `/${reportId}?hard=true` : `/${reportId}`;
-  const result = await apiClient<{ archived: boolean; deleted: boolean }>(endpoint, {
-    method: 'DELETE',
-  });
+  const result = await apiClient<{ archived: boolean; deleted: boolean }>(
+    endpoint,
+    {
+      method: 'DELETE',
+    }
+  );
   return result.data!;
 }
 
@@ -210,10 +218,13 @@ export async function generateReport(
   reportId: string,
   input: GenerateExecBoardReportInput = {}
 ): Promise<GenerateExecBoardReportResponse> {
-  const result = await apiClient<GenerateExecBoardReportResponse>(`/${reportId}/generate`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<GenerateExecBoardReportResponse>(
+    `/${reportId}/generate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -238,10 +249,13 @@ export async function publishReport(
   reportId: string,
   input: PublishExecBoardReportInput = {}
 ): Promise<PublishExecBoardReportResponse> {
-  const result = await apiClient<PublishExecBoardReportResponse>(`/${reportId}/publish`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<PublishExecBoardReportResponse>(
+    `/${reportId}/publish`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -252,8 +266,12 @@ export async function publishReport(
 /**
  * List sections for a report
  */
-export async function listSections(reportId: string): Promise<ExecBoardReportSection[]> {
-  const result = await apiClient<{ sections: ExecBoardReportSection[] }>(`/${reportId}/sections`);
+export async function listSections(
+  reportId: string
+): Promise<ExecBoardReportSection[]> {
+  const result = await apiClient<{ sections: ExecBoardReportSection[] }>(
+    `/${reportId}/sections`
+  );
   return result.data?.sections || [];
 }
 
@@ -316,10 +334,13 @@ export async function addAudienceMember(
   reportId: string,
   input: AddExecBoardReportAudienceInput
 ): Promise<ExecBoardReportAudience> {
-  const result = await apiClient<ExecBoardReportAudience>(`/${reportId}/audience`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  const result = await apiClient<ExecBoardReportAudience>(
+    `/${reportId}/audience`,
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }
+  );
   return result.data!;
 }
 
@@ -344,7 +365,10 @@ export async function updateAudienceMember(
 /**
  * Remove an audience member from a report
  */
-export async function removeAudienceMember(reportId: string, audienceId: string): Promise<void> {
+export async function removeAudienceMember(
+  reportId: string,
+  audienceId: string
+): Promise<void> {
   await apiClient(`/${reportId}/audience/${audienceId}`, {
     method: 'DELETE',
   });
@@ -362,8 +386,11 @@ export async function listAuditLogs(
   query: Omit<ListExecBoardReportAuditLogsQuery, 'reportId'> = {}
 ): Promise<ListExecBoardReportAuditLogsResponse> {
   const qs = buildQueryString(query as Record<string, unknown>);
-  const endpoint = qs ? `/${reportId}/audit-logs?${qs}` : `/${reportId}/audit-logs`;
-  const result = await apiClient<ListExecBoardReportAuditLogsResponse>(endpoint);
+  const endpoint = qs
+    ? `/${reportId}/audit-logs?${qs}`
+    : `/${reportId}/audit-logs`;
+  const result =
+    await apiClient<ListExecBoardReportAuditLogsResponse>(endpoint);
   return result.data!;
 }
 
@@ -388,21 +415,27 @@ export function getStatusLabel(status: ExecBoardReportStatus): string {
 /**
  * Get human-readable label for section type
  */
-export function getSectionTypeLabel(sectionType: ExecBoardReportSectionType): string {
+export function getSectionTypeLabel(
+  sectionType: ExecBoardReportSectionType
+): string {
   return EXEC_BOARD_REPORT_SECTION_TYPE_LABELS[sectionType] || sectionType;
 }
 
 /**
  * Get human-readable label for section status
  */
-export function getSectionStatusLabel(status: ExecBoardReportSectionStatus): string {
+export function getSectionStatusLabel(
+  status: ExecBoardReportSectionStatus
+): string {
   return EXEC_BOARD_REPORT_SECTION_STATUS_LABELS[status] || status;
 }
 
 /**
  * Get human-readable label for access level
  */
-export function getAccessLevelLabel(accessLevel: ExecBoardReportAccessLevel): string {
+export function getAccessLevelLabel(
+  accessLevel: ExecBoardReportAccessLevel
+): string {
   return EXEC_BOARD_REPORT_ACCESS_LEVEL_LABELS[accessLevel] || accessLevel;
 }
 
@@ -431,7 +464,9 @@ export function getStatusColor(status: ExecBoardReportStatus): string {
 /**
  * Get section status color
  */
-export function getSectionStatusColor(status: ExecBoardReportSectionStatus): string {
+export function getSectionStatusColor(
+  status: ExecBoardReportSectionStatus
+): string {
   switch (status) {
     case 'pending':
       return 'gray';
@@ -453,7 +488,9 @@ export function getSectionStatusColor(status: ExecBoardReportSectionStatus): str
 /**
  * Get icon name for section type
  */
-export function getSectionTypeIcon(sectionType: ExecBoardReportSectionType): string {
+export function getSectionTypeIcon(
+  sectionType: ExecBoardReportSectionType
+): string {
   const iconMap: Record<ExecBoardReportSectionType, string> = {
     executive_summary: 'file-text',
     strategic_highlights: 'star',
@@ -495,7 +532,10 @@ export function formatRelativeTime(isoDate: string): string {
 /**
  * Format date range for period display
  */
-export function formatPeriodRange(periodStart: string, periodEnd: string): string {
+export function formatPeriodRange(
+  periodStart: string,
+  periodEnd: string
+): string {
   const start = new Date(periodStart);
   const end = new Date(periodEnd);
 
@@ -516,7 +556,10 @@ export function formatPeriodRange(periodStart: string, periodEnd: string): strin
 /**
  * Format fiscal quarter display
  */
-export function formatFiscalQuarter(fiscalQuarter: string | null, fiscalYear: number | null): string {
+export function formatFiscalQuarter(
+  fiscalQuarter: string | null,
+  fiscalYear: number | null
+): string {
   if (fiscalQuarter && fiscalYear) {
     return `${fiscalQuarter} ${fiscalYear}`;
   } else if (fiscalQuarter) {
@@ -561,7 +604,9 @@ export function getReportHealthStatus(
 /**
  * Get health status color
  */
-export function getHealthStatusColor(status: 'healthy' | 'warning' | 'critical'): string {
+export function getHealthStatusColor(
+  status: 'healthy' | 'warning' | 'critical'
+): string {
   switch (status) {
     case 'healthy':
       return 'green';

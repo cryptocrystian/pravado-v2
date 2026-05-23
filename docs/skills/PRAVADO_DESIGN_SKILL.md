@@ -1,4 +1,5 @@
 # PRAVADO DESIGN SKILL
+
 **For:** Claude Code sessions building Pravado v2 UI
 **Read this before:** Writing any component, touching any existing component, or making any styling decision
 **Authority:** `DS_v3_PRINCIPLES.md`, `DS_v3_1_EXPRESSION.md`, `DS_v3_COMPLIANCE_CHECKLIST.md`
@@ -15,6 +16,7 @@ Before touching code, hold this mental image:
 **The feeling:** You are in control of something powerful. The system is working on your behalf. Information is surfaced exactly when you need it. Actions are clear and consequential. Nothing is decorative.
 
 **Not:**
+
 - A SaaS dashboard with rounded cards and pastel accents
 - A content creation tool with friendly, warm UI
 - A generic "dark mode" app with blue gradients
@@ -120,19 +122,20 @@ The `typography.ts` token file defines `headingLg = 'text-lg'` (18px) as the lar
 
 ### Typography Scale (Canonical)
 
-| Level | Size | Tailwind | Weight | Opacity | Use |
-|-------|------|----------|--------|---------|-----|
-| Surface Title | 24px | `text-2xl` | 700 | `/95` | Page/surface name. One per view. |
-| Section Heading | 20px | `text-xl` | 600 | `/95` | Major sections within a surface. |
-| Pane / Panel Title | 18px | `text-lg` | 600 | `/90` | Tri-pane titles, modal headers. |
-| Sub-section / Card Group | 16px | `text-base` | 600 | `/90` | Grouping headers inside a pane. |
-| Card Title | 15px | `text-[15px]` | 600 | `/90` | Individual card headings. |
-| Body Primary | 14px | `text-sm` | 400 | `/85` | Main readable content. |
-| Body Secondary | 13px | `text-[13px]` | 400 | `/70` | Supporting text, descriptions. |
-| Metadata | 12px | `text-xs` | 500 | `/55` | Only with uppercase + tracking-wide. |
-| Badge / Micro | 11px | `text-[11px]` | 700 | varies | Only for badges with uppercase. Never for readable prose. |
+| Level                    | Size | Tailwind      | Weight | Opacity | Use                                                       |
+| ------------------------ | ---- | ------------- | ------ | ------- | --------------------------------------------------------- |
+| Surface Title            | 24px | `text-2xl`    | 700    | `/95`   | Page/surface name. One per view.                          |
+| Section Heading          | 20px | `text-xl`     | 600    | `/95`   | Major sections within a surface.                          |
+| Pane / Panel Title       | 18px | `text-lg`     | 600    | `/90`   | Tri-pane titles, modal headers.                           |
+| Sub-section / Card Group | 16px | `text-base`   | 600    | `/90`   | Grouping headers inside a pane.                           |
+| Card Title               | 15px | `text-[15px]` | 600    | `/90`   | Individual card headings.                                 |
+| Body Primary             | 14px | `text-sm`     | 400    | `/85`   | Main readable content.                                    |
+| Body Secondary           | 13px | `text-[13px]` | 400    | `/70`   | Supporting text, descriptions.                            |
+| Metadata                 | 12px | `text-xs`     | 500    | `/55`   | Only with uppercase + tracking-wide.                      |
+| Badge / Micro            | 11px | `text-[11px]` | 700    | varies  | Only for badges with uppercase. Never for readable prose. |
 
 **Hard rules from this table:**
+
 - `text-2xl font-bold` is the only acceptable Surface Title. Never `text-xl` for an h1.
 - `text-sm` (14px) body and `text-sm` (14px) card titles are **the same size**. Disambiguate with weight (`font-semibold` vs `font-normal`) AND opacity (`/90` vs `/85`). Do not cheat this — use `text-[15px]` for card titles if visual separation feels inadequate.
 - `text-xs` (12px) is **only permitted with `uppercase tracking-wide font-medium`**. Plain 12px body text fails legibility standards on dark backgrounds.
@@ -259,15 +262,15 @@ A card should contain exactly what a user needs to make one decision or take one
 
 ### Law 4: Data Shape Determines Layout
 
-| Data shape | Layout |
-|-----------|--------|
-| N items, each with M comparable attributes | Table |
-| N items, each requiring an individual decision | Card grid |
-| 1 item with deep detail | Detail pane / drawer |
-| 3–6 summary metrics | KPI row (horizontal, not cards) |
-| Time-series | Chart (full-width justified) |
-| Status pipeline | Kanban or step indicator |
-| Ranked list | List (vertical, not cards) |
+| Data shape                                     | Layout                          |
+| ---------------------------------------------- | ------------------------------- |
+| N items, each with M comparable attributes     | Table                           |
+| N items, each requiring an individual decision | Card grid                       |
+| 1 item with deep detail                        | Detail pane / drawer            |
+| 3–6 summary metrics                            | KPI row (horizontal, not cards) |
+| Time-series                                    | Chart (full-width justified)    |
+| Status pipeline                                | Kanban or step indicator        |
+| Ranked list                                    | List (vertical, not cards)      |
 
 ```
 ❌ Analytics summary: 6 KPI cards stacked 2-across, each spanning 600px
@@ -335,7 +338,9 @@ Summary metrics go in a 3-column grid at desktop, 2-column at tablet. Never in a
 
 ```tsx
 <div className="flex flex-col gap-1 px-4 py-3 bg-panel border border-border-subtle rounded-lg">
-  <span className="text-xs font-semibold text-white/55 uppercase tracking-wide">EVI Score</span>
+  <span className="text-xs font-semibold text-white/55 uppercase tracking-wide">
+    EVI Score
+  </span>
   <div className="flex items-baseline gap-2">
     <span className="text-2xl font-bold text-white/95 tabular-nums">72</span>
     <span className="text-xs font-bold text-semantic-success">↑3</span>
@@ -355,9 +360,7 @@ Summary metrics go in a 3-column grid at desktop, 2-column at tablet. Never in a
 ### Body Text (Primary)
 
 ```tsx
-<p className="text-sm text-white/85 leading-relaxed">
-  Main content text.
-</p>
+<p className="text-sm text-white/85 leading-relaxed">Main content text.</p>
 ```
 
 ### Body Text (Secondary)
@@ -505,7 +508,9 @@ Summary metrics go in a 3-column grid at desktop, 2-column at tablet. Never in a
 <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-gradient-to-r from-slate-1 to-page">
   <div className="flex items-center gap-2">
     <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-    <h3 className="text-lg font-semibold text-white/90 tracking-tight">Pane Title</h3>
+    <h3 className="text-lg font-semibold text-white/90 tracking-tight">
+      Pane Title
+    </h3>
   </div>
   {/* Optional controls */}
 </div>
@@ -522,12 +527,18 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
 ```
 
 ```tsx
-{/* Single unified chrome bar — 48px, replaces header + tabs + ImpactStrip */}
+{
+  /* Single unified chrome bar — 48px, replaces header + tabs + ImpactStrip */
+}
 <div className="flex items-center h-12 px-4 border-b border-border-subtle bg-slate-1 shrink-0 relative z-10">
-
   {/* LEFT: icon + title + divider + tabs */}
-  <PillarIcon className="w-5 h-5 text-brand-[pillar] shrink-0" weight="regular" />
-  <span className="text-sm font-semibold text-white/80 ml-2 shrink-0">Surface Name</span>
+  <PillarIcon
+    className="w-5 h-5 text-brand-[pillar] shrink-0"
+    weight="regular"
+  />
+  <span className="text-sm font-semibold text-white/80 ml-2 shrink-0">
+    Surface Name
+  </span>
   <div className="w-px h-4 bg-white/10 mx-3 shrink-0" />
   {/* Tabs — inline, px-3 h-full, iris underline on active */}
   <button className="flex items-center gap-1.5 px-3 h-full text-sm font-medium text-white/95 relative">
@@ -551,7 +562,9 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
     <div className="w-px h-4 bg-white/10" />
     {/* EVI */}
     <div className="flex items-center gap-1">
-      <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">EVI</span>
+      <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+        EVI
+      </span>
       <span className="text-sm font-bold tabular-nums text-brand-cyan">72</span>
       <span className="text-xs text-semantic-success">↑3.1</span>
     </div>
@@ -573,10 +586,11 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
     {/* Create — see Visual Hierarchy section for per-mode treatment */}
     <CreateButton mode={currentMode} />
   </div>
-</div>
+</div>;
 ```
 
 **Hard rules for this pattern:**
+
 - `h-12` (48px) exactly. Never taller, never shorter.
 - `bg-slate-1` — not gradient, not bg-page, not transparent.
 - Pillar icon `w-5 h-5` inline — NO surrounding box, ring, or glow.
@@ -587,6 +601,7 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
 - Explain button: icon-only. No text label.
 
 **What this replaces (NEVER use these patterns again):**
+
 ```tsx
 // ❌ ABOLISHED — wastes ~150px of viewport before any data
 <div className="px-6 pt-6 pb-0">
@@ -600,7 +615,10 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
 ### Drawer / Modal Backdrop
 
 ```tsx
-<div className="fixed inset-0 bg-page/70 backdrop-blur-sm z-40" onClick={onClose} />
+<div
+  className="fixed inset-0 bg-page/70 backdrop-blur-sm z-40"
+  onClick={onClose}
+/>
 ```
 
 ### Scrollbar (Apply to Any Scrollable Pane)
@@ -608,10 +626,19 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
 ```tsx
 // Add className="prave-scroll" to the scrollable element, then:
 <style jsx global>{`
-  .prave-scroll::-webkit-scrollbar { width: 4px; }
-  .prave-scroll::-webkit-scrollbar-track { background: transparent; }
-  .prave-scroll::-webkit-scrollbar-thumb { background: #1F1F28; border-radius: 2px; }
-  .prave-scroll::-webkit-scrollbar-thumb:hover { background: #2A2A35; }
+  .prave-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .prave-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .prave-scroll::-webkit-scrollbar-thumb {
+    background: #1f1f28;
+    border-radius: 2px;
+  }
+  .prave-scroll::-webkit-scrollbar-thumb:hover {
+    background: #2a2a35;
+  }
 `}</style>
 ```
 
@@ -630,15 +657,15 @@ Every work surface uses a single unified 48px chrome bar that contains ALL of th
 
   {/* EVI Score */}
   <div className="flex items-center gap-1.5">
-    <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">EVI</span>
+    <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+      EVI
+    </span>
     <span className="text-sm font-bold text-brand-cyan tabular-nums">72</span>
     <span className="text-[11px] text-semantic-success">↑3</span>
   </div>
 
   {/* Mode Badge — right-aligned */}
-  <div className="ml-auto">
-    {/* Insert mode badge here */}
-  </div>
+  <div className="ml-auto">{/* Insert mode badge here */}</div>
 </div>
 ```
 
@@ -665,6 +692,7 @@ Background: `bg-slate-1/95 backdrop-blur-xl` — slightly elevated from page, no
 **Right cluster:** AI Active indicator → chips → bell → avatar. The bell should always have its notification badge rendered (even if empty state — just hide the badge, not the bell).
 
 **What the topbar is NOT:**
+
 - Not a second navigation layer. The surface shell tabs handle within-surface navigation.
 - Not a breadcrumb. Breadcrumbs are for hierarchical content systems, not flat surface navigation.
 - Not a search bar. The Omni-Tray is AI-first, not a filter input.
@@ -684,6 +712,7 @@ This sidebar currently renders for routes outside the main surfaces. It follows 
 ## Glow Effects Reference
 
 Glow effects are **functional signals**, not decoration. Use them to indicate:
+
 - AI activity (cyan glow on analyzing dots)
 - Active/selected state (pillar color glow on selected cards)
 - Ready-to-execute state (success glow on primary CTA)
@@ -710,6 +739,7 @@ shadow-[0_0_8px_rgba(168,85,247,0.6)]     ← AI generating dot
 Modes are not badge changes — they change the entire UI environment. When implementing a mode-aware component:
 
 ### Manual Mode
+
 - Full queue visible, no AI filtering
 - Dense tool aesthetics — creation surfaces prominent
 - Direct manipulation affordances (drag handles, inline edit)
@@ -717,6 +747,7 @@ Modes are not badge changes — they change the entire UI environment. When impl
 - `Create` button at full prominence
 
 ### Copilot Mode
+
 - AI reasoning chips visible on each item (don't hide them behind clicks)
 - Approve / Reject inline affordances on every actionable item
 - SAGE proposal banner at top of queues
@@ -724,6 +755,7 @@ Modes are not badge changes — they change the entire UI environment. When impl
 - `Create` button present but secondary in the chrome bar
 
 ### Autopilot Mode
+
 - Exception queue only — routine items hidden
 - Activity log / execution status panel visible
 - Kill switch accessible
@@ -753,16 +785,17 @@ This section defines the **dominant → secondary → tertiary** action hierarch
 
 #### Manual Mode
 
-| Rank | Element | Position | Visual Treatment |
-|------|---------|----------|------------------|
-| **DOMINANT** | Create button | Chrome bar right cluster | `bg-brand-iris` filled, `px-4 py-2`, iris glow, full label "+ Create" with caret |
-| **DOMINANT** | Asset work queue | Full viewport below chrome | Dense list/table, full width, all 5+ items visible immediately |
-| Secondary | Filter bar | Top of queue | Single bar — search + inline pills, `bg-slate-3`, `h-9` |
-| Secondary | Status strip | Below chrome bar | Compact `h-10`, CiteMind + pipeline metrics in single row |
-| Tertiary | Explain | Chrome bar right | Icon-only `<Info>`, no label, `text-white/50` |
-| Tertiary | Mode badge | Chrome bar right | Neutral `bg-white/5 text-white/70 border-white/20` — not calling attention |
+| Rank         | Element          | Position                   | Visual Treatment                                                                 |
+| ------------ | ---------------- | -------------------------- | -------------------------------------------------------------------------------- |
+| **DOMINANT** | Create button    | Chrome bar right cluster   | `bg-brand-iris` filled, `px-4 py-2`, iris glow, full label "+ Create" with caret |
+| **DOMINANT** | Asset work queue | Full viewport below chrome | Dense list/table, full width, all 5+ items visible immediately                   |
+| Secondary    | Filter bar       | Top of queue               | Single bar — search + inline pills, `bg-slate-3`, `h-9`                          |
+| Secondary    | Status strip     | Below chrome bar           | Compact `h-10`, CiteMind + pipeline metrics in single row                        |
+| Tertiary     | Explain          | Chrome bar right           | Icon-only `<Info>`, no label, `text-white/50`                                    |
+| Tertiary     | Mode badge       | Chrome bar right           | Neutral `bg-white/5 text-white/70 border-white/20` — not calling attention       |
 
 **Manual mode Create implementation:**
+
 ```tsx
 // DOMINANT — full iris fill, glow, prominent
 <button className="flex items-center gap-2 px-4 py-2 bg-brand-iris text-white/95 text-sm font-semibold rounded-lg hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)] transition-all">
@@ -774,17 +807,18 @@ This section defines the **dominant → secondary → tertiary** action hierarch
 
 #### Copilot Mode
 
-| Rank | Element | Position | Visual Treatment |
-|------|---------|----------|------------------|
-| **DOMINANT** | SAGE Action Queue | Left ~60% of viewport | Full width of its column, cards with strong left-border accent |
-| **DOMINANT** | "Approve & Create Brief →" | On every SAGE card | `bg-brand-iris` filled button, right-aligned on card, iris glow — this IS the Create action in Copilot |
-| Secondary | Cross-Pillar Attribution | Right ~40% of viewport | Present and scannable, but narrower column |
-| Secondary | CiteMind instrument strip | Below chrome bar | Full viewport width, compact `h-[90px]` |
-| Secondary | Create (chrome bar) | Chrome bar right | **Ghost button** — `border border-white/15 text-white/60 hover:text-white/80` — available but not competing with SAGE CTAs |
-| Tertiary | Dismiss | On every SAGE card | Text-only, `text-white/50`, no border |
-| Tertiary | Explain | Chrome bar right | Icon-only |
+| Rank         | Element                    | Position               | Visual Treatment                                                                                                           |
+| ------------ | -------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **DOMINANT** | SAGE Action Queue          | Left ~60% of viewport  | Full width of its column, cards with strong left-border accent                                                             |
+| **DOMINANT** | "Approve & Create Brief →" | On every SAGE card     | `bg-brand-iris` filled button, right-aligned on card, iris glow — this IS the Create action in Copilot                     |
+| Secondary    | Cross-Pillar Attribution   | Right ~40% of viewport | Present and scannable, but narrower column                                                                                 |
+| Secondary    | CiteMind instrument strip  | Below chrome bar       | Full viewport width, compact `h-[90px]`                                                                                    |
+| Secondary    | Create (chrome bar)        | Chrome bar right       | **Ghost button** — `border border-white/15 text-white/60 hover:text-white/80` — available but not competing with SAGE CTAs |
+| Tertiary     | Dismiss                    | On every SAGE card     | Text-only, `text-white/50`, no border                                                                                      |
+| Tertiary     | Explain                    | Chrome bar right       | Icon-only                                                                                                                  |
 
 **Copilot mode Create implementation — GHOST, not filled:**
+
 ```tsx
 // SECONDARY — ghost, clearly subordinate to SAGE card CTAs
 <button className="flex items-center gap-2 px-3 py-1.5 border border-white/15 text-white/60 text-sm font-medium rounded-lg hover:text-white/80 hover:border-white/25 hover:bg-white/5 transition-all">
@@ -798,16 +832,17 @@ This section defines the **dominant → secondary → tertiary** action hierarch
 
 #### Autopilot Mode
 
-| Rank | Element | Position | Visual Treatment |
-|------|---------|----------|------------------|
-| **DOMINANT** | Exception queue | Left ~55% of viewport | Full column, exception cards with semantic urgency colors |
-| **DOMINANT** | Pause Autopilot | Chrome bar / status bar | Visible kill switch — `border border-white/20 text-white/70`, always accessible |
-| Secondary | Activity log | Right ~45% of viewport | Read-only, timestamped, no CTAs |
-| Secondary | Autopilot status bar | Below chrome bar | `EXECUTING` label + ambient proof-of-work count |
-| Tertiary | Create (chrome bar) | Chrome bar right | **Icon + text, tertiary style** — user may need to create despite automation |
-| Tertiary | Explain | Chrome bar right | Icon-only |
+| Rank         | Element              | Position                | Visual Treatment                                                                |
+| ------------ | -------------------- | ----------------------- | ------------------------------------------------------------------------------- |
+| **DOMINANT** | Exception queue      | Left ~55% of viewport   | Full column, exception cards with semantic urgency colors                       |
+| **DOMINANT** | Pause Autopilot      | Chrome bar / status bar | Visible kill switch — `border border-white/20 text-white/70`, always accessible |
+| Secondary    | Activity log         | Right ~45% of viewport  | Read-only, timestamped, no CTAs                                                 |
+| Secondary    | Autopilot status bar | Below chrome bar        | `EXECUTING` label + ambient proof-of-work count                                 |
+| Tertiary     | Create (chrome bar)  | Chrome bar right        | **Icon + text, tertiary style** — user may need to create despite automation    |
+| Tertiary     | Explain              | Chrome bar right        | Icon-only                                                                       |
 
 **Autopilot mode Create implementation — TERTIARY, always present:**
+
 ```tsx
 // TERTIARY — clearly demoted, but never removed
 // User may always need to create content even in Autopilot
@@ -822,11 +857,11 @@ This section defines the **dominant → secondary → tertiary** action hierarch
 
 ### Create Button: Summary Table
 
-| Mode | Style | Classes | Reasoning |
-|------|-------|---------|----------|
-| Manual | **Filled / Dominant** | `bg-brand-iris text-white/95 shadow-iris` | Creation is the primary workflow |
-| Copilot | **Ghost / Secondary** | `border border-white/15 text-white/60` | SAGE card CTAs own "create" — this is the escape hatch |
-| Autopilot | **Text / Tertiary** | `text-white/50 hover:bg-white/5` | Monitoring is primary — create available but not calling |
+| Mode      | Style                 | Classes                                   | Reasoning                                                |
+| --------- | --------------------- | ----------------------------------------- | -------------------------------------------------------- |
+| Manual    | **Filled / Dominant** | `bg-brand-iris text-white/95 shadow-iris` | Creation is the primary workflow                         |
+| Copilot   | **Ghost / Secondary** | `border border-white/15 text-white/60`    | SAGE card CTAs own "create" — this is the escape hatch   |
+| Autopilot | **Text / Tertiary**   | `text-white/50 hover:bg-white/5`          | Monitoring is primary — create available but not calling |
 
 **Hard rule: Create is NEVER removed from any mode.** Demoted, yes. Removed, never.
 

@@ -123,31 +123,31 @@ apps/dashboard/
 
 ## Risk Index Computation
 
-| Level | Range | Color |
-|-------|-------|-------|
-| Critical | 80-100 | Red |
-| High | 60-79 | Orange |
-| Medium | 40-59 | Yellow |
-| Low | 0-39 | Green |
+| Level    | Range  | Color  |
+| -------- | ------ | ------ |
+| Critical | 80-100 | Red    |
+| High     | 60-79  | Orange |
+| Medium   | 40-59  | Yellow |
+| Low      | 0-39   | Green  |
 
 ## Signal Sources
 
-| Source | System | Signals |
-|--------|--------|---------|
-| Media | S40 Media Monitoring | Coverage, sentiment |
-| Crisis | S55 Crisis Response | Active incidents |
-| Competitive | S47 Comp Intel | Market position |
-| Personas | S56 Audience Personas | Alignment scores |
-| Governance | S59 Governance | Policy compliance |
+| Source      | System                | Signals             |
+| ----------- | --------------------- | ------------------- |
+| Media       | S40 Media Monitoring  | Coverage, sentiment |
+| Crisis      | S55 Crisis Response   | Active incidents    |
+| Competitive | S47 Comp Intel        | Market position     |
+| Personas    | S56 Audience Personas | Alignment scores    |
+| Governance  | S59 Governance        | Policy compliance   |
 
 ## Performance Metrics
 
-| Operation | Target | Actual |
-|-----------|--------|--------|
-| Snapshot creation | <500ms | ~150-500ms |
-| Forecast (statistical) | <500ms | ~200ms |
-| Forecast (LLM) | <10s | ~2-5s |
-| Dashboard load | <500ms | ~100-300ms |
+| Operation              | Target | Actual     |
+| ---------------------- | ------ | ---------- |
+| Snapshot creation      | <500ms | ~150-500ms |
+| Forecast (statistical) | <500ms | ~200ms     |
+| Forecast (LLM)         | <10s   | ~2-5s      |
+| Dashboard load         | <500ms | ~100-300ms |
 
 ## Testing Summary
 
@@ -157,12 +157,14 @@ apps/dashboard/
 ## Dependencies
 
 ### Internal
+
 - `@pravado/types` - Type definitions
 - `@pravado/validators` - Validation schemas
 - `@pravado/utils` - Logger, utilities
 - `@pravado/feature-flags` - Feature gating
 
 ### External
+
 - `@supabase/supabase-js` - Database client
 - `uuid` - ID generation
 - `lucide-react` - Icons
@@ -177,6 +179,7 @@ apps/dashboard/
 ## Files Changed
 
 ### New Files (Part 2)
+
 - `apps/dashboard/src/components/risk-radar/RiskLevelBadge.tsx`
 - `apps/dashboard/src/components/risk-radar/RiskRadarCard.tsx`
 - `apps/dashboard/src/components/risk-radar/RiskIndicatorPanel.tsx`
@@ -194,6 +197,7 @@ apps/dashboard/
 - `docs/SPRINT_S60_COMPLETION_REPORT.md`
 
 ### Modified Files (Part 2)
+
 - `apps/api/src/server.ts` - Route registration
 
 ## Conclusion

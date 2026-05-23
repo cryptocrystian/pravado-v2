@@ -68,16 +68,44 @@ const FORBIDDEN_TOKENS = [
   { pattern: /\bred-400\b/, name: 'red-400', replacement: 'semantic-danger' },
   { pattern: /\bred-500\b/, name: 'red-500', replacement: 'semantic-danger' },
   // Does not exist — typo for semantic-danger
-  { pattern: /\bsemantic-error\b/, name: 'semantic-error', replacement: 'semantic-danger' },
+  {
+    pattern: /\bsemantic-error\b/,
+    name: 'semantic-error',
+    replacement: 'semantic-danger',
+  },
   // Replaced by semantic-success
-  { pattern: /\bemerald-400\b/, name: 'emerald-400', replacement: 'semantic-success' },
+  {
+    pattern: /\bemerald-400\b/,
+    name: 'emerald-400',
+    replacement: 'semantic-success',
+  },
   // Replaced by semantic-warning
-  { pattern: /\bamber-400\b/, name: 'amber-400', replacement: 'semantic-warning' },
+  {
+    pattern: /\bamber-400\b/,
+    name: 'amber-400',
+    replacement: 'semantic-warning',
+  },
   // Old slate/gray scale — use white/opacity instead
-  { pattern: /\btext-slate-\d{3}\b/, name: 'text-slate-*', replacement: 'text-white/{opacity}' },
-  { pattern: /\btext-gray-\d{3}\b/, name: 'text-gray-*', replacement: 'text-white/{opacity}' },
-  { pattern: /\bbg-gray-\d{3}\b/, name: 'bg-gray-*', replacement: 'bg-[#surface-hex]' },
-  { pattern: /\bbg-slate-\d{3}\b/, name: 'bg-slate-*', replacement: 'bg-[#surface-hex]' },
+  {
+    pattern: /\btext-slate-\d{3}\b/,
+    name: 'text-slate-*',
+    replacement: 'text-white/{opacity}',
+  },
+  {
+    pattern: /\btext-gray-\d{3}\b/,
+    name: 'text-gray-*',
+    replacement: 'text-white/{opacity}',
+  },
+  {
+    pattern: /\bbg-gray-\d{3}\b/,
+    name: 'bg-gray-*',
+    replacement: 'bg-[#surface-hex]',
+  },
+  {
+    pattern: /\bbg-slate-\d{3}\b/,
+    name: 'bg-slate-*',
+    replacement: 'bg-[#surface-hex]',
+  },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -214,7 +242,9 @@ function main() {
   // ── Output ──────────────────────────────────────────────────────────────────
 
   if (totalViolations === 0) {
-    console.log('\n✅  DS v3.1 typography & token check passed — no violations found.\n');
+    console.log(
+      '\n✅  DS v3.1 typography & token check passed — no violations found.\n'
+    );
     process.exit(0);
   }
 
@@ -237,7 +267,9 @@ function main() {
   }
 
   console.log('─'.repeat(72));
-  console.log(`\nTotal: ${totalViolations} violation${totalViolations === 1 ? '' : 's'}\n`);
+  console.log(
+    `\nTotal: ${totalViolations} violation${totalViolations === 1 ? '' : 's'}\n`
+  );
   console.log('Run with --fix-report for actionable fix suggestions.\n');
   console.log('Reference: /docs/canon/DS_v3_1_EXPRESSION.md\n');
 

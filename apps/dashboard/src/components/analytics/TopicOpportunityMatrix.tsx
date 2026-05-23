@@ -17,6 +17,7 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
+
 import { mockTopicPerformance } from './analytics-mock-data';
 
 const scatterData = mockTopicPerformance.map((t) => ({
@@ -28,7 +29,13 @@ const scatterData = mockTopicPerformance.map((t) => ({
 // Midpoint for quadrant lines
 const MID = 60;
 
-function MatrixTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: typeof scatterData[0] }> }) {
+function MatrixTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload: (typeof scatterData)[0] }>;
+}) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
@@ -58,7 +65,12 @@ export function TopicOpportunityMatrix() {
             axisLine={false}
             tickLine={false}
           >
-            <Label value="Your Score →" position="bottom" offset={0} style={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }} />
+            <Label
+              value="Your Score →"
+              position="bottom"
+              offset={0}
+              style={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }}
+            />
           </XAxis>
           <YAxis
             type="number"
@@ -69,25 +81,50 @@ export function TopicOpportunityMatrix() {
             tickLine={false}
             width={30}
           >
-            <Label value="Competitor ↑" angle={-90} position="insideLeft" offset={10} style={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }} />
+            <Label
+              value="Competitor ↑"
+              angle={-90}
+              position="insideLeft"
+              offset={10}
+              style={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }}
+            />
           </YAxis>
 
           {/* Quadrant dividers */}
-          <ReferenceLine x={MID} stroke="rgba(255,255,255,0.15)" strokeDasharray="4 4" />
-          <ReferenceLine y={MID} stroke="rgba(255,255,255,0.15)" strokeDasharray="4 4" />
+          <ReferenceLine
+            x={MID}
+            stroke="rgba(255,255,255,0.15)"
+            strokeDasharray="4 4"
+          />
+          <ReferenceLine
+            y={MID}
+            stroke="rgba(255,255,255,0.15)"
+            strokeDasharray="4 4"
+          />
 
           <Tooltip content={<MatrixTooltip />} />
-          <Scatter data={scatterData} fill="#00D9FF" fillOpacity={0.8}>
-          </Scatter>
+          <Scatter
+            data={scatterData}
+            fill="#00D9FF"
+            fillOpacity={0.8}
+          ></Scatter>
         </ScatterChart>
       </ResponsiveContainer>
 
       {/* Quadrant labels */}
       <div className="grid grid-cols-2 gap-2 mt-2 text-[10px]">
-        <div className="text-center text-semantic-danger font-semibold">Prioritize (Low you, High them)</div>
-        <div className="text-center text-semantic-warning font-semibold">Defend (High you, High them)</div>
-        <div className="text-center text-white/30">Watch (Low you, Low them)</div>
-        <div className="text-center text-semantic-success font-semibold">Dominate (High you, Low them)</div>
+        <div className="text-center text-semantic-danger font-semibold">
+          Prioritize (Low you, High them)
+        </div>
+        <div className="text-center text-semantic-warning font-semibold">
+          Defend (High you, High them)
+        </div>
+        <div className="text-center text-white/30">
+          Watch (Low you, Low them)
+        </div>
+        <div className="text-center text-semantic-success font-semibold">
+          Dominate (High you, Low them)
+        </div>
       </div>
     </div>
   );

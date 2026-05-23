@@ -7,6 +7,7 @@ Sprint S26 created a comprehensive Supabase mock utility that properly supports 
 ## The Problem
 
 Old mock approach:
+
 ```typescript
 const mockQuery = {
   select: vi.fn().mockReturnThis(),
@@ -19,11 +20,17 @@ const mockQuery = {
 ## The Solution
 
 New comprehensive mock from `tests/helpers/supabaseMock.ts`:
+
 ```typescript
-import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess } from './helpers/supabaseMock';
+import {
+  createMockSupabaseClient,
+  createMockQueryBuilder,
+  createMockSuccess,
+} from './helpers/supabaseMock';
 ```
 
 ### Benefits:
+
 - ✅ Supports infinite method chaining (`.eq().eq().eq()...`)
 - ✅ Supports all query methods: `eq`, `or`, `ilike`, `limit`, `order`, `range`, etc.
 - ✅ Supports all DML methods: `insert`, `update`, `delete` with chained filters
@@ -35,6 +42,7 @@ import { createMockSupabaseClient, createMockQueryBuilder, createMockSuccess } f
 ### Step 1: Update imports
 
 **Before:**
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -48,6 +56,7 @@ const createMockSupabase = () => {
 ```
 
 **After:**
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -55,13 +64,14 @@ import {
   createMockSupabaseClient,
   createMockQueryBuilder,
   createMockSuccess,
-  createMockError
+  createMockError,
 } from './helpers/supabaseMock';
 ```
 
 ### Step 2: Update beforeEach
 
 **Before:**
+
 ```typescript
 beforeEach(() => {
   mockSupabase = createMockSupabase();
@@ -70,6 +80,7 @@ beforeEach(() => {
 ```
 
 **After:**
+
 ```typescript
 beforeEach(() => {
   mockSupabase = createMockSupabaseClient();
@@ -80,6 +91,7 @@ beforeEach(() => {
 ### Step 3: Update test mocks
 
 **Before (failing with chained .eq() calls):**
+
 ```typescript
 const mockQuery = {
   update: vi.fn().mockReturnThis(),
@@ -89,6 +101,7 @@ const mockQuery = {
 ```
 
 **After (supports unlimited chaining):**
+
 ```typescript
 const mockQuery = createMockQueryBuilder(createMockSuccess(null));
 (mockSupabase.from as any).mockReturnValue(mockQuery);
@@ -97,6 +110,7 @@ const mockQuery = createMockQueryBuilder(createMockSuccess(null));
 ### Step 4: Handle multiple queries
 
 **Before:**
+
 ```typescript
 const mockSelectQuery = { select: vi.fn()... };
 const mockInsertQuery = { insert: vi.fn()... };
@@ -107,13 +121,12 @@ const mockInsertQuery = { insert: vi.fn()... };
 ```
 
 **After:**
+
 ```typescript
 const mockSelectQuery = createMockQueryBuilder(
   createMockSuccess({ id: 'existing' })
 );
-const mockInsertQuery = createMockQueryBuilder(
-  createMockSuccess(null)
-);
+const mockInsertQuery = createMockQueryBuilder(createMockSuccess(null));
 
 (mockSupabase.from as any)
   .mockReturnValueOnce(mockSelectQuery)
@@ -136,9 +149,7 @@ it('should update existing assignment', async () => {
   );
 
   // Mock query to update - supports chaining .eq().eq()
-  const mockUpdateQuery = createMockQueryBuilder(
-    createMockSuccess(null)
-  );
+  const mockUpdateQuery = createMockQueryBuilder(createMockSuccess(null));
 
   (mockSupabase.from as any)
     .mockReturnValueOnce(mockSelectQuery)
@@ -146,22 +157,26 @@ it('should update existing assignment', async () => {
 
   await store.assignPersonalityToAgent(orgId, agentId, personalityId);
 
-  expect(mockSupabase.from).toHaveBeenCalledWith('agent_personality_assignments');
+  expect(mockSupabase.from).toHaveBeenCalledWith(
+    'agent_personality_assignments'
+  );
 });
 ```
 
 **Service code this supports:**
+
 ```typescript
 await this.supabase
   .from('agent_personality_assignments')
   .update({ personality_id: personalityId })
-  .eq('org_id', orgId)      // First .eq()
+  .eq('org_id', orgId) // First .eq()
   .eq('agent_id', agentId); // Second .eq() - now works!
 ```
 
 ## Files Still Needing Migration
 
 Apply this pattern to:
+
 1. ✅ `tests/personalityStore.test.ts` - **DONE** (2 tests fixed)
 2. ⏳ `tests/contentService.test.ts` - 5 failing tests
 3. ⏳ `tests/prMediaService.test.ts` - 4 failing tests
@@ -170,16 +185,18 @@ Apply this pattern to:
 ## Helper Functions Reference
 
 ### createMockSupabaseClient(tableResponses?)
+
 Creates a full Supabase client mock with auth, storage, and rpc.
 
 ```typescript
 const mockSupabase = createMockSupabaseClient({
-  'users': createMockSuccess([{ id: '1', name: 'John' }]),
-  'posts': createMockSuccess([]),
+  users: createMockSuccess([{ id: '1', name: 'John' }]),
+  posts: createMockSuccess([]),
 });
 ```
 
 ### createMockQueryBuilder(defaultResponse?)
+
 Creates a chainable query builder that resolves to the given response.
 
 ```typescript
@@ -193,24 +210,27 @@ await queryBuilder.select('*').eq('id', '123').eq('org_id', 'org-1');
 ```
 
 ### createMockSuccess<T>(data, count?)
+
 Creates a successful response object.
 
 ```typescript
-createMockSuccess([{ id: '1' }], 10)
+createMockSuccess([{ id: '1' }], 10);
 // Returns: { data: [{ id: '1' }], error: null, count: 10 }
 ```
 
 ### createMockError(message, code?)
+
 Creates an error response object.
 
 ```typescript
-createMockError('Not found', 'PGRST116')
+createMockError('Not found', 'PGRST116');
 // Returns: { data: null, error: { message: 'Not found', code: 'PGRST116', ... } }
 ```
 
 ## Testing the Migration
 
 Run specific test file after migration:
+
 ```bash
 pnpm vitest run tests/yourFile.test.ts
 ```

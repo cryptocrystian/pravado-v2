@@ -7,7 +7,12 @@
 
 'use client';
 
-import React from 'react';
+import type {
+  CrisisSeverity,
+  IncidentStatus,
+  CrisisTrajectory,
+  CrisisPropagationLevel,
+} from '@pravado/types';
 import {
   Search,
   Filter,
@@ -17,16 +22,18 @@ import {
   AlertTriangle,
   Radio,
 } from 'lucide-react';
-import type {
-  CrisisSeverity,
-  IncidentStatus,
-  CrisisTrajectory,
-  CrisisPropagationLevel,
-} from '@pravado/types';
-import { SEVERITY_COLORS, STATUS_COLORS, TRAJECTORY_COLORS, PROPAGATION_COLORS } from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -36,13 +43,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  SEVERITY_COLORS,
+  STATUS_COLORS,
+  TRAJECTORY_COLORS,
+  PROPAGATION_COLORS,
+} from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 export interface CrisisFilters {
   searchQuery?: string;
@@ -51,7 +57,12 @@ export interface CrisisFilters {
   trajectory?: CrisisTrajectory[];
   propagationLevel?: CrisisPropagationLevel[];
   isEscalated?: boolean;
-  sortBy?: 'createdAt' | 'updatedAt' | 'severity' | 'riskScore' | 'mentionCount';
+  sortBy?:
+    | 'createdAt'
+    | 'updatedAt'
+    | 'severity'
+    | 'riskScore'
+    | 'mentionCount';
   sortOrder?: 'asc' | 'desc';
 }
 
@@ -63,8 +74,19 @@ interface CrisisFiltersBarProps {
   className?: string;
 }
 
-const SEVERITY_OPTIONS: CrisisSeverity[] = ['severe', 'critical', 'high', 'medium', 'low'];
-const STATUS_OPTIONS: IncidentStatus[] = ['active', 'contained', 'resolved', 'closed'];
+const SEVERITY_OPTIONS: CrisisSeverity[] = [
+  'severe',
+  'critical',
+  'high',
+  'medium',
+  'low',
+];
+const STATUS_OPTIONS: IncidentStatus[] = [
+  'active',
+  'contained',
+  'resolved',
+  'closed',
+];
 const TRAJECTORY_OPTIONS: CrisisTrajectory[] = [
   'critical',
   'worsening',
@@ -121,7 +143,10 @@ export default function CrisisFiltersBar({
     const updated = current.includes(severity)
       ? current.filter((s) => s !== severity)
       : [...current, severity];
-    onFiltersChange({ ...filters, severity: updated.length > 0 ? updated : undefined });
+    onFiltersChange({
+      ...filters,
+      severity: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const toggleStatus = (status: IncidentStatus) => {
@@ -129,7 +154,10 @@ export default function CrisisFiltersBar({
     const updated = current.includes(status)
       ? current.filter((s) => s !== status)
       : [...current, status];
-    onFiltersChange({ ...filters, status: updated.length > 0 ? updated : undefined });
+    onFiltersChange({
+      ...filters,
+      status: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const toggleTrajectory = (trajectory: CrisisTrajectory) => {
@@ -137,7 +165,10 @@ export default function CrisisFiltersBar({
     const updated = current.includes(trajectory)
       ? current.filter((t) => t !== trajectory)
       : [...current, trajectory];
-    onFiltersChange({ ...filters, trajectory: updated.length > 0 ? updated : undefined });
+    onFiltersChange({
+      ...filters,
+      trajectory: updated.length > 0 ? updated : undefined,
+    });
   };
 
   const togglePropagation = (level: CrisisPropagationLevel) => {
@@ -218,7 +249,9 @@ export default function CrisisFiltersBar({
                   checked={filters.severity?.includes(severity)}
                   onCheckedChange={() => toggleSeverity(severity)}
                 >
-                  <span className={cn('capitalize', colors.text)}>{severity}</span>
+                  <span className={cn('capitalize', colors.text)}>
+                    {severity}
+                  </span>
                 </DropdownMenuCheckboxItem>
               );
             })}
@@ -249,7 +282,9 @@ export default function CrisisFiltersBar({
                   checked={filters.status?.includes(status)}
                   onCheckedChange={() => toggleStatus(status)}
                 >
-                  <span className={cn('capitalize', colors.text)}>{status}</span>
+                  <span className={cn('capitalize', colors.text)}>
+                    {status}
+                  </span>
                 </DropdownMenuCheckboxItem>
               );
             })}
@@ -283,7 +318,9 @@ export default function CrisisFiltersBar({
                   checked={filters.trajectory?.includes(trajectory)}
                   onCheckedChange={() => toggleTrajectory(trajectory)}
                 >
-                  <span className={cn('capitalize', colors.text)}>{trajectory}</span>
+                  <span className={cn('capitalize', colors.text)}>
+                    {trajectory}
+                  </span>
                 </DropdownMenuCheckboxItem>
               );
             })}
@@ -368,9 +405,7 @@ export default function CrisisFiltersBar({
             </span>
           )}
           {!hasActiveFilters && (
-            <span className="text-white/50">
-              {totalCount} incidents
-            </span>
+            <span className="text-white/50">{totalCount} incidents</span>
           )}
         </div>
 
@@ -381,7 +416,11 @@ export default function CrisisFiltersBar({
               <Badge
                 key={s}
                 variant="outline"
-                className={cn('text-xs', SEVERITY_COLORS[s].bg, SEVERITY_COLORS[s].text)}
+                className={cn(
+                  'text-xs',
+                  SEVERITY_COLORS[s].bg,
+                  SEVERITY_COLORS[s].text
+                )}
               >
                 {s}
                 <button
@@ -396,7 +435,11 @@ export default function CrisisFiltersBar({
               <Badge
                 key={s}
                 variant="outline"
-                className={cn('text-xs', STATUS_COLORS[s].bg, STATUS_COLORS[s].text)}
+                className={cn(
+                  'text-xs',
+                  STATUS_COLORS[s].bg,
+                  STATUS_COLORS[s].text
+                )}
               >
                 {s}
                 <button
@@ -408,7 +451,10 @@ export default function CrisisFiltersBar({
               </Badge>
             ))}
             {filters.isEscalated && (
-              <Badge variant="outline" className="text-xs bg-red-100 text-red-700">
+              <Badge
+                variant="outline"
+                className="text-xs bg-red-100 text-red-700"
+              >
                 Escalated
                 <button
                   className="ml-1 hover:text-destructive"

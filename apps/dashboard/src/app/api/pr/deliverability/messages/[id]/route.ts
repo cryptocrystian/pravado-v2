@@ -17,11 +17,17 @@ interface RouteParams {
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const data = await prBackendFetch(`/api/v1/pr-outreach-deliverability/messages/${id}`);
+    const data = await prBackendFetch(
+      `/api/v1/pr-outreach-deliverability/messages/${id}`
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/deliverability/messages/[id]] GET Error:', { status, message, code });
+    console.error('[API /api/pr/deliverability/messages/[id]] GET Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -30,14 +36,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const data = await prBackendFetch(`/api/v1/pr-outreach-deliverability/messages/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(body),
-    });
+    const data = await prBackendFetch(
+      `/api/v1/pr-outreach-deliverability/messages/${id}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      }
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/deliverability/messages/[id]] PATCH Error:', { status, message, code });
+    console.error('[API /api/pr/deliverability/messages/[id]] PATCH Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }
@@ -51,7 +64,11 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/deliverability/messages/[id]] DELETE Error:', { status, message, code });
+    console.error('[API /api/pr/deliverability/messages/[id]] DELETE Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

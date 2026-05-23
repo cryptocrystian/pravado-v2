@@ -653,8 +653,16 @@ export interface GraphMetrics {
 
   // Top nodes
   topNodesByDegree?: Array<{ nodeId: string; label: string; degree: number }>;
-  topNodesByPagerank?: Array<{ nodeId: string; label: string; pagerank: number }>;
-  topNodesByBetweenness?: Array<{ nodeId: string; label: string; betweenness: number }>;
+  topNodesByPagerank?: Array<{
+    nodeId: string;
+    label: string;
+    pagerank: number;
+  }>;
+  topNodesByBetweenness?: Array<{
+    nodeId: string;
+    label: string;
+    betweenness: number;
+  }>;
 
   // Computed at
   computedAt: string;
@@ -670,7 +678,10 @@ export interface SnapshotDiff {
   edgesAdded: number;
   edgesRemoved: number;
   edgesModified: number;
-  metricsChanges: Record<string, { before: number; after: number; change: number }>;
+  metricsChanges: Record<
+    string,
+    { before: number; after: number; change: number }
+  >;
   addedNodeIds: string[];
   removedNodeIds: string[];
   addedEdgeIds: string[];
@@ -803,7 +814,11 @@ export interface UpdateEdgeInput {
 export interface MergeNodesInput {
   sourceNodeIds: string[];
   targetNodeId?: string;
-  mergeStrategy: 'keep_first' | 'keep_newest' | 'merge_properties' | 'create_new';
+  mergeStrategy:
+    | 'keep_first'
+    | 'keep_newest'
+    | 'merge_properties'
+    | 'create_new';
   newLabel?: string;
   newDescription?: string;
   preserveEdges: boolean;
@@ -821,7 +836,12 @@ export interface ListNodesInput {
   search?: string;
   sourceSystem?: string;
   isActive?: boolean;
-  sortBy?: 'created_at' | 'updated_at' | 'label' | 'degree_centrality' | 'pagerank_score';
+  sortBy?:
+    | 'created_at'
+    | 'updated_at'
+    | 'label'
+    | 'degree_centrality'
+    | 'pagerank_score';
   sortOrder?: 'asc' | 'desc';
   clusterId?: string;
   communityId?: string;
@@ -1049,9 +1069,21 @@ export const NODE_TYPE_CATEGORIES: Record<string, NodeType[]> = {
     NodeType.PITCH,
     NodeType.OUTREACH_CAMPAIGN,
   ],
-  monitoring: [NodeType.MEDIA_MENTION, NodeType.MEDIA_ALERT, NodeType.SENTIMENT_SIGNAL],
-  analytics: [NodeType.PERFORMANCE_METRIC, NodeType.KPI_INDICATOR, NodeType.TREND_SIGNAL],
-  competitive: [NodeType.COMPETITOR, NodeType.COMPETITIVE_INSIGHT, NodeType.MARKET_TREND],
+  monitoring: [
+    NodeType.MEDIA_MENTION,
+    NodeType.MEDIA_ALERT,
+    NodeType.SENTIMENT_SIGNAL,
+  ],
+  analytics: [
+    NodeType.PERFORMANCE_METRIC,
+    NodeType.KPI_INDICATOR,
+    NodeType.TREND_SIGNAL,
+  ],
+  competitive: [
+    NodeType.COMPETITOR,
+    NodeType.COMPETITIVE_INSIGHT,
+    NodeType.MARKET_TREND,
+  ],
   crisis: [
     NodeType.CRISIS_EVENT,
     NodeType.CRISIS_RESPONSE,
@@ -1059,8 +1091,16 @@ export const NODE_TYPE_CATEGORIES: Record<string, NodeType[]> = {
     NodeType.RISK_ASSESSMENT,
     NodeType.ESCALATION,
   ],
-  brand: [NodeType.BRAND_SIGNAL, NodeType.BRAND_MENTION, NodeType.REPUTATION_SCORE],
-  governance: [NodeType.COMPLIANCE_ITEM, NodeType.GOVERNANCE_POLICY, NodeType.AUDIT_FINDING],
+  brand: [
+    NodeType.BRAND_SIGNAL,
+    NodeType.BRAND_MENTION,
+    NodeType.REPUTATION_SCORE,
+  ],
+  governance: [
+    NodeType.COMPLIANCE_ITEM,
+    NodeType.GOVERNANCE_POLICY,
+    NodeType.AUDIT_FINDING,
+  ],
   executive: [
     NodeType.EXECUTIVE_DIGEST,
     NodeType.BOARD_REPORT,
@@ -1074,14 +1114,25 @@ export const NODE_TYPE_CATEGORIES: Record<string, NodeType[]> = {
   ],
   audience: [NodeType.AUDIENCE_PERSONA, NodeType.AUDIENCE_SEGMENT],
   content: [NodeType.CONTENT_BRIEF, NodeType.CONTENT_PIECE, NodeType.NARRATIVE],
-  graph: [NodeType.CLUSTER, NodeType.TOPIC, NodeType.THEME, NodeType.EVENT, NodeType.CUSTOM],
+  graph: [
+    NodeType.CLUSTER,
+    NodeType.TOPIC,
+    NodeType.THEME,
+    NodeType.EVENT,
+    NodeType.CUSTOM,
+  ],
 };
 
 /**
  * Edge type category groupings
  */
 export const EDGE_TYPE_CATEGORIES: Record<string, EdgeType[]> = {
-  hierarchical: [EdgeType.PARENT_OF, EdgeType.CHILD_OF, EdgeType.BELONGS_TO, EdgeType.CONTAINS],
+  hierarchical: [
+    EdgeType.PARENT_OF,
+    EdgeType.CHILD_OF,
+    EdgeType.BELONGS_TO,
+    EdgeType.CONTAINS,
+  ],
   causal: [
     EdgeType.CAUSED_BY,
     EdgeType.LEADS_TO,
@@ -1089,7 +1140,12 @@ export const EDGE_TYPE_CATEGORIES: Record<string, EdgeType[]> = {
     EdgeType.MITIGATES,
     EdgeType.ESCALATES_TO,
   ],
-  temporal: [EdgeType.PRECEDES, EdgeType.FOLLOWS, EdgeType.CONCURRENT_WITH, EdgeType.DURING],
+  temporal: [
+    EdgeType.PRECEDES,
+    EdgeType.FOLLOWS,
+    EdgeType.CONCURRENT_WITH,
+    EdgeType.DURING,
+  ],
   similarity: [
     EdgeType.SIMILAR_TO,
     EdgeType.RELATED_TO,
@@ -1109,7 +1165,11 @@ export const EDGE_TYPE_CATEGORIES: Record<string, EdgeType[]> = {
     EdgeType.DERIVES_FROM,
     EdgeType.CONTRIBUTES_TO,
   ],
-  association: [EdgeType.ASSOCIATED_WITH, EdgeType.LINKED_TO, EdgeType.CORRELATES_WITH],
+  association: [
+    EdgeType.ASSOCIATED_WITH,
+    EdgeType.LINKED_TO,
+    EdgeType.CORRELATES_WITH,
+  ],
   sentiment: [
     EdgeType.POSITIVE_SENTIMENT_TOWARD,
     EdgeType.NEGATIVE_SENTIMENT_TOWARD,
@@ -1131,11 +1191,27 @@ export const SOURCE_SYSTEM_NODE_TYPES: Record<string, NodeType[]> = {
   media_monitoring: [NodeType.MEDIA_COVERAGE, NodeType.MEDIA_MENTION],
   media_alerts: [NodeType.MEDIA_ALERT],
   media_performance: [NodeType.PERFORMANCE_METRIC, NodeType.KPI_INDICATOR],
-  competitive_intel: [NodeType.COMPETITOR, NodeType.COMPETITIVE_INSIGHT, NodeType.MARKET_TREND],
-  crisis_engine: [NodeType.CRISIS_EVENT, NodeType.CRISIS_RESPONSE, NodeType.ESCALATION],
+  competitive_intel: [
+    NodeType.COMPETITOR,
+    NodeType.COMPETITIVE_INSIGHT,
+    NodeType.MARKET_TREND,
+  ],
+  crisis_engine: [
+    NodeType.CRISIS_EVENT,
+    NodeType.CRISIS_RESPONSE,
+    NodeType.ESCALATION,
+  ],
   risk_radar: [NodeType.RISK_FACTOR, NodeType.RISK_ASSESSMENT],
-  brand_reputation: [NodeType.BRAND_SIGNAL, NodeType.BRAND_MENTION, NodeType.REPUTATION_SCORE],
-  governance: [NodeType.COMPLIANCE_ITEM, NodeType.GOVERNANCE_POLICY, NodeType.AUDIT_FINDING],
+  brand_reputation: [
+    NodeType.BRAND_SIGNAL,
+    NodeType.BRAND_MENTION,
+    NodeType.REPUTATION_SCORE,
+  ],
+  governance: [
+    NodeType.COMPLIANCE_ITEM,
+    NodeType.GOVERNANCE_POLICY,
+    NodeType.AUDIT_FINDING,
+  ],
   exec_digest: [NodeType.EXECUTIVE_DIGEST],
   board_reports: [NodeType.BOARD_REPORT],
   investor_relations: [NodeType.INVESTOR_UPDATE],

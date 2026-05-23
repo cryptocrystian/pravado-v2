@@ -10,18 +10,22 @@ The Command Center is the AI-first operational hub for PRAVADO. It provides a tr
 ## Architecture
 
 ### Route
+
 ```
 /app/command-center
 ```
 
 ### Data Sources
+
 During hollow development, all data is served via MSW (Mock Service Worker) handlers:
+
 - `GET /api/command-center/action-stream`
 - `GET /api/command-center/intelligence-canvas`
 - `GET /api/command-center/strategy-panel`
 - `GET /api/command-center/orchestration-calendar`
 
 Contract examples are the single source of truth:
+
 - `/contracts/examples/action-stream.json`
 - `/contracts/examples/intelligence-canvas.json`
 - `/contracts/examples/strategy-panel.json`
@@ -30,9 +34,11 @@ Contract examples are the single source of truth:
 ## Tri-Pane Layout
 
 ### Left Pane: Action Stream
+
 **Component:** `ActionStreamPane`
 
 Displays prioritized AI proposals and tasks. Each action card shows:
+
 - Pillar chip (PR/Content/SEO)
 - Priority indicator (Critical/High/Medium/Low)
 - Title and summary
@@ -44,9 +50,11 @@ Displays prioritized AI proposals and tasks. Each action card shows:
 **Interaction:** Clicking a card opens the Peek Drawer with full details.
 
 ### Center Pane: Intelligence Canvas
+
 **Component:** `IntelligenceCanvasPane`
 
 Displays the knowledge graph and citation feed:
+
 - Node list by kind (AI Models, Journalists, Topics, Competitors)
 - Citation feed with platform badges (ChatGPT, Perplexity, Claude, Gemini)
 - Graph visualization placeholder
@@ -54,11 +62,13 @@ Displays the knowledge graph and citation feed:
 **Interaction:** Clicking a node enters "focus mode" showing related connections in the graph placeholder area. Click "Clear focus" or another node to exit.
 
 ### Right Pane: Strategy Panel
+
 **Component:** `StrategyPanelPane`
 
 **CRITICAL**: Strategy Panel is DIAGNOSTIC ONLY. It explains EVI state but contains NO action buttons. Actions belong in the Action Stream.
 
 Displays strategic intelligence:
+
 - **EVI Hero**: Single North Star KPI with score, delta, status band, sparkline
 - **Driver Breakdown**: Three expandable rows (Visibility 40%, Authority 35%, Momentum 25%)
 - **AI Narratives**: Generated explanations of EVI movement with sentiment indicators
@@ -69,6 +79,7 @@ Displays strategic intelligence:
 ## EVI: The North Star KPI
 
 ### Definition
+
 The **Earned Visibility Index (EVI)** is the single North Star KPI for the Command Center Strategy Panel.
 
 ```
@@ -77,29 +88,31 @@ EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)
 
 ### EVI Status Bands
 
-| EVI Range | Status | Color | Interpretation |
-|-----------|--------|-------|----------------|
-| **0–40** | At Risk | `semantic-danger` (Red) | Brand is invisible. Urgent action required. |
-| **41–60** | Emerging | `brand-amber` (Yellow) | Foundational presence. Growth focus. |
-| **61–80** | Competitive | `brand-cyan` (Cyan) | Meaningful visibility. Maintenance mode. |
-| **81–100** | Dominant | `semantic-success` (Green) | Category leader. Expansion focus. |
+| EVI Range  | Status      | Color                      | Interpretation                              |
+| ---------- | ----------- | -------------------------- | ------------------------------------------- |
+| **0–40**   | At Risk     | `semantic-danger` (Red)    | Brand is invisible. Urgent action required. |
+| **41–60**  | Emerging    | `brand-amber` (Yellow)     | Foundational presence. Growth focus.        |
+| **61–80**  | Competitive | `brand-cyan` (Cyan)        | Meaningful visibility. Maintenance mode.    |
+| **81–100** | Dominant    | `semantic-success` (Green) | Category leader. Expansion focus.           |
 
 ### EVI Drivers
 
-| Driver | Weight | Purpose | Color |
-|--------|--------|---------|-------|
-| **Visibility** | 40% | Where brand appears (AI, SERP, press) | `brand-cyan` |
-| **Authority** | 35% | Why brand should be trusted | `brand-iris` |
-| **Momentum** | 25% | Trajectory and competitive velocity | `brand-magenta` |
+| Driver         | Weight | Purpose                               | Color           |
+| -------------- | ------ | ------------------------------------- | --------------- |
+| **Visibility** | 40%    | Where brand appears (AI, SERP, press) | `brand-cyan`    |
+| **Authority**  | 35%    | Why brand should be trusted           | `brand-iris`    |
+| **Momentum**   | 25%    | Trajectory and competitive velocity   | `brand-magenta` |
 
 ### Strategy Panel KPI Rules
 
 **REQUIRED:**
+
 1. EVI is the ONLY top-level KPI in Strategy Panel
 2. All supporting metrics must map to an EVI driver
 3. EVI driver weights must sum to 100%
 
 **FORBIDDEN (will fail CI):**
+
 1. No "AEO Health Score" anywhere in codebase
 2. No second top-level KPI in Strategy Panel
 3. No metrics that cannot explain EVI movement
@@ -109,35 +122,37 @@ EVI = (Visibility × 0.40) + (Authority × 0.35) + (Momentum × 0.25)
 
 Every metric displayed in Strategy Panel must trace to an EVI driver:
 
-| Metric | Driver | Why It Matters |
-|--------|--------|----------------|
-| AI Answer Presence % | Visibility | AI systems are decision surfaces |
-| Press Mention Coverage | Visibility | Third-party validation |
-| Topic SERP Coverage % | Visibility | Discovery and credibility |
-| Featured Snippets | Visibility | Position zero attention |
-| Citation Quality Score | Authority | High-authority citations transfer trust |
-| Referring Domain Authority | Authority | Backlink source credibility |
-| Journalist Match Strength | Authority | Contextual coverage relevance |
-| Structured Data Coverage % | Authority | AI comprehension signals |
-| Citation Velocity (WoW) | Momentum | Growth rate indicator |
-| Share of Voice Change | Momentum | Relative competitive position |
-| Content Velocity | Momentum | Output vs. competitor average |
-| Topic Growth Rate | Momentum | Emerging topic coverage velocity |
+| Metric                     | Driver     | Why It Matters                          |
+| -------------------------- | ---------- | --------------------------------------- |
+| AI Answer Presence %       | Visibility | AI systems are decision surfaces        |
+| Press Mention Coverage     | Visibility | Third-party validation                  |
+| Topic SERP Coverage %      | Visibility | Discovery and credibility               |
+| Featured Snippets          | Visibility | Position zero attention                 |
+| Citation Quality Score     | Authority  | High-authority citations transfer trust |
+| Referring Domain Authority | Authority  | Backlink source credibility             |
+| Journalist Match Strength  | Authority  | Contextual coverage relevance           |
+| Structured Data Coverage % | Authority  | AI comprehension signals                |
+| Citation Velocity (WoW)    | Momentum   | Growth rate indicator                   |
+| Share of Voice Change      | Momentum   | Relative competitive position           |
+| Content Velocity           | Momentum   | Output vs. competitor average           |
+| Topic Growth Rate          | Momentum   | Emerging topic coverage velocity        |
 
 ### Anti-Patterns (ENFORCED BY CI)
 
-| Pattern | Why It's Bad | CI Guard |
-|---------|--------------|----------|
-| "AEO Health Score" | Duplicate top-level KPI | `check-command-center-kpis.mjs` |
-| Traffic-only metrics | Outcomes, not inputs | `check-command-center-kpis.mjs` |
-| Vanity metrics | Not earned visibility | `check-command-center-kpis.mjs` |
+| Pattern                          | Why It's Bad                | CI Guard                        |
+| -------------------------------- | --------------------------- | ------------------------------- |
+| "AEO Health Score"               | Duplicate top-level KPI     | `check-command-center-kpis.mjs` |
+| Traffic-only metrics             | Outcomes, not inputs        | `check-command-center-kpis.mjs` |
+| Vanity metrics                   | Not earned visibility       | `check-command-center-kpis.mjs` |
 | Action buttons in Strategy Panel | Breaks diagnostic-only role | `check-command-center-kpis.mjs` |
-| Metrics without driver mapping | Cannot explain EVI | `check-command-center-kpis.mjs` |
+| Metrics without driver mapping   | Cannot explain EVI          | `check-command-center-kpis.mjs` |
 
 ### Calendar Widget
+
 **Component:** `CalendarPeek`
 
 Positioned at the bottom of the center pane, shows:
+
 - Next 5 upcoming orchestration items
 - Pillar and status badges
 - Mode indicators
@@ -146,47 +161,54 @@ Positioned at the bottom of the center pane, shows:
 ## Action Stream Interaction Contract v2.0 (Modal Model)
 
 ### Core Principle: One Click, One Outcome
+
 Every action card has **one primary interaction path**. The user should never wonder "what happens if I click here?" The answer must be visually obvious before clicking.
 
 ### Interaction Behavior Matrix
 
-| Element | Action | Result |
-|---------|--------|--------|
-| **Card Body Click** | Investigate | Opens Action Modal (centered overlay) |
-| **"Review" Button** | Investigate | Opens Action Modal (centered overlay) |
-| **Primary CTA** | Execute | Executes action OR opens confirmation if destructive |
-| **Hover** | Preview | Reveals hover intelligence block inside card |
+| Element             | Action      | Result                                               |
+| ------------------- | ----------- | ---------------------------------------------------- |
+| **Card Body Click** | Investigate | Opens Action Modal (centered overlay)                |
+| **"Review" Button** | Investigate | Opens Action Modal (centered overlay)                |
+| **Primary CTA**     | Execute     | Executes action OR opens confirmation if destructive |
+| **Hover**           | Preview     | Reveals hover intelligence block inside card         |
 
 ### Hover Micro-Brief v5 (ANCHORED HOVERCARD)
 
 **CRITICAL:** Hover reveals a popover ANCHORED to the card, positioned to the left within the Action Stream column.
 
 #### HoverCard Architecture (v5)
+
 The micro-brief uses a Radix HoverCard component:
+
 1. **HoverCard component**: `@radix-ui/react-hover-card`
 2. **ActionHoverBrief**: Popover content component with structured sections
 3. **Arrow**: Points to the hovered card for clear association
 4. **Positioning**: `side="left"` to stay inside the Action Stream pane
 
 #### Hover Coordination (CI ENFORCED)
-| Rule | Enforcement |
-|------|-------------|
-| Radix HoverCard import | Required |
-| ActionHoverBrief content component | Required |
-| `isHoverOpen` controlled state prop | Required |
-| `onHoverOpenChange` callback prop | Required |
-| `isDimmed` prop for sibling dimming | Required |
-| Single hover tracking in ActionStreamPane | Required |
-| Compact mode: no hover popover | Required |
+
+| Rule                                      | Enforcement |
+| ----------------------------------------- | ----------- |
+| Radix HoverCard import                    | Required    |
+| ActionHoverBrief content component        | Required    |
+| `isHoverOpen` controlled state prop       | Required    |
+| `onHoverOpenChange` callback prop         | Required    |
+| `isDimmed` prop for sibling dimming       | Required    |
+| Single hover tracking in ActionStreamPane | Required    |
+| Compact mode: no hover popover            | Required    |
 
 #### Hover Timing
-| Event | Delay | Purpose |
-|-------|-------|---------|
-| Open | ~200ms | Hover intent filter |
+
+| Event | Delay  | Purpose                            |
+| ----- | ------ | ---------------------------------- |
+| Open  | ~200ms | Hover intent filter                |
 | Close | ~250ms | Allows cursor to move into popover |
 
 #### ActionHoverBrief Content Sections
+
 The `ActionHoverBrief` component displays:
+
 1. **Title**: Action title with pillar accent color
 2. **Why Now**: Strategic rationale (2-3 lines)
 3. **Next Step**: Single recommended next action
@@ -196,18 +218,20 @@ The `ActionHoverBrief` component displays:
 
 #### Content by Density Mode
 
-| Density | Hover Behavior |
-|---------|----------------|
+| Density         | Hover Behavior                                       |
+| --------------- | ---------------------------------------------------- |
 | **Comfortable** | HoverCard popover with full ActionHoverBrief content |
-| **Standard** | HoverCard popover with full ActionHoverBrief content |
-| **Compact** | NO hover popover (click card to open modal) |
+| **Standard**    | HoverCard popover with full ActionHoverBrief content |
+| **Compact**     | NO hover popover (click card to open modal)          |
 
 #### What Hover Must NOT Do
+
 - Reveal hidden CTAs or change available actions
 - Open multiple popovers simultaneously
 - Block interaction with adjacent cards (uses dimming instead)
 
 ### Primary CTA Behavior
+
 - **Never opens the modal** - Primary CTA executes or confirms
 - Executes immediately for non-destructive actions
 - Opens confirmation modal for destructive/irreversible actions
@@ -215,14 +239,17 @@ The `ActionHoverBrief` component displays:
 - Updates card state on completion (success/error badge)
 
 ### Secondary CTA ("Review") Behavior
+
 - **Always opens the Action Modal**
 - Label is always "Review" (consolidated from "Details", "View", etc.)
 - In compact mode: secondary CTA is removed; card click is the review path
 
 ### Action Modal (Centered Overlay)
+
 **Component:** `ActionModal`
 
 A centered modal overlay (NOT a right-side drawer) that opens for investigation:
+
 1. **Header**: Title, pillar badge, status chip (Ready/Gated/Critical), timestamp
 2. **"Why this matters"**: AI rationale summary
 3. **Metrics**: Confidence, Impact, Effort estimate, Risk level, Gate reason
@@ -230,6 +257,7 @@ A centered modal overlay (NOT a right-side drawer) that opens for investigation:
 5. **Actions Footer**: Primary CTA (matches card), Close button
 
 **Accessibility:**
+
 - Focus trapped inside modal
 - Escape closes modal
 - Click outside closes modal
@@ -237,29 +265,33 @@ A centered modal overlay (NOT a right-side drawer) that opens for investigation:
 
 ### Anti-Patterns (FORBIDDEN)
 
-| Pattern | Why It's Bad | Correct Approach |
-|---------|--------------|------------------|
-| Right-side drawer for Action Stream | Breaks spatial continuity | Use centered modal |
-| In-place card expansion | Layout shift, scroll disruption | Fixed modal overlay |
-| Hover-reveal CTAs | Hidden affordances, touch-unfriendly | Always-visible CTAs |
-| Primary CTA opens modal | Confuses execute vs investigate | Primary = execute only |
-| "View" + "Review" + "Details" | Redundant labels | Use "Review" consistently |
-| Card click executes action | Accidental execution risk | Card click = investigate |
+| Pattern                             | Why It's Bad                         | Correct Approach          |
+| ----------------------------------- | ------------------------------------ | ------------------------- |
+| Right-side drawer for Action Stream | Breaks spatial continuity            | Use centered modal        |
+| In-place card expansion             | Layout shift, scroll disruption      | Fixed modal overlay       |
+| Hover-reveal CTAs                   | Hidden affordances, touch-unfriendly | Always-visible CTAs       |
+| Primary CTA opens modal             | Confuses execute vs investigate      | Primary = execute only    |
+| "View" + "Review" + "Details"       | Redundant labels                     | Use "Review" consistently |
+| Card click executes action          | Accidental execution risk            | Card click = investigate  |
 
 ### Density Scaling (Behavior Preserved)
+
 Interaction model does NOT change per density—only visual presentation:
 
-| Density | Primary CTA | Secondary CTA | Card Click | Hover |
-|---------|-------------|---------------|------------|-------|
-| Comfortable | Large colored pill | Ghost "Review" button | → Modal | Full intelligence |
-| Standard | Medium pill | Text link "Review →" | → Modal | Condensed intelligence |
-| Compact | Small pill | Hidden (card click) | → Modal | Row highlight only |
+| Density     | Primary CTA        | Secondary CTA         | Card Click | Hover                  |
+| ----------- | ------------------ | --------------------- | ---------- | ---------------------- |
+| Comfortable | Large colored pill | Ghost "Review" button | → Modal    | Full intelligence      |
+| Standard    | Medium pill        | Text link "Review →"  | → Modal    | Condensed intelligence |
+| Compact     | Small pill         | Hidden (card click)   | → Modal    | Row highlight only     |
 
 ### Execution States
+
 Cards support execution state visualization:
+
 ```
 [Idle] → [Executing...] → [Success ✓] or [Error ✗]
 ```
+
 - Executing: Spinner, disabled CTA, subtle pulse
 - Success: Green checkmark badge, toast notification
 - Error: Red badge, error message in toast
@@ -267,43 +299,52 @@ Cards support execution state visualization:
 ## Other Interaction Patterns
 
 ### 1. Node Focus (Intelligence Canvas)
+
 Clicking a node in the Intelligence Canvas:
+
 - Highlights the selected node with pillar glow
 - Updates the graph placeholder to show connections
 - Displays related edge labels and target nodes
 - Click "Clear focus" or another node to deselect
 
 ### 2. Entity Map (SAGE-Native Graph)
+
 **Component:** `EntityMap`
 **@see** `/docs/canon/ENTITY-MAP-SAGE.md` for full specification.
 
 The Entity Map renders the strategic relationship graph within the Intelligence Canvas pane:
 
 **Layout:**
+
 - Zone-based positioning (Authority/Signal/Growth/Exposure)
 - Deterministic layout seed (stable positions)
 - Top-20 node constraint by default
 
 **Action Stream Integration:**
+
 - Hover: Highlights impacted nodes/edges, dims others
 - Execute: Triggers pulse animation on affected entities
 - Uses same hover coordination as Action Stream (single active)
 
 **Node Types:**
+
 - `brand` (center) - Central brand entity
 - `journalist`, `outlet` (left) - Media contacts
 - `topic`, `ai_model` (right) - Content/SEO topics
 - `competitor` (bottom) - Competitive brands
 
 **Styling:**
+
 - Nodes use pillar accent colors (magenta/iris/cyan)
 - Edges use pillar colors at 50% opacity
 - Glow effects follow DS v3.1 specifications
 
 ### 3. Pillar Accent System
+
 **File:** `pillar-accents.ts`
 
 Consistent visual language for PR/Content/SEO:
+
 ```typescript
 pillarAccents: {
   pr: {
@@ -320,6 +361,7 @@ pillarAccents: {
 ## DS v3.1 Styling
 
 ### Surface Tokens
+
 - Page background: `#0A0A0F`
 - Card background: `#13131A`
 - Card elevated: `#1A1A24`
@@ -327,11 +369,13 @@ pillarAccents: {
 - Border hover: `#2A2A36`
 
 ### Glow Effects
+
 - Pillar glows on hover/focus
 - 12px blur radius with 15% opacity
 - Colors match pillar accent system
 
 ### Typography
+
 - Section headers: `text-xs font-semibold uppercase tracking-wide`
 - Card titles: `text-sm font-medium`
 - Body text: `text-xs` with `text-white/50`
@@ -340,6 +384,7 @@ pillarAccents: {
 ## Topbar Structure Rules
 
 ### Layout Grouping (v2.0)
+
 The Command Center topbar follows a specific grouping hierarchy:
 
 ```
@@ -350,29 +395,34 @@ The Command Center topbar follows a specific grouping hierarchy:
 ```
 
 **Left Cluster:**
+
 - Pravado wordmark with gradient text
 - AI status dot (animated pulse, cyan glow)
 - Org selector (compact variant)
 
 **Middle Cluster (PROMINENT):**
+
 - Surface navigation tabs
 - Primary navigation anchor for the entire app
 - Active state: `bg-brand-cyan/12 + border + glow + underline`
 - Inactive state: `text-white/70 hover:text-white`
 
 **Center-Right:**
+
 - Omni-Tray trigger (ONLY search-like affordance)
 - Chat icon, NOT magnifying glass
 - "Ask Pravado…" placeholder text
 - Keyboard shortcut hint (⌘K)
 
 **Right Cluster:**
+
 - AI Active indicator pill
 - Context toggle chips (Media Monitoring, Content Quality)
 - Notifications bell with badge
 - User avatar + dropdown
 
 ### Navigation Prominence Rules
+
 - Nav items use `text-sm` font size (NOT text-xs)
 - Inactive text: `text-white/70` (lighter than body text)
 - Active state includes:
@@ -383,7 +433,9 @@ The Command Center topbar follows a specific grouping hierarchy:
 - Consistent `gap-1` spacing between nav items
 
 ### Single Search Rule
+
 **CRITICAL:** The Omni-Tray trigger is the ONLY search-like element.
+
 - Do NOT add additional search inputs
 - Do NOT add magnifying glass icons elsewhere
 - The chat bubble icon differentiates it from traditional search
@@ -391,17 +443,19 @@ The Command Center topbar follows a specific grouping hierarchy:
 ## Typography + Contrast Rules
 
 ### Typography Intent System
+
 Use semantic text intent helpers from `text-intents.ts`:
 
-| Intent | Class | Use Case |
-|--------|-------|----------|
-| `titlePrimary` | `text-sm font-semibold text-white/90` | Card titles |
-| `bodyPrimary` | `text-sm text-white/85` | Main content |
-| `bodySecondary` | `text-xs text-white/70` | Descriptions |
-| `mutedPrimary` | `text-xs text-white/55` | Helper text |
-| `microText` | `text-[11px] text-white/55` | Timestamps, badges |
+| Intent          | Class                                 | Use Case           |
+| --------------- | ------------------------------------- | ------------------ |
+| `titlePrimary`  | `text-sm font-semibold text-white/90` | Card titles        |
+| `bodyPrimary`   | `text-sm text-white/85`               | Main content       |
+| `bodySecondary` | `text-xs text-white/70`               | Descriptions       |
+| `mutedPrimary`  | `text-xs text-white/55`               | Helper text        |
+| `microText`     | `text-[11px] text-white/55`           | Timestamps, badges |
 
 ### Contrast Token Rules (ENFORCED BY CI v2.0)
+
 No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Command Center scope.
 
 **Opacity Minimums:**
@@ -413,6 +467,7 @@ No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Comm
 | Micro/Timestamps | `white/35` | Requires `typography-allow:` comment |
 
 **Allowed text tokens:**
+
 - Primary labels: `text-white/90`, `text-white/85`
 - Secondary labels: `text-white/70`, `text-white/65`
 - Muted/tertiary: `text-white/55`, `text-white/50`
@@ -421,25 +476,30 @@ No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Comm
 - Semantic: `text-semantic-danger`, `text-semantic-warning`, `text-semantic-success`
 
 **Allowlist Comments:**
+
 - `contrast-allow:` - For forbidden color tokens
 - `typography-allow: micro` - For low-opacity micro text
 
 ## Calendar Interaction Rules
 
 ### Outlook-Like Contract (v3.0)
+
 **CRITICAL**: Container height is FIXED at `h-[280px]` - DOES NOT CHANGE between Day/Week/Month views.
 
 #### View Behaviors
+
 - **Day View**: Large single-day header with hourly agenda grouping (Early Morning, Morning, Midday, Afternoon, Evening)
 - **Week View**: 7-day horizontal strip with selectable days, agenda list for selected date below
 - **Month View**: Compact 6-row grid with pillar dots, split-view agenda panel on desktop
 
 #### Interaction
+
 - Clicking any day updates `selectedDate` and agenda list
 - On mobile: Segmented "Calendar | Agenda" tabs
 - "Today" button appears when not viewing today
 
 ### Desktop Split-View
+
 - Left side: Calendar grid (Day/Week/Month selector)
 - Right side: Agenda panel showing items for selected date
 - Both panels scroll independently within fixed container
@@ -447,17 +507,19 @@ No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Comm
 ## Action Stream Density Contract (v6.0)
 
 ### UX-Pilot Authority
+
 **Comfortable mode is the UX-Pilot reference authority.** All Action Stream cards should look like UX-Pilot in comfortable mode by default.
 
 ### Density Levels (3 Modes)
 
-| Level | Card Count | Card Height | Content Shown | CTA Visibility |
-|-------|------------|-------------|---------------|----------------|
-| **Comfortable** (DEFAULT) | ≤8 cards | ~130-150px | Full details, metrics row, summary | **DOMINANT** primary + subdued secondary |
-| Standard | 9-12 cards | ~80-100px | Title, summary, condensed badges | Visible primary + text secondary |
-| Compact | 13+ cards | ~48-56px | Title only, inline badges | Primary CTA only + chevron |
+| Level                     | Card Count | Card Height | Content Shown                      | CTA Visibility                           |
+| ------------------------- | ---------- | ----------- | ---------------------------------- | ---------------------------------------- |
+| **Comfortable** (DEFAULT) | ≤8 cards   | ~130-150px  | Full details, metrics row, summary | **DOMINANT** primary + subdued secondary |
+| Standard                  | 9-12 cards | ~80-100px   | Title, summary, condensed badges   | Visible primary + text secondary         |
+| Compact                   | 13+ cards  | ~48-56px    | Title only, inline badges          | Primary CTA only + chevron               |
 
 ### Density Selection Rules
+
 1. **Comfortable is DEFAULT** - Should be the most common state
 2. **≤8 cards** → Always comfortable (unless height-constrained)
 3. **9-12 cards** → Standard (transition zone)
@@ -466,6 +528,7 @@ No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Comm
 ### CTA Hierarchy Rules (CRITICAL)
 
 **Comfortable Mode (UX-Pilot Authority):**
+
 - **Primary CTA**: DOMINANT - Large, fully colored pill, strong glow, white text
   - Ready state: `bg-semantic-success` with green glow
   - Non-ready: Pillar color (`bg-brand-magenta/iris/cyan`) with pillar glow
@@ -473,40 +536,49 @@ No `text-slate-*`, `text-gray-*`, `text-neutral-*`, `text-zinc-*` tokens in Comm
   - `text-white/60` with `border-white/10`, no background
 
 **Standard Mode:**
+
 - Primary CTA: Colored background/border, moderate size
 - Secondary CTA: Text-only link style (`text-white/55`)
 
 **Compact Mode:**
+
 - Primary CTA only - Compact pill button
 - Secondary: Click card or chevron to open drawer
 
 ### On-Card CTAs (REQUIRED)
+
 Every action card MUST include visible CTAs:
 
 **Primary CTA:**
+
 - Contextual action label from `action.cta.primary`
 - "Execute", "Auto-Fix", "Send Email", "Investigate", etc.
 - Ready state (confidence ≥0.8 + no gate): Green success styling
 - Non-ready: Pillar-colored
 
 **Secondary CTA (Comfortable/Standard only):**
+
 - Action from `action.cta.secondary`
 - "Review", "Details", "View", etc.
 - Opens ActionPeekDrawer
 
 ### Ready State Definition
+
 ```typescript
-isReady = confidence >= 0.8 && !gate.required
+isReady = confidence >= 0.8 && !gate.required;
 ```
+
 - Shows "✓ Ready" badge in comfortable mode
 - Primary CTA uses success styling with enhanced glow
 
 ### Progressive Disclosure (3 Layers)
+
 1. **Layer 1 (Card)**: Content scales with density + visible CTAs
 2. **Layer 2 (Hover)**: Background tint via `group-hover:opacity`
 3. **Layer 3 (Drawer)**: Full details via ActionPeekDrawer
 
 ### Grouping
+
 - Critical/Urgent actions pinned to top with "Requires Attention" header
 - Divider separates urgent from other items
 - Within tiers: sorted by confidence descending
@@ -514,11 +586,13 @@ isReady = confidence >= 0.8 && !gate.required
 ### Card Layout by Density
 
 **Compact (13+ cards):**
+
 ```
 [●] [PR] Title text truncated...       [Execute] [→]
 ```
 
 **Standard (9-12 cards):**
+
 ```
 [●] [PR] [High] [Ready]                         2h ago
 Title text that can wrap to one line
@@ -527,6 +601,7 @@ Summary text truncated...
 ```
 
 **Comfortable (DEFAULT, ≤8 cards):**
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │ [●][High] [PR] [✓ Ready] [Auto]             2h ago  │
@@ -548,6 +623,7 @@ Summary text truncated...
 ## Testing (Development Only)
 
 ### Density Query Param Override
+
 Use `?density=` query parameter to force density modes for testing:
 
 ```
@@ -557,13 +633,16 @@ Use `?density=` query parameter to force density modes for testing:
 ```
 
 **Behavior:**
+
 - Overrides auto-calculation when present
 - Shows "DEV" badge in density toggle area
 - Disables manual toggle buttons
 - Only works on `/app/command-center` route
 
 ### Toggle Buttons
+
 UI toggle buttons in header (disabled when query param active):
+
 - **A** (Auto): Adaptive density based on card count (default)
 - **F** (Force Comfortable): Always comfortable mode
 - **C** (Compact): Always compact mode
@@ -640,6 +719,7 @@ The following are noted for future sprints:
 ### Action Stream Interaction Model
 
 1. **Visit the Command Center:**
+
    ```
    http://localhost:3000/app/command-center
    ```
@@ -677,6 +757,7 @@ The following are noted for future sprints:
    - Verify: Card updates to "Sent" state
 
 ### Density Mode Testing
+
 ```
 /app/command-center?density=comfortable  # Force comfortable
 /app/command-center?density=standard     # Force standard

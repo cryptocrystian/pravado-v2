@@ -5,6 +5,7 @@
 **Sprint Goal:** Eliminate remaining TypeScript errors across @pravado/api and @pravado/dashboard packages.
 
 **Final Status:**
+
 - @pravado/types: 0 errors (maintained)
 - @pravado/validators: 0 errors (maintained)
 - @pravado/api: 0 errors (reduced from 79)
@@ -40,6 +41,7 @@
 ### Dashboard Package (161 → 122 errors)
 
 **Fixed:**
+
 - Removed unused imports across multiple component files
 - Fixed DropdownMenuItem to support `asChild` prop
 - Created missing Slider UI component
@@ -49,18 +51,18 @@
 
 **Known Remaining Issues (122 errors):**
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| TS2339 | 45 | Property does not exist on type - Type definition gaps |
-| TS6133 | 33 | Unused variable warnings |
-| TS6196 | 14 | Unused import warnings |
-| TS2345 | 13 | Validator schema mismatches with page usage |
-| TS7006 | 4 | Implicit 'any' type |
-| TS2554 | 4 | Wrong argument count |
-| TS2305 | 4 | Missing module exports |
-| TS18048 | 3 | Possibly undefined values |
-| TS2322 | 1 | Type not assignable |
-| TS2307 | 1 | Cannot find module |
+| Category | Count | Description                                            |
+| -------- | ----- | ------------------------------------------------------ |
+| TS2339   | 45    | Property does not exist on type - Type definition gaps |
+| TS6133   | 33    | Unused variable warnings                               |
+| TS6196   | 14    | Unused import warnings                                 |
+| TS2345   | 13    | Validator schema mismatches with page usage            |
+| TS7006   | 4     | Implicit 'any' type                                    |
+| TS2554   | 4     | Wrong argument count                                   |
+| TS2305   | 4     | Missing module exports                                 |
+| TS18048  | 3     | Possibly undefined values                              |
+| TS2322   | 1     | Type not assignable                                    |
+| TS2307   | 1     | Cannot find module                                     |
 
 **Root Causes for Remaining Dashboard Errors:**
 
@@ -95,6 +97,7 @@
 ## Files Modified
 
 ### API (31 files)
+
 - services/strategicIntelligenceService.ts
 - services/mediaBriefingService.ts
 - services/crisisService.ts
@@ -110,15 +113,16 @@
 - services/narrativeGeneratorService.ts
 
 ### Dashboard (25+ files)
+
 - components/ui/dropdown-menu.tsx
 - components/ui/slider.tsx (created)
 - lib/strategicIntelligenceApi.ts
-- components/crisis/*
-- components/brand-reputation/*
-- components/media-performance/*
-- components/media-briefings/*
-- components/unified-graph/*
-- app/app/exec/strategy/*
+- components/crisis/\*
+- components/brand-reputation/\*
+- components/media-performance/\*
+- components/media-briefings/\*
+- components/unified-graph/\*
+- app/app/exec/strategy/\*
 - And others...
 
 ## Sprint Duration

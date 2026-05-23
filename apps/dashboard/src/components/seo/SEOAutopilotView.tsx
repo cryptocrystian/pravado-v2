@@ -13,6 +13,7 @@
  */
 
 import { useState } from 'react';
+
 import {
   MOCK_SHARE_OF_MODEL,
   MOCK_COMPETITORS,
@@ -47,7 +48,9 @@ function formatTimestamp(iso: string): string {
   return `${diffDays}d ago`;
 }
 
-function getLayerStatusDot(status: 'healthy' | 'attention' | 'critical'): string {
+function getLayerStatusDot(
+  status: 'healthy' | 'attention' | 'critical'
+): string {
   switch (status) {
     case 'healthy':
       return 'bg-semantic-success shadow-[0_0_6px_rgba(22,163,74,0.4)]';
@@ -58,7 +61,9 @@ function getLayerStatusDot(status: 'healthy' | 'attention' | 'critical'): string
   }
 }
 
-function getLayerScoreColor(status: 'healthy' | 'attention' | 'critical'): string {
+function getLayerScoreColor(
+  status: 'healthy' | 'attention' | 'critical'
+): string {
   switch (status) {
     case 'healthy':
       return 'text-semantic-success';
@@ -151,7 +156,9 @@ function OverviewTab() {
             Share of Model
           </span>
           <div className="flex items-baseline gap-3 mb-3">
-            <span className={`text-3xl font-bold tabular-nums ${getAEOBandColor(MOCK_SHARE_OF_MODEL.brand)}`}>
+            <span
+              className={`text-3xl font-bold tabular-nums ${getAEOBandColor(MOCK_SHARE_OF_MODEL.brand)}`}
+            >
               {MOCK_SHARE_OF_MODEL.brand}%
             </span>
             <span className="text-sm font-semibold text-semantic-success tabular-nums">
@@ -170,18 +177,26 @@ function OverviewTab() {
                 const delta = MOCK_SHARE_OF_MODEL.brand - comp.shareOfModel;
                 const isAhead = delta > 0;
                 return (
-                  <div key={comp.name} className="flex items-center justify-between">
+                  <div
+                    key={comp.name}
+                    className="flex items-center justify-between"
+                  >
                     <span className="text-sm text-white/55">{comp.name}</span>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[13px] tabular-nums ${getAEOBandColor(comp.shareOfModel)}`}>
+                      <span
+                        className={`text-[13px] tabular-nums ${getAEOBandColor(comp.shareOfModel)}`}
+                      >
                         {comp.shareOfModel}%
                       </span>
                       <span
                         className={`text-[13px] font-semibold tabular-nums ${
-                          isAhead ? 'text-semantic-success' : 'text-semantic-danger'
+                          isAhead
+                            ? 'text-semantic-success'
+                            : 'text-semantic-danger'
                         }`}
                       >
-                        {isAhead ? '+' : ''}{delta.toFixed(1)}
+                        {isAhead ? '+' : ''}
+                        {delta.toFixed(1)}
                       </span>
                     </div>
                   </div>
@@ -202,15 +217,31 @@ function OverviewTab() {
                 className="flex items-center justify-between py-2 px-3 bg-slate-3 rounded-lg cursor-pointer hover:bg-slate-4 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <span className={`w-2.5 h-2.5 rounded-full ${getLayerStatusDot(layer.status)}`} />
-                  <span className="text-sm font-medium text-white/85">{layer.label}</span>
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full ${getLayerStatusDot(layer.status)}`}
+                  />
+                  <span className="text-sm font-medium text-white/85">
+                    {layer.label}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-sm font-bold tabular-nums ${getLayerScoreColor(layer.status)}`}>
+                  <span
+                    className={`text-sm font-bold tabular-nums ${getLayerScoreColor(layer.status)}`}
+                  >
                     {layer.score}
                   </span>
-                  <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 text-white/30"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -231,13 +262,27 @@ function OverviewTab() {
               className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-3 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <svg className="w-4 h-4 text-semantic-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-4 h-4 text-semantic-success shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
-                <span className="text-sm text-white/85 truncate">{item.title}</span>
+                <span className="text-sm text-white/85 truncate">
+                  {item.title}
+                </span>
               </div>
               <div className="flex items-center gap-4 shrink-0 ml-4">
-                <span className="text-[13px] text-white/50">{formatTimestamp(item.completedAt)}</span>
+                <span className="text-[13px] text-white/50">
+                  {formatTimestamp(item.completedAt)}
+                </span>
                 <span className="text-sm font-semibold text-semantic-success tabular-nums">
                   +{item.impactDelta.toFixed(1)}
                 </span>
@@ -272,15 +317,26 @@ function ExceptionsTab() {
         <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-10 flex flex-col items-center text-center max-w-md">
           {/* Large green checkmark */}
           <div className="w-16 h-16 rounded-full bg-semantic-success/10 border border-semantic-success/20 flex items-center justify-center mb-5">
-            <svg className="w-8 h-8 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-8 h-8 text-semantic-success"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <h3 className="text-sm font-semibold text-white/90 mb-1">
             All clear
           </h3>
           <p className="text-sm text-white/55 mb-5">
-            {MOCK_AUTOPILOT_STATUS.running + MOCK_AUTOPILOT_STATUS.queued} items executing autonomously
+            {MOCK_AUTOPILOT_STATUS.running + MOCK_AUTOPILOT_STATUS.queued} items
+            executing autonomously
           </p>
           <button
             type="button"
@@ -297,12 +353,14 @@ function ExceptionsTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-          {unresolvedExceptions.length} Exception{unresolvedExceptions.length !== 1 ? 's' : ''} Requiring Attention
+          {unresolvedExceptions.length} Exception
+          {unresolvedExceptions.length !== 1 ? 's' : ''} Requiring Attention
         </span>
       </div>
 
       {unresolvedExceptions.map((exception) => {
-        const severityConf = SEVERITY_CONFIG[exception.severity] ?? SEVERITY_CONFIG.medium;
+        const severityConf =
+          SEVERITY_CONFIG[exception.severity] ?? SEVERITY_CONFIG.medium;
 
         return (
           <div
@@ -327,19 +385,25 @@ function ExceptionsTab() {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 block mb-0.5">
                   What it attempted
                 </span>
-                <p className="text-sm text-white/70 leading-relaxed">{exception.attempted}</p>
+                <p className="text-sm text-white/70 leading-relaxed">
+                  {exception.attempted}
+                </p>
               </div>
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 block mb-0.5">
                   Why it stopped
                 </span>
-                <p className="text-sm text-white/70 leading-relaxed">{exception.reason}</p>
+                <p className="text-sm text-white/70 leading-relaxed">
+                  {exception.reason}
+                </p>
               </div>
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 block mb-0.5">
                   Your decision
                 </span>
-                <p className="text-sm text-white/85 leading-relaxed font-medium">{exception.requiresDecision}</p>
+                <p className="text-sm text-white/85 leading-relaxed font-medium">
+                  {exception.requiresDecision}
+                </p>
               </div>
             </div>
 

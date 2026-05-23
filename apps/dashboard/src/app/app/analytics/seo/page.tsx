@@ -5,6 +5,7 @@
  * Topic cluster performance, engine breakdown, competitive movement.
  */
 
+import { WarningCircle, Warning } from '@phosphor-icons/react';
 import { useCallback } from 'react';
 import {
   LineChart,
@@ -16,17 +17,17 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { WarningCircle, Warning } from '@phosphor-icons/react';
+
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import {
   mockSEOSummary,
   mockTopicPerformance,
   mockEngineTrend,
   mockNarratives,
 } from '@/components/analytics/analytics-mock-data';
-import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
-import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
 import { CitationVelocityByEngine } from '@/components/analytics/CitationVelocityByEngine';
 import { TopicOpportunityMatrix } from '@/components/analytics/TopicOpportunityMatrix';
+import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 const engineColors: Record<string, string> = {
   ChatGPT: '#00E5CC',
@@ -42,7 +43,14 @@ export default function SEOAnalyticsPage() {
   const handleExport = useCallback(() => {
     const csv = arrayToCsv(
       ['Topic', 'Start Score', 'End Score', 'Delta', 'Leader', 'Gap to Leader'],
-      mockTopicPerformance.map(t => [t.topic, t.startScore, t.endScore, t.delta, t.leader, t.gapToLeader])
+      mockTopicPerformance.map((t) => [
+        t.topic,
+        t.startScore,
+        t.endScore,
+        t.delta,
+        t.leader,
+        t.gapToLeader,
+      ])
     );
     downloadCsv('pravado-analytics-seo.csv', csv);
   }, []);
@@ -75,14 +83,18 @@ export default function SEOAnalyticsPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-1">
               Share of Voice
             </p>
-            <p className="text-2xl font-bold text-white">{s.shareOfVoice.value}</p>
+            <p className="text-2xl font-bold text-white">
+              {s.shareOfVoice.value}
+            </p>
             <p className="text-sm text-emerald-500">{s.shareOfVoice.delta}</p>
           </div>
           <div className="bg-cc-surface border border-white/8 rounded-2xl p-5">
             <p className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-1">
               Total Citations
             </p>
-            <p className="text-2xl font-bold text-white">{s.totalCitations.value}</p>
+            <p className="text-2xl font-bold text-white">
+              {s.totalCitations.value}
+            </p>
             <p className="text-sm text-emerald-500">{s.totalCitations.delta}</p>
           </div>
           <div className="bg-cc-surface border border-white/8 rounded-2xl p-5">
@@ -146,7 +158,8 @@ export default function SEOAnalyticsPage() {
                       }`}
                     >
                       {row.delta > 0 ? '+' : ''}
-                      {row.delta} {row.delta > 0 ? '\u2191' : row.delta < 0 ? '\u2193' : ''}
+                      {row.delta}{' '}
+                      {row.delta > 0 ? '\u2191' : row.delta < 0 ? '\u2193' : ''}
                     </td>
                     <td
                       className={`px-4 py-3 ${
@@ -159,7 +172,9 @@ export default function SEOAnalyticsPage() {
                       {row.gapToLeader !== null ? (
                         <span
                           className={`flex items-center justify-end gap-1 ${
-                            isLargeGap ? 'text-red-500 font-medium' : 'text-white/70'
+                            isLargeGap
+                              ? 'text-red-500 font-medium'
+                              : 'text-white/70'
                           }`}
                         >
                           {row.gapToLeader}
@@ -258,10 +273,7 @@ export default function SEOAnalyticsPage() {
           <p className="text-sm text-white/70 mb-3">
             Pravado vs CompetitorX this period:
             <br />
-            <span className="text-white">
-              You: +4.2 pts
-            </span>{' '}
-            &middot;{' '}
+            <span className="text-white">You: +4.2 pts</span> &middot;{' '}
             <span className="text-white/70">CompetitorX: +1.8 pts</span>
           </p>
           <p className="text-sm text-white font-semibold mb-2">

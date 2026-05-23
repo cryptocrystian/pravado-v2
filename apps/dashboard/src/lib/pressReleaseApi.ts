@@ -58,7 +58,9 @@ export async function generatePressRelease(
   const result: ApiResponse<PRGenerationResponse> = await response.json();
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to generate press release');
+    throw new Error(
+      result.error?.message || 'Failed to generate press release'
+    );
   }
 
   return result.data;
@@ -116,16 +118,23 @@ export async function getPressRelease(id: string): Promise<PRDetailResponse> {
 /**
  * Optimize a press release
  */
-export async function optimizePressRelease(id: string): Promise<PROptimizationResult> {
-  const response = await fetch(`${API_BASE}/api/v1/pr/releases/${id}/optimize`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+export async function optimizePressRelease(
+  id: string
+): Promise<PROptimizationResult> {
+  const response = await fetch(
+    `${API_BASE}/api/v1/pr/releases/${id}/optimize`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   const result: ApiResponse<PROptimizationResult> = await response.json();
 
   if (!result.success || !result.data) {
-    throw new Error(result.error?.message || 'Failed to optimize press release');
+    throw new Error(
+      result.error?.message || 'Failed to optimize press release'
+    );
   }
 
   return result.data;

@@ -5,13 +5,6 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import {
-  GraphMetrics,
-  formatNodeCount,
-  formatCentrality,
-} from '@/lib/unifiedGraphApi';
 import {
   CircleDot,
   GitBranch,
@@ -21,12 +14,23 @@ import {
   BarChart3,
 } from 'lucide-react';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import {
+  GraphMetrics,
+  formatNodeCount,
+  formatCentrality,
+} from '@/lib/unifiedGraphApi';
+
 interface GraphMetricsPanelProps {
   metrics: GraphMetrics;
   isLoading?: boolean;
 }
 
-export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps) {
+export function GraphMetricsPanel({
+  metrics,
+  isLoading,
+}: GraphMetricsPanelProps) {
   if (isLoading) {
     return (
       <Card>
@@ -113,25 +117,30 @@ export function GraphMetricsPanel({ metrics, isLoading }: GraphMetricsPanelProps
         )}
 
         {/* Top Nodes by PageRank */}
-        {metrics.topNodesByPagerank && metrics.topNodesByPagerank.length > 0 && (
-          <div>
-            <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Top Nodes by Importance
-            </h4>
-            <div className="space-y-2">
-              {metrics.topNodesByPagerank.slice(0, 5).map((node, index) => (
-                <div key={node.nodeId} className="flex items-center gap-2">
-                  <span className="text-xs text-white/50 w-4">{index + 1}.</span>
-                  <span className="flex-1 truncate text-sm">{node.label}</span>
-                  <span className="text-xs font-medium">
-                    {formatCentrality(node.pagerank)}
-                  </span>
-                </div>
-              ))}
+        {metrics.topNodesByPagerank &&
+          metrics.topNodesByPagerank.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Top Nodes by Importance
+              </h4>
+              <div className="space-y-2">
+                {metrics.topNodesByPagerank.slice(0, 5).map((node, index) => (
+                  <div key={node.nodeId} className="flex items-center gap-2">
+                    <span className="text-xs text-white/50 w-4">
+                      {index + 1}.
+                    </span>
+                    <span className="flex-1 truncate text-sm">
+                      {node.label}
+                    </span>
+                    <span className="text-xs font-medium">
+                      {formatCentrality(node.pagerank)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Node Distribution */}
         {Object.keys(metrics.nodesByType).length > 0 && (

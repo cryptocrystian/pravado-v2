@@ -17,13 +17,19 @@ interface RouteParams {
 export async function POST(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const data = await prBackendFetch(`/api/v1/pr-outreach-deliverability/engagement/${id}/recalculate`, {
-      method: 'POST',
-    });
+    const data = await prBackendFetch(
+      `/api/v1/pr-outreach-deliverability/engagement/${id}/recalculate`,
+      {
+        method: 'POST',
+      }
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/deliverability/engagement/[id]/recalculate] POST Error:', { status, message, code });
+    console.error(
+      '[API /api/pr/deliverability/engagement/[id]/recalculate] POST Error:',
+      { status, message, code }
+    );
     return NextResponse.json({ error: message, code }, { status });
   }
 }

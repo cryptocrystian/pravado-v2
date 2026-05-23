@@ -10,7 +10,10 @@ import type { PlaybookRunView } from '@pravado/types';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 
-import { useExecutionStream, type ExecutionEvent } from '@/hooks/useExecutionStream';
+import {
+  useExecutionStream,
+  type ExecutionEvent,
+} from '@/hooks/useExecutionStream';
 
 import { RunHeader } from './components/RunHeader';
 import { StepInspector } from './components/StepInspector';
@@ -27,7 +30,9 @@ export default function PlaybookRunViewerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPolling, setIsPolling] = useState(true);
-  const [streamingMode, setStreamingMode] = useState<'sse' | 'polling'>('polling');
+  const [streamingMode, setStreamingMode] = useState<'sse' | 'polling'>(
+    'polling'
+  );
 
   // S21: SSE streaming (only if feature flag enabled)
   const streamingEnabled = FLAGS.ENABLE_EXECUTION_STREAMING;
@@ -82,93 +87,101 @@ export default function PlaybookRunViewerPage() {
   /**
    * Apply SSE event to run state (S21)
    */
-  const applyEvent = useCallback((event: ExecutionEvent) => {
-    if (!run) return;
+  const applyEvent = useCallback(
+    (event: ExecutionEvent) => {
+      if (!run) return;
 
-    setRun((prevRun) => {
-      if (!prevRun) return prevRun;
+      setRun((prevRun) => {
+        if (!prevRun) return prevRun;
 
-      const updatedRun = { ...prevRun };
+        const updatedRun = { ...prevRun };
 
-      switch (event.type) {
-        case 'run.completed':
-          updatedRun.status = 'SUCCEEDED';
-          updatedRun.state = 'success';
-          updatedRun.completedAt = event.payload.completedAt as string;
-          setIsPolling(false);
-          break;
+        switch (event.type) {
+          case 'run.completed':
+            updatedRun.status = 'SUCCEEDED';
+            updatedRun.state = 'success';
+            updatedRun.completedAt = event.payload.completedAt as string;
+            setIsPolling(false);
+            break;
 
-        case 'run.failed':
-          updatedRun.status = 'FAILED';
-          updatedRun.state = 'failed';
-          updatedRun.completedAt = event.payload.failedAt as string;
-          updatedRun.error = { message: event.payload.error as string };
-          setIsPolling(false);
-          break;
+          case 'run.failed':
+            updatedRun.status = 'FAILED';
+            updatedRun.state = 'failed';
+            updatedRun.completedAt = event.payload.failedAt as string;
+            updatedRun.error = { message: event.payload.error as string };
+            setIsPolling(false);
+            break;
 
-        case 'step.updated':
-        case 'step.completed':
-        case 'step.failed':
-          // Update specific step state
-          if (event.stepKey) {
-            updatedRun.steps = updatedRun.steps.map((step) => {
-              if (step.key !== event.stepKey) return step;
+          case 'step.updated':
+          case 'step.completed':
+          case 'step.failed':
+            // Update specific step state
+            if (event.stepKey) {
+              updatedRun.steps = updatedRun.steps.map((step) => {
+                if (step.key !== event.stepKey) return step;
 
-              const updatedStep = { ...step };
+                const updatedStep = { ...step };
 
-              if (event.type === 'step.updated') {
-                if (event.payload.startedAt) {
-                  updatedStep.startedAt = event.payload.startedAt as string;
-                  updatedStep.state = 'running';
-                  updatedStep.status = 'RUNNING';
+                if (event.type === 'step.updated') {
+                  if (event.payload.startedAt) {
+                    updatedStep.startedAt = event.payload.startedAt as string;
+                    updatedStep.state = 'running';
+                    updatedStep.status = 'RUNNING';
+                  }
+                } else if (event.type === 'step.completed') {
+                  updatedStep.status = 'SUCCEEDED';
+                  updatedStep.state = 'success';
+                  updatedStep.completedAt = event.payload.completedAt as string;
+                  if (event.payload.result) {
+                    updatedStep.output = event.payload.result as Record<
+                      string,
+                      unknown
+                    >;
+                  }
+                } else if (event.type === 'step.failed') {
+                  updatedStep.status = 'FAILED';
+                  updatedStep.state = 'failed';
+                  updatedStep.completedAt = event.payload.failedAt as string;
+                  updatedStep.error = {
+                    message: event.payload.error as string,
+                  };
                 }
-              } else if (event.type === 'step.completed') {
-                updatedStep.status = 'SUCCEEDED';
-                updatedStep.state = 'success';
-                updatedStep.completedAt = event.payload.completedAt as string;
-                if (event.payload.result) {
-                  updatedStep.output = event.payload.result as Record<string, unknown>;
+
+                return updatedStep;
+              });
+            }
+            break;
+
+          case 'step.log.appended':
+            // Append log to step
+            if (event.stepKey && event.payload.logEntry) {
+              updatedRun.steps = updatedRun.steps.map((step) => {
+                if (step.key !== event.stepKey) return step;
+
+                const updatedStep = { ...step };
+                const logEntry = event.payload.logEntry as {
+                  level: string;
+                  message: string;
+                  timestamp: string;
+                };
+
+                // Append to logs array (create if doesn't exist)
+                if (!updatedStep.logs) {
+                  updatedStep.logs = [];
                 }
-              } else if (event.type === 'step.failed') {
-                updatedStep.status = 'FAILED';
-                updatedStep.state = 'failed';
-                updatedStep.completedAt = event.payload.failedAt as string;
-                updatedStep.error = { message: event.payload.error as string };
-              }
+                updatedStep.logs = [...updatedStep.logs, logEntry.message];
 
-              return updatedStep;
-            });
-          }
-          break;
+                return updatedStep;
+              });
+            }
+            break;
+        }
 
-        case 'step.log.appended':
-          // Append log to step
-          if (event.stepKey && event.payload.logEntry) {
-            updatedRun.steps = updatedRun.steps.map((step) => {
-              if (step.key !== event.stepKey) return step;
-
-              const updatedStep = { ...step };
-              const logEntry = event.payload.logEntry as {
-                level: string;
-                message: string;
-                timestamp: string;
-              };
-
-              // Append to logs array (create if doesn't exist)
-              if (!updatedStep.logs) {
-                updatedStep.logs = [];
-              }
-              updatedStep.logs = [...updatedStep.logs, logEntry.message];
-
-              return updatedStep;
-            });
-          }
-          break;
-      }
-
-      return updatedRun;
-    });
-  }, [run]);
+        return updatedRun;
+      });
+    },
+    [run]
+  );
 
   // Initial fetch
   useEffect(() => {
@@ -242,8 +255,12 @@ export default function PlaybookRunViewerPage() {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="bg-white border border-red-200 rounded-lg p-6 max-w-md">
-          <div className="text-red-600 text-xl font-semibold mb-2">⚠ Error</div>
-          <div className="text-gray-700">{error || 'Failed to load playbook run'}</div>
+          <div className="text-red-600 text-xl font-semibold mb-2">
+            ⚠ Error
+          </div>
+          <div className="text-gray-700">
+            {error || 'Failed to load playbook run'}
+          </div>
           <button
             onClick={() => {
               setError(null);

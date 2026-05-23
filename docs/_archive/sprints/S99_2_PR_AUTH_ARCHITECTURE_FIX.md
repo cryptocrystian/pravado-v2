@@ -67,11 +67,13 @@ The PR pages were `'use client'` components that called API clients using `supab
 ### Debug Logging
 
 Enable debug logging by setting:
+
 ```
 NEXT_PUBLIC_DEBUG_AUTH=true
 ```
 
 This logs:
+
 - Token presence (yes/no)
 - Token length (not actual token)
 - API_BASE_URL being used
@@ -91,12 +93,14 @@ To extend this pattern to other pillars (SEO, Content, etc.):
 ## What Was Refactored
 
 ### Before (Broken)
+
 - `'use client'` pages called API clients directly
 - API clients used browser Supabase client
 - Browser client couldn't access cookies during SSR
 - Result: 401 errors on all PR drilldown pages
 
 ### After (Fixed)
+
 - Server Components fetch initial data via `prDataServer`
 - `prDataServer` reads cookies in request scope
 - Proper Authorization header injected

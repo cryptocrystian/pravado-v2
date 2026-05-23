@@ -5,10 +5,24 @@
 
 'use client';
 
+import type {
+  BrandReputationAlert,
+  ReputationAlertSeverity,
+} from '@pravado/types';
+import {
+  AlertTriangle,
+  Info,
+  AlertCircle,
+  Bell,
+  Check,
+  CheckCircle,
+  Loader2,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   getAlertSeverityColor,
   getAlertSeverityBgColor,
@@ -17,16 +31,6 @@ import {
   resolveAlert,
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
-import type { BrandReputationAlert, ReputationAlertSeverity } from '@pravado/types';
-import {
-  AlertTriangle,
-  Info,
-  AlertCircle,
-  Bell,
-  Check,
-  CheckCircle,
-  Loader2
-} from 'lucide-react';
 
 interface ReputationAlertsListProps {
   alerts: BrandReputationAlert[];
@@ -138,7 +142,12 @@ interface AlertItemProps {
   onResolve: () => void;
 }
 
-function AlertItem({ alert, isLoading, onAcknowledge, onResolve }: AlertItemProps) {
+function AlertItem({
+  alert,
+  isLoading,
+  onAcknowledge,
+  onResolve,
+}: AlertItemProps) {
   const severityColorClass = getAlertSeverityColor(alert.severity);
   const severityBgClass = getAlertSeverityBgColor(alert.severity);
 
@@ -172,12 +181,18 @@ function AlertItem({ alert, isLoading, onAcknowledge, onResolve }: AlertItemProp
                 {alert.severity}
               </Badge>
               {alert.isAcknowledged && !alert.isResolved && (
-                <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                <Badge
+                  variant="outline"
+                  className="text-xs bg-blue-50 text-blue-700"
+                >
                   Acknowledged
                 </Badge>
               )}
               {alert.isResolved && (
-                <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
+                <Badge
+                  variant="outline"
+                  className="text-xs bg-green-50 text-green-700"
+                >
                   Resolved
                 </Badge>
               )}
@@ -187,12 +202,13 @@ function AlertItem({ alert, isLoading, onAcknowledge, onResolve }: AlertItemProp
             </p>
             <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
               <span>{formatRelativeTime(alert.createdAt)}</span>
-              {alert.triggerValue !== undefined && alert.thresholdValue !== undefined && (
-                <span>
-                  | Score: {alert.triggerValue.toFixed(0)} / Threshold:{' '}
-                  {alert.thresholdValue.toFixed(0)}
-                </span>
-              )}
+              {alert.triggerValue !== undefined &&
+                alert.thresholdValue !== undefined && (
+                  <span>
+                    | Score: {alert.triggerValue.toFixed(0)} / Threshold:{' '}
+                    {alert.thresholdValue.toFixed(0)}
+                  </span>
+                )}
             </div>
           </div>
         </div>

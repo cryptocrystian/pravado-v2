@@ -27,7 +27,9 @@ test.describe('Journalist Enrichment Engine', () => {
 
     // Check for main page elements
     await expect(page.locator('h1')).toContainText('Contact Enrichment');
-    await expect(page.locator('text=Enrich journalist contact data')).toBeVisible();
+    await expect(
+      page.locator('text=Enrich journalist contact data')
+    ).toBeVisible();
 
     // Verify three-panel layout exists
     await expect(page.locator('text=Generate Enrichment')).toBeVisible();
@@ -41,7 +43,9 @@ test.describe('Journalist Enrichment Engine', () => {
     await expect(page.locator('label:has-text("Source Type")')).toBeVisible();
     await expect(page.locator('label:has-text("Email Address")')).toBeVisible();
     await expect(page.locator('label:has-text("Media Outlet")')).toBeVisible();
-    await expect(page.locator('label:has-text("Social Profile URL")')).toBeVisible();
+    await expect(
+      page.locator('label:has-text("Social Profile URL")')
+    ).toBeVisible();
 
     // Check generate button
     await expect(
@@ -55,30 +59,35 @@ test.describe('Journalist Enrichment Engine', () => {
 
   test('should generate enrichment from email', async ({ page, context }) => {
     // Mock API response
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/generate`, (route) => {
-      route.fulfill({
-        status: 201,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: 'test-enrichment-id',
-          orgId: '00000000-0000-0000-0000-000000000001',
-          sourceType: 'email_verification',
-          email: 'journalist@nytimes.com',
-          emailVerified: true,
-          emailConfidence: 0.9,
-          overallConfidenceScore: 85,
-          completenessScore: 70,
-          dataFreshnessScore: 95,
-          status: 'completed',
-          createdAt: new Date().toISOString(),
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/generate`,
+      (route) => {
+        route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'test-enrichment-id',
+            orgId: '00000000-0000-0000-0000-000000000001',
+            sourceType: 'email_verification',
+            email: 'journalist@nytimes.com',
+            emailVerified: true,
+            emailConfidence: 0.9,
+            overallConfidenceScore: 85,
+            completenessScore: 70,
+            dataFreshnessScore: 95,
+            status: 'completed',
+            createdAt: new Date().toISOString(),
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
     // Fill form
-    await page.locator('select[name="sourceType"]').selectOption('email_verification');
+    await page
+      .locator('select[name="sourceType"]')
+      .selectOption('email_verification');
     await page.fill('input[type="email"]', 'journalist@nytimes.com');
 
     // Submit
@@ -90,11 +99,15 @@ test.describe('Journalist Enrichment Engine', () => {
     });
   });
 
-  test('should validate required fields in generator form', async ({ page }) => {
+  test('should validate required fields in generator form', async ({
+    page,
+  }) => {
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
     // Try to submit empty form
-    const generateButton = page.locator('button:has-text("Generate Enrichment")');
+    const generateButton = page.locator(
+      'button:has-text("Generate Enrichment")'
+    );
     await expect(generateButton).toBeDisabled();
 
     // Fill email field
@@ -102,19 +115,25 @@ test.describe('Journalist Enrichment Engine', () => {
     await expect(generateButton).toBeEnabled();
   });
 
-  test('should display loading state during generation', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/generate`, async (route) => {
-      // Delay response
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      route.fulfill({
-        status: 201,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: 'test-id',
-          status: 'processing',
-        }),
-      });
-    });
+  test('should display loading state during generation', async ({
+    page,
+    context,
+  }) => {
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/generate`,
+      async (route) => {
+        // Delay response
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'test-id',
+            status: 'processing',
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -130,41 +149,44 @@ test.describe('Journalist Enrichment Engine', () => {
   // ========================================
 
   test('should display enrichment records list', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/records*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          records: [
-            {
-              id: 'record-1',
-              sourceType: 'email_verification',
-              email: 'journalist1@nytimes.com',
-              emailVerified: true,
-              outlet: 'The New York Times',
-              overallConfidenceScore: 85,
-              completenessScore: 90,
-              dataFreshnessScore: 95,
-              status: 'completed',
-              createdAt: new Date().toISOString(),
-            },
-            {
-              id: 'record-2',
-              sourceType: 'social_scraping',
-              email: 'journalist2@wsj.com',
-              outlet: 'The Wall Street Journal',
-              overallConfidenceScore: 75,
-              completenessScore: 80,
-              dataFreshnessScore: 85,
-              status: 'completed',
-              createdAt: new Date().toISOString(),
-            },
-          ],
-          total: 2,
-          hasMore: false,
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/records*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            records: [
+              {
+                id: 'record-1',
+                sourceType: 'email_verification',
+                email: 'journalist1@nytimes.com',
+                emailVerified: true,
+                outlet: 'The New York Times',
+                overallConfidenceScore: 85,
+                completenessScore: 90,
+                dataFreshnessScore: 95,
+                status: 'completed',
+                createdAt: new Date().toISOString(),
+              },
+              {
+                id: 'record-2',
+                sourceType: 'social_scraping',
+                email: 'journalist2@wsj.com',
+                outlet: 'The Wall Street Journal',
+                overallConfidenceScore: 75,
+                completenessScore: 80,
+                dataFreshnessScore: 85,
+                status: 'completed',
+                createdAt: new Date().toISOString(),
+              },
+            ],
+            total: 2,
+            hasMore: false,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -173,27 +195,33 @@ test.describe('Journalist Enrichment Engine', () => {
     await expect(page.locator('text=journalist2@wsj.com')).toBeVisible();
   });
 
-  test('should select enrichment record and show details', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/records*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          records: [
-            {
-              id: 'record-1',
-              email: 'test@example.com',
-              status: 'completed',
-              overallConfidenceScore: 85,
-              completenessScore: 90,
-              dataFreshnessScore: 95,
-            },
-          ],
-          total: 1,
-          hasMore: false,
-        }),
-      });
-    });
+  test('should select enrichment record and show details', async ({
+    page,
+    context,
+  }) => {
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/records*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            records: [
+              {
+                id: 'record-1',
+                email: 'test@example.com',
+                status: 'completed',
+                overallConfidenceScore: 85,
+                completenessScore: 90,
+                dataFreshnessScore: 95,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -209,27 +237,30 @@ test.describe('Journalist Enrichment Engine', () => {
   // ========================================
 
   test('should display merge suggestions', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/suggestions/*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          suggestions: [
-            {
-              targetId: 'journalist-1',
-              targetEmail: 'journalist@example.com',
-              confidence: 0.85,
-              reason: 'Email and phone match',
-              fieldsToMerge: ['email', 'phone', 'social_profiles'],
-              matchScore: 0.9,
-              matchFields: ['email', 'phone'],
-              potentialConflicts: [],
-            },
-          ],
-          totalSuggestions: 1,
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/suggestions/*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            suggestions: [
+              {
+                targetId: 'journalist-1',
+                targetEmail: 'journalist@example.com',
+                confidence: 0.85,
+                reason: 'Email and phone match',
+                fieldsToMerge: ['email', 'phone', 'social_profiles'],
+                matchScore: 0.9,
+                matchFields: ['email', 'phone'],
+                potentialConflicts: [],
+              },
+            ],
+            totalSuggestions: 1,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -244,34 +275,40 @@ test.describe('Journalist Enrichment Engine', () => {
   test('should accept merge suggestion', async ({ page, context }) => {
     let mergeRequested = false;
 
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/merge`, (route) => {
-      mergeRequested = true;
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/merge`,
+      (route) => {
+        mergeRequested = true;
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true }),
+        });
+      }
+    );
 
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/suggestions/*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          suggestions: [
-            {
-              targetId: 'journalist-1',
-              confidence: 0.85,
-              reason: 'Match found',
-              fieldsToMerge: ['email'],
-              matchScore: 0.9,
-              matchFields: ['email'],
-            },
-          ],
-          totalSuggestions: 1,
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/suggestions/*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            suggestions: [
+              {
+                targetId: 'journalist-1',
+                confidence: 0.85,
+                reason: 'Match found',
+                fieldsToMerge: ['email'],
+                matchScore: 0.9,
+                matchFields: ['email'],
+              },
+            ],
+            totalSuggestions: 1,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -294,28 +331,31 @@ test.describe('Journalist Enrichment Engine', () => {
   // ========================================
 
   test('should display batch jobs', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/jobs*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          jobs: [
-            {
-              id: 'job-1',
-              jobType: 'batch_enrichment',
-              status: 'processing',
-              inputRecordCount: 100,
-              successfulRecords: 75,
-              failedRecords: 5,
-              progressPercentage: 80,
-              createdAt: new Date().toISOString(),
-            },
-          ],
-          total: 1,
-          hasMore: false,
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/jobs*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            jobs: [
+              {
+                id: 'job-1',
+                jobType: 'batch_enrichment',
+                status: 'processing',
+                inputRecordCount: 100,
+                successfulRecords: 75,
+                failedRecords: 5,
+                progressPercentage: 80,
+                createdAt: new Date().toISOString(),
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -332,31 +372,37 @@ test.describe('Journalist Enrichment Engine', () => {
   // Confidence Badges
   // ========================================
 
-  test('should display confidence badges correctly', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/records*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          records: [
-            {
-              id: 'high-confidence',
-              email: 'high@example.com',
-              overallConfidenceScore: 90,
-              status: 'completed',
-            },
-            {
-              id: 'low-confidence',
-              email: 'low@example.com',
-              overallConfidenceScore: 25,
-              status: 'completed',
-            },
-          ],
-          total: 2,
-          hasMore: false,
-        }),
-      });
-    });
+  test('should display confidence badges correctly', async ({
+    page,
+    context,
+  }) => {
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/records*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            records: [
+              {
+                id: 'high-confidence',
+                email: 'high@example.com',
+                overallConfidenceScore: 90,
+                status: 'completed',
+              },
+              {
+                id: 'low-confidence',
+                email: 'low@example.com',
+                overallConfidenceScore: 25,
+                status: 'completed',
+              },
+            ],
+            total: 2,
+            hasMore: false,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -372,15 +418,18 @@ test.describe('Journalist Enrichment Engine', () => {
   // ========================================
 
   test('should handle API errors gracefully', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/generate`, (route) => {
-      route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          error: 'Internal server error',
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/generate`,
+      (route) => {
+        route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            error: 'Internal server error',
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -399,25 +448,28 @@ test.describe('Journalist Enrichment Engine', () => {
   // ========================================
 
   test('should display quality flags', async ({ page, context }) => {
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/records*`, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          records: [
-            {
-              id: 'flagged-record',
-              email: 'flagged@example.com',
-              status: 'completed',
-              overallConfidenceScore: 60,
-              qualityFlags: ['unverified_email', 'missing_social_profiles'],
-            },
-          ],
-          total: 1,
-          hasMore: false,
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/records*`,
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            records: [
+              {
+                id: 'flagged-record',
+                email: 'flagged@example.com',
+                status: 'completed',
+                overallConfidenceScore: 60,
+                qualityFlags: ['unverified_email', 'missing_social_profiles'],
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 
@@ -432,18 +484,21 @@ test.describe('Journalist Enrichment Engine', () => {
   test('should refresh records list', async ({ page, context }) => {
     let requestCount = 0;
 
-    await context.route(`${API_BASE}/api/v1/journalist-enrichment/records*`, (route) => {
-      requestCount++;
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          records: [],
-          total: 0,
-          hasMore: false,
-        }),
-      });
-    });
+    await context.route(
+      `${API_BASE}/api/v1/journalist-enrichment/records*`,
+      (route) => {
+        requestCount++;
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            records: [],
+            total: 0,
+            hasMore: false,
+          }),
+        });
+      }
+    );
 
     await page.goto(`${DASHBOARD_URL}/app/pr/enrichment`);
 

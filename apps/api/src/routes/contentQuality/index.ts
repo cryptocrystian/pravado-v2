@@ -7,7 +7,11 @@ import type {
   AnalyzeContentQualityResponse,
   GetContentQualityResponse,
 } from '@pravado/types';
-import { analyzeContentQualitySchema, validateEnv, apiEnvSchema } from '@pravado/validators';
+import {
+  analyzeContentQualitySchema,
+  validateEnv,
+  apiEnvSchema,
+} from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
@@ -17,7 +21,10 @@ import { ContentQualityService } from '../../services/contentQualityService';
 /**
  * Helper to get user's org ID
  */
-async function getUserOrgId(userId: string, supabase: any): Promise<string | null> {
+async function getUserOrgId(
+  userId: string,
+  supabase: any
+): Promise<string | null> {
   const { data: userOrgs } = await supabase
     .from('org_members')
     .select('org_id')
@@ -30,7 +37,10 @@ async function getUserOrgId(userId: string, supabase: any): Promise<string | nul
 
 export async function contentQualityRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
   const contentQualityService = new ContentQualityService(supabase);
 
   // ========================================
@@ -83,7 +93,10 @@ export async function contentQualityRoutes(server: FastifyInstance) {
       const { contentItemId } = validation.data;
 
       try {
-        const result = await contentQualityService.analyzeQuality(orgId, contentItemId);
+        const result = await contentQualityService.analyzeQuality(
+          orgId,
+          contentItemId
+        );
 
         return reply.code(200).send({
           success: true,
@@ -140,11 +153,17 @@ export async function contentQualityRoutes(server: FastifyInstance) {
 
       try {
         // Try to get existing score first
-        const existingScore = await contentQualityService.getQualityScore(orgId, contentItemId);
+        const existingScore = await contentQualityService.getQualityScore(
+          orgId,
+          contentItemId
+        );
 
         // If no score exists, analyze now
         if (!existingScore) {
-          const result = await contentQualityService.analyzeQuality(orgId, contentItemId);
+          const result = await contentQualityService.analyzeQuality(
+            orgId,
+            contentItemId
+          );
           return reply.code(200).send({
             success: true,
             data: { result },
@@ -152,7 +171,10 @@ export async function contentQualityRoutes(server: FastifyInstance) {
         }
 
         // Return existing analysis
-        const result = await contentQualityService.analyzeQuality(orgId, contentItemId);
+        const result = await contentQualityService.analyzeQuality(
+          orgId,
+          contentItemId
+        );
         return reply.code(200).send({
           success: true,
           data: { result },

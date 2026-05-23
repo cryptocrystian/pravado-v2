@@ -16,7 +16,10 @@ interface SequenceEditorProps {
   sequence: PRPitchSequenceWithSteps | null;
   pressReleases: { id: string; headline: string }[];
   onSave: (input: CreatePRPitchSequenceInput) => Promise<void>;
-  onUpdate: (id: string, input: Partial<CreatePRPitchSequenceInput>) => Promise<void>;
+  onUpdate: (
+    id: string,
+    input: Partial<CreatePRPitchSequenceInput>
+  ) => Promise<void>;
   isSaving?: boolean;
 }
 
@@ -44,8 +47,12 @@ export function SequenceEditor({
   isSaving,
 }: SequenceEditorProps) {
   const [name, setName] = useState(sequence?.name || '');
-  const [pressReleaseId, setPressReleaseId] = useState(sequence?.pressReleaseId || '');
-  const [defaultSubject, setDefaultSubject] = useState(sequence?.defaultSubject || '');
+  const [pressReleaseId, setPressReleaseId] = useState(
+    sequence?.pressReleaseId || ''
+  );
+  const [defaultSubject, setDefaultSubject] = useState(
+    sequence?.defaultSubject || ''
+  );
   const [steps, setSteps] = useState<StepFormData[]>(
     sequence?.steps.map((s) => ({
       id: s.id,
@@ -102,7 +109,11 @@ Best regards,
     setSteps(newSteps.map((s, i) => ({ ...s, position: i + 1 })));
   };
 
-  const handleStepChange = (index: number, field: keyof StepFormData, value: unknown) => {
+  const handleStepChange = (
+    index: number,
+    field: keyof StepFormData,
+    value: unknown
+  ) => {
     setSteps(steps.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
   };
 
@@ -138,7 +149,10 @@ Best regards,
         </h3>
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
             Sequence Name *
           </label>
           <input
@@ -153,7 +167,10 @@ Best regards,
         </div>
 
         <div>
-          <label htmlFor="pressRelease" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="pressRelease"
+            className="block text-sm font-medium text-gray-700"
+          >
             Associated Press Release
           </label>
           <select
@@ -172,7 +189,10 @@ Best regards,
         </div>
 
         <div>
-          <label htmlFor="defaultSubject" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="defaultSubject"
+            className="block text-sm font-medium text-gray-700"
+          >
             Default Subject Line
           </label>
           <input
@@ -222,11 +242,17 @@ Best regards,
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Type</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Type
+                  </label>
                   <select
                     value={step.stepType}
                     onChange={(e) =>
-                      handleStepChange(index, 'stepType', e.target.value as PRPitchStepType)
+                      handleStepChange(
+                        index,
+                        'stepType',
+                        e.target.value as PRPitchStepType
+                      )
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   >
@@ -247,7 +273,11 @@ Best regards,
                       type="number"
                       value={step.waitDays}
                       onChange={(e) =>
-                        handleStepChange(index, 'waitDays', parseInt(e.target.value) || 0)
+                        handleStepChange(
+                          index,
+                          'waitDays',
+                          parseInt(e.target.value) || 0
+                        )
                       }
                       min={0}
                       max={30}
@@ -264,7 +294,9 @@ Best regards,
                 <input
                   type="text"
                   value={step.subjectTemplate}
-                  onChange={(e) => handleStepChange(index, 'subjectTemplate', e.target.value)}
+                  onChange={(e) =>
+                    handleStepChange(index, 'subjectTemplate', e.target.value)
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   placeholder="Use {{variables}} for personalization"
                 />
@@ -276,15 +308,18 @@ Best regards,
                 </label>
                 <textarea
                   value={step.bodyTemplate}
-                  onChange={(e) => handleStepChange(index, 'bodyTemplate', e.target.value)}
+                  onChange={(e) =>
+                    handleStepChange(index, 'bodyTemplate', e.target.value)
+                  }
                   rows={6}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-sm"
                   placeholder="Email body with {{journalist.firstName}}, {{organization.name}}, etc."
                   required
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  Available variables: {'{{journalist.firstName}}'}, {'{{journalist.beat}}'},
-                  {'{{journalist.outlet}}'}, {'{{organization.name}}'}, {'{{pressRelease.headline}}'},
+                  Available variables: {'{{journalist.firstName}}'},{' '}
+                  {'{{journalist.beat}}'},{'{{journalist.outlet}}'},{' '}
+                  {'{{organization.name}}'}, {'{{pressRelease.headline}}'},
                   {'{{pressRelease.angle}}'}
                 </p>
               </div>
@@ -300,7 +335,11 @@ Best regards,
           disabled={isSaving || !name}
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSaving ? 'Saving...' : sequence ? 'Update Sequence' : 'Create Sequence'}
+          {isSaving
+            ? 'Saving...'
+            : sequence
+              ? 'Update Sequence'
+              : 'Create Sequence'}
         </button>
       </div>
     </form>

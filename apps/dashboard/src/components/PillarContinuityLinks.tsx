@@ -22,7 +22,13 @@ export interface PillarLinkInfo {
 // Pillar metadata
 const pillarMeta: Record<
   string,
-  { label: string; href: string; color: string; bgColor: string; borderColor: string }
+  {
+    label: string;
+    href: string;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+  }
 > = {
   pr: {
     label: 'PR Intelligence',
@@ -84,7 +90,8 @@ export function PillarContinuityLinks({
 }: PillarContinuityLinksProps) {
   if (links.length === 0) return null;
 
-  const containerClass = layout === 'inline' ? 'flex flex-wrap items-center gap-2' : 'space-y-2';
+  const containerClass =
+    layout === 'inline' ? 'flex flex-wrap items-center gap-2' : 'space-y-2';
 
   return (
     <div className={containerClass}>
@@ -96,7 +103,11 @@ export function PillarContinuityLinks({
 
         return (
           <div key={idx} className="flex items-center gap-1.5">
-            {showLabels && <span className="text-xs text-white/55 uppercase">{roleLabels[link.role]}</span>}
+            {showLabels && (
+              <span className="text-xs text-white/55 uppercase">
+                {roleLabels[link.role]}
+              </span>
+            )}
             <Link
               href={href}
               className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium border transition-all hover:shadow-sm ${meta.bgColor} ${meta.color} ${meta.borderColor}`}
@@ -129,14 +140,17 @@ export function PillarBadge({
   if (!meta) return null;
 
   const href = actionPath || meta.href;
-  const sizeClasses = size === 'md' ? 'px-3 py-1.5 text-sm' : 'px-2 py-0.5 text-xs';
+  const sizeClasses =
+    size === 'md' ? 'px-3 py-1.5 text-sm' : 'px-2 py-0.5 text-xs';
 
   return (
     <Link
       href={href}
       className={`inline-flex items-center gap-1.5 ${sizeClasses} rounded font-medium border transition-all hover:shadow-sm ${meta.bgColor} ${meta.color} ${meta.borderColor}`}
     >
-      <span className={`rounded-full bg-current ${size === 'md' ? 'w-2 h-2' : 'w-1.5 h-1.5'}`} />
+      <span
+        className={`rounded-full bg-current ${size === 'md' ? 'w-2 h-2' : 'w-1.5 h-1.5'}`}
+      />
       {actionLabel || meta.label}
     </Link>
   );
@@ -145,8 +159,13 @@ export function PillarBadge({
 /**
  * Helper to determine pillar from source system
  */
-export function getPillarFromSource(sourceSystem: string): 'pr' | 'content' | 'seo' | 'exec' | 'crisis' {
-  const sourceMap: Record<string, 'pr' | 'content' | 'seo' | 'exec' | 'crisis'> = {
+export function getPillarFromSource(
+  sourceSystem: string
+): 'pr' | 'content' | 'seo' | 'exec' | 'crisis' {
+  const sourceMap: Record<
+    string,
+    'pr' | 'content' | 'seo' | 'exec' | 'crisis'
+  > = {
     media_monitoring: 'pr',
     journalist_intel: 'pr',
     press_release: 'pr',
@@ -198,7 +217,11 @@ export function getAffectedPillars(
     }
     // SEO opportunities affect content
     if (sourcePillar === 'seo') {
-      affected.push({ pillar: 'content', role: 'action', actionLabel: 'Create Brief' });
+      affected.push({
+        pillar: 'content',
+        role: 'action',
+        actionLabel: 'Create Brief',
+      });
     }
     // PR opportunities may have SEO impact
     if (sourcePillar === 'pr') {

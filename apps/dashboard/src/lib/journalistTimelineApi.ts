@@ -34,7 +34,9 @@ async function apiFetch(endpoint: string, options?: RequestInit) {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: 'Request failed' }));
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 
@@ -60,7 +62,9 @@ export async function createEvent(
 /**
  * Get a single timeline event by ID
  */
-export async function getEvent(eventId: string): Promise<JournalistTimelineEvent> {
+export async function getEvent(
+  eventId: string
+): Promise<JournalistTimelineEvent> {
   return apiFetch(`/events/${eventId}`, {
     method: 'GET',
   });
@@ -82,7 +86,9 @@ export async function updateEvent(
 /**
  * Delete a timeline event
  */
-export async function deleteEvent(eventId: string): Promise<{ success: boolean }> {
+export async function deleteEvent(
+  eventId: string
+): Promise<{ success: boolean }> {
   return apiFetch(`/events/${eventId}`, {
     method: 'DELETE',
   });
@@ -91,7 +97,9 @@ export async function deleteEvent(eventId: string): Promise<{ success: boolean }
 /**
  * List timeline events with filtering, sorting, and pagination
  */
-export async function listEvents(query?: TimelineQuery): Promise<TimelineListResponse> {
+export async function listEvents(
+  query?: TimelineQuery
+): Promise<TimelineListResponse> {
   const params = new URLSearchParams();
 
   if (query?.journalistId) params.append('journalistId', query.journalistId);
@@ -101,11 +109,15 @@ export async function listEvents(query?: TimelineQuery): Promise<TimelineListRes
   }
 
   if (query?.sourceSystems && query.sourceSystems.length > 0) {
-    query.sourceSystems.forEach((system) => params.append('sourceSystems', system));
+    query.sourceSystems.forEach((system) =>
+      params.append('sourceSystems', system)
+    );
   }
 
   if (query?.sentiments && query.sentiments.length > 0) {
-    query.sentiments.forEach((sentiment) => params.append('sentiments', sentiment));
+    query.sentiments.forEach((sentiment) =>
+      params.append('sentiments', sentiment)
+    );
   }
 
   if (query?.clusterIds && query.clusterIds.length > 0) {

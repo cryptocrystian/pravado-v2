@@ -13,7 +13,6 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import { useRef, useState, useEffect } from 'react';
 import {
   Lightning,
   Lock,
@@ -23,6 +22,8 @@ import {
   TrendUp,
   Info,
 } from '@phosphor-icons/react';
+import { useRef, useState, useEffect } from 'react';
+
 import { useCalendarMode, type AutomationMode } from './CalendarModeContext';
 import type { CalendarViewMode } from './types';
 
@@ -30,13 +31,16 @@ import type { CalendarViewMode } from './types';
 // MODE CONFIG
 // ============================================
 
-const MODE_CONFIG: Record<AutomationMode, {
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-  pill: string;
-  dot: string;
-}> = {
+const MODE_CONFIG: Record<
+  AutomationMode,
+  {
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+    pill: string;
+    dot: string;
+  }
+> = {
   manual: {
     label: 'Manual',
     description: 'You control every action',
@@ -78,7 +82,8 @@ function ModeSwitcher() {
 
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -101,29 +106,43 @@ function ModeSwitcher() {
           className="absolute right-0 top-full mt-1.5 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden"
           style={{ width: 260, maxWidth: 'calc(100vw - 2rem)' }}
         >
-          {(Object.entries(MODE_CONFIG) as [AutomationMode, typeof MODE_CONFIG[AutomationMode]][]).map(
-            ([key, c]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => { setMode(key); setOpen(false); }}
-                className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
-                  mode === key ? 'bg-slate-3' : ''
-                }`}
+          {(
+            Object.entries(MODE_CONFIG) as [
+              AutomationMode,
+              (typeof MODE_CONFIG)[AutomationMode],
+            ][]
+          ).map(([key, c]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => {
+                setMode(key);
+                setOpen(false);
+              }}
+              className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
+                mode === key ? 'bg-slate-3' : ''
+              }`}
+            >
+              <div
+                className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${c.pill}`}
               >
-                <div className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${c.pill}`}>
-                  {c.icon}
+                {c.icon}
+              </div>
+              <div>
+                <div className="text-[13px] font-semibold text-white/90">
+                  {c.label}
                 </div>
-                <div>
-                  <div className="text-[13px] font-semibold text-white/90">{c.label}</div>
-                  <div className="text-[12px] text-white/50 mt-0.5">{c.description}</div>
+                <div className="text-[12px] text-white/50 mt-0.5">
+                  {c.description}
                 </div>
-                {mode === key && (
-                  <div className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
-                )}
-              </button>
-            )
-          )}
+              </div>
+              {mode === key && (
+                <div
+                  className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`}
+                />
+              )}
+            </button>
+          ))}
         </div>
       )}
     </div>
@@ -165,8 +184,8 @@ export function CalendarChromeBar() {
 
   useEffect(() => {
     fetch('/api/command-center/strategy-panel')
-      .then(r => r.json())
-      .then(d => {
+      .then((r) => r.json())
+      .then((d) => {
         if (d.success !== false && d.evi) {
           setEvi({ score: d.evi.score, delta: d.evi.delta_7d });
         }
@@ -177,7 +196,6 @@ export function CalendarChromeBar() {
   return (
     <div className="border-b border-slate-4 bg-slate-0 shrink-0">
       <div className="flex items-center justify-between px-8 h-12">
-
         {/* Left: Pillar indicator + SAGE tag */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -198,11 +216,18 @@ export function CalendarChromeBar() {
         {/* Center: EVI metric + info */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/35">EVI</span>
-            <span className="text-[15px] font-bold text-white/90">{(evi?.score ?? 0).toFixed(1)}</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/35">
+              EVI
+            </span>
+            <span className="text-[15px] font-bold text-white/90">
+              {(evi?.score ?? 0).toFixed(1)}
+            </span>
             <div className="flex items-center gap-1 text-semantic-success">
               <TrendUp className="w-3 h-3" weight="bold" />
-              <span className="text-[12px] font-semibold">{(evi?.delta ?? 0) >= 0 ? '+' : ''}{(evi?.delta ?? 0).toFixed(1)}</span>
+              <span className="text-[12px] font-semibold">
+                {(evi?.delta ?? 0) >= 0 ? '+' : ''}
+                {(evi?.delta ?? 0).toFixed(1)}
+              </span>
             </div>
           </div>
           <button
@@ -210,7 +235,10 @@ export function CalendarChromeBar() {
             className="p-1.5 rounded-lg hover:bg-slate-3 transition-colors"
             title="About Calendar"
           >
-            <Info className="w-4 h-4 text-white/35 hover:text-white/60 transition-colors" weight="regular" />
+            <Info
+              className="w-4 h-4 text-white/35 hover:text-white/60 transition-colors"
+              weight="regular"
+            />
           </button>
         </div>
 

@@ -18,7 +18,11 @@ export const PersonaTypeSchema = z.enum([
 
 export const PersonaStatusSchema = z.enum(['active', 'archived', 'merged']);
 
-export const GenerationMethodSchema = z.enum(['manual', 'llm_assisted', 'auto_extracted']);
+export const GenerationMethodSchema = z.enum([
+  'manual',
+  'llm_assisted',
+  'auto_extracted',
+]);
 
 export const TraitCategorySchema = z.enum([
   'skill',
@@ -46,7 +50,11 @@ export const InsightTypeSchema = z.enum([
   'opportunity',
 ]);
 
-export const PersonaInsightCategorySchema = z.enum(['behavioral', 'attitudinal', 'contextual']);
+export const PersonaInsightCategorySchema = z.enum([
+  'behavioral',
+  'attitudinal',
+  'contextual',
+]);
 
 export const PersonaSourceSystemSchema = z.enum([
   'press_release_gen',
@@ -74,7 +82,11 @@ export const SeniorityLevelSchema = z.enum([
   'c_level',
 ]);
 
-export const ExtractionMethodSchema = z.enum(['manual', 'llm', 'deterministic']);
+export const ExtractionMethodSchema = z.enum([
+  'manual',
+  'llm',
+  'deterministic',
+]);
 
 export const PersonaSourceTypeSchema = z.enum([
   'press_release',
@@ -227,7 +239,9 @@ export const PersonaInsightsQuerySchema = z.object({
   minConfidence: z.number().min(0).max(1).optional(),
   minImpact: z.number().min(0).max(1).optional(),
   isActionable: z.boolean().optional(),
-  sortBy: z.enum(['created_at', 'observed_at', 'confidence_score', 'impact_score']).optional(),
+  sortBy: z
+    .enum(['created_at', 'observed_at', 'confidence_score', 'impact_score'])
+    .optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
   limit: z.number().int().min(1).max(100).optional(),
   offset: z.number().int().min(0).optional(),
@@ -257,11 +271,15 @@ export const PersonaTrendsQuerySchema = z.object({
 export type CreatePersonaInput = z.infer<typeof CreatePersonaInputSchema>;
 export type UpdatePersonaInput = z.infer<typeof UpdatePersonaInputSchema>;
 export type GenerationContext = z.infer<typeof GenerationContextSchema>;
-export type GeneratePersonaRequest = z.infer<typeof GeneratePersonaRequestSchema>;
+export type GeneratePersonaRequest = z.infer<
+  typeof GeneratePersonaRequestSchema
+>;
 export type ExtractionInput = z.infer<typeof ExtractionInputSchema>;
 export type AddTraitRequest = z.infer<typeof AddTraitRequestSchema>;
 export type AddInsightRequest = z.infer<typeof AddInsightRequestSchema>;
-export type ComparePersonasRequest = z.infer<typeof ComparePersonasRequestSchema>;
+export type ComparePersonasRequest = z.infer<
+  typeof ComparePersonasRequestSchema
+>;
 export type MergePersonasRequest = z.infer<typeof MergePersonasRequestSchema>;
 export type PersonasQuery = z.infer<typeof PersonasQuerySchema>;
 export type PersonaInsightsQuery = z.infer<typeof PersonaInsightsQuerySchema>;

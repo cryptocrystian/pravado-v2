@@ -6,15 +6,18 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import type { GovernanceSeverityLevel } from '@/lib/governanceApi';
+import { cn } from '@/lib/utils';
 
 interface SeverityBadgeProps {
   severity: GovernanceSeverityLevel;
   className?: string;
 }
 
-const severityConfig: Record<GovernanceSeverityLevel, { label: string; className: string }> = {
+const severityConfig: Record<
+  GovernanceSeverityLevel,
+  { label: string; className: string }
+> = {
   low: {
     label: 'Low',
     className: 'bg-green-100 text-green-800 border-green-200',
@@ -37,7 +40,10 @@ export function SeverityBadge({ severity, className }: SeverityBadgeProps) {
   const config = severityConfig[severity] || severityConfig.low;
 
   return (
-    <Badge variant="outline" className={cn('text-xs font-medium', config.className, className)}>
+    <Badge
+      variant="outline"
+      className={cn('text-xs font-medium', config.className, className)}
+    >
       {config.label}
     </Badge>
   );

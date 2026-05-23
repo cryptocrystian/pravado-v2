@@ -26,7 +26,12 @@ export { PRPitchPipeline } from './views/PRPitchPipeline';
 export { DistributionDecisionMatrix } from './components/DistributionDecisionMatrix';
 export { ContactDetailDrawer } from './components/ContactDetailDrawer';
 export { ContactRelationshipLedger } from './components/ContactRelationshipLedger';
-export { ImpactStrip, SAGETag, EVIIndicator, ModeBadge } from './components/ImpactStrip';
+export {
+  ImpactStrip,
+  SAGETag,
+  EVIIndicator,
+  ModeBadge,
+} from './components/ImpactStrip';
 export { PitchComposer } from './components/PitchComposer';
 export { AttentionQueue } from './components/AttentionQueue';
 export { CopilotSuggestions } from './components/CopilotSuggestions';

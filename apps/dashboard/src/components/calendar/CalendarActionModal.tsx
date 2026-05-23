@@ -10,8 +10,14 @@
  */
 
 import { useEffect, useCallback } from 'react';
+
+import {
+  STATUS_CONFIG,
+  MODE_CONFIG,
+  PILLAR_CONFIG,
+  RISK_CONFIG,
+} from './types';
 import type { CalendarItem } from '../command-center/types';
-import { STATUS_CONFIG, MODE_CONFIG, PILLAR_CONFIG, RISK_CONFIG } from './types';
 
 // ============================================
 // PROPS
@@ -206,7 +212,10 @@ function StatusActions({ status }: { status: string }) {
 // MAIN COMPONENT
 // ============================================
 
-export function CalendarActionModal({ item, onClose }: CalendarActionModalProps) {
+export function CalendarActionModal({
+  item,
+  onClose,
+}: CalendarActionModalProps) {
   const statusConf = STATUS_CONFIG[item.status];
   const modeConf = MODE_CONFIG[item.mode];
   const pillarConf = PILLAR_CONFIG[item.pillar];
@@ -219,7 +228,7 @@ export function CalendarActionModal({ item, onClose }: CalendarActionModalProps)
         onClose();
       }
     },
-    [onClose],
+    [onClose]
   );
 
   useEffect(() => {

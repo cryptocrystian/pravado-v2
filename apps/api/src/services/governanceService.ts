@@ -262,7 +262,13 @@ export class GovernanceService {
     }
 
     // Create initial version
-    await this.createPolicyVersion(orgId, data.id, data, 'Initial creation', userId);
+    await this.createPolicyVersion(
+      orgId,
+      data.id,
+      data,
+      'Initial creation',
+      userId
+    );
 
     logger.info('Policy created', { orgId, policyId: data.id, key: input.key });
     return this.mapPolicyRecord(data);
@@ -365,7 +371,10 @@ export class GovernanceService {
     return this.mapPolicyRecord(data);
   }
 
-  async getPolicy(orgId: string, policyId: string): Promise<GovernancePolicy | null> {
+  async getPolicy(
+    orgId: string,
+    policyId: string
+  ): Promise<GovernancePolicy | null> {
     const { data, error } = await this.supabase
       .from('governance_policies')
       .select('*')
@@ -382,13 +391,20 @@ export class GovernanceService {
     return this.mapPolicyRecord(data);
   }
 
-  async getPolicyDetail(orgId: string, policyId: string): Promise<GovernancePolicyDetailResponse | null> {
+  async getPolicyDetail(
+    orgId: string,
+    policyId: string
+  ): Promise<GovernancePolicyDetailResponse | null> {
     const policy = await this.getPolicy(orgId, policyId);
     if (!policy) return null;
 
     const [rulesResult, findingsResult] = await Promise.all([
       this.listRules(orgId, { policyId, limit: 100 }),
-      this.listFindings(orgId, { policyId, status: ['open', 'acknowledged', 'in_progress'], limit: 10 }),
+      this.listFindings(orgId, {
+        policyId,
+        status: ['open', 'acknowledged', 'in_progress'],
+        limit: 10,
+      }),
     ]);
 
     return {
@@ -400,7 +416,10 @@ export class GovernanceService {
     };
   }
 
-  async listPolicies(orgId: string, query: GovernancePoliciesQuery = {}): Promise<GovernancePoliciesListResponse> {
+  async listPolicies(
+    orgId: string,
+    query: GovernancePoliciesQuery = {}
+  ): Promise<GovernancePoliciesListResponse> {
     const {
       category,
       scope,
@@ -462,12 +481,19 @@ export class GovernanceService {
     }
 
     if (searchQuery) {
-      dbQuery = dbQuery.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,key.ilike.%${searchQuery}%`);
+      dbQuery = dbQuery.or(
+        `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,key.ilike.%${searchQuery}%`
+      );
     }
 
-    const sortColumn = sortBy === 'created_at' ? 'created_at' :
-                       sortBy === 'updated_at' ? 'updated_at' :
-                       sortBy === 'name' ? 'name' : 'severity';
+    const sortColumn =
+      sortBy === 'created_at'
+        ? 'created_at'
+        : sortBy === 'updated_at'
+          ? 'updated_at'
+          : sortBy === 'name'
+            ? 'name'
+            : 'severity';
 
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
@@ -520,7 +546,8 @@ export class GovernanceService {
       .order('version_number', { ascending: false })
       .limit(1);
 
-    const nextVersion = versions && versions.length > 0 ? versions[0].version_number + 1 : 1;
+    const nextVersion =
+      versions && versions.length > 0 ? versions[0].version_number + 1 : 1;
 
     const { error } = await this.supabase
       .from('governance_policy_versions')
@@ -539,7 +566,10 @@ export class GovernanceService {
     }
   }
 
-  async getPolicyVersions(orgId: string, policyId: string): Promise<GovernancePolicyVersionsResponse> {
+  async getPolicyVersions(
+    orgId: string,
+    policyId: string
+  ): Promise<GovernancePolicyVersionsResponse> {
     const { data, error, count } = await this.supabase
       .from('governance_policy_versions')
       .select('*', { count: 'exact' })
@@ -597,11 +627,19 @@ export class GovernanceService {
       .single();
 
     if (error) {
-      logger.error('Failed to create rule', { error, orgId, policyId: input.policyId });
+      logger.error('Failed to create rule', {
+        error,
+        orgId,
+        policyId: input.policyId,
+      });
       throw new Error(`Failed to create rule: ${error.message}`);
     }
 
-    logger.info('Rule created', { orgId, ruleId: data.id, policyId: input.policyId });
+    logger.info('Rule created', {
+      orgId,
+      ruleId: data.id,
+      policyId: input.policyId,
+    });
     return this.mapRuleRecord(data);
   }
 
@@ -614,17 +652,23 @@ export class GovernanceService {
     const updates: Record<string, unknown> = { updated_by: userId || null };
 
     if (input.name !== undefined) updates.name = input.name;
-    if (input.description !== undefined) updates.description = input.description;
+    if (input.description !== undefined)
+      updates.description = input.description;
     if (input.ruleType !== undefined) updates.rule_type = input.ruleType;
-    if (input.targetSystem !== undefined) updates.target_system = input.targetSystem;
+    if (input.targetSystem !== undefined)
+      updates.target_system = input.targetSystem;
     if (input.condition !== undefined) updates.condition = input.condition;
     if (input.action !== undefined) updates.action = input.action;
     if (input.priority !== undefined) updates.priority = input.priority;
     if (input.isActive !== undefined) updates.is_active = input.isActive;
-    if (input.evaluationMode !== undefined) updates.evaluation_mode = input.evaluationMode;
-    if (input.scheduleCron !== undefined) updates.schedule_cron = input.scheduleCron;
-    if (input.cooldownMinutes !== undefined) updates.cooldown_minutes = input.cooldownMinutes;
-    if (input.maxFindingsPerDay !== undefined) updates.max_findings_per_day = input.maxFindingsPerDay;
+    if (input.evaluationMode !== undefined)
+      updates.evaluation_mode = input.evaluationMode;
+    if (input.scheduleCron !== undefined)
+      updates.schedule_cron = input.scheduleCron;
+    if (input.cooldownMinutes !== undefined)
+      updates.cooldown_minutes = input.cooldownMinutes;
+    if (input.maxFindingsPerDay !== undefined)
+      updates.max_findings_per_day = input.maxFindingsPerDay;
     if (input.tags !== undefined) updates.tags = input.tags;
     if (input.metadata !== undefined) updates.metadata = input.metadata;
 
@@ -662,7 +706,10 @@ export class GovernanceService {
     return this.mapRuleRecord(data);
   }
 
-  async listRules(orgId: string, query: GovernanceRulesQuery = {}): Promise<GovernanceRulesListResponse> {
+  async listRules(
+    orgId: string,
+    query: GovernanceRulesQuery = {}
+  ): Promise<GovernanceRulesListResponse> {
     const {
       policyId,
       ruleType,
@@ -715,12 +762,19 @@ export class GovernanceService {
     }
 
     if (searchQuery) {
-      dbQuery = dbQuery.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+      dbQuery = dbQuery.or(
+        `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`
+      );
     }
 
-    const sortColumn = sortBy === 'created_at' ? 'created_at' :
-                       sortBy === 'updated_at' ? 'updated_at' :
-                       sortBy === 'name' ? 'name' : 'priority';
+    const sortColumn =
+      sortBy === 'created_at'
+        ? 'created_at'
+        : sortBy === 'updated_at'
+          ? 'updated_at'
+          : sortBy === 'name'
+            ? 'name'
+            : 'priority';
 
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
@@ -790,11 +844,19 @@ export class GovernanceService {
       .single();
 
     if (error) {
-      logger.error('Failed to create finding', { error, orgId, ruleId: input.ruleId });
+      logger.error('Failed to create finding', {
+        error,
+        orgId,
+        ruleId: input.ruleId,
+      });
       throw new Error(`Failed to create finding: ${error.message}`);
     }
 
-    logger.info('Finding created', { orgId, findingId: data.id, severity: input.severity });
+    logger.info('Finding created', {
+      orgId,
+      findingId: data.id,
+      severity: input.severity,
+    });
     return this.mapFindingRecord(data);
   }
 
@@ -821,9 +883,12 @@ export class GovernanceService {
     }
 
     if (input.assignedTo !== undefined) updates.assigned_to = input.assignedTo;
-    if (input.mitigationNotes !== undefined) updates.mitigation_notes = input.mitigationNotes;
-    if (input.resolutionNotes !== undefined) updates.resolution_notes = input.resolutionNotes;
-    if (input.recommendedActions !== undefined) updates.recommended_actions = input.recommendedActions;
+    if (input.mitigationNotes !== undefined)
+      updates.mitigation_notes = input.mitigationNotes;
+    if (input.resolutionNotes !== undefined)
+      updates.resolution_notes = input.resolutionNotes;
+    if (input.recommendedActions !== undefined)
+      updates.recommended_actions = input.recommendedActions;
 
     const { data, error } = await this.supabase
       .from('governance_findings')
@@ -842,7 +907,10 @@ export class GovernanceService {
     return this.mapFindingRecord(data);
   }
 
-  async getFinding(orgId: string, findingId: string): Promise<GovernanceFinding | null> {
+  async getFinding(
+    orgId: string,
+    findingId: string
+  ): Promise<GovernanceFinding | null> {
     const { data, error } = await this.supabase
       .from('governance_findings')
       .select('*')
@@ -859,7 +927,10 @@ export class GovernanceService {
     return this.mapFindingRecord(data);
   }
 
-  async getFindingDetail(orgId: string, findingId: string): Promise<GovernanceFindingDetailResponse | null> {
+  async getFindingDetail(
+    orgId: string,
+    findingId: string
+  ): Promise<GovernanceFindingDetailResponse | null> {
     const finding = await this.getFinding(orgId, findingId);
     if (!finding) return null;
 
@@ -881,11 +952,16 @@ export class GovernanceService {
       finding,
       policy,
       rule,
-      relatedFindings: relatedFindings.findings.filter(f => f.id !== findingId),
+      relatedFindings: relatedFindings.findings.filter(
+        (f) => f.id !== findingId
+      ),
     };
   }
 
-  async listFindings(orgId: string, query: GovernanceFindingsQuery = {}): Promise<GovernanceFindingsListResponse> {
+  async listFindings(
+    orgId: string,
+    query: GovernanceFindingsQuery = {}
+  ): Promise<GovernanceFindingsListResponse> {
     const {
       policyId,
       ruleId,
@@ -952,12 +1028,19 @@ export class GovernanceService {
     }
 
     if (searchQuery) {
-      dbQuery = dbQuery.or(`summary.ilike.%${searchQuery}%,details.ilike.%${searchQuery}%`);
+      dbQuery = dbQuery.or(
+        `summary.ilike.%${searchQuery}%,details.ilike.%${searchQuery}%`
+      );
     }
 
-    const sortColumn = sortBy === 'detected_at' ? 'detected_at' :
-                       sortBy === 'severity' ? 'severity' :
-                       sortBy === 'status' ? 'status' : 'impact_score';
+    const sortColumn =
+      sortBy === 'detected_at'
+        ? 'detected_at'
+        : sortBy === 'severity'
+          ? 'severity'
+          : sortBy === 'status'
+            ? 'status'
+            : 'impact_score';
 
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
@@ -979,7 +1062,11 @@ export class GovernanceService {
     };
   }
 
-  async acknowledgeFinding(orgId: string, findingId: string, notes?: string): Promise<GovernanceFinding> {
+  async acknowledgeFinding(
+    orgId: string,
+    findingId: string,
+    notes?: string
+  ): Promise<GovernanceFinding> {
     return this.updateFinding(orgId, findingId, {
       status: 'acknowledged' as GovernanceFindingStatus,
       mitigationNotes: notes,
@@ -992,13 +1079,22 @@ export class GovernanceService {
     resolutionNotes: string,
     userId?: string
   ): Promise<GovernanceFinding> {
-    return this.updateFinding(orgId, findingId, {
-      status: 'resolved' as GovernanceFindingStatus,
-      resolutionNotes,
-    }, userId);
+    return this.updateFinding(
+      orgId,
+      findingId,
+      {
+        status: 'resolved' as GovernanceFindingStatus,
+        resolutionNotes,
+      },
+      userId
+    );
   }
 
-  async dismissFinding(orgId: string, findingId: string, reason: string): Promise<GovernanceFinding> {
+  async dismissFinding(
+    orgId: string,
+    findingId: string,
+    reason: string
+  ): Promise<GovernanceFinding> {
     return this.updateFinding(orgId, findingId, {
       status: 'dismissed' as GovernanceFindingStatus,
       mitigationNotes: reason,
@@ -1102,15 +1198,29 @@ export class GovernanceService {
     }
 
     if (error) {
-      logger.error('Failed to upsert risk score', { error, orgId, entityType: input.entityType, entityId: input.entityId });
+      logger.error('Failed to upsert risk score', {
+        error,
+        orgId,
+        entityType: input.entityType,
+        entityId: input.entityId,
+      });
       throw new Error(`Failed to upsert risk score: ${error.message}`);
     }
 
-    logger.info('Risk score upserted', { orgId, entityType: input.entityType, entityId: input.entityId, score: input.overallScore });
+    logger.info('Risk score upserted', {
+      orgId,
+      entityType: input.entityType,
+      entityId: input.entityId,
+      score: input.overallScore,
+    });
     return this.mapRiskScoreRecord(data);
   }
 
-  async getRiskScore(orgId: string, entityType: GovernanceEntityType, entityId: string): Promise<GovernanceRiskScore | null> {
+  async getRiskScore(
+    orgId: string,
+    entityType: GovernanceEntityType,
+    entityId: string
+  ): Promise<GovernanceRiskScore | null> {
     const { data, error } = await this.supabase
       .from('governance_risk_scores')
       .select('*')
@@ -1121,14 +1231,22 @@ export class GovernanceService {
 
     if (error) {
       if (error.code === 'PGRST116') return null;
-      logger.error('Failed to get risk score', { error, orgId, entityType, entityId });
+      logger.error('Failed to get risk score', {
+        error,
+        orgId,
+        entityType,
+        entityId,
+      });
       throw new Error(`Failed to get risk score: ${error.message}`);
     }
 
     return this.mapRiskScoreRecord(data);
   }
 
-  async listRiskScores(orgId: string, query: GovernanceRiskScoresQuery = {}): Promise<GovernanceRiskScoresListResponse> {
+  async listRiskScores(
+    orgId: string,
+    query: GovernanceRiskScoresQuery = {}
+  ): Promise<GovernanceRiskScoresListResponse> {
     const {
       entityType,
       riskLevel,
@@ -1179,8 +1297,12 @@ export class GovernanceService {
       dbQuery = dbQuery.eq('is_stale', isStale);
     }
 
-    const sortColumn = sortBy === 'overall_score' ? 'overall_score' :
-                       sortBy === 'computed_at' ? 'computed_at' : 'entity_name';
+    const sortColumn =
+      sortBy === 'overall_score'
+        ? 'overall_score'
+        : sortBy === 'computed_at'
+          ? 'computed_at'
+          : 'entity_name';
 
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
@@ -1269,7 +1391,10 @@ export class GovernanceService {
     return this.mapAuditInsightRecord(data);
   }
 
-  async getAuditInsight(orgId: string, insightId: string): Promise<GovernanceAuditInsight | null> {
+  async getAuditInsight(
+    orgId: string,
+    insightId: string
+  ): Promise<GovernanceAuditInsight | null> {
     const { data, error } = await this.supabase
       .from('governance_audit_insights')
       .select('*')
@@ -1286,7 +1411,10 @@ export class GovernanceService {
     return this.mapAuditInsightRecord(data);
   }
 
-  async listAuditInsights(orgId: string, query: GovernanceAuditInsightsQuery = {}): Promise<GovernanceAuditInsightsListResponse> {
+  async listAuditInsights(
+    orgId: string,
+    query: GovernanceAuditInsightsQuery = {}
+  ): Promise<GovernanceAuditInsightsListResponse> {
     const {
       insightType,
       scope,
@@ -1328,8 +1456,12 @@ export class GovernanceService {
       dbQuery = dbQuery.eq('generated_by', generatedBy);
     }
 
-    const sortColumn = sortBy === 'created_at' ? 'created_at' :
-                       sortBy === 'time_window_start' ? 'time_window_start' : 'title';
+    const sortColumn =
+      sortBy === 'created_at'
+        ? 'created_at'
+        : sortBy === 'time_window_start'
+          ? 'time_window_start'
+          : 'title';
 
     dbQuery = dbQuery.order(sortColumn, { ascending: sortOrder === 'asc' });
     dbQuery = dbQuery.range(offset, offset + limit - 1);
@@ -1396,7 +1528,9 @@ export class GovernanceService {
         // Check cooldown
         if (rule.cooldown_minutes > 0) {
           const cooldownStart = new Date();
-          cooldownStart.setMinutes(cooldownStart.getMinutes() - rule.cooldown_minutes);
+          cooldownStart.setMinutes(
+            cooldownStart.getMinutes() - rule.cooldown_minutes
+          );
 
           const { count } = await this.supabase
             .from('governance_findings')
@@ -1441,7 +1575,10 @@ export class GovernanceService {
         }
 
         // Evaluate condition
-        conditionsMet = this.evaluateCondition(rule.condition, context.eventData);
+        conditionsMet = this.evaluateCondition(
+          rule.condition,
+          context.eventData
+        );
 
         if (conditionsMet) {
           triggered = true;
@@ -1455,8 +1592,11 @@ export class GovernanceService {
               sourceSystem: context.sourceSystem,
               sourceReferenceId: context.eventId,
               sourceReferenceType: context.eventType,
-              severity: (action.severity as GovernanceSeverityLevel) || rule.governance_policies.severity,
-              summary: (action.message as string) || `Rule "${rule.name}" triggered`,
+              severity:
+                (action.severity as GovernanceSeverityLevel) ||
+                rule.governance_policies.severity,
+              summary:
+                (action.message as string) || `Rule "${rule.name}" triggered`,
               details: `Event type: ${context.eventType}`,
               eventSnapshot: context.eventData,
               metadata: context.metadata || {},
@@ -1503,13 +1643,18 @@ export class GovernanceService {
     };
   }
 
-  private evaluateCondition(condition: GovernanceRuleCondition, eventData: Record<string, unknown>): boolean {
+  private evaluateCondition(
+    condition: GovernanceRuleCondition,
+    eventData: Record<string, unknown>
+  ): boolean {
     // Handle compound conditions
     if (condition.conditions && condition.logic) {
-      const subResults = condition.conditions.map(c => this.evaluateCondition(c, eventData));
+      const subResults = condition.conditions.map((c) =>
+        this.evaluateCondition(c, eventData)
+      );
       return condition.logic === 'and'
-        ? subResults.every(r => r)
-        : subResults.some(r => r);
+        ? subResults.every((r) => r)
+        : subResults.some((r) => r);
     }
 
     // Handle simple conditions
@@ -1526,15 +1671,35 @@ export class GovernanceService {
       case 'ne':
         return fieldValue !== conditionValue;
       case 'gt':
-        return typeof fieldValue === 'number' && typeof conditionValue === 'number' && fieldValue > conditionValue;
+        return (
+          typeof fieldValue === 'number' &&
+          typeof conditionValue === 'number' &&
+          fieldValue > conditionValue
+        );
       case 'gte':
-        return typeof fieldValue === 'number' && typeof conditionValue === 'number' && fieldValue >= conditionValue;
+        return (
+          typeof fieldValue === 'number' &&
+          typeof conditionValue === 'number' &&
+          fieldValue >= conditionValue
+        );
       case 'lt':
-        return typeof fieldValue === 'number' && typeof conditionValue === 'number' && fieldValue < conditionValue;
+        return (
+          typeof fieldValue === 'number' &&
+          typeof conditionValue === 'number' &&
+          fieldValue < conditionValue
+        );
       case 'lte':
-        return typeof fieldValue === 'number' && typeof conditionValue === 'number' && fieldValue <= conditionValue;
+        return (
+          typeof fieldValue === 'number' &&
+          typeof conditionValue === 'number' &&
+          fieldValue <= conditionValue
+        );
       case 'contains':
-        return typeof fieldValue === 'string' && typeof conditionValue === 'string' && fieldValue.includes(conditionValue);
+        return (
+          typeof fieldValue === 'string' &&
+          typeof conditionValue === 'string' &&
+          fieldValue.includes(conditionValue)
+        );
       case 'matches':
         if (typeof fieldValue === 'string' && condition.pattern) {
           try {
@@ -1545,9 +1710,15 @@ export class GovernanceService {
         }
         return false;
       case 'in':
-        return Array.isArray(condition.items) && condition.items.includes(fieldValue as string);
+        return (
+          Array.isArray(condition.items) &&
+          condition.items.includes(fieldValue as string)
+        );
       case 'not_in':
-        return Array.isArray(condition.items) && !condition.items.includes(fieldValue as string);
+        return (
+          Array.isArray(condition.items) &&
+          !condition.items.includes(fieldValue as string)
+        );
       default:
         return false;
     }
@@ -1570,7 +1741,9 @@ export class GovernanceService {
   // Dashboard & Analytics
   // ========================================
 
-  async getDashboardSummary(orgId: string): Promise<GovernanceDashboardSummary> {
+  async getDashboardSummary(
+    orgId: string
+  ): Promise<GovernanceDashboardSummary> {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
@@ -1582,15 +1755,30 @@ export class GovernanceService {
       riskScoresResult,
       findingsTrendResult,
     ] = await Promise.all([
-      this.supabase.from('governance_policies').select('category, severity, is_active').eq('org_id', orgId),
-      this.supabase.from('governance_rules').select('rule_type, target_system, is_active').eq('org_id', orgId),
-      this.supabase.from('governance_findings').select('status, severity').eq('org_id', orgId),
-      this.supabase.from('governance_risk_scores').select('overall_score, risk_level, score_trend, entity_type, entity_id, entity_name')
+      this.supabase
+        .from('governance_policies')
+        .select('category, severity, is_active')
+        .eq('org_id', orgId),
+      this.supabase
+        .from('governance_rules')
+        .select('rule_type, target_system, is_active')
+        .eq('org_id', orgId),
+      this.supabase
+        .from('governance_findings')
+        .select('status, severity')
+        .eq('org_id', orgId),
+      this.supabase
+        .from('governance_risk_scores')
+        .select(
+          'overall_score, risk_level, score_trend, entity_type, entity_id, entity_name'
+        )
         .eq('org_id', orgId)
         .gte('overall_score', 70)
         .order('overall_score', { ascending: false })
         .limit(5),
-      this.supabase.from('governance_findings').select('detected_at, status')
+      this.supabase
+        .from('governance_findings')
+        .select('detected_at, status')
         .eq('org_id', orgId)
         .gte('detected_at', thirtyDaysAgo.toISOString()),
     ]);
@@ -1602,40 +1790,57 @@ export class GovernanceService {
     const recentFindings = findingsTrendResult.data || [];
 
     // Calculate policy stats
-    const policiesByCategory: Record<GovernancePolicyCategory, number> = {} as Record<GovernancePolicyCategory, number>;
-    const policiesBySeverity: Record<GovernanceSeverityLevel, number> = {} as Record<GovernanceSeverityLevel, number>;
+    const policiesByCategory: Record<GovernancePolicyCategory, number> =
+      {} as Record<GovernancePolicyCategory, number>;
+    const policiesBySeverity: Record<GovernanceSeverityLevel, number> =
+      {} as Record<GovernanceSeverityLevel, number>;
     let activePolicies = 0;
 
     for (const p of policies) {
-      policiesByCategory[p.category as GovernancePolicyCategory] = (policiesByCategory[p.category as GovernancePolicyCategory] || 0) + 1;
-      policiesBySeverity[p.severity as GovernanceSeverityLevel] = (policiesBySeverity[p.severity as GovernanceSeverityLevel] || 0) + 1;
+      policiesByCategory[p.category as GovernancePolicyCategory] =
+        (policiesByCategory[p.category as GovernancePolicyCategory] || 0) + 1;
+      policiesBySeverity[p.severity as GovernanceSeverityLevel] =
+        (policiesBySeverity[p.severity as GovernanceSeverityLevel] || 0) + 1;
       if (p.is_active) activePolicies++;
     }
 
     // Calculate rule stats
-    const rulesByType: Record<GovernanceRuleType, number> = {} as Record<GovernanceRuleType, number>;
-    const rulesByTargetSystem: Record<GovernanceTargetSystem, number> = {} as Record<GovernanceTargetSystem, number>;
+    const rulesByType: Record<GovernanceRuleType, number> = {} as Record<
+      GovernanceRuleType,
+      number
+    >;
+    const rulesByTargetSystem: Record<GovernanceTargetSystem, number> =
+      {} as Record<GovernanceTargetSystem, number>;
     let activeRules = 0;
 
     for (const r of rules) {
-      rulesByType[r.rule_type as GovernanceRuleType] = (rulesByType[r.rule_type as GovernanceRuleType] || 0) + 1;
-      rulesByTargetSystem[r.target_system as GovernanceTargetSystem] = (rulesByTargetSystem[r.target_system as GovernanceTargetSystem] || 0) + 1;
+      rulesByType[r.rule_type as GovernanceRuleType] =
+        (rulesByType[r.rule_type as GovernanceRuleType] || 0) + 1;
+      rulesByTargetSystem[r.target_system as GovernanceTargetSystem] =
+        (rulesByTargetSystem[r.target_system as GovernanceTargetSystem] || 0) +
+        1;
       if (r.is_active) activeRules++;
     }
 
     // Calculate finding stats
-    const findingsByStatus: Record<GovernanceFindingStatus, number> = {} as Record<GovernanceFindingStatus, number>;
-    const findingsBySeverity: Record<GovernanceSeverityLevel, number> = {} as Record<GovernanceSeverityLevel, number>;
+    const findingsByStatus: Record<GovernanceFindingStatus, number> =
+      {} as Record<GovernanceFindingStatus, number>;
+    const findingsBySeverity: Record<GovernanceSeverityLevel, number> =
+      {} as Record<GovernanceSeverityLevel, number>;
     let openFindings = 0;
 
     for (const f of findings) {
-      findingsByStatus[f.status as GovernanceFindingStatus] = (findingsByStatus[f.status as GovernanceFindingStatus] || 0) + 1;
-      findingsBySeverity[f.severity as GovernanceSeverityLevel] = (findingsBySeverity[f.severity as GovernanceSeverityLevel] || 0) + 1;
-      if (['open', 'acknowledged', 'in_progress'].includes(f.status)) openFindings++;
+      findingsByStatus[f.status as GovernanceFindingStatus] =
+        (findingsByStatus[f.status as GovernanceFindingStatus] || 0) + 1;
+      findingsBySeverity[f.severity as GovernanceSeverityLevel] =
+        (findingsBySeverity[f.severity as GovernanceSeverityLevel] || 0) + 1;
+      if (['open', 'acknowledged', 'in_progress'].includes(f.status))
+        openFindings++;
     }
 
     // Calculate findings trend (by week)
-    const findingsTrend: { period: string; count: number; resolved: number }[] = [];
+    const findingsTrend: { period: string; count: number; resolved: number }[] =
+      [];
     const weekMap = new Map<string, { count: number; resolved: number }>();
 
     for (const f of recentFindings) {
@@ -1657,7 +1862,7 @@ export class GovernanceService {
 
     // Calculate risk stats
     let totalRiskScore = 0;
-    const topRisks: GovernanceInsightTopRisk[] = riskScores.map(rs => {
+    const topRisks: GovernanceInsightTopRisk[] = riskScores.map((rs) => {
       totalRiskScore += rs.overall_score;
       return {
         entityType: rs.entity_type as GovernanceEntityType,
@@ -1666,15 +1871,24 @@ export class GovernanceService {
         riskScore: rs.overall_score,
         riskLevel: rs.risk_level as GovernanceSeverityLevel,
         primaryConcern: 'High risk score',
-        trend: rs.score_trend as GovernanceScoreTrend || undefined,
+        trend: (rs.score_trend as GovernanceScoreTrend) || undefined,
       };
     });
 
-    const avgRiskScore = riskScores.length > 0 ? totalRiskScore / riskScores.length : 0;
-    const worseningCount = riskScores.filter(rs => rs.score_trend === 'worsening').length;
-    const improvingCount = riskScores.filter(rs => rs.score_trend === 'improving').length;
-    const riskTrend: GovernanceScoreTrend = worseningCount > improvingCount ? 'worsening' :
-                                             improvingCount > worseningCount ? 'improving' : 'stable';
+    const avgRiskScore =
+      riskScores.length > 0 ? totalRiskScore / riskScores.length : 0;
+    const worseningCount = riskScores.filter(
+      (rs) => rs.score_trend === 'worsening'
+    ).length;
+    const improvingCount = riskScores.filter(
+      (rs) => rs.score_trend === 'improving'
+    ).length;
+    const riskTrend: GovernanceScoreTrend =
+      worseningCount > improvingCount
+        ? 'worsening'
+        : improvingCount > worseningCount
+          ? 'improving'
+          : 'stable';
 
     return {
       totalPolicies: policies.length,
@@ -1698,10 +1912,15 @@ export class GovernanceService {
     };
   }
 
-  async getComplianceMetrics(orgId: string, days: number = 30): Promise<GovernanceComplianceMetrics> {
+  async getComplianceMetrics(
+    orgId: string,
+    days: number = 30
+  ): Promise<GovernanceComplianceMetrics> {
     const now = new Date();
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-    const previousStartDate = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000);
+    const previousStartDate = new Date(
+      startDate.getTime() - days * 24 * 60 * 60 * 1000
+    );
 
     // Get current period stats
     const [
@@ -1712,26 +1931,38 @@ export class GovernanceService {
       rulesResult,
       triggeredRulesResult,
     ] = await Promise.all([
-      this.supabase.from('governance_findings').select('*', { count: 'exact', head: true })
+      this.supabase
+        .from('governance_findings')
+        .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId)
         .gte('detected_at', startDate.toISOString()),
-      this.supabase.from('governance_findings').select('resolved_at, detected_at')
+      this.supabase
+        .from('governance_findings')
+        .select('resolved_at, detected_at')
         .eq('org_id', orgId)
         .eq('status', 'resolved')
         .gte('resolved_at', startDate.toISOString()),
-      this.supabase.from('governance_findings').select('*', { count: 'exact', head: true })
+      this.supabase
+        .from('governance_findings')
+        .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId)
         .gte('detected_at', previousStartDate.toISOString())
         .lt('detected_at', startDate.toISOString()),
-      this.supabase.from('governance_findings').select('resolved_at, detected_at')
+      this.supabase
+        .from('governance_findings')
+        .select('resolved_at, detected_at')
         .eq('org_id', orgId)
         .eq('status', 'resolved')
         .gte('resolved_at', previousStartDate.toISOString())
         .lt('resolved_at', startDate.toISOString()),
-      this.supabase.from('governance_rules').select('*', { count: 'exact', head: true })
+      this.supabase
+        .from('governance_rules')
+        .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId)
         .eq('is_active', true),
-      this.supabase.from('governance_findings').select('rule_id')
+      this.supabase
+        .from('governance_findings')
+        .select('rule_id')
         .eq('org_id', orgId)
         .gte('detected_at', startDate.toISOString()),
     ]);
@@ -1743,21 +1974,32 @@ export class GovernanceService {
     const totalRules = rulesResult.count || 0;
 
     // Calculate resolution rate
-    const resolutionRate = currentFindings > 0 ? (resolved.length / currentFindings) * 100 : 100;
-    const previousResolutionRate = previousFindings > 0 ? (previousResolved.length / previousFindings) * 100 : 100;
+    const resolutionRate =
+      currentFindings > 0 ? (resolved.length / currentFindings) * 100 : 100;
+    const previousResolutionRate =
+      previousFindings > 0
+        ? (previousResolved.length / previousFindings) * 100
+        : 100;
 
     // Calculate mean time to resolution
     let totalResolutionTime = 0;
     for (const f of resolved) {
       if (f.resolved_at && f.detected_at) {
-        totalResolutionTime += new Date(f.resolved_at).getTime() - new Date(f.detected_at).getTime();
+        totalResolutionTime +=
+          new Date(f.resolved_at).getTime() - new Date(f.detected_at).getTime();
       }
     }
-    const meanTimeToResolution = resolved.length > 0 ? totalResolutionTime / resolved.length / (1000 * 60 * 60) : 0;
+    const meanTimeToResolution =
+      resolved.length > 0
+        ? totalResolutionTime / resolved.length / (1000 * 60 * 60)
+        : 0;
 
     // Calculate rule effectiveness
-    const triggeredRuleIds = new Set((triggeredRulesResult.data || []).map(f => f.rule_id));
-    const ruleEffectiveness = totalRules > 0 ? (triggeredRuleIds.size / totalRules) * 100 : 0;
+    const triggeredRuleIds = new Set(
+      (triggeredRulesResult.data || []).map((f) => f.rule_id)
+    );
+    const ruleEffectiveness =
+      totalRules > 0 ? (triggeredRuleIds.size / totalRules) * 100 : 0;
 
     // Calculate compliance score (inverse of open findings ratio)
     const openFindingsResult = await this.supabase
@@ -1766,7 +2008,7 @@ export class GovernanceService {
       .eq('org_id', orgId)
       .in('status', ['open', 'acknowledged', 'in_progress']);
     const openFindings = openFindingsResult.count || 0;
-    const complianceScore = Math.max(0, 100 - (openFindings * 5)); // Lose 5 points per open finding
+    const complianceScore = Math.max(0, 100 - openFindings * 5); // Lose 5 points per open finding
 
     // Policy coverage - simplified for now
     const policyCoverage = 100; // TODO: Calculate based on actual system coverage
@@ -1781,7 +2023,9 @@ export class GovernanceService {
       trendsVsPreviousPeriod: {
         complianceScoreChange: 0, // TODO: Calculate
         findingsChange: currentFindings - previousFindings,
-        resolutionRateChange: Math.round(resolutionRate - previousResolutionRate),
+        resolutionRateChange: Math.round(
+          resolutionRate - previousResolutionRate
+        ),
       },
     };
   }
@@ -1794,7 +2038,14 @@ export class GovernanceService {
 
     const cells: GovernanceRiskHeatmapCell[] = [];
     const entityTypes = new Set<GovernanceEntityType>();
-    const riskDimensions = ['content', 'reputation', 'crisis', 'legal', 'relationship', 'competitive'];
+    const riskDimensions = [
+      'content',
+      'reputation',
+      'crisis',
+      'legal',
+      'relationship',
+      'competitive',
+    ];
 
     for (const rs of riskScores || []) {
       entityTypes.add(rs.entity_type as GovernanceEntityType);
@@ -1849,7 +2100,9 @@ export class GovernanceService {
       ownerUserId: record.owner_user_id || undefined,
       department: record.department || undefined,
       regulatoryReference: record.regulatory_reference || undefined,
-      effectiveDate: record.effective_date ? new Date(record.effective_date) : undefined,
+      effectiveDate: record.effective_date
+        ? new Date(record.effective_date)
+        : undefined,
       reviewDate: record.review_date ? new Date(record.review_date) : undefined,
       createdBy: record.created_by || undefined,
       updatedBy: record.updated_by || undefined,
@@ -1871,7 +2124,8 @@ export class GovernanceService {
       action: record.action as GovernanceRule['action'],
       priority: record.priority,
       isActive: record.is_active,
-      evaluationMode: (record.evaluation_mode || 'on_event') as GovernanceRule['evaluationMode'],
+      evaluationMode: (record.evaluation_mode ||
+        'on_event') as GovernanceRule['evaluationMode'],
       scheduleCron: record.schedule_cron || undefined,
       cooldownMinutes: record.cooldown_minutes || 0,
       maxFindingsPerDay: record.max_findings_per_day || undefined,
@@ -1898,16 +2152,22 @@ export class GovernanceService {
       summary: record.summary,
       details: record.details || undefined,
       impactScore: record.impact_score || undefined,
-      affectedEntities: (record.affected_entities || []) as GovernanceFinding['affectedEntities'],
-      recommendedActions: (record.recommended_actions || []) as GovernanceFinding['recommendedActions'],
+      affectedEntities: (record.affected_entities ||
+        []) as GovernanceFinding['affectedEntities'],
+      recommendedActions: (record.recommended_actions ||
+        []) as GovernanceFinding['recommendedActions'],
       mitigationNotes: record.mitigation_notes || undefined,
       assignedTo: record.assigned_to || undefined,
       resolvedBy: record.resolved_by || undefined,
       resolutionNotes: record.resolution_notes || undefined,
       detectedAt: new Date(record.detected_at),
-      acknowledgedAt: record.acknowledged_at ? new Date(record.acknowledged_at) : undefined,
+      acknowledgedAt: record.acknowledged_at
+        ? new Date(record.acknowledged_at)
+        : undefined,
       resolvedAt: record.resolved_at ? new Date(record.resolved_at) : undefined,
-      dismissedAt: record.dismissed_at ? new Date(record.dismissed_at) : undefined,
+      dismissedAt: record.dismissed_at
+        ? new Date(record.dismissed_at)
+        : undefined,
       metadata: record.metadata,
       eventSnapshot: record.event_snapshot,
       createdAt: new Date(record.created_at),
@@ -1931,10 +2191,11 @@ export class GovernanceService {
       relationshipRisk: record.relationship_risk || undefined,
       competitiveRisk: record.competitive_risk || undefined,
       previousScore: record.previous_score || undefined,
-      scoreTrend: record.score_trend as GovernanceScoreTrend || undefined,
+      scoreTrend: (record.score_trend as GovernanceScoreTrend) || undefined,
       trendPeriodDays: record.trend_period_days || 30,
       breakdown: record.breakdown,
-      contributingFactors: (record.contributing_factors || []) as GovernanceContributingFactor[],
+      contributingFactors: (record.contributing_factors ||
+        []) as GovernanceContributingFactor[],
       activeFindingsCount: record.active_findings_count || 0,
       linkedFindingIds: record.linked_finding_ids || [],
       computedAt: new Date(record.computed_at),
@@ -1947,7 +2208,9 @@ export class GovernanceService {
     };
   }
 
-  private mapAuditInsightRecord(record: AuditInsightRecord): GovernanceAuditInsight {
+  private mapAuditInsightRecord(
+    record: AuditInsightRecord
+  ): GovernanceAuditInsight {
     return {
       id: record.id,
       orgId: record.org_id,
@@ -1959,8 +2222,10 @@ export class GovernanceService {
       summary: record.summary,
       executiveSummary: record.executive_summary || undefined,
       detailedAnalysis: record.detailed_analysis || undefined,
-      recommendations: (record.recommendations || []) as GovernanceAuditInsight['recommendations'],
-      actionItems: (record.action_items || []) as GovernanceAuditInsight['actionItems'],
+      recommendations: (record.recommendations ||
+        []) as GovernanceAuditInsight['recommendations'],
+      actionItems: (record.action_items ||
+        []) as GovernanceAuditInsight['actionItems'],
       topRisks: (record.top_risks || []) as GovernanceAuditInsight['topRisks'],
       riskDistribution: record.risk_distribution || {},
       metricsSnapshot: record.metrics_snapshot || {},
@@ -1972,15 +2237,20 @@ export class GovernanceService {
       llmModel: record.llm_model || undefined,
       generationPrompt: record.generation_prompt || undefined,
       tokensUsed: record.tokens_used || undefined,
-      recipients: (record.recipients || []) as GovernanceAuditInsight['recipients'],
-      distributedAt: record.distributed_at ? new Date(record.distributed_at) : undefined,
+      recipients: (record.recipients ||
+        []) as GovernanceAuditInsight['recipients'],
+      distributedAt: record.distributed_at
+        ? new Date(record.distributed_at)
+        : undefined,
       createdBy: record.created_by || undefined,
       createdAt: new Date(record.created_at),
       updatedAt: new Date(record.updated_at),
     };
   }
 
-  private mapPolicyVersionRecord(record: PolicyVersionRecord): GovernancePolicyVersion {
+  private mapPolicyVersionRecord(
+    record: PolicyVersionRecord
+  ): GovernancePolicyVersion {
     return {
       id: record.id,
       orgId: record.org_id,
@@ -2001,14 +2271,18 @@ export class GovernanceService {
 
 let governanceServiceInstance: GovernanceService | null = null;
 
-export function initGovernanceService(supabase: SupabaseClient): GovernanceService {
+export function initGovernanceService(
+  supabase: SupabaseClient
+): GovernanceService {
   governanceServiceInstance = new GovernanceService(supabase);
   return governanceServiceInstance;
 }
 
 export function getGovernanceService(): GovernanceService {
   if (!governanceServiceInstance) {
-    throw new Error('GovernanceService not initialized. Call initGovernanceService() first.');
+    throw new Error(
+      'GovernanceService not initialized. Call initGovernanceService() first.'
+    );
   }
   return governanceServiceInstance;
 }

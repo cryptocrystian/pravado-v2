@@ -22,7 +22,9 @@ test.describe('Risk Radar', () => {
       await expect(page).toHaveTitle(/Pravado/);
       await expect(page.locator('h1')).toContainText('Risk Radar');
       await expect(
-        page.locator('text=Executive risk monitoring & predictive crisis forecasting')
+        page.locator(
+          'text=Executive risk monitoring & predictive crisis forecasting'
+        )
       ).toBeVisible();
     });
 
@@ -48,7 +50,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/risk-radar');
 
-      await expect(page.locator('button:has-text("New Snapshot")')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("New Snapshot")')
+      ).toBeVisible();
     });
 
     test.skip('should show Refresh button', async ({ page }) => {
@@ -62,7 +66,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user
       await page.goto('/app/risk-radar');
 
-      await expect(page.locator('input[placeholder*="Search snapshots"]')).toBeVisible();
+      await expect(
+        page.locator('input[placeholder*="Search snapshots"]')
+      ).toBeVisible();
     });
 
     test.skip('should display risk level filter', async ({ page }) => {
@@ -78,7 +84,9 @@ test.describe('Risk Radar', () => {
 
       // Should show at least one snapshot card if data exists
       // or empty state message
-      const hasSnapshots = await page.locator('[data-testid="snapshot-card"]').count();
+      const hasSnapshots = await page
+        .locator('[data-testid="snapshot-card"]')
+        .count();
       if (hasSnapshots === 0) {
         await expect(page.locator('text=No snapshots found')).toBeVisible();
       }
@@ -89,7 +97,9 @@ test.describe('Risk Radar', () => {
       await page.goto('/app/risk-radar');
 
       // Click on a snapshot card
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -101,11 +111,15 @@ test.describe('Risk Radar', () => {
       }
     });
 
-    test.skip('should show executive dashboard for selected snapshot', async ({ page }) => {
+    test.skip('should show executive dashboard for selected snapshot', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -118,7 +132,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -127,7 +143,9 @@ test.describe('Risk Radar', () => {
 
         // Should show drawer with tabs
         await expect(page.locator('button:has-text("Overview")')).toBeVisible();
-        await expect(page.locator('button:has-text("Indicators")')).toBeVisible();
+        await expect(
+          page.locator('button:has-text("Indicators")')
+        ).toBeVisible();
         await expect(page.locator('button:has-text("Forecast")')).toBeVisible();
         await expect(page.locator('button:has-text("Drivers")')).toBeVisible();
         await expect(page.locator('button:has-text("Notes")')).toBeVisible();
@@ -138,7 +156,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
         await page.click('button:has-text("View Full Details")');
@@ -165,12 +185,17 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
         // Find note textarea
-        await page.fill('textarea[placeholder*="Add a note"]', 'Test observation note');
+        await page.fill(
+          'textarea[placeholder*="Add a note"]',
+          'Test observation note'
+        );
 
         // Click Add button
         await page.click('button:has-text("Add")');
@@ -184,7 +209,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -202,7 +229,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
         await page.click('button:has-text("Generate")');
@@ -220,7 +249,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
         await page.click('button:has-text("Generate")');
@@ -244,7 +275,9 @@ test.describe('Risk Radar', () => {
       await page.click('button:has-text("New Snapshot")');
 
       // Should show loading state
-      await expect(page.locator('button:has-text("New Snapshot"):disabled')).toBeVisible();
+      await expect(
+        page.locator('button:has-text("New Snapshot"):disabled')
+      ).toBeVisible();
     });
 
     test.skip('should filter snapshots by risk level', async ({ page }) => {
@@ -270,7 +303,9 @@ test.describe('Risk Radar', () => {
       // Should filter the list based on search
     });
 
-    test.skip('should show risk level badges with correct colors', async ({ page }) => {
+    test.skip('should show risk level badges with correct colors', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
@@ -290,11 +325,15 @@ test.describe('Risk Radar', () => {
       expect(hasAnyBadge).toBeTruthy();
     });
 
-    test.skip('should show component scores in executive dashboard', async ({ page }) => {
+    test.skip('should show component scores in executive dashboard', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -309,7 +348,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -318,11 +359,15 @@ test.describe('Risk Radar', () => {
       }
     });
 
-    test.skip('should show forecast projection visualization', async ({ page }) => {
+    test.skip('should show forecast projection visualization', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -339,7 +384,9 @@ test.describe('Risk Radar', () => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 
@@ -349,16 +396,22 @@ test.describe('Risk Radar', () => {
           await showDetailsBtn.click();
 
           // Should show expanded sections
-          await expect(page.locator('button:has-text("Hide Details")')).toBeVisible();
+          await expect(
+            page.locator('button:has-text("Hide Details")')
+          ).toBeVisible();
         }
       }
     });
 
-    test.skip('should show crisis probability in forecast', async ({ page }) => {
+    test.skip('should show crisis probability in forecast', async ({
+      page,
+    }) => {
       // TODO: Implement with authenticated test user and mock data
       await page.goto('/app/risk-radar');
 
-      const firstSnapshot = page.locator('[data-testid="snapshot-card"]').first();
+      const firstSnapshot = page
+        .locator('[data-testid="snapshot-card"]')
+        .first();
       if (await firstSnapshot.isVisible()) {
         await firstSnapshot.click();
 

@@ -15,9 +15,11 @@
 ---
 
 ## Canon References
+
 - [ ] /docs/canon/<file> § <section>
 
 ## Contract References (if applicable)
+
 - [ ] /contracts/openapi.yaml
 - [ ] /contracts/schemas/<schema>.json
 - [ ] /contracts/examples/<example>.json
@@ -29,15 +31,18 @@
 ## Why
 
 ## Acceptance Criteria
+
 - [ ]
 
 ## Tests / Evidence
+
 - [ ] Unit tests:
 - [ ] Contract validation:
 - [ ] E2E:
 - [ ] Visual regression:
 
 ## Drift Check
+
 - [ ] This PR does not change product meaning
   - OR
 - [ ] This PR is an AMENDMENT and updates canon accordingly

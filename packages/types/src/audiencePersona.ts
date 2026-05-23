@@ -7,13 +7,22 @@
 // Enums
 // ========================================
 
-export type PersonaType = 'primary_audience' | 'secondary_audience' | 'stakeholder' | 'influencer';
+export type PersonaType =
+  | 'primary_audience'
+  | 'secondary_audience'
+  | 'stakeholder'
+  | 'influencer';
 
 export type PersonaStatus = 'active' | 'archived' | 'merged';
 
 export type GenerationMethod = 'manual' | 'llm_assisted' | 'auto_extracted';
 
-export type TraitCategory = 'skill' | 'demographic' | 'psychographic' | 'behavioral' | 'interest';
+export type TraitCategory =
+  | 'skill'
+  | 'demographic'
+  | 'psychographic'
+  | 'behavioral'
+  | 'interest';
 
 export type TraitType =
   | 'hard_skill'
@@ -34,7 +43,10 @@ export type InsightType =
   | 'pain_point'
   | 'opportunity';
 
-export type PersonaInsightCategory = 'behavioral' | 'attitudinal' | 'contextual';
+export type PersonaInsightCategory =
+  | 'behavioral'
+  | 'attitudinal'
+  | 'contextual';
 
 export type PersonaSourceSystem =
   | 'press_release_gen'

@@ -757,10 +757,13 @@ export interface InvestorQnAStats {
  * Source system usage stats
  */
 export interface InvestorSourceStats {
-  bySystem: Record<InvestorSourceSystem, {
-    count: number;
-    averageRelevance: number;
-  }>;
+  bySystem: Record<
+    InvestorSourceSystem,
+    {
+      count: number;
+      averageRelevance: number;
+    }
+  >;
   totalSources: number;
   averageSourcesPerPack: number;
 }
@@ -798,7 +801,9 @@ export interface ListInvestorAuditLogResponse {
 /**
  * Type guard for investor pack format
  */
-export function isInvestorPackFormat(value: string): value is InvestorPackFormat {
+export function isInvestorPackFormat(
+  value: string
+): value is InvestorPackFormat {
   return [
     'quarterly_earnings',
     'annual_review',
@@ -812,21 +817,34 @@ export function isInvestorPackFormat(value: string): value is InvestorPackFormat
 /**
  * Type guard for investor pack status
  */
-export function isInvestorPackStatus(value: string): value is InvestorPackStatus {
-  return ['draft', 'generating', 'review', 'approved', 'published', 'archived'].includes(value);
+export function isInvestorPackStatus(
+  value: string
+): value is InvestorPackStatus {
+  return [
+    'draft',
+    'generating',
+    'review',
+    'approved',
+    'published',
+    'archived',
+  ].includes(value);
 }
 
 /**
  * Type guard for investor primary audience
  */
-export function isInvestorPrimaryAudience(value: string): value is InvestorPrimaryAudience {
+export function isInvestorPrimaryAudience(
+  value: string
+): value is InvestorPrimaryAudience {
   return ['board', 'investors', 'analysts', 'internal_execs'].includes(value);
 }
 
 /**
  * Type guard for investor section type
  */
-export function isInvestorSectionType(value: string): value is InvestorSectionType {
+export function isInvestorSectionType(
+  value: string
+): value is InvestorSectionType {
   return [
     'executive_summary',
     'highlights',
@@ -848,14 +866,18 @@ export function isInvestorSectionType(value: string): value is InvestorSectionTy
 /**
  * Type guard for investor section status
  */
-export function isInvestorSectionStatus(value: string): value is InvestorSectionStatus {
+export function isInvestorSectionStatus(
+  value: string
+): value is InvestorSectionStatus {
   return ['draft', 'generated', 'edited', 'approved'].includes(value);
 }
 
 /**
  * Type guard for investor source system
  */
-export function isInvestorSourceSystem(value: string): value is InvestorSourceSystem {
+export function isInvestorSourceSystem(
+  value: string
+): value is InvestorSourceSystem {
   return [
     'media_performance',
     'board_reports',
@@ -883,7 +905,9 @@ export function isInvestorSourceSystem(value: string): value is InvestorSourceSy
 /**
  * Type guard for investor Q&A category
  */
-export function isInvestorQnACategory(value: string): value is InvestorQnACategory {
+export function isInvestorQnACategory(
+  value: string
+): value is InvestorQnACategory {
   return [
     'financials',
     'strategy',
@@ -1009,22 +1033,23 @@ export const DEFAULT_ANNUAL_REVIEW_SECTIONS: InvestorSectionType[] = [
 /**
  * Section type labels
  */
-export const INVESTOR_SECTION_TYPE_LABELS: Record<InvestorSectionType, string> = {
-  executive_summary: 'Executive Summary',
-  highlights: 'Key Highlights',
-  lowlights: 'Challenges & Learnings',
-  kpi_overview: 'KPI Dashboard',
-  market_context: 'Market Environment',
-  competition: 'Competitive Landscape',
-  product_updates: 'Product & Technology',
-  go_to_market: 'Go-to-Market Strategy',
-  customer_stories: 'Customer Success',
-  risk_and_mitigations: 'Risk Analysis',
-  governance: 'Governance & Compliance',
-  esg: 'ESG & Sustainability',
-  outlook: 'Forward Outlook',
-  appendix: 'Appendix',
-};
+export const INVESTOR_SECTION_TYPE_LABELS: Record<InvestorSectionType, string> =
+  {
+    executive_summary: 'Executive Summary',
+    highlights: 'Key Highlights',
+    lowlights: 'Challenges & Learnings',
+    kpi_overview: 'KPI Dashboard',
+    market_context: 'Market Environment',
+    competition: 'Competitive Landscape',
+    product_updates: 'Product & Technology',
+    go_to_market: 'Go-to-Market Strategy',
+    customer_stories: 'Customer Success',
+    risk_and_mitigations: 'Risk Analysis',
+    governance: 'Governance & Compliance',
+    esg: 'ESG & Sustainability',
+    outlook: 'Forward Outlook',
+    appendix: 'Appendix',
+  };
 
 /**
  * Format labels
@@ -1053,23 +1078,25 @@ export const INVESTOR_STATUS_LABELS: Record<InvestorPackStatus, string> = {
 /**
  * Audience labels
  */
-export const INVESTOR_AUDIENCE_LABELS: Record<InvestorPrimaryAudience, string> = {
-  board: 'Board of Directors',
-  investors: 'Institutional Investors',
-  analysts: 'Financial Analysts',
-  internal_execs: 'Internal Executives',
-};
+export const INVESTOR_AUDIENCE_LABELS: Record<InvestorPrimaryAudience, string> =
+  {
+    board: 'Board of Directors',
+    investors: 'Institutional Investors',
+    analysts: 'Financial Analysts',
+    internal_execs: 'Internal Executives',
+  };
 
 /**
  * Q&A category labels
  */
-export const INVESTOR_QNA_CATEGORY_LABELS: Record<InvestorQnACategory, string> = {
-  financials: 'Financial Questions',
-  strategy: 'Strategic Direction',
-  competition: 'Competitive Positioning',
-  product: 'Product & Technology',
-  risk: 'Risk Factors',
-  governance: 'Governance & Compliance',
-  operations: 'Operational Matters',
-  other: 'Other Questions',
-};
+export const INVESTOR_QNA_CATEGORY_LABELS: Record<InvestorQnACategory, string> =
+  {
+    financials: 'Financial Questions',
+    strategy: 'Strategic Direction',
+    competition: 'Competitive Positioning',
+    product: 'Product & Technology',
+    risk: 'Risk Factors',
+    governance: 'Governance & Compliance',
+    operations: 'Operational Matters',
+    other: 'Other Questions',
+  };

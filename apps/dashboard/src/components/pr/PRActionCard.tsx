@@ -9,6 +9,7 @@ import {
   ChartBar,
   X,
 } from '@phosphor-icons/react';
+
 import type { PRActionItem } from './pr-mock-data';
 import { priorityConfig } from './pr-mock-data';
 
@@ -28,7 +29,12 @@ interface PRActionCardProps {
   onDismiss?: () => void;
 }
 
-export function PRActionCard({ action, onPrimary, onSecondary, onDismiss }: PRActionCardProps) {
+export function PRActionCard({
+  action,
+  onPrimary,
+  onSecondary,
+  onDismiss,
+}: PRActionCardProps) {
   const Icon = iconMap[action.iconName] ?? FileText;
   const priority = priorityConfig[action.priority];
 
@@ -39,7 +45,9 @@ export function PRActionCard({ action, onPrimary, onSecondary, onDismiss }: PRAc
         <div className="flex items-center gap-2">
           <Icon
             size={20}
-            className={action.priority === 'critical' ? 'text-red-500' : 'text-white/45'}
+            className={
+              action.priority === 'critical' ? 'text-red-500' : 'text-white/45'
+            }
           />
           <span
             className={`text-xs font-medium px-2 py-0.5 rounded-full uppercase ${priority.bg} ${priority.text}`}
@@ -65,7 +73,9 @@ export function PRActionCard({ action, onPrimary, onSecondary, onDismiss }: PRAc
       <h3 className="text-sm font-semibold text-white mb-1">{action.title}</h3>
 
       {/* Description */}
-      <p className="text-sm text-white/70 mb-3 line-clamp-2">{action.description}</p>
+      <p className="text-sm text-white/70 mb-3 line-clamp-2">
+        {action.description}
+      </p>
 
       {/* Actions */}
       <div className="flex items-center gap-2">

@@ -6,9 +6,15 @@
 
 'use client';
 
-import React from 'react';
 import type { Competitor } from '@pravado/types';
-import { getTierColor, getTierBgColor, getTierLabel, formatNumber } from '@/lib/competitorIntelligenceApi';
+import React from 'react';
+
+import {
+  getTierColor,
+  getTierBgColor,
+  getTierLabel,
+  formatNumber,
+} from '@/lib/competitorIntelligenceApi';
 
 interface CompetitorCardProps {
   competitor: Competitor;
@@ -46,7 +52,9 @@ export default function CompetitorCard({
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-lg font-semibold text-gray-900">{competitor.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {competitor.name}
+            </h3>
             {!competitor.isActive && (
               <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded">
                 Inactive
@@ -67,8 +75,12 @@ export default function CompetitorCard({
         </div>
 
         {/* Tier Badge */}
-        <div className={`px-3 py-1 rounded-full ${getTierBgColor(competitor.tier)}`}>
-          <span className={`text-sm font-medium ${getTierColor(competitor.tier)}`}>
+        <div
+          className={`px-3 py-1 rounded-full ${getTierBgColor(competitor.tier)}`}
+        >
+          <span
+            className={`text-sm font-medium ${getTierColor(competitor.tier)}`}
+          >
             {getTierLabel(competitor.tier)}
           </span>
         </div>
@@ -76,7 +88,9 @@ export default function CompetitorCard({
 
       {/* Description */}
       {competitor.description && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{competitor.description}</p>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          {competitor.description}
+        </p>
       )}
 
       {/* Industry */}
@@ -106,7 +120,9 @@ export default function CompetitorCard({
           <div>
             <div className="text-xs text-gray-500">EVI</div>
             <div className="text-sm font-semibold text-gray-900">
-              {metrics.eviScore !== undefined ? metrics.eviScore.toFixed(0) : 'N/A'}
+              {metrics.eviScore !== undefined
+                ? metrics.eviScore.toFixed(0)
+                : 'N/A'}
             </div>
           </div>
         </div>

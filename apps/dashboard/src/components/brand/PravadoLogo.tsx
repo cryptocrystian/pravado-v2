@@ -20,7 +20,10 @@ export function PravadoLogoIcon({ size = 48, className = '' }: LogoIconProps) {
   const gap = 1.5;
 
   return (
-    <div className={`relative inline-block ${className}`} style={{ width: size, height: size }}>
+    <div
+      className={`relative inline-block ${className}`}
+      style={{ width: size, height: size }}
+    >
       <svg
         viewBox="0 0 100 100"
         fill="none"
@@ -70,12 +73,7 @@ export function PravadoLogoIcon({ size = 48, className = '' }: LogoIconProps) {
         />
 
         {/* THE AUTHORITY NODE (Pulse Dot) */}
-        <circle
-          cx={62 + gap}
-          cy={40}
-          r="4"
-          fill="white"
-        >
+        <circle cx={62 + gap} cy={40} r="4" fill="white">
           <animate
             attributeName="opacity"
             values="1;0.4;1"
@@ -93,7 +91,10 @@ interface WordmarkProps {
   className?: string;
 }
 
-export function PravadoWordmark({ fontSize = '24px', className = '' }: WordmarkProps) {
+export function PravadoWordmark({
+  fontSize = '24px',
+  className = '',
+}: WordmarkProps) {
   return (
     <span
       className={`font-mono font-bold tracking-[0.15em] text-white ${className}`}
@@ -110,7 +111,11 @@ interface PravadoLogoProps {
   className?: string;
 }
 
-export function PravadoLogo({ iconSize = 48, fontSize = '24px', className = '' }: PravadoLogoProps) {
+export function PravadoLogo({
+  iconSize = 48,
+  fontSize = '24px',
+  className = '',
+}: PravadoLogoProps) {
   return (
     <div className={`flex items-center ${className}`}>
       <PravadoLogoIcon size={iconSize} />

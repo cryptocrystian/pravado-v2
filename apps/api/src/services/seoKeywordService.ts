@@ -20,8 +20,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * S4: Stub implementation; S5+ can plug in real APIs (Ahrefs, SEMrush, etc.)
  */
 export interface KeywordProvider {
-  enrichKeyword(orgId: string, keyword: SEOKeyword): Promise<SEOKeywordMetric | null>;
-  batchEnrichKeywords(orgId: string, keywords: SEOKeyword[]): Promise<SEOKeywordMetric[]>;
+  enrichKeyword(
+    orgId: string,
+    keyword: SEOKeyword
+  ): Promise<SEOKeywordMetric | null>;
+  batchEnrichKeywords(
+    orgId: string,
+    keywords: SEOKeyword[]
+  ): Promise<SEOKeywordMetric[]>;
 }
 
 /**
@@ -29,20 +35,27 @@ export interface KeywordProvider {
  * Returns mock metrics based on simple heuristics
  */
 export class StubKeywordProvider implements KeywordProvider {
-  async enrichKeyword(orgId: string, keyword: SEOKeyword): Promise<SEOKeywordMetric | null> {
+  async enrichKeyword(
+    orgId: string,
+    keyword: SEOKeyword
+  ): Promise<SEOKeywordMetric | null> {
     // Generate mock metrics based on keyword characteristics
     const keywordLength = keyword.keyword.length;
     const wordCount = keyword.keyword.split(' ').length;
 
     // Simple heuristics for stub data
-    const searchVolume = wordCount === 1 ? 10000 : wordCount === 2 ? 5000 : 2000;
+    const searchVolume =
+      wordCount === 1 ? 10000 : wordCount === 2 ? 5000 : 2000;
     const difficulty = Math.min(100, keywordLength * 3 + wordCount * 5);
     const cpc = parseFloat((wordCount * 0.5 + Math.random() * 2).toFixed(2));
     const clickThroughRate = parseFloat((5 + Math.random() * 15).toFixed(2));
 
     // Calculate priority score (higher search volume + lower difficulty = higher priority)
     const priorityScore = parseFloat(
-      Math.min(100, (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6).toFixed(2)
+      Math.min(
+        100,
+        (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6
+      ).toFixed(2)
     );
 
     return {
@@ -82,7 +95,12 @@ export interface ListKeywordsOptions {
   pageSize?: number;
   status?: 'active' | 'paused' | 'archived';
   intent?: SEOKeywordIntent;
-  sortBy?: 'keyword' | 'searchVolume' | 'difficulty' | 'priorityScore' | 'createdAt';
+  sortBy?:
+    | 'keyword'
+    | 'searchVolume'
+    | 'difficulty'
+    | 'priorityScore'
+    | 'createdAt';
   sortOrder?: 'asc' | 'desc';
 }
 
@@ -165,7 +183,8 @@ export class SEOKeywordService {
         const existing = metricsMap.get(metric.keyword_id);
         if (
           !existing ||
-          new Date(metric.last_refreshed_at) > new Date(existing.lastRefreshedAt)
+          new Date(metric.last_refreshed_at) >
+            new Date(existing.lastRefreshedAt)
         ) {
           metricsMap.set(metric.keyword_id, this.mapMetricFromDb(metric));
         }
@@ -193,7 +212,10 @@ export class SEOKeywordService {
   /**
    * Get a single keyword by ID with metrics
    */
-  async getKeyword(orgId: string, keywordId: string): Promise<SEOKeywordWithMetrics | null> {
+  async getKeyword(
+    orgId: string,
+    keywordId: string
+  ): Promise<SEOKeywordWithMetrics | null> {
     const { data: keyword, error } = await this.supabase
       .from('seo_keywords')
       .select('*')
@@ -216,14 +238,18 @@ export class SEOKeywordService {
 
     return {
       keyword: this.mapKeywordFromDb(keyword),
-      metrics: metrics && metrics.length > 0 ? this.mapMetricFromDb(metrics[0]) : null,
+      metrics:
+        metrics && metrics.length > 0 ? this.mapMetricFromDb(metrics[0]) : null,
     };
   }
 
   /**
    * Enrich a keyword with metrics using the configured provider
    */
-  async enrichKeyword(orgId: string, keywordId: string): Promise<SEOKeywordMetric | null> {
+  async enrichKeyword(
+    orgId: string,
+    keywordId: string
+  ): Promise<SEOKeywordMetric | null> {
     // Fetch keyword
     const { data: keyword, error } = await this.supabase
       .from('seo_keywords')
@@ -318,7 +344,9 @@ export class SEOKeywordService {
       searchVolume: row.search_volume,
       difficulty: row.difficulty,
       cpc: row.cpc ? parseFloat(row.cpc) : null,
-      clickThroughRate: row.click_through_rate ? parseFloat(row.click_through_rate) : null,
+      clickThroughRate: row.click_through_rate
+        ? parseFloat(row.click_through_rate)
+        : null,
       priorityScore: row.priority_score ? parseFloat(row.priority_score) : null,
       lastRefreshedAt: row.last_refreshed_at,
       createdAt: row.created_at,

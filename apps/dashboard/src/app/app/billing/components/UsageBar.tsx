@@ -15,7 +15,13 @@ interface UsageBarProps {
   overage?: number;
 }
 
-export function UsageBar({ label, used, limit, unit = '', overage = 0 }: UsageBarProps) {
+export function UsageBar({
+  label,
+  used,
+  limit,
+  unit = '',
+  overage = 0,
+}: UsageBarProps) {
   const percentage = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
   const totalUsed = used + overage;
 
@@ -52,9 +58,7 @@ export function UsageBar({ label, used, limit, unit = '', overage = 0 }: UsageBa
         </div>
       )}
 
-      <div className="text-xs text-gray-500">
-        {percentage.toFixed(1)}% used
-      </div>
+      <div className="text-xs text-gray-500">{percentage.toFixed(1)}% used</div>
     </div>
   );
 }

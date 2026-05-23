@@ -44,9 +44,15 @@ export function CiteMindPublishGate({
   if (!isOpen) return null;
 
   const isBlocked = aeoScore < AEO_THRESHOLD;
-  const scoreColor = isBlocked ? 'text-semantic-danger' : 'text-semantic-success';
-  const scoreBg = isBlocked ? 'bg-semantic-danger/10' : 'bg-semantic-success/10';
-  const scoreBorder = isBlocked ? 'border-semantic-danger/20' : 'border-semantic-success/20';
+  const scoreColor = isBlocked
+    ? 'text-semantic-danger'
+    : 'text-semantic-success';
+  const scoreBg = isBlocked
+    ? 'bg-semantic-danger/10'
+    : 'bg-semantic-success/10';
+  const scoreBorder = isBlocked
+    ? 'border-semantic-danger/20'
+    : 'border-semantic-success/20';
 
   return (
     <>
@@ -63,19 +69,43 @@ export function CiteMindPublishGate({
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-4">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${scoreBg} border ${scoreBorder}`}>
+              <div
+                className={`p-2 rounded-lg ${scoreBg} border ${scoreBorder}`}
+              >
                 {isBlocked ? (
-                  <svg className="w-5 h-5 text-semantic-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <svg
+                    className="w-5 h-5 text-semantic-danger"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
                   </svg>
                 ) : (
-                  <svg className="w-5 h-5 text-semantic-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-semantic-success"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 )}
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white/95">CiteMind Publish Check</h3>
+                <h3 className="text-sm font-semibold text-white/95">
+                  CiteMind Publish Check
+                </h3>
                 <p className="text-xs text-white/50">AEO Score Verification</p>
               </div>
             </div>
@@ -84,8 +114,18 @@ export function CiteMindPublishGate({
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-white/5 transition-colors"
             >
-              <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5 text-white/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -99,22 +139,30 @@ export function CiteMindPublishGate({
             </p>
 
             {/* AEO Score Display */}
-            <div className={`flex items-center justify-between p-4 rounded-lg ${scoreBg} border ${scoreBorder}`}>
+            <div
+              className={`flex items-center justify-between p-4 rounded-lg ${scoreBg} border ${scoreBorder}`}
+            >
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">AEO Score</p> {/* typography-allow: system label */}
+                <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+                  AEO Score
+                </p>{' '}
+                {/* typography-allow: system label */}
                 <p className="text-xs text-white/40 mt-0.5">
                   Threshold: {AEO_THRESHOLD}
                 </p>
               </div>
-              <span className={`text-3xl font-bold tabular-nums ${scoreColor}`}>{aeoScore}</span>
+              <span className={`text-3xl font-bold tabular-nums ${scoreColor}`}>
+                {aeoScore}
+              </span>
             </div>
 
             {/* Message */}
             {isBlocked ? (
               <div className="space-y-2">
                 <p className="text-sm text-white/70 leading-relaxed">
-                  This content is unlikely to be cited by AI systems. Publishing below the AEO threshold
-                  ({AEO_THRESHOLD}) means reduced visibility in AI-generated answers.
+                  This content is unlikely to be cited by AI systems. Publishing
+                  below the AEO threshold ({AEO_THRESHOLD}) means reduced
+                  visibility in AI-generated answers.
                 </p>
                 <p className="text-xs text-white/40">
                   You can still publish, but consider reviewing the gaps first.
@@ -122,8 +170,8 @@ export function CiteMindPublishGate({
               </div>
             ) : (
               <p className="text-sm text-semantic-success/80 leading-relaxed">
-                This content meets the citation threshold and is likely to be referenced by AI systems.
-                Ready to publish.
+                This content meets the citation threshold and is likely to be
+                referenced by AI systems. Ready to publish.
               </p>
             )}
           </div>

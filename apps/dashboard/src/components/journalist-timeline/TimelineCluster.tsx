@@ -4,8 +4,9 @@
  */
 
 import type { TimelineCluster as TimelineClusterType } from '@pravado/types';
-import { TimelineEvent } from './TimelineEvent';
 import { useState } from 'react';
+
+import { TimelineEvent } from './TimelineEvent';
 
 interface TimelineClusterProps {
   cluster: TimelineClusterType;

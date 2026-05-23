@@ -8,7 +8,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getPRConfig } from '@/lib/env/pr-config';
-import { authenticatePRRequest, createAuthErrorResponse, addPRAuthHeader } from '@/server/pr/prAuth';
+import {
+  authenticatePRRequest,
+  createAuthErrorResponse,
+  addPRAuthHeader,
+} from '@/server/pr/prAuth';
 import { createPRService } from '@/server/pr/prService';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +26,9 @@ export async function GET(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists] Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/journalists] Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -37,7 +43,10 @@ export async function GET(request: NextRequest) {
     const minEngagementScore = searchParams.get('minEngagementScore');
     const minRelevanceScore = searchParams.get('minRelevanceScore');
     const sortBy = searchParams.get('sortBy') || undefined;
-    const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | undefined;
+    const sortOrder = searchParams.get('sortOrder') as
+      | 'asc'
+      | 'desc'
+      | undefined;
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
 
@@ -45,8 +54,12 @@ export async function GET(request: NextRequest) {
       q,
       outlet,
       beat,
-      minEngagementScore: minEngagementScore ? parseFloat(minEngagementScore) : undefined,
-      minRelevanceScore: minRelevanceScore ? parseFloat(minRelevanceScore) : undefined,
+      minEngagementScore: minEngagementScore
+        ? parseFloat(minEngagementScore)
+        : undefined,
+      minRelevanceScore: minRelevanceScore
+        ? parseFloat(minRelevanceScore)
+        : undefined,
       sortBy,
       sortOrder,
       limit: limit ? parseInt(limit, 10) : undefined,
@@ -54,7 +67,9 @@ export async function GET(request: NextRequest) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists] GET: ${result.profiles.length}/${result.total} profiles`);
+      console.log(
+        `[API /api/pr/journalists] GET: ${result.profiles.length}/${result.total} profiles`
+      );
     }
 
     const response = NextResponse.json({
@@ -97,7 +112,9 @@ export async function POST(request: NextRequest) {
 
   if (auth.status !== 'ok' || !auth.client || !auth.orgId) {
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists] POST Auth failed: ${auth.status} - ${auth.error}`);
+      console.log(
+        `[API /api/pr/journalists] POST Auth failed: ${auth.status} - ${auth.error}`
+      );
     }
     return createAuthErrorResponse(auth);
   }
@@ -117,7 +134,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (config.showBackendStatus) {
-      console.log(`[API /api/pr/journalists] POST: Created journalist ${journalist.id}`);
+      console.log(
+        `[API /api/pr/journalists] POST: Created journalist ${journalist.id}`
+      );
     }
 
     const response = NextResponse.json(journalist, { status: 201 });

@@ -200,7 +200,9 @@ const createMockSupabase = () => {
             eq: (column: string, value: any) => ({
               eq: (col2: string, val2: any) => ({
                 single: async () => ({
-                  data: mockData.plans.find((p: any) => p[column] === value && p[col2] === val2),
+                  data: mockData.plans.find(
+                    (p: any) => p[column] === value && p[col2] === val2
+                  ),
                   error: null,
                 }),
               }),
@@ -244,11 +246,17 @@ const createMockSupabase = () => {
               }),
               order: (col: string, opts: any) => ({
                 limit: (n: number) => ({
-                  async (): Promise<{ data: any; error: any }> {
-                    const filtered = mockData.invoiceCache.filter((inv: any) => inv[column] === value);
+                  async(): Promise<{ data: any; error: any }> {
+                    const filtered = mockData.invoiceCache.filter(
+                      (inv: any) => inv[column] === value
+                    );
                     const sorted = opts.ascending
-                      ? filtered.sort((a: any, b: any) => (a[col] > b[col] ? 1 : -1))
-                      : filtered.sort((a: any, b: any) => (a[col] < b[col] ? 1 : -1));
+                      ? filtered.sort((a: any, b: any) =>
+                          a[col] > b[col] ? 1 : -1
+                        )
+                      : filtered.sort((a: any, b: any) =>
+                          a[col] < b[col] ? 1 : -1
+                        );
                     return { data: sorted.slice(0, n), error: null };
                   },
                 }),
@@ -266,7 +274,10 @@ const createMockSupabase = () => {
                   Object.assign(existing, data);
                   return { data: existing, error: null };
                 }
-                const newInvoice = { id: `inv-cache-${mockData.invoiceCache.length + 1}`, ...data };
+                const newInvoice = {
+                  id: `inv-cache-${mockData.invoiceCache.length + 1}`,
+                  ...data,
+                };
                 mockData.invoiceCache.push(newInvoice);
                 return { data: newInvoice, error: null };
               },
@@ -281,7 +292,7 @@ const createMockSupabase = () => {
             eq: (column: string, value: any) => ({
               gte: (col2: string, val2: any) => ({
                 lte: (col3: string, val3: any) => ({
-                  async (): Promise<{ data: any; error: any }> {
+                  async(): Promise<{ data: any; error: any }> {
                     const filtered = mockData.usageTracking.filter(
                       (u: any) =>
                         u[column] === value &&
@@ -303,7 +314,7 @@ const createMockSupabase = () => {
             eq: (column: string, value: any) => ({
               gte: (col2: string, val2: any) => ({
                 lte: (col3: string, val3: any) => ({
-                  async (): Promise<{ data: any; error: any }> {
+                  async(): Promise<{ data: any; error: any }> {
                     const filtered = mockData.alerts.filter(
                       (a: any) =>
                         a[column] === value &&
@@ -400,7 +411,10 @@ describe('Billing Invoices API (S34)', () => {
 
   describe('getInvoiceWithBreakdown()', () => {
     it('should return detailed invoice breakdown', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details).toBeDefined();
       expect(details.invoice).toBeDefined();
@@ -411,7 +425,10 @@ describe('Billing Invoices API (S34)', () => {
     });
 
     it('should categorize line items correctly', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.lineItems.length).toBe(3);
 
@@ -422,14 +439,23 @@ describe('Billing Invoices API (S34)', () => {
       expect(planItem?.amount).toBe(2900);
 
       // Check overage line items
-      const overageItems = details.lineItems.filter((item) => item.type === 'overage');
+      const overageItems = details.lineItems.filter(
+        (item) => item.type === 'overage'
+      );
       expect(overageItems.length).toBe(2);
-      expect(overageItems.some((item) => item.description.includes('Token'))).toBe(true);
-      expect(overageItems.some((item) => item.description.includes('Playbook'))).toBe(true);
+      expect(
+        overageItems.some((item) => item.description.includes('Token'))
+      ).toBe(true);
+      expect(
+        overageItems.some((item) => item.description.includes('Playbook'))
+      ).toBe(true);
     });
 
     it('should calculate breakdown correctly', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.breakdown.planCost).toBe(2900);
       expect(details.breakdown.tokenOverages).toBe(500);
@@ -438,7 +464,10 @@ describe('Billing Invoices API (S34)', () => {
     });
 
     it('should include usage snapshot for period', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.usageSnapshot).toBeDefined();
       expect(details.usageSnapshot?.tokens).toBe(500000);
@@ -447,7 +476,10 @@ describe('Billing Invoices API (S34)', () => {
     });
 
     it('should return related alerts from the same period', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.relatedAlerts).toBeDefined();
       expect(Array.isArray(details.relatedAlerts)).toBe(true);
@@ -460,12 +492,18 @@ describe('Billing Invoices API (S34)', () => {
 
     it('should return 404 error for non-existent invoice', async () => {
       await expect(async () => {
-        await billingService.getInvoiceWithBreakdown('org-1', 'non-existent-invoice');
+        await billingService.getInvoiceWithBreakdown(
+          'org-1',
+          'non-existent-invoice'
+        );
       }).rejects.toThrow();
     });
 
     it('should handle invoices with no overages', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-1');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-1'
+      );
 
       expect(details.breakdown.tokenOverages).toBe(0);
       expect(details.breakdown.runOverages).toBe(0);
@@ -482,17 +520,29 @@ describe('Billing Invoices API (S34)', () => {
 
   describe('Invoice line item type detection', () => {
     it('should detect subscription/plan charges', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-1');
-      const planItems = details.lineItems.filter((item) => item.type === 'plan');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-1'
+      );
+      const planItems = details.lineItems.filter(
+        (item) => item.type === 'plan'
+      );
 
       expect(planItems.length).toBeGreaterThan(0);
-      expect(planItems[0].description.toLowerCase()).toMatch(/subscription|plan/);
+      expect(planItems[0].description.toLowerCase()).toMatch(
+        /subscription|plan/
+      );
     });
 
     it('should detect token overage charges', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
       const tokenOverages = details.lineItems.filter(
-        (item) => item.type === 'overage' && item.description.toLowerCase().includes('token')
+        (item) =>
+          item.type === 'overage' &&
+          item.description.toLowerCase().includes('token')
       );
 
       expect(tokenOverages.length).toBe(1);
@@ -500,9 +550,14 @@ describe('Billing Invoices API (S34)', () => {
     });
 
     it('should detect playbook run overage charges', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
       const runOverages = details.lineItems.filter(
-        (item) => item.type === 'overage' && item.description.toLowerCase().includes('run')
+        (item) =>
+          item.type === 'overage' &&
+          item.description.toLowerCase().includes('run')
       );
 
       expect(runOverages.length).toBe(1);
@@ -512,26 +567,38 @@ describe('Billing Invoices API (S34)', () => {
 
   describe('Usage snapshot aggregation', () => {
     it('should aggregate token usage from org_usage_tracking', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.usageSnapshot?.tokens).toBe(500000);
     });
 
     it('should aggregate playbook run usage', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.usageSnapshot?.playbookRuns).toBe(251);
     });
 
     it('should use max value for concurrent seat usage', async () => {
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-2');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-2'
+      );
 
       expect(details.usageSnapshot?.seats).toBe(3);
     });
 
     it('should return null usage snapshot if no usage data found', async () => {
       // Testing invoice outside the period with usage data
-      const details = await billingService.getInvoiceWithBreakdown('org-1', 'inv-cache-1');
+      const details = await billingService.getInvoiceWithBreakdown(
+        'org-1',
+        'inv-cache-1'
+      );
 
       // INV-001 is for Jan-Feb period, but usage data is for Feb-Mar period
       expect(details.usageSnapshot?.tokens).toBe(0);

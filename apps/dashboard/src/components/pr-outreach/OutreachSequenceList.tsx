@@ -7,7 +7,10 @@
 
 import type { OutreachSequence } from '@pravado/types';
 
-import { deleteOutreachSequence, updateOutreachSequence } from '@/lib/prOutreachApi';
+import {
+  deleteOutreachSequence,
+  updateOutreachSequence,
+} from '@/lib/prOutreachApi';
 
 export interface OutreachSequenceListProps {
   sequences: OutreachSequence[];
@@ -28,7 +31,10 @@ export function OutreachSequenceList({
   onNewSequence,
   onEditSequence,
 }: OutreachSequenceListProps) {
-  const handleToggleActive = async (sequence: OutreachSequence, event: React.MouseEvent) => {
+  const handleToggleActive = async (
+    sequence: OutreachSequence,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation();
 
     try {
@@ -38,14 +44,21 @@ export function OutreachSequenceList({
       onSequenceChange();
     } catch (error) {
       console.error('Failed to toggle sequence:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   };
 
-  const handleDelete = async (sequence: OutreachSequence, event: React.MouseEvent) => {
+  const handleDelete = async (
+    sequence: OutreachSequence,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation();
 
-    if (!confirm(`Delete sequence "${sequence.name}"? All runs will be stopped.`)) {
+    if (
+      !confirm(`Delete sequence "${sequence.name}"? All runs will be stopped.`)
+    ) {
       return;
     }
 
@@ -54,7 +67,9 @@ export function OutreachSequenceList({
       onSequenceChange();
     } catch (error) {
       console.error('Failed to delete sequence:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   };
 
@@ -79,7 +94,9 @@ export function OutreachSequenceList({
       {/* List */}
       <div className="divide-y max-h-[600px] overflow-y-auto">
         {isLoading && (
-          <div className="p-8 text-center text-gray-500">Loading sequences...</div>
+          <div className="p-8 text-center text-gray-500">
+            Loading sequences...
+          </div>
         )}
 
         {!isLoading && sequences.length === 0 && (
@@ -100,7 +117,9 @@ export function OutreachSequenceList({
               key={sequence.id}
               onClick={() => onSequenceSelect(sequence)}
               className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                selectedSequence?.id === sequence.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
+                selectedSequence?.id === sequence.id
+                  ? 'bg-blue-50 border-l-4 border-l-blue-600'
+                  : ''
               }`}
             >
               <div className="flex items-start justify-between">
@@ -119,7 +138,9 @@ export function OutreachSequenceList({
                   </div>
 
                   {sequence.description && (
-                    <p className="text-sm text-gray-600 mt-1">{sequence.description}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {sequence.description}
+                    </p>
                   )}
 
                   <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
@@ -138,7 +159,12 @@ export function OutreachSequenceList({
                     className="p-1 hover:bg-gray-200 rounded"
                     title="Edit"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -153,7 +179,12 @@ export function OutreachSequenceList({
                     title={sequence.isActive ? 'Deactivate' : 'Activate'}
                   >
                     {sequence.isActive ? (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -162,7 +193,12 @@ export function OutreachSequenceList({
                         />
                       </svg>
                     ) : (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -183,7 +219,12 @@ export function OutreachSequenceList({
                     className="p-1 hover:bg-red-100 hover:text-red-600 rounded"
                     title="Delete"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"

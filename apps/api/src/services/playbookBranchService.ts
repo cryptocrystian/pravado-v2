@@ -79,7 +79,8 @@ export async function listBranches(
 ): Promise<PlaybookBranchWithCommit[]> {
   const { data: branches, error } = await supabase
     .from('playbook_branches')
-    .select(`
+    .select(
+      `
       id,
       playbook_id,
       org_id,
@@ -89,7 +90,8 @@ export async function listBranches(
       created_by,
       created_at,
       updated_at
-    `)
+    `
+    )
     .eq('playbook_id', playbookId)
     .order('created_at', { ascending: true });
 
@@ -133,20 +135,22 @@ export async function listBranches(
         createdBy: branch.created_by,
         createdAt: branch.created_at,
         updatedAt: branch.updated_at,
-        latestCommit: latestCommit ? {
-          id: latestCommit.id,
-          playbookId: latestCommit.playbook_id,
-          orgId: latestCommit.org_id,
-          branchId: latestCommit.branch_id,
-          version: latestCommit.version,
-          graph: latestCommit.graph,
-          playbookJson: latestCommit.playbook_json,
-          message: latestCommit.message,
-          parentCommitId: latestCommit.parent_commit_id,
-          mergeParentCommitId: latestCommit.merge_parent_commit_id,
-          createdBy: latestCommit.created_by,
-          createdAt: latestCommit.created_at,
-        } : null,
+        latestCommit: latestCommit
+          ? {
+              id: latestCommit.id,
+              playbookId: latestCommit.playbook_id,
+              orgId: latestCommit.org_id,
+              branchId: latestCommit.branch_id,
+              version: latestCommit.version,
+              graph: latestCommit.graph,
+              playbookJson: latestCommit.playbook_json,
+              message: latestCommit.message,
+              parentCommitId: latestCommit.parent_commit_id,
+              mergeParentCommitId: latestCommit.merge_parent_commit_id,
+              createdBy: latestCommit.created_by,
+              createdAt: latestCommit.created_at,
+            }
+          : null,
         commitCount: count || 0,
       };
     })
@@ -241,7 +245,9 @@ export async function deleteBranch(
     .eq('current_branch_id', branchId);
 
   if (playbooks && playbooks.length > 0) {
-    throw new Error('Cannot delete active branch. Switch to another branch first.');
+    throw new Error(
+      'Cannot delete active branch. Switch to another branch first.'
+    );
   }
 
   const { error } = await supabase

@@ -27,61 +27,68 @@ The PR Outreach Email Deliverability & Engagement Analytics system adds comprehe
 ### Database Schema
 
 #### `pr_outreach_email_messages`
+
 Individual email tracking table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `org_id` | UUID | Organization reference |
-| `run_id` | UUID | Outreach run reference (S44) |
-| `sequence_id` | UUID | Outreach sequence reference (S44) |
-| `step_number` | INTEGER | Step number in sequence |
-| `journalist_id` | UUID | Journalist reference |
-| `subject` | TEXT | Email subject line |
-| `body_html` | TEXT | HTML email body |
-| `body_text` | TEXT | Plain text email body |
-| `provider_message_id` | TEXT | External provider message ID |
-| `send_status` | TEXT | pending \| sent \| bounced \| complained \| failed |
-| `sent_at` | TIMESTAMPTZ | When email was sent |
-| `delivered_at` | TIMESTAMPTZ | When email was delivered |
-| `opened_at` | TIMESTAMPTZ | When email was first opened |
-| `clicked_at` | TIMESTAMPTZ | When link was first clicked |
-| `bounced_at` | TIMESTAMPTZ | When email bounced |
-| `complained_at` | TIMESTAMPTZ | When spam complaint received |
-| `raw_event` | JSONB | Raw provider event data |
-| `metadata` | JSONB | Additional tracking metadata |
+| Column                | Type        | Description                                        |
+| --------------------- | ----------- | -------------------------------------------------- |
+| `id`                  | UUID        | Primary key                                        |
+| `org_id`              | UUID        | Organization reference                             |
+| `run_id`              | UUID        | Outreach run reference (S44)                       |
+| `sequence_id`         | UUID        | Outreach sequence reference (S44)                  |
+| `step_number`         | INTEGER     | Step number in sequence                            |
+| `journalist_id`       | UUID        | Journalist reference                               |
+| `subject`             | TEXT        | Email subject line                                 |
+| `body_html`           | TEXT        | HTML email body                                    |
+| `body_text`           | TEXT        | Plain text email body                              |
+| `provider_message_id` | TEXT        | External provider message ID                       |
+| `send_status`         | TEXT        | pending \| sent \| bounced \| complained \| failed |
+| `sent_at`             | TIMESTAMPTZ | When email was sent                                |
+| `delivered_at`        | TIMESTAMPTZ | When email was delivered                           |
+| `opened_at`           | TIMESTAMPTZ | When email was first opened                        |
+| `clicked_at`          | TIMESTAMPTZ | When link was first clicked                        |
+| `bounced_at`          | TIMESTAMPTZ | When email bounced                                 |
+| `complained_at`       | TIMESTAMPTZ | When spam complaint received                       |
+| `raw_event`           | JSONB       | Raw provider event data                            |
+| `metadata`            | JSONB       | Additional tracking metadata                       |
 
 **Indexes:**
+
 - `org_id`, `run_id`, `sequence_id`, `journalist_id`, `provider_message_id`, `send_status`, `sent_at DESC`
 
 #### `pr_outreach_engagement_metrics`
+
 Aggregated journalist engagement metrics
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `org_id` | UUID | Organization reference |
-| `journalist_id` | UUID | Journalist reference |
-| `total_sent` | INTEGER | Total emails sent |
-| `total_opened` | INTEGER | Total emails opened |
-| `total_clicked` | INTEGER | Total emails with clicks |
-| `total_replied` | INTEGER | Total emails replied to |
-| `total_bounced` | INTEGER | Total emails bounced |
-| `total_complained` | INTEGER | Total spam complaints |
-| `engagement_score` | FLOAT | Calculated engagement score (0-1) |
+| Column             | Type    | Description                       |
+| ------------------ | ------- | --------------------------------- |
+| `id`               | UUID    | Primary key                       |
+| `org_id`           | UUID    | Organization reference            |
+| `journalist_id`    | UUID    | Journalist reference              |
+| `total_sent`       | INTEGER | Total emails sent                 |
+| `total_opened`     | INTEGER | Total emails opened               |
+| `total_clicked`    | INTEGER | Total emails with clicks          |
+| `total_replied`    | INTEGER | Total emails replied to           |
+| `total_bounced`    | INTEGER | Total emails bounced              |
+| `total_complained` | INTEGER | Total spam complaints             |
+| `engagement_score` | FLOAT   | Calculated engagement score (0-1) |
 
 **Unique Constraint:** `(org_id, journalist_id)`
 
 **Engagement Score Formula:**
+
 ```
 score = (open_rate * 0.2) + (click_rate * 0.4) + (reply_rate * 0.3) - (bounce_rate * 0.3)
 ```
+
 Clamped between 0.0 and 1.0.
 
 ### Database Functions
 
 #### `calculate_engagement_score()`
+
 Calculates engagement score from metrics
+
 ```sql
 SELECT calculate_engagement_score(
   p_total_sent := 100,
@@ -93,7 +100,9 @@ SELECT calculate_engagement_score(
 ```
 
 #### `update_journalist_engagement_metrics()`
+
 Recalculates metrics for a journalist
+
 ```sql
 SELECT update_journalist_engagement_metrics(
   p_org_id := '123e4567-e89b-12d3-a456-426614174000',
@@ -102,7 +111,9 @@ SELECT update_journalist_engagement_metrics(
 ```
 
 #### `get_deliverability_summary()`
+
 Returns aggregate stats for an organization
+
 ```sql
 SELECT get_deliverability_summary(
   p_org_id := '123e4567-e89b-12d3-a456-426614174000'
@@ -148,15 +159,20 @@ getJournalistEngagement(journalistId: string, orgId: string): Promise<Journalist
 ### Email Provider Architecture
 
 **Abstract Base Class:**
+
 ```typescript
 abstract class EmailProviderBase {
   abstract send(request: SendEmailRequest): Promise<SendEmailResponse>;
-  abstract validateWebhookSignature(payload: any, signature?: string): Promise<boolean>;
+  abstract validateWebhookSignature(
+    payload: any,
+    signature?: string
+  ): Promise<boolean>;
   abstract normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null>;
 }
 ```
 
 **Implementations:**
+
 - `StubEmailProvider` - For testing/development
 - `SendGridEmailProvider` - SendGrid integration (API calls stubbed for future implementation)
 - `MailgunEmailProvider` - Mailgun integration (API calls stubbed for future implementation)
@@ -184,6 +200,7 @@ const outreachService = new OutreachService({
 ```
 
 When configured, emails sent via `outreachService.advanceRun()` will:
+
 1. Create an `EmailMessage` record
 2. Send the email via the configured provider
 3. Update the `EmailMessage` with provider tracking ID
@@ -215,8 +232,8 @@ POST   /engagement/:journalistId/recalculate  // Recalculate metrics
 ### Statistics
 
 ```typescript
-GET    /stats/deliverability   // Get deliverability summary
-GET    /stats/top-engaged       // Get top engaged journalists
+GET / stats / deliverability; // Get deliverability summary
+GET / stats / top - engaged; // Get top engaged journalists
 ```
 
 ### Webhooks
@@ -228,7 +245,7 @@ POST   /webhooks/:provider      // Process provider webhook events
 ### Testing
 
 ```typescript
-POST   /test-send               // Test email sending (development)
+POST / test - send; // Test email sending (development)
 ```
 
 ---
@@ -250,7 +267,7 @@ EMAIL_FROM_NAME=Pravado PR Team
 ### Feature Flag
 
 ```typescript
-ENABLE_PR_OUTREACH_DELIVERABILITY: true
+ENABLE_PR_OUTREACH_DELIVERABILITY: true;
 ```
 
 ---
@@ -262,6 +279,7 @@ ENABLE_PR_OUTREACH_DELIVERABILITY: true
 **Location:** `apps/dashboard/src/app/app/pr/deliverability/page.tsx`
 
 **Features:**
+
 - **Overview Tab**: Deliverability stats, detailed metrics, top engaged journalists
 - **Email Messages Tab**: List of sent emails with status, timestamps, and engagement
 - **Engagement Metrics Tab**: Journalist-level engagement analytics with scores
@@ -269,6 +287,7 @@ ENABLE_PR_OUTREACH_DELIVERABILITY: true
 **Auto-Refresh:** Dashboard refreshes every 30 seconds
 
 **Frontend API Client:**
+
 - **Location:** `apps/dashboard/src/lib/prOutreachDeliverabilityApi.ts`
 - **Functions:** 14 API helper functions for all endpoints
 
@@ -349,10 +368,15 @@ console.log(`Click Rate: ${summary.clickRate * 100}%`);
 console.log(`Bounce Rate: ${summary.bounceRate * 100}%`);
 
 // Get top engaged journalists
-const topEngaged = await deliverabilityService.getTopEngagedJournalists(orgId, 10);
+const topEngaged = await deliverabilityService.getTopEngagedJournalists(
+  orgId,
+  10
+);
 
-topEngaged.forEach(engagement => {
-  console.log(`${engagement.journalist.name}: ${engagement.engagementScore * 100}%`);
+topEngaged.forEach((engagement) => {
+  console.log(
+    `${engagement.journalist.name}: ${engagement.engagementScore * 100}%`
+  );
 });
 ```
 
@@ -380,18 +404,21 @@ topEngaged.forEach(engagement => {
 ## Future Enhancements
 
 ### Short-Term (Next Sprint)
+
 1. Implement actual SendGrid/Mailgun/SES API integrations
 2. Add proper webhook signature validation
 3. Add email template preview functionality
 4. Implement email reply detection
 
 ### Medium-Term (2-3 Sprints)
+
 1. A/B testing for subject lines
 2. Send-time optimization based on journalist timezone
 3. Automated response classification (positive/negative/neutral)
 4. Domain reputation tracking
 
 ### Long-Term (4+ Sprints)
+
 1. ML-based optimal send-time prediction
 2. Sentiment analysis on replies
 3. Advanced charts and visualizations
@@ -402,15 +429,18 @@ topEngaged.forEach(engagement => {
 ## Integration Points
 
 ### S44 (Automated Journalist Outreach)
+
 - Automatically tracks emails sent via outreach sequences
 - Creates `EmailMessage` records for each sent email
 - Updates delivery and engagement status via webhooks
 
 ### S40-S43 (Media Monitoring)
+
 - Uses journalist data from media monitoring
 - Engagement scores inform journalist targeting
 
 ### S42 (Scheduler)
+
 - Metrics can be recalculated on schedule
 - Webhooks processed asynchronously
 
@@ -419,6 +449,7 @@ topEngaged.forEach(engagement => {
 ## Metrics & KPIs
 
 **Deliverability Metrics:**
+
 - Total messages sent
 - Delivery rate (delivered / sent)
 - Open rate (opened / sent)
@@ -426,6 +457,7 @@ topEngaged.forEach(engagement => {
 - Bounce rate (bounced / sent)
 
 **Engagement Metrics:**
+
 - Engagement score (weighted formula)
 - Per-journalist open/click/reply rates
 - Top engaged journalists ranking
@@ -435,10 +467,12 @@ topEngaged.forEach(engagement => {
 ## Testing
 
 **Backend Tests:**
+
 - **Location:** `apps/api/tests/outreachDeliverabilityService.test.ts`
 - **Coverage:** 20+ test cases covering CRUD, webhooks, statistics
 
 **E2E Tests:**
+
 - **Location:** `apps/dashboard/tests/pr-outreach-deliverability/deliverability.spec.ts`
 - **Coverage:** 30+ test scenarios covering UI interactions, tabs, accessibility
 
@@ -447,21 +481,25 @@ topEngaged.forEach(engagement => {
 ## Files Created
 
 **Backend:**
+
 - `apps/api/supabase/migrations/50_pr_outreach_deliverability.sql` (323 lines)
 - `apps/api/src/services/outreachDeliverabilityService.ts` (900 lines)
 - `apps/api/src/routes/prOutreachDeliverability/index.ts` (480 lines)
 - `apps/api/tests/outreachDeliverabilityService.test.ts` (550 lines)
 
 **Frontend:**
+
 - `apps/dashboard/src/lib/prOutreachDeliverabilityApi.ts` (250 lines)
 - `apps/dashboard/src/app/app/pr/deliverability/page.tsx` (400 lines)
 - `apps/dashboard/tests/pr-outreach-deliverability/deliverability.spec.ts` (350 lines)
 
 **Shared:**
+
 - `packages/types/src/prOutreachDeliverability.ts` (300 lines)
 - `packages/validators/src/prOutreachDeliverability.ts` (340 lines)
 
 **Modified:**
+
 - `apps/api/src/services/outreachService.ts` (integration with deliverability)
 - `apps/api/src/server.ts` (route registration)
 - `packages/feature-flags/src/flags.ts` (feature flag)

@@ -63,18 +63,44 @@ export interface ScanResponse extends ScanResult {
 // ── EVI band logic — canonical 4-band per docs/canon/EARNED_VISIBILITY_INDEX.md
 // Hex values are approved DS v3.1 tokens (semantic-danger / brand-amber /
 // brand-cyan / semantic-success).
-export function eviBand(score: number): { label: EVIBand; color: string; bgColor: string } {
-  if (score <= 40) return { label: 'At Risk',     color: '#EF4444', bgColor: 'rgba(239,68,68,0.15)' };
-  if (score <= 60) return { label: 'Emerging',    color: '#F59E0B', bgColor: 'rgba(245,158,11,0.15)' };
-  if (score <= 80) return { label: 'Competitive', color: '#00D9FF', bgColor: 'rgba(0,217,255,0.15)' };
-  return                  { label: 'Dominant',    color: '#22C55E', bgColor: 'rgba(34,197,94,0.15)' };
+export function eviBand(score: number): {
+  label: EVIBand;
+  color: string;
+  bgColor: string;
+} {
+  if (score <= 40)
+    return {
+      label: 'At Risk',
+      color: '#EF4444',
+      bgColor: 'rgba(239,68,68,0.15)',
+    };
+  if (score <= 60)
+    return {
+      label: 'Emerging',
+      color: '#F59E0B',
+      bgColor: 'rgba(245,158,11,0.15)',
+    };
+  if (score <= 80)
+    return {
+      label: 'Competitive',
+      color: '#00D9FF',
+      bgColor: 'rgba(0,217,255,0.15)',
+    };
+  return {
+    label: 'Dominant',
+    color: '#22C55E',
+    bgColor: 'rgba(34,197,94,0.15)',
+  };
 }
 
 export function sevColor(severity: Severity): string {
   switch (severity) {
-    case 'high':   return '#EF4444';
-    case 'medium': return '#F59E0B';
-    case 'low':    return '#22C55E';
+    case 'high':
+      return '#EF4444';
+    case 'medium':
+      return '#F59E0B';
+    case 'low':
+      return '#22C55E';
   }
 }
 
@@ -88,10 +114,28 @@ export function sevLabel(severity: Severity): string {
 // Content uses the iris SAGE accent (strategy/authority infrastructure),
 // AI Citation uses the cyan CRAFT accent (the execution layer that
 // drives AI engine surface presence).
-export const PILLAR_CONFIG: Record<PillarKey, { label: string; accent: string; bgAccent: string; Icon: Icon }> = {
-  pr:      { label: 'PR Authority',          accent: '#E879F9', bgAccent: 'rgba(232,121,249,0.10)', Icon: Newspaper },
-  content: { label: 'Content Authority',     accent: '#A855F7', bgAccent: 'rgba(168,85,247,0.10)',  Icon: FileText  },
-  ai:      { label: 'AI Citation Authority', accent: '#00D9FF', bgAccent: 'rgba(0,217,255,0.10)',   Icon: Brain     },
+export const PILLAR_CONFIG: Record<
+  PillarKey,
+  { label: string; accent: string; bgAccent: string; Icon: Icon }
+> = {
+  pr: {
+    label: 'PR Authority',
+    accent: '#E879F9',
+    bgAccent: 'rgba(232,121,249,0.10)',
+    Icon: Newspaper,
+  },
+  content: {
+    label: 'Content Authority',
+    accent: '#A855F7',
+    bgAccent: 'rgba(168,85,247,0.10)',
+    Icon: FileText,
+  },
+  ai: {
+    label: 'AI Citation Authority',
+    accent: '#00D9FF',
+    bgAccent: 'rgba(0,217,255,0.10)',
+    Icon: Brain,
+  },
 };
 
 // Pillar order shown to the user is determined by entry_path so the
@@ -99,11 +143,15 @@ export const PILLAR_CONFIG: Record<PillarKey, { label: string; accent: string; b
 // all three pillars regardless of order.
 export function pillarOrder(entryPath: EntryPath): PillarKey[] {
   switch (entryPath) {
-    case 'pr':      return ['pr', 'content', 'ai'];
-    case 'content': return ['content', 'pr', 'ai'];
-    case 'ai':      return ['ai', 'pr', 'content'];
+    case 'pr':
+      return ['pr', 'content', 'ai'];
+    case 'content':
+      return ['content', 'pr', 'ai'];
+    case 'ai':
+      return ['ai', 'pr', 'content'];
     case 'generic':
-    default:        return ['pr', 'content', 'ai'];
+    default:
+      return ['pr', 'content', 'ai'];
   }
 }
 

@@ -5,7 +5,11 @@
 
 'use client';
 
+import type { StrategicReportFormat, StrategicAudience } from '@pravado/types';
+import { Plus, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -15,9 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -26,9 +28,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { createReport, type CreateStrategicReport } from '@/lib/strategicIntelligenceApi';
-import type { StrategicReportFormat, StrategicAudience } from '@pravado/types';
-import { Plus, Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  createReport,
+  type CreateStrategicReport,
+} from '@/lib/strategicIntelligenceApi';
 
 interface CreateStrategicReportDialogProps {
   onSuccess?: () => void;
@@ -101,8 +105,8 @@ export function CreateStrategicReportDialog({
           <DialogHeader>
             <DialogTitle>Create Strategic Intelligence Report</DialogTitle>
             <DialogDescription>
-              Create a new CEO-level strategic intelligence report synthesizing insights from
-              all upstream systems.
+              Create a new CEO-level strategic intelligence report synthesizing
+              insights from all upstream systems.
             </DialogDescription>
           </DialogHeader>
 
@@ -113,7 +117,9 @@ export function CreateStrategicReportDialog({
                 id="title"
                 placeholder="Q1 2025 Strategic Review"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 required
               />
             </div>
@@ -124,7 +130,9 @@ export function CreateStrategicReportDialog({
                 id="description"
                 placeholder="Brief description of this strategic report..."
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={2}
               />
             </div>
@@ -135,20 +143,37 @@ export function CreateStrategicReportDialog({
                 <Select
                   value={formData.format}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, format: value as StrategicReportFormat })
+                    setFormData({
+                      ...formData,
+                      format: value as StrategicReportFormat,
+                    })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select format" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="quarterly_strategic_review">Quarterly Strategic Review</SelectItem>
-                    <SelectItem value="annual_strategic_assessment">Annual Strategic Assessment</SelectItem>
-                    <SelectItem value="board_strategy_brief">Board Strategy Brief</SelectItem>
-                    <SelectItem value="ceo_intelligence_brief">CEO Intelligence Brief</SelectItem>
-                    <SelectItem value="investor_strategy_update">Investor Strategy Update</SelectItem>
-                    <SelectItem value="crisis_strategic_response">Crisis Strategic Response</SelectItem>
-                    <SelectItem value="competitive_strategy_report">Competitive Strategy Report</SelectItem>
+                    <SelectItem value="quarterly_strategic_review">
+                      Quarterly Strategic Review
+                    </SelectItem>
+                    <SelectItem value="annual_strategic_assessment">
+                      Annual Strategic Assessment
+                    </SelectItem>
+                    <SelectItem value="board_strategy_brief">
+                      Board Strategy Brief
+                    </SelectItem>
+                    <SelectItem value="ceo_intelligence_brief">
+                      CEO Intelligence Brief
+                    </SelectItem>
+                    <SelectItem value="investor_strategy_update">
+                      Investor Strategy Update
+                    </SelectItem>
+                    <SelectItem value="crisis_strategic_response">
+                      Crisis Strategic Response
+                    </SelectItem>
+                    <SelectItem value="competitive_strategy_report">
+                      Competitive Strategy Report
+                    </SelectItem>
                     <SelectItem value="custom">Custom Report</SelectItem>
                   </SelectContent>
                 </Select>
@@ -159,7 +184,10 @@ export function CreateStrategicReportDialog({
                 <Select
                   value={formData.audience}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, audience: value as StrategicAudience })
+                    setFormData({
+                      ...formData,
+                      audience: value as StrategicAudience,
+                    })
                   }
                 >
                   <SelectTrigger>
@@ -170,8 +198,12 @@ export function CreateStrategicReportDialog({
                     <SelectItem value="c_suite">C-Suite Executives</SelectItem>
                     <SelectItem value="board">Board of Directors</SelectItem>
                     <SelectItem value="investors">Investors</SelectItem>
-                    <SelectItem value="senior_leadership">Senior Leadership</SelectItem>
-                    <SelectItem value="all_executives">All Executives</SelectItem>
+                    <SelectItem value="senior_leadership">
+                      Senior Leadership
+                    </SelectItem>
+                    <SelectItem value="all_executives">
+                      All Executives
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -216,7 +248,9 @@ export function CreateStrategicReportDialog({
                 <Label htmlFor="fiscalQuarter">Fiscal Quarter</Label>
                 <Select
                   value={formData.fiscalQuarter || ''}
-                  onValueChange={(value) => setFormData({ ...formData, fiscalQuarter: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, fiscalQuarter: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select quarter" />
@@ -239,7 +273,10 @@ export function CreateStrategicReportDialog({
                   max={2100}
                   value={formData.fiscalYear}
                   onChange={(e) =>
-                    setFormData({ ...formData, fiscalYear: parseInt(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      fiscalYear: parseInt(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -251,7 +288,10 @@ export function CreateStrategicReportDialog({
                 <Select
                   value={formData.tone}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, tone: value as 'executive' | 'formal' | 'strategic' })
+                    setFormData({
+                      ...formData,
+                      tone: value as 'executive' | 'formal' | 'strategic',
+                    })
                   }
                 >
                   <SelectTrigger>
@@ -272,7 +312,10 @@ export function CreateStrategicReportDialog({
                   onValueChange={(value) =>
                     setFormData({
                       ...formData,
-                      targetLength: value as 'brief' | 'standard' | 'comprehensive',
+                      targetLength: value as
+                        | 'brief'
+                        | 'standard'
+                        | 'comprehensive',
                     })
                   }
                 >

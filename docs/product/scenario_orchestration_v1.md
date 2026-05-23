@@ -21,14 +21,14 @@ The Scenario Orchestration Engine enables organizations to chain multiple AI sce
 
 The engine supports six trigger condition types:
 
-| Type | Description | Parameters |
-|------|-------------|------------|
-| `always` | Always execute | None |
-| `risk_threshold` | Execute when risk level meets threshold | `minRiskLevel`, `comparison` |
-| `sentiment_shift` | Execute on sentiment changes | `direction`, `magnitude` |
-| `keyword_match` | Execute when keywords detected | `keywords`, `matchMode` |
-| `agent_response` | Execute based on agent behavior | `agentRoleType`, `responsePattern` |
-| `outcome_match` | Execute when outcome type matches | `outcomeType`, `includePartial` |
+| Type              | Description                             | Parameters                         |
+| ----------------- | --------------------------------------- | ---------------------------------- |
+| `always`          | Always execute                          | None                               |
+| `risk_threshold`  | Execute when risk level meets threshold | `minRiskLevel`, `comparison`       |
+| `sentiment_shift` | Execute on sentiment changes            | `direction`, `magnitude`           |
+| `keyword_match`   | Execute when keywords detected          | `keywords`, `matchMode`            |
+| `agent_response`  | Execute based on agent behavior         | `agentRoleType`, `responsePattern` |
+| `outcome_match`   | Execute when outcome type matches       | `outcomeType`, `includePartial`    |
 
 ### 3. Suite Run Execution
 
@@ -156,15 +156,15 @@ GET    /api/v1/scenario-orchestrations/suite-runs/:id/audit-log
 
 ### Dashboard Components
 
-| Component | Purpose |
-|-----------|---------|
-| `SuiteCard` | Display suite in list view with status, counts, actions |
-| `SuiteConfigForm` | Create/edit suite with config options |
-| `SuiteItemList` | Display simulation items with conditions |
-| `SuiteRunTimeline` | Visual timeline of run progress |
-| `SuiteMetricsPanel` | Aggregated metrics display |
-| `SuiteOutcomePanel` | Narrative, risk map, outcomes tabs |
-| `SuiteRunControlBar` | Advance/abort run controls |
+| Component            | Purpose                                                 |
+| -------------------- | ------------------------------------------------------- |
+| `SuiteCard`          | Display suite in list view with status, counts, actions |
+| `SuiteConfigForm`    | Create/edit suite with config options                   |
+| `SuiteItemList`      | Display simulation items with conditions                |
+| `SuiteRunTimeline`   | Visual timeline of run progress                         |
+| `SuiteMetricsPanel`  | Aggregated metrics display                              |
+| `SuiteOutcomePanel`  | Narrative, risk map, outcomes tabs                      |
+| `SuiteRunControlBar` | Advance/abort run controls                              |
 
 ### Page Views
 
@@ -228,7 +228,11 @@ const { run } = await startSuiteRun(orgId, suiteId, userId);
 
 // Monitor and advance
 while (run.status === 'running') {
-  const { run: updated, advanced } = await advanceSuiteRun(orgId, run.id, userId);
+  const { run: updated, advanced } = await advanceSuiteRun(
+    orgId,
+    run.id,
+    userId
+  );
 
   if (!advanced) {
     // All items processed or blocked
@@ -254,7 +258,7 @@ const { riskMap } = await generateSuiteRiskMap(orgId, run.id, {
 
 ```typescript
 // packages/feature-flags/src/flags.ts
-ENABLE_SCENARIO_ORCHESTRATION: true
+ENABLE_SCENARIO_ORCHESTRATION: true;
 ```
 
 ## Testing
@@ -264,6 +268,7 @@ ENABLE_SCENARIO_ORCHESTRATION: true
 Located at: `apps/api/tests/scenarioOrchestrationService.test.ts`
 
 Covers:
+
 - Suite CRUD operations
 - Item management
 - Run execution and advancement
@@ -276,6 +281,7 @@ Covers:
 Located at: `apps/dashboard/tests/e2e/scenarioOrchestrations.e2e.test.ts`
 
 Covers:
+
 - Suite list/detail views
 - Suite creation flow
 - Run execution and monitoring
@@ -287,6 +293,7 @@ Covers:
 ### S71 AI Scenario Simulation Engine
 
 The orchestration engine integrates with S71 for:
+
 - Running individual simulations (`aiScenarioSimulationService.startRun`)
 - Converging simulations (`aiScenarioSimulationService.runUntilConverged`)
 - Extracting outcomes for condition evaluation
@@ -294,6 +301,7 @@ The orchestration engine integrates with S71 for:
 ### LLM Router
 
 Uses `@pravado/utils/routeLLM` for:
+
 - Narrative generation
 - Risk map synthesis
 - Outcome summarization

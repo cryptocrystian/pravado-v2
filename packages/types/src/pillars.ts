@@ -16,7 +16,14 @@ export interface MediaOutlet extends BaseEntity {
   websiteUrl: string | null;
   country: string | null;
   language: string | null;
-  outletType: 'newspaper' | 'magazine' | 'blog' | 'podcast' | 'tv' | 'radio' | null;
+  outletType:
+    | 'newspaper'
+    | 'magazine'
+    | 'blog'
+    | 'podcast'
+    | 'tv'
+    | 'radio'
+    | null;
   tier: string | null; // 'top_tier', 'trade', 'niche', etc.
   distribution: string | null; // 'national', 'regional', 'local', 'global'
   reachEstimate: number | null;
@@ -132,7 +139,12 @@ export interface ContentItem extends BaseEntity {
   orgId: UUID;
   title: string;
   slug: string | null; // URL-friendly identifier
-  contentType: 'blog_post' | 'social_post' | 'long_form' | 'video_script' | 'newsletter';
+  contentType:
+    | 'blog_post'
+    | 'social_post'
+    | 'long_form'
+    | 'video_script'
+    | 'newsletter';
   status: ContentStatus; // S12: Enhanced with type
   body: string | null;
   url: string | null; // S12: Added
@@ -215,7 +227,11 @@ export interface ContentGapDTO {
 // SEO INTELLIGENCE TYPES
 // ========================================
 
-export type SEOKeywordIntent = 'informational' | 'navigational' | 'commercial' | 'transactional';
+export type SEOKeywordIntent =
+  | 'informational'
+  | 'navigational'
+  | 'commercial'
+  | 'transactional';
 
 export interface SEOKeyword extends BaseEntity {
   orgId: UUID;
@@ -375,7 +391,12 @@ export interface SEOOpportunityDTO {
   gapSummary: string;
   recommendedAction: string;
   priorityScore: number;
-  opportunityType: 'keyword_gap' | 'content_refresh' | 'broken_link' | 'missing_meta' | 'low_content';
+  opportunityType:
+    | 'keyword_gap'
+    | 'content_refresh'
+    | 'broken_link'
+    | 'missing_meta'
+    | 'low_content';
   status: 'open' | 'in_progress' | 'completed' | 'dismissed';
   createdAt: string;
   updatedAt: string;
@@ -449,9 +470,13 @@ export type ListJournalistsWithContextResponse = ApiResponse<{
 export type ListPRBeatsResponse = ApiResponse<{ items: PRBeat[] }>;
 export type ListPRListsResponse = ApiResponse<{ items: PRList[] }>;
 export type GetPRListResponse = ApiResponse<{ item: PRList }>;
-export type GetPRListWithMembersResponse = ApiResponse<{ item: PRListWithMembers }>;
+export type GetPRListWithMembersResponse = ApiResponse<{
+  item: PRListWithMembers;
+}>;
 export type CreatePRListResponse = ApiResponse<{ item: PRList }>;
-export type UpdatePRListMembersResponse = ApiResponse<{ item: PRListWithMembers }>;
+export type UpdatePRListMembersResponse = ApiResponse<{
+  item: PRListWithMembers;
+}>;
 
 // Content API Responses (S3 + S12)
 export type ListContentItemsResponse = ApiResponse<ContentItemListDTO>; // S12: Enhanced with pagination
@@ -460,14 +485,20 @@ export type CreateContentItemResponse = ApiResponse<{ item: ContentItem }>; // S
 export type UpdateContentItemResponse = ApiResponse<{ item: ContentItem }>; // S12: Added
 export type ListContentBriefsResponse = ApiResponse<{ items: ContentBrief[] }>;
 export type GetContentBriefResponse = ApiResponse<{ item: ContentBrief }>;
-export type GetContentBriefWithContextResponse = ApiResponse<ContentBriefWithContextDTO>; // S12: Added
+export type GetContentBriefWithContextResponse =
+  ApiResponse<ContentBriefWithContextDTO>; // S12: Added
 export type CreateContentBriefResponse = ApiResponse<{ item: ContentBrief }>; // S12: Added
 export type UpdateContentBriefResponse = ApiResponse<{ item: ContentBrief }>; // S12: Added
-export type ListContentClustersResponse = ApiResponse<{ items: ContentClusterDTO[] }>; // S12: Added
+export type ListContentClustersResponse = ApiResponse<{
+  items: ContentClusterDTO[];
+}>; // S12: Added
 export type ListContentGapsResponse = ApiResponse<{ items: ContentGapDTO[] }>; // S12: Added
 
 // SEO API Responses
-export type ListSEOKeywordsResponse = ApiResponse<{ items: SEOKeyword[]; total?: number }>;
+export type ListSEOKeywordsResponse = ApiResponse<{
+  items: SEOKeyword[];
+  total?: number;
+}>;
 export type ListSEOKeywordsWithMetricsResponse = ApiResponse<{
   items: SEOKeywordWithMetrics[];
   total?: number;
@@ -477,17 +508,35 @@ export type ListSEOKeywordsWithMetricsResponse = ApiResponse<{
 export type GetSEOKeywordResponse = ApiResponse<{ item: SEOKeyword }>;
 export type ListSEOPagesResponse = ApiResponse<{ items: SEOPage[] }>;
 export type GetSEOPageResponse = ApiResponse<{ item: SEOPage }>;
-export type ListSEOOpportunitiesResponse = ApiResponse<{ items: SEOOpportunity[] }>;
-export type ListSEOOpportunityDTOsResponse = ApiResponse<{ items: SEOOpportunityDTO[] }>;
+export type ListSEOOpportunitiesResponse = ApiResponse<{
+  items: SEOOpportunity[];
+}>;
+export type ListSEOOpportunityDTOsResponse = ApiResponse<{
+  items: SEOOpportunityDTO[];
+}>;
 export type GetSEOOpportunityResponse = ApiResponse<{ item: SEOOpportunity }>;
-export type ListSEOCompetitorsResponse = ApiResponse<{ items: SEOCompetitor[] }>;
+export type ListSEOCompetitorsResponse = ApiResponse<{
+  items: SEOCompetitor[];
+}>;
 export type ListSEOSnapshotsResponse = ApiResponse<{ items: SEOSnapshot[] }>;
-export type GetSEOSerpSnapshotResponse = ApiResponse<{ snapshot: SEOSerpSnapshot }>;
-export type GetSEOPageAuditResponse = ApiResponse<{ auditWithIssues: SEOPageAuditWithIssues }>;
+export type GetSEOSerpSnapshotResponse = ApiResponse<{
+  snapshot: SEOSerpSnapshot;
+}>;
+export type GetSEOPageAuditResponse = ApiResponse<{
+  auditWithIssues: SEOPageAuditWithIssues;
+}>;
 export type ListSEOPageAuditsResponse = ApiResponse<{ items: SEOPageAudit[] }>;
-export type GetSEOBacklinkProfileResponse = ApiResponse<{ profile: SEOBacklinkProfile }>;
-export type ListSEOBacklinksResponse = ApiResponse<{ items: SEOBacklink[]; total: number }>;
-export type ListSEOReferringDomainsResponse = ApiResponse<{ items: SEOReferringDomain[]; total: number }>;
+export type GetSEOBacklinkProfileResponse = ApiResponse<{
+  profile: SEOBacklinkProfile;
+}>;
+export type ListSEOBacklinksResponse = ApiResponse<{
+  items: SEOBacklink[];
+  total: number;
+}>;
+export type ListSEOReferringDomainsResponse = ApiResponse<{
+  items: SEOReferringDomain[];
+  total: number;
+}>;
 
 // ========================================
 // CONTENT BRIEF GENERATOR TYPES (S13)
@@ -522,9 +571,13 @@ export interface BriefGenerationResult {
 // CONTENT BRIEF GENERATOR API RESPONSES (S13)
 // ========================================
 
-export type GenerateBriefResponse = ApiResponse<{ result: BriefGenerationResult }>;
+export type GenerateBriefResponse = ApiResponse<{
+  result: BriefGenerationResult;
+}>;
 export type GetGeneratedBriefResponse = ApiResponse<{ item: GeneratedBrief }>;
-export type ListGeneratedBriefsResponse = ApiResponse<{ items: GeneratedBrief[] }>;
+export type ListGeneratedBriefsResponse = ApiResponse<{
+  items: GeneratedBrief[];
+}>;
 
 // ========================================
 // CONTENT QUALITY SCORING TYPES (S14)

@@ -5,7 +5,10 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createExecutiveDigestService, type ExecutiveDigestService } from '../src/services/executiveDigestService';
+import {
+  createExecutiveDigestService,
+  type ExecutiveDigestService,
+} from '../src/services/executiveDigestService';
 import type {
   CreateExecDigestInput,
   UpdateExecDigestInput,
@@ -37,7 +40,9 @@ const mockSupabase = {
   storage: {
     from: vi.fn().mockReturnValue({
       upload: vi.fn().mockResolvedValue({ error: null }),
-      getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'https://example.com/digest.pdf' } }),
+      getPublicUrl: vi.fn().mockReturnValue({
+        data: { publicUrl: 'https://example.com/digest.pdf' },
+      }),
     }),
   },
 } as unknown as SupabaseClient;
@@ -60,10 +65,11 @@ describe('ExecutiveDigestService', () => {
     // Default mock for OpenAI API
     (global.fetch as vi.Mock).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        choices: [{ message: { content: 'Generated content' } }],
-        usage: { total_tokens: 100 },
-      }),
+      json: () =>
+        Promise.resolve({
+          choices: [{ message: { content: 'Generated content' } }],
+          usage: { total_tokens: 100 },
+        }),
     });
   });
 
@@ -201,8 +207,9 @@ describe('ExecutiveDigestService', () => {
         error: { message: 'Database error' },
       } as any);
 
-      await expect(service.createDigest(testOrgId, testUserId, { title: 'Test' }))
-        .rejects.toThrow('Failed to create digest');
+      await expect(
+        service.createDigest(testOrgId, testUserId, { title: 'Test' })
+      ).rejects.toThrow('Failed to create digest');
     });
   });
 
@@ -340,7 +347,12 @@ describe('ExecutiveDigestService', () => {
         error: null,
       } as any);
 
-      const result = await service.updateDigest(testOrgId, testDigestId, testUserId, updates);
+      const result = await service.updateDigest(
+        testOrgId,
+        testDigestId,
+        testUserId,
+        updates
+      );
 
       expect(mockSupabase.from).toHaveBeenCalledWith('exec_digests');
       expect(mockSupabase.update).toHaveBeenCalled();
@@ -354,7 +366,12 @@ describe('ExecutiveDigestService', () => {
         error: { message: 'Not found' },
       } as any);
 
-      const result = await service.updateDigest(testOrgId, 'non-existent', testUserId, { title: 'New' });
+      const result = await service.updateDigest(
+        testOrgId,
+        'non-existent',
+        testUserId,
+        { title: 'New' }
+      );
       expect(result).toBeNull();
     });
   });
@@ -369,7 +386,11 @@ describe('ExecutiveDigestService', () => {
         error: null,
       } as any);
 
-      const result = await service.deleteDigest(testOrgId, testDigestId, testUserId);
+      const result = await service.deleteDigest(
+        testOrgId,
+        testDigestId,
+        testUserId
+      );
 
       expect(mockSupabase.update).toHaveBeenCalled();
       expect(result.archived).toBe(true);
@@ -382,7 +403,12 @@ describe('ExecutiveDigestService', () => {
         error: null,
       } as any);
 
-      const result = await service.deleteDigest(testOrgId, testDigestId, testUserId, true);
+      const result = await service.deleteDigest(
+        testOrgId,
+        testDigestId,
+        testUserId,
+        true
+      );
 
       expect(mockSupabase.delete).toHaveBeenCalled();
       expect(result.deleted).toBe(true);
@@ -425,7 +451,12 @@ describe('ExecutiveDigestService', () => {
         error: null,
       } as any);
 
-      const result = await service.addRecipient(testOrgId, testDigestId, testUserId, input);
+      const result = await service.addRecipient(
+        testOrgId,
+        testDigestId,
+        testUserId,
+        input
+      );
 
       expect(result.email).toBe('exec@company.com');
       expect(result.name).toBe('John Executive');
@@ -460,7 +491,12 @@ describe('ExecutiveDigestService', () => {
         error: null,
       } as any);
 
-      const result = await service.addRecipient(testOrgId, testDigestId, testUserId, input);
+      const result = await service.addRecipient(
+        testOrgId,
+        testDigestId,
+        testUserId,
+        input
+      );
 
       expect(result.email).toBe('exec@company.com');
     });
@@ -480,7 +516,12 @@ describe('ExecutiveDigestService', () => {
         error: null,
       } as any);
 
-      const result = await service.removeRecipient(testOrgId, testDigestId, 'recipient-1', testUserId);
+      const result = await service.removeRecipient(
+        testOrgId,
+        testDigestId,
+        'recipient-1',
+        testUserId
+      );
 
       expect(mockSupabase.delete).toHaveBeenCalled();
       expect(result).toBe(true);
@@ -579,7 +620,10 @@ describe('ExecutiveDigestService', () => {
         count: 1,
       } as any);
 
-      const result = await service.listDigests(testOrgId, { limit: 20, offset: 0 });
+      const result = await service.listDigests(testOrgId, {
+        limit: 20,
+        offset: 0,
+      });
 
       expect(result.digests.length).toBe(1);
       expect(result.total).toBe(1);
@@ -595,7 +639,10 @@ describe('ExecutiveDigestService', () => {
 
       await service.listDigests(testOrgId, { deliveryPeriod: 'monthly' });
 
-      expect(mockSupabase.eq).toHaveBeenCalledWith('delivery_period', 'monthly');
+      expect(mockSupabase.eq).toHaveBeenCalledWith(
+        'delivery_period',
+        'monthly'
+      );
     });
   });
 

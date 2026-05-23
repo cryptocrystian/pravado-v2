@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { CaretDown, CaretRight, Upload, X } from '@phosphor-icons/react';
+import { useState } from 'react';
+
 import type { KBCategory } from '@/components/content/content-mock-data';
 
 interface KnowledgeBaseSectionProps {
@@ -58,7 +59,9 @@ export function KnowledgeBaseSection({ category }: KnowledgeBaseSectionProps) {
             <p className="text-sm text-white/45">
               Drop files here or click to upload
             </p>
-            <p className="text-xs text-white/30 mt-1">Accepts .txt, .docx, .pdf</p>
+            <p className="text-xs text-white/30 mt-1">
+              Accepts .txt, .docx, .pdf
+            </p>
           </div>
 
           {/* Paste textarea */}
@@ -71,7 +74,9 @@ export function KnowledgeBaseSection({ category }: KnowledgeBaseSectionProps) {
           {/* Uploaded files list */}
           {files.length > 0 && (
             <div>
-              <span className="text-xs text-white/45 block mb-2">Uploaded files</span>
+              <span className="text-xs text-white/45 block mb-2">
+                Uploaded files
+              </span>
               <div className="space-y-1.5">
                 {files.map((file) => (
                   <div
@@ -79,8 +84,12 @@ export function KnowledgeBaseSection({ category }: KnowledgeBaseSectionProps) {
                     className="flex items-center justify-between bg-cc-page border border-white/8 rounded-lg px-3 py-2"
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-sm text-white truncate">{file.name}</span>
-                      <span className="text-xs text-white/45 flex-shrink-0">{file.size}</span>
+                      <span className="text-sm text-white truncate">
+                        {file.name}
+                      </span>
+                      <span className="text-xs text-white/45 flex-shrink-0">
+                        {file.size}
+                      </span>
                     </div>
                     <button
                       type="button"

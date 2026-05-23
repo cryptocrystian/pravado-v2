@@ -20,8 +20,6 @@
  * Pillar accent: iris (#A855F7) — Content's pillar color.
  */
 
-import { useState } from 'react';
-import Link from 'next/link';
 import {
   FileText,
   Newspaper,
@@ -31,12 +29,17 @@ import {
   CaretDown,
   ArrowRight,
 } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import type { ScanResponse } from '@/components/marketing/audit-types';
 import { AuditForm } from '@/components/marketing/AuditForm';
 import { EVIScorecardResults } from '@/components/marketing/EVIScorecardResults';
-import type { ScanResponse } from '@/components/marketing/audit-types';
 
 function TM() {
-  return <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>;
+  return (
+    <sup style={{ fontSize: '0.6em', verticalAlign: 'super' }}>&trade;</sup>
+  );
 }
 
 const KEYFRAMES = `
@@ -126,7 +129,6 @@ export default function AuditContentPage() {
       />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 1: HERO                                            */}
         {/* ─────────────────────────────────────────────────────────── */}
@@ -170,14 +172,16 @@ export default function AuditContentPage() {
                   lineHeight: 1.05,
                   marginTop: 0,
                   marginBottom: 24,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #A855F7 60%, #7C3AED 100%)',
+                  background:
+                    'linear-gradient(135deg, #ffffff 0%, #A855F7 60%, #7C3AED 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                   letterSpacing: '-0.02em',
                 }}
               >
-                You shipped 200 pieces last quarter. ChatGPT still cites the competitor.
+                You shipped 200 pieces last quarter. ChatGPT still cites the
+                competitor.
               </h1>
 
               <p
@@ -190,12 +194,13 @@ export default function AuditContentPage() {
                   maxWidth: 580,
                 }}
               >
-                Your editorial calendar is full. Your traffic chart points up and to the
-                right on long-tail. The pillar pages exist. And yet, when buyers ask
-                Perplexity or ChatGPT who owns your category, the answer surfaces a
-                competitor you outpublished three to one. Volume isn&apos;t the problem.
-                Authority is. Your content stack measures publishing throughput; the
-                buyer journey now measures something else.
+                Your editorial calendar is full. Your traffic chart points up
+                and to the right on long-tail. The pillar pages exist. And yet,
+                when buyers ask Perplexity or ChatGPT who owns your category,
+                the answer surfaces a competitor you outpublished three to one.
+                Volume isn&apos;t the problem. Authority is. Your content stack
+                measures publishing throughput; the buyer journey now measures
+                something else.
               </p>
 
               <div
@@ -207,15 +212,33 @@ export default function AuditContentPage() {
                   color: 'rgba(255,255,255,0.5)',
                 }}
               >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   Free, no credit card
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   20–30 seconds
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
                   <CheckCircle size={16} weight="fill" color="#22C55E" />
                   5-engine citation scan
                 </span>
@@ -256,7 +279,8 @@ export default function AuditContentPage() {
                   lineHeight: 1.25,
                 }}
               >
-                Score your content authority. See what your publishing isn&apos;t buying.
+                Score your content authority. See what your publishing
+                isn&apos;t buying.
               </h2>
               <AuditForm
                 entryPath="content"
@@ -270,7 +294,13 @@ export default function AuditContentPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 2: PROBLEM (Layer 1) — names lived experience      */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <div
               style={{
@@ -297,7 +327,8 @@ export default function AuditContentPage() {
                 letterSpacing: '-0.01em',
               }}
             >
-              Volume up. Authority flat. Competitor still owns the category answer.
+              Volume up. Authority flat. Competitor still owns the category
+              answer.
             </h2>
             <p
               style={{
@@ -307,15 +338,16 @@ export default function AuditContentPage() {
                 margin: 0,
               }}
             >
-              You have a calendar. You have a brief template. You have an SEO tool
-              telling you what to cover. You ship the pieces. Some rank. A handful go
-              viral. The dashboard shows growth on the long tail. Then the CMO opens
-              ChatGPT in an executive review, asks &ldquo;who leads our category,&rdquo; and your
-              brand isn&apos;t in the answer. The competitor is. The one you outpublish
-              three to one. Because what compounds in 2026 isn&apos;t pages shipped —
-              it&apos;s <em>authority architecture</em>: schema, named entities, citation
-              worthiness, topic cluster integrity. Your content stack was built for
-              the page-view web, and the buyer journey moved.
+              You have a calendar. You have a brief template. You have an SEO
+              tool telling you what to cover. You ship the pieces. Some rank. A
+              handful go viral. The dashboard shows growth on the long tail.
+              Then the CMO opens ChatGPT in an executive review, asks &ldquo;who
+              leads our category,&rdquo; and your brand isn&apos;t in the
+              answer. The competitor is. The one you outpublish three to one.
+              Because what compounds in 2026 isn&apos;t pages shipped —
+              it&apos;s <em>authority architecture</em>: schema, named entities,
+              citation worthiness, topic cluster integrity. Your content stack
+              was built for the page-view web, and the buyer journey moved.
             </p>
           </div>
         </section>
@@ -323,7 +355,13 @@ export default function AuditContentPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 3: STRUCTURAL (Layer 2) — names the silo            */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 920, margin: '0 auto' }}>
             <div
               style={{
@@ -357,22 +395,40 @@ export default function AuditContentPage() {
             </h2>
 
             <div style={{ maxWidth: 720, margin: '0 auto', marginBottom: 40 }}>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, marginTop: 0, marginBottom: 20 }}>
-                HubSpot tells you a page published. Contently tells you a freelancer
-                turned in a draft. Marketo tells you who opened the email. None of
-                them know whether the piece you shipped earned a single citation in
-                ChatGPT, whether the pillar page has the schema AI engines need to
-                extract the answer, or whether your topic cluster is structurally
-                whole or just a calendar of related posts.
+              <p
+                style={{
+                  fontSize: 17,
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.75,
+                  marginTop: 0,
+                  marginBottom: 20,
+                }}
+              >
+                HubSpot tells you a page published. Contently tells you a
+                freelancer turned in a draft. Marketo tells you who opened the
+                email. None of them know whether the piece you shipped earned a
+                single citation in ChatGPT, whether the pillar page has the
+                schema AI engines need to extract the answer, or whether your
+                topic cluster is structurally whole or just a calendar of
+                related posts.
               </p>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, marginTop: 0, marginBottom: 0 }}>
+              <p
+                style={{
+                  fontSize: 17,
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.75,
+                  marginTop: 0,
+                  marginBottom: 0,
+                }}
+              >
                 Content tools were built for the SEO web — publish, optimize for
-                Google, watch the rank chart. The web split. Half of category research
-                now happens inside ChatGPT, Perplexity, Gemini, Claude, and Bing
-                Copilot, and those engines reward an architecture your CMS dashboard
-                wasn&apos;t designed to surface: named entities, schema completeness,
-                cluster integrity, citation worthiness. Your throughput tools have no
-                idea any of this is being measured.
+                Google, watch the rank chart. The web split. Half of category
+                research now happens inside ChatGPT, Perplexity, Gemini, Claude,
+                and Bing Copilot, and those engines reward an architecture your
+                CMS dashboard wasn&apos;t designed to surface: named entities,
+                schema completeness, cluster integrity, citation worthiness.
+                Your throughput tools have no idea any of this is being
+                measured.
               </p>
             </div>
 
@@ -388,9 +444,22 @@ export default function AuditContentPage() {
               }}
             >
               {[
-                { name: 'HubSpot', sees: 'Publishing pipeline, page views, lead capture', misses: 'Whether content built citation-worthy authority' },
-                { name: 'Contently', sees: 'Editorial workflow, freelance throughput, brand voice', misses: 'Whether the pieces produced compound topical authority' },
-                { name: 'Pravado', sees: 'All of the above + schema scaffolding + AI citation tracking + PR layer', misses: null },
+                {
+                  name: 'HubSpot',
+                  sees: 'Publishing pipeline, page views, lead capture',
+                  misses: 'Whether content built citation-worthy authority',
+                },
+                {
+                  name: 'Contently',
+                  sees: 'Editorial workflow, freelance throughput, brand voice',
+                  misses:
+                    'Whether the pieces produced compound topical authority',
+                },
+                {
+                  name: 'Pravado',
+                  sees: 'All of the above + schema scaffolding + AI citation tracking + PR layer',
+                  misses: null,
+                },
               ].map((tool) => {
                 const isPravado = tool.name === 'Pravado';
                 return (
@@ -399,27 +468,68 @@ export default function AuditContentPage() {
                     style={{
                       padding: 20,
                       borderRadius: 12,
-                      background: isPravado ? 'rgba(168,85,247,0.06)' : 'rgba(255,255,255,0.03)',
-                      border: isPravado ? '1px solid rgba(168,85,247,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                      background: isPravado
+                        ? 'rgba(168,85,247,0.06)'
+                        : 'rgba(255,255,255,0.03)',
+                      border: isPravado
+                        ? '1px solid rgba(168,85,247,0.3)'
+                        : '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
-                    <div style={{ fontSize: 16, fontWeight: 700, color: isPravado ? '#A855F7' : '#ffffff', marginBottom: 16 }}>
+                    <div
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 700,
+                        color: isPravado ? '#A855F7' : '#ffffff',
+                        marginBottom: 16,
+                      }}
+                    >
                       {tool.name}
                     </div>
                     <div style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(34,197,94,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: 'rgba(34,197,94,0.9)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.08em',
+                          marginBottom: 6,
+                        }}
+                      >
                         Sees
                       </div>
-                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: 'rgba(255,255,255,0.75)',
+                          lineHeight: 1.5,
+                        }}
+                      >
                         {tool.sees}
                       </div>
                     </div>
                     {tool.misses && (
                       <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(239,68,68,0.9)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                        <div
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: 'rgba(239,68,68,0.9)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            marginBottom: 6,
+                          }}
+                        >
                           Misses
                         </div>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: 'rgba(255,255,255,0.55)',
+                            lineHeight: 1.5,
+                          }}
+                        >
                           {tool.misses}
                         </div>
                       </div>
@@ -450,7 +560,13 @@ export default function AuditContentPage() {
         {/* SECTION 4: REVEAL (Layer 3) — three pillars credentialed   */}
         {/* Content gets longest treatment; PR + AI briefer.           */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div
               style={{
@@ -480,7 +596,8 @@ export default function AuditContentPage() {
                 marginRight: 'auto',
               }}
             >
-              Three pillars of earned visibility. One scorecard. One platform that runs them together.
+              Three pillars of earned visibility. One scorecard. One platform
+              that runs them together.
             </h2>
             <p
               style={{
@@ -492,9 +609,9 @@ export default function AuditContentPage() {
                 maxWidth: 720,
               }}
             >
-              Authority infrastructure for Content. Compounding when paired with PR
-              and AI Citation, because the schema is shared at the platform level —
-              not retrofitted across an acquisition stack.
+              Authority infrastructure for Content. Compounding when paired with
+              PR and AI Citation, because the schema is shared at the platform
+              level — not retrofitted across an acquisition stack.
             </p>
 
             {/* Content Pillar — long treatment */}
@@ -527,26 +644,63 @@ export default function AuditContentPage() {
                 >
                   <FileText size={26} weight="regular" color="#A855F7" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#A855F7', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#A855F7',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 8,
+                  }}
+                >
                   Pillar 1
                 </div>
-                <h3 style={{ fontSize: 28, fontWeight: 700, color: '#ffffff', lineHeight: 1.2, marginTop: 0, marginBottom: 0 }}>
+                <h3
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.2,
+                    marginTop: 0,
+                    marginBottom: 0,
+                  }}
+                >
                   Content Authority
                 </h3>
               </div>
               <div>
-                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginTop: 0, marginBottom: 16 }}>
-                  Pravado treats content as <strong style={{ color: '#ffffff' }}>authority infrastructure</strong>,
-                  not blog calendar. CRAFT generates briefs scaffolded with the
-                  named-entity coverage, FAQ schema, and topic cluster topology that
-                  AI engines reward. CiteMind scores every piece for citation
-                  worthiness across five engines before it ships, and tracks which
-                  engines pick it up after.
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.75)',
+                    lineHeight: 1.7,
+                    marginTop: 0,
+                    marginBottom: 16,
+                  }}
+                >
+                  Pravado treats content as{' '}
+                  <strong style={{ color: '#ffffff' }}>
+                    authority infrastructure
+                  </strong>
+                  , not blog calendar. CRAFT generates briefs scaffolded with
+                  the named-entity coverage, FAQ schema, and topic cluster
+                  topology that AI engines reward. CiteMind scores every piece
+                  for citation worthiness across five engines before it ships,
+                  and tracks which engines pick it up after.
                 </p>
-                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginTop: 0, marginBottom: 16 }}>
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.75)',
+                    lineHeight: 1.7,
+                    marginTop: 0,
+                    marginBottom: 16,
+                  }}
+                >
                   Standalone, it&apos;s the strategy + intelligence layer above
-                  whatever CMS you publish into. The CMS still owns publish. Pravado
-                  owns whether what you publish actually compounds.
+                  whatever CMS you publish into. The CMS still owns publish.
+                  Pravado owns whether what you publish actually compounds.
                 </p>
                 <ul
                   className="audit-pr-features-list"
@@ -569,7 +723,14 @@ export default function AuditContentPage() {
                     'Topic cluster health audits',
                     'Cross-pillar publish hooks',
                   ].map((feature) => (
-                    <li key={feature} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <li
+                      key={feature}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
                       <CheckCircle size={14} weight="fill" color="#A855F7" />
                       {feature}
                     </li>
@@ -579,7 +740,14 @@ export default function AuditContentPage() {
             </div>
 
             {/* PR + AI — briefer treatment */}
-            <div className="audit-pillars-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+            <div
+              className="audit-pillars-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 24,
+              }}
+            >
               <div
                 style={{
                   padding: 32,
@@ -602,18 +770,43 @@ export default function AuditContentPage() {
                 >
                   <Newspaper size={22} weight="regular" color="#E879F9" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#E879F9', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#E879F9',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 6,
+                  }}
+                >
                   Pillar 2
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.25, marginTop: 0, marginBottom: 14 }}>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.25,
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
                   PR Authority
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
-                  Every pillar page Pravado helps you build deserves the press hits
-                  that should point at it. The 283K-profile media database matches
-                  named journalists to your content topics, routes pitches by beat,
-                  and tracks coverage so the earned mentions land where the topical
-                  authority lives.
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  Every pillar page Pravado helps you build deserves the press
+                  hits that should point at it. The 283K-profile media database
+                  matches named journalists to your content topics, routes
+                  pitches by beat, and tracks coverage so the earned mentions
+                  land where the topical authority lives.
                 </p>
               </div>
 
@@ -639,14 +832,40 @@ export default function AuditContentPage() {
                 >
                   <Brain size={22} weight="regular" color="#00D9FF" />
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#00D9FF', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#00D9FF',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 6,
+                  }}
+                >
                   Pillar 3
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.25, marginTop: 0, marginBottom: 14 }}>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.25,
+                    marginTop: 0,
+                    marginBottom: 14,
+                  }}
+                >
                   AI Citation Authority
                 </h3>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: 0 }}>
-                  CiteMind<TM /> tracks which queries cite you across ChatGPT,
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  CiteMind
+                  <TM /> tracks which queries cite you across ChatGPT,
                   Perplexity, Gemini, Claude, and Bing Copilot — and tells you
                   which content gaps you&apos;d need to close to flip the
                   share-of-model on the queries that matter to your category.
@@ -676,12 +895,15 @@ export default function AuditContentPage() {
                   marginRight: 'auto',
                 }}
               >
-                The orchestration layer (<strong style={{ color: '#A855F7' }}>SAGE</strong>
-                <TM /> strategy mesh, <strong style={{ color: '#00D9FF' }}>CRAFT</strong>
-                <TM /> execution, <strong style={{ color: '#E879F9' }}>CiteMind</strong>
-                <TM /> citation intelligence) is the thing no single-pillar competitor
-                can ship — because it requires shared schema across PR, Content, and
-                AEO that no acquisition stack can retrofit.
+                The orchestration layer (
+                <strong style={{ color: '#A855F7' }}>SAGE</strong>
+                <TM /> strategy mesh,{' '}
+                <strong style={{ color: '#00D9FF' }}>CRAFT</strong>
+                <TM /> execution,{' '}
+                <strong style={{ color: '#E879F9' }}>CiteMind</strong>
+                <TM /> citation intelligence) is the thing no single-pillar
+                competitor can ship — because it requires shared schema across
+                PR, Content, and AEO that no acquisition stack can retrofit.
               </p>
             </div>
           </div>
@@ -690,7 +912,13 @@ export default function AuditContentPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 5: MID-PAGE FORM REPEAT                            */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
             <h2
               style={{
@@ -739,7 +967,13 @@ export default function AuditContentPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 6: SOCIAL PROOF / CATEGORY POSITIONING             */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div
               style={{
@@ -781,7 +1015,8 @@ export default function AuditContentPage() {
               Pravado&apos;s Content pillar is built to score, structure, and
               compound — not just publish. It sits above your CMS, instruments
               what compounds, and ties content output to the PR signal and AI
-              citation outcome that decide whether your authority actually grows.
+              citation outcome that decide whether your authority actually
+              grows.
             </p>
 
             {/* Comparison table */}
@@ -798,63 +1033,164 @@ export default function AuditContentPage() {
                 className="audit-compare-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
+                  gridTemplateColumns:
+                    'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                   background: 'rgba(0,0,0,0.2)',
                 }}
               >
-                <div style={{ padding: '16px 20px', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.5)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                  }}
+                >
                   Capability
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textAlign: 'center',
+                  }}
+                >
                   HubSpot
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.7)',
+                    textAlign: 'center',
+                  }}
+                >
                   Contently
                 </div>
-                <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: '#A855F7', textAlign: 'center' }}>
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#A855F7',
+                    textAlign: 'center',
+                  }}
+                >
                   Pravado
                 </div>
               </div>
               {[
-                { capability: 'Editorial workflow + brief management',     hub: true,  con: true,  pravado: true },
-                { capability: 'Page publishing pipeline',                  hub: true,  con: false, pravado: true },
-                { capability: 'SEO keyword research + on-page checks',     hub: true,  con: false, pravado: true },
-                { capability: 'Citation worthiness scoring (pre-publish)', hub: false, con: false, pravado: true },
-                { capability: 'AI engine citation tracking',               hub: false, con: false, pravado: true },
-                { capability: 'PR pillar (283K media database)',           hub: false, con: false, pravado: true },
-                { capability: 'Cross-pillar EVI scorecard',                hub: false, con: false, pravado: true },
-                { capability: 'Shared schema across PR / Content / AEO',   hub: false, con: false, pravado: true },
+                {
+                  capability: 'Editorial workflow + brief management',
+                  hub: true,
+                  con: true,
+                  pravado: true,
+                },
+                {
+                  capability: 'Page publishing pipeline',
+                  hub: true,
+                  con: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'SEO keyword research + on-page checks',
+                  hub: true,
+                  con: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Citation worthiness scoring (pre-publish)',
+                  hub: false,
+                  con: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'AI engine citation tracking',
+                  hub: false,
+                  con: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'PR pillar (283K media database)',
+                  hub: false,
+                  con: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Cross-pillar EVI scorecard',
+                  hub: false,
+                  con: false,
+                  pravado: true,
+                },
+                {
+                  capability: 'Shared schema across PR / Content / AEO',
+                  hub: false,
+                  con: false,
+                  pravado: true,
+                },
               ].map((row, i) => (
                 <div
                   key={row.capability}
                   className="audit-compare-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
-                    borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
-                    background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
+                    gridTemplateColumns:
+                      'minmax(0, 1.4fr) repeat(3, minmax(0, 1fr))',
+                    borderTop:
+                      i === 0 ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                    background:
+                      i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
                   }}
                 >
-                  <div style={{ padding: '14px 20px', fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>
+                  <div
+                    style={{
+                      padding: '14px 20px',
+                      fontSize: 14,
+                      color: 'rgba(255,255,255,0.85)',
+                    }}
+                  >
                     {row.capability}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
                     {row.hub ? (
-                      <CheckCircle size={20} weight="fill" color="rgba(34,197,94,0.7)" />
+                      <CheckCircle
+                        size={20}
+                        weight="fill"
+                        color="rgba(34,197,94,0.7)"
+                      />
                     ) : (
-                      <XCircle size={20} weight="regular" color="rgba(255,255,255,0.2)" />
+                      <XCircle
+                        size={20}
+                        weight="regular"
+                        color="rgba(255,255,255,0.2)"
+                      />
                     )}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
                     {row.con ? (
-                      <CheckCircle size={20} weight="fill" color="rgba(34,197,94,0.7)" />
+                      <CheckCircle
+                        size={20}
+                        weight="fill"
+                        color="rgba(34,197,94,0.7)"
+                      />
                     ) : (
-                      <XCircle size={20} weight="regular" color="rgba(255,255,255,0.2)" />
+                      <XCircle
+                        size={20}
+                        weight="regular"
+                        color="rgba(255,255,255,0.2)"
+                      />
                     )}
                   </div>
                   <div style={{ padding: '14px 20px', textAlign: 'center' }}>
-                    {row.pravado && <CheckCircle size={20} weight="fill" color="#A855F7" />}
+                    {row.pravado && (
+                      <CheckCircle size={20} weight="fill" color="#A855F7" />
+                    )}
                   </div>
                 </div>
               ))}
@@ -869,7 +1205,8 @@ export default function AuditContentPage() {
                 marginBottom: 0,
               }}
             >
-              Comparison reflects publicly stated capabilities of HubSpot Content Hub and Contently as of 2026.
+              Comparison reflects publicly stated capabilities of HubSpot
+              Content Hub and Contently as of 2026.
             </p>
           </div>
         </section>
@@ -877,7 +1214,13 @@ export default function AuditContentPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 7: FAQ                                              */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0A0A0F', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0A0A0F',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <h2
               style={{
@@ -960,7 +1303,13 @@ export default function AuditContentPage() {
         {/* ─────────────────────────────────────────────────────────── */}
         {/* SECTION 8: FOOTER CTA                                      */}
         {/* ─────────────────────────────────────────────────────────── */}
-        <section style={{ background: '#0D0D14', padding: '80px 5%', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <section
+          style={{
+            background: '#0D0D14',
+            padding: '80px 5%',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
           <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
             <h2
               style={{
@@ -984,9 +1333,10 @@ export default function AuditContentPage() {
                 maxWidth: 560,
               }}
             >
-              Free three-pillar EVI<TM /> scorecard. No credit card. No upgrade
-              pitch. The conversation that matters happens after the scan, on a
-              call where your specifics are on the table.
+              Free three-pillar EVI
+              <TM /> scorecard. No credit card. No upgrade pitch. The
+              conversation that matters happens after the scan, on a call where
+              your specifics are on the table.
             </p>
 
             <div
@@ -1006,7 +1356,13 @@ export default function AuditContentPage() {
               />
             </div>
 
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: 0 }}>
+            <p
+              style={{
+                fontSize: 13,
+                color: 'rgba(255,255,255,0.45)',
+                margin: 0,
+              }}
+            >
               Or skip the scan and{' '}
               <Link
                 href="https://pravado.io/contact"

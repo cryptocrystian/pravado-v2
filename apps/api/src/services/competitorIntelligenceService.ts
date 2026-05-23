@@ -11,7 +11,6 @@
  * - Anomaly and spike detection
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
 import {
   Competitor,
   CompetitorMention,
@@ -45,6 +44,7 @@ import {
   CISentimentTrend,
 } from '@pravado/types';
 import { LlmRouter, createLogger } from '@pravado/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('competitor-intelligence-service');
 
@@ -109,7 +109,8 @@ export class CompetitorIntelligenceService {
     if (data.description !== undefined) updates.description = data.description;
     if (data.keywords !== undefined) updates.keywords = data.keywords;
     if (data.domains !== undefined) updates.domains = data.domains;
-    if (data.socialHandles !== undefined) updates.social_handles = data.socialHandles;
+    if (data.socialHandles !== undefined)
+      updates.social_handles = data.socialHandles;
     if (data.isActive !== undefined) updates.is_active = data.isActive;
 
     const { data: competitor, error } = await this.supabase
@@ -127,7 +128,10 @@ export class CompetitorIntelligenceService {
   /**
    * Get single competitor by ID
    */
-  async getCompetitor(orgId: string, competitorId: string): Promise<Competitor> {
+  async getCompetitor(
+    orgId: string,
+    competitorId: string
+  ): Promise<Competitor> {
     const { data: competitor, error } = await this.supabase
       .from('competitors')
       .select('*')
@@ -151,17 +155,29 @@ export class CompetitorIntelligenceService {
     limit: number = 20,
     offset: number = 0
   ): Promise<GetCompetitorsResponse> {
-    let query = this.supabase.from('competitors').select('*', { count: 'exact' }).eq('org_id', orgId);
+    let query = this.supabase
+      .from('competitors')
+      .select('*', { count: 'exact' })
+      .eq('org_id', orgId);
 
     // Apply filters
     if (filters.tier) query = query.eq('tier', filters.tier);
-    if (filters.isActive !== undefined) query = query.eq('is_active', filters.isActive);
-    if (filters.industry) query = query.ilike('industry', `%${filters.industry}%`);
-    if (filters.trackedSinceStart) query = query.gte('tracked_since', filters.trackedSinceStart.toISOString());
-    if (filters.trackedSinceEnd) query = query.lte('tracked_since', filters.trackedSinceEnd.toISOString());
+    if (filters.isActive !== undefined)
+      query = query.eq('is_active', filters.isActive);
+    if (filters.industry)
+      query = query.ilike('industry', `%${filters.industry}%`);
+    if (filters.trackedSinceStart)
+      query = query.gte(
+        'tracked_since',
+        filters.trackedSinceStart.toISOString()
+      );
+    if (filters.trackedSinceEnd)
+      query = query.lte('tracked_since', filters.trackedSinceEnd.toISOString());
 
     // Pagination
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: competitors, count, error } = await query;
 
@@ -245,19 +261,28 @@ export class CompetitorIntelligenceService {
       .eq('org_id', orgId);
 
     // Apply filters
-    if (filters.competitorId) query = query.eq('competitor_id', filters.competitorId);
+    if (filters.competitorId)
+      query = query.eq('competitor_id', filters.competitorId);
     if (filters.sourceType) query = query.eq('source_type', filters.sourceType);
-    if (filters.publishedStart) query = query.gte('published_at', filters.publishedStart.toISOString());
-    if (filters.publishedEnd) query = query.lte('published_at', filters.publishedEnd.toISOString());
-    if (filters.journalistId) query = query.eq('journalist_id', filters.journalistId);
-    if (filters.outletName) query = query.ilike('outlet_name', `%${filters.outletName}%`);
-    if (filters.minSentiment !== undefined) query = query.gte('sentiment_score', filters.minSentiment);
-    if (filters.maxSentiment !== undefined) query = query.lte('sentiment_score', filters.maxSentiment);
+    if (filters.publishedStart)
+      query = query.gte('published_at', filters.publishedStart.toISOString());
+    if (filters.publishedEnd)
+      query = query.lte('published_at', filters.publishedEnd.toISOString());
+    if (filters.journalistId)
+      query = query.eq('journalist_id', filters.journalistId);
+    if (filters.outletName)
+      query = query.ilike('outlet_name', `%${filters.outletName}%`);
+    if (filters.minSentiment !== undefined)
+      query = query.gte('sentiment_score', filters.minSentiment);
+    if (filters.maxSentiment !== undefined)
+      query = query.lte('sentiment_score', filters.maxSentiment);
     if (filters.topics && filters.topics.length > 0) {
       query = query.contains('topics', filters.topics);
     }
 
-    query = query.order('published_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('published_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: mentions, count, error } = await query;
 
@@ -308,33 +333,47 @@ export class CompetitorIntelligenceService {
       .gte('published_at', startDate.toISOString())
       .lte('published_at', endDate.toISOString());
 
-    if (mentionError) throw new Error(`Failed to fetch mentions for snapshot: ${mentionError.message}`);
+    if (mentionError)
+      throw new Error(
+        `Failed to fetch mentions for snapshot: ${mentionError.message}`
+      );
 
     const mentionList = mentions || [];
 
     // Calculate aggregated metrics
     const mentionCount = mentionList.length;
-    const articleCount = mentionList.filter((m) => m.source_type === 'article').length;
+    const articleCount = mentionList.filter(
+      (m) => m.source_type === 'article'
+    ).length;
 
     const uniqueJournalists = new Set(
       mentionList.filter((m) => m.journalist_id).map((m) => m.journalist_id)
     );
     const journalistCount = uniqueJournalists.size;
 
-    const uniqueOutlets = new Set(mentionList.filter((m) => m.outlet_name).map((m) => m.outlet_name));
+    const uniqueOutlets = new Set(
+      mentionList.filter((m) => m.outlet_name).map((m) => m.outlet_name)
+    );
     const outletCount = uniqueOutlets.size;
 
     // Sentiment analysis
-    const sentimentScores = mentionList.filter((m) => m.sentiment_score !== null).map((m) => m.sentiment_score!);
+    const sentimentScores = mentionList
+      .filter((m) => m.sentiment_score !== null)
+      .map((m) => m.sentiment_score!);
     const avgSentiment =
       sentimentScores.length > 0
-        ? sentimentScores.reduce((sum, s) => sum + s, 0) / sentimentScores.length
+        ? sentimentScores.reduce((sum, s) => sum + s, 0) /
+          sentimentScores.length
         : null;
 
     const sentimentDistribution = {
-      positive: mentionList.filter((m) => (m.sentiment_score || 0) > 0.1).length,
-      neutral: mentionList.filter((m) => Math.abs(m.sentiment_score || 0) <= 0.1).length,
-      negative: mentionList.filter((m) => (m.sentiment_score || 0) < -0.1).length,
+      positive: mentionList.filter((m) => (m.sentiment_score || 0) > 0.1)
+        .length,
+      neutral: mentionList.filter(
+        (m) => Math.abs(m.sentiment_score || 0) <= 0.1
+      ).length,
+      negative: mentionList.filter((m) => (m.sentiment_score || 0) < -0.1)
+        .length,
     };
 
     // Tier distribution
@@ -347,15 +386,21 @@ export class CompetitorIntelligenceService {
     };
 
     // Estimated reach
-    const estimatedReach = mentionList.reduce((sum, m) => sum + (m.estimated_reach || 0), 0);
+    const estimatedReach = mentionList.reduce(
+      (sum, m) => sum + (m.estimated_reach || 0),
+      0
+    );
 
     // Calculate EVI using SQL function
-    const { data: eviData } = await this.supabase.rpc('calculate_competitor_evi', {
-      p_estimated_reach: estimatedReach,
-      p_avg_sentiment: avgSentiment || 0,
-      p_tier_distribution: tierDistribution,
-      p_mention_count: mentionCount,
-    });
+    const { data: eviData } = await this.supabase.rpc(
+      'calculate_competitor_evi',
+      {
+        p_estimated_reach: estimatedReach,
+        p_avg_sentiment: avgSentiment || 0,
+        p_tier_distribution: tierDistribution,
+        p_mention_count: mentionCount,
+      }
+    );
 
     const eviScore = eviData || 0;
 
@@ -363,7 +408,10 @@ export class CompetitorIntelligenceService {
     const journalistMentions = new Map<string, number>();
     mentionList.forEach((m) => {
       if (m.journalist_id) {
-        journalistMentions.set(m.journalist_id, (journalistMentions.get(m.journalist_id) || 0) + 1);
+        journalistMentions.set(
+          m.journalist_id,
+          (journalistMentions.get(m.journalist_id) || 0) + 1
+        );
       }
     });
 
@@ -377,13 +425,19 @@ export class CompetitorIntelligenceService {
       }));
 
     // Detect anomalies (simplified - check for volume spike)
-    const previousSnapshot = await this.getPreviousSnapshot(orgId, competitorId, period);
+    const previousSnapshot = await this.getPreviousSnapshot(
+      orgId,
+      competitorId,
+      period
+    );
     let hasAnomaly = false;
     let anomalyType: SpikeType | null = null;
     let anomalyMagnitude: number | null = null;
 
     if (previousSnapshot && previousSnapshot.mentionCount > 0) {
-      const volumeChange = (mentionCount - previousSnapshot.mentionCount) / previousSnapshot.mentionCount;
+      const volumeChange =
+        (mentionCount - previousSnapshot.mentionCount) /
+        previousSnapshot.mentionCount;
       if (Math.abs(volumeChange) > 0.5) {
         // 50% change threshold
         hasAnomaly = true;
@@ -441,13 +495,19 @@ export class CompetitorIntelligenceService {
       .eq('org_id', orgId);
 
     // Apply filters
-    if (filters.competitorId) query = query.eq('competitor_id', filters.competitorId);
+    if (filters.competitorId)
+      query = query.eq('competitor_id', filters.competitorId);
     if (filters.period) query = query.eq('period', filters.period);
-    if (filters.snapshotStart) query = query.gte('snapshot_at', filters.snapshotStart.toISOString());
-    if (filters.snapshotEnd) query = query.lte('snapshot_at', filters.snapshotEnd.toISOString());
-    if (filters.hasAnomaly !== undefined) query = query.eq('has_anomaly', filters.hasAnomaly);
+    if (filters.snapshotStart)
+      query = query.gte('snapshot_at', filters.snapshotStart.toISOString());
+    if (filters.snapshotEnd)
+      query = query.lte('snapshot_at', filters.snapshotEnd.toISOString());
+    if (filters.hasAnomaly !== undefined)
+      query = query.eq('has_anomaly', filters.hasAnomaly);
 
-    query = query.order('snapshot_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('snapshot_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: snapshots, count, error } = await query;
 
@@ -495,18 +555,31 @@ export class CompetitorIntelligenceService {
     const mentionList = mentions || [];
     const totalMentions = mentionList.length;
 
-    const sentimentScores = mentionList.filter((m) => m.sentiment_score !== null).map((m) => m.sentiment_score!);
+    const sentimentScores = mentionList
+      .filter((m) => m.sentiment_score !== null)
+      .map((m) => m.sentiment_score!);
     const avgSentiment =
-      sentimentScores.length > 0 ? sentimentScores.reduce((sum, s) => sum + s, 0) / sentimentScores.length : undefined;
+      sentimentScores.length > 0
+        ? sentimentScores.reduce((sum, s) => sum + s, 0) /
+          sentimentScores.length
+        : undefined;
 
-    const totalReach = mentionList.reduce((sum, m) => sum + (m.estimated_reach || 0), 0);
+    const totalReach = mentionList.reduce(
+      (sum, m) => sum + (m.estimated_reach || 0),
+      0
+    );
 
     // Get sentiment trend
-    const { data: sentimentTrendData } = await this.supabase.rpc('calculate_competitor_sentiment', {
-      p_competitor_id: competitorId,
-      p_org_id: orgId,
-      p_window_days: Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
-    });
+    const { data: sentimentTrendData } = await this.supabase.rpc(
+      'calculate_competitor_sentiment',
+      {
+        p_competitor_id: competitorId,
+        p_org_id: orgId,
+        p_window_days: Math.floor(
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+        ),
+      }
+    );
 
     const sentimentTrend: CISentimentTrend = sentimentTrendData || {
       current: avgSentiment || 0,
@@ -529,7 +602,9 @@ export class CompetitorIntelligenceService {
       competitorId,
       competitorName: competitor.name,
       tier: competitor.tier,
-      latestSnapshot: latestSnapshot ? this.mapSnapshotFromDb(latestSnapshot) : null,
+      latestSnapshot: latestSnapshot
+        ? this.mapSnapshotFromDb(latestSnapshot)
+        : null,
       periodStart: startDate,
       periodEnd: endDate,
       totalMentions,
@@ -555,7 +630,12 @@ export class CompetitorIntelligenceService {
     _brandId?: string // Reserved for future brand metrics integration
   ): Promise<ComparativeAnalyticsResponse> {
     // Get competitor metrics
-    const competitorMetrics = await this.getCompetitorMetrics(orgId, competitorId, startDate, endDate);
+    const competitorMetrics = await this.getCompetitorMetrics(
+      orgId,
+      competitorId,
+      startDate,
+      endDate
+    );
     const competitor = await this.getCompetitor(orgId, competitorId);
 
     // Get brand metrics (would integrate with media monitoring/performance services)
@@ -582,20 +662,28 @@ export class CompetitorIntelligenceService {
 
     // Calculate differentials
     const differentials = {
-      mentionVolume: brandMetrics.mentionVolume - competitorMetricsData.mentionVolume,
+      mentionVolume:
+        brandMetrics.mentionVolume - competitorMetricsData.mentionVolume,
       sentiment: brandMetrics.avgSentiment - competitorMetricsData.avgSentiment,
       evi: brandMetrics.eviScore - competitorMetricsData.eviScore,
-      visibility: brandMetrics.visibilityScore - competitorMetricsData.visibilityScore,
-      journalists: brandMetrics.journalistCount - competitorMetricsData.journalistCount,
+      visibility:
+        brandMetrics.visibilityScore - competitorMetricsData.visibilityScore,
+      journalists:
+        brandMetrics.journalistCount - competitorMetricsData.journalistCount,
       outlets: brandMetrics.outletCount - competitorMetricsData.outletCount,
     };
 
     // Calculate advantage score
-    const { data: advantageScore } = await this.supabase.rpc('calculate_advantage_score', {
-      p_competitor_id: competitorId,
-      p_org_id: orgId,
-      p_window_days: Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
-    });
+    const { data: advantageScore } = await this.supabase.rpc(
+      'calculate_advantage_score',
+      {
+        p_competitor_id: competitorId,
+        p_org_id: orgId,
+        p_window_days: Math.floor(
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+        ),
+      }
+    );
 
     // Identify advantage and threat areas
     const advantageAreas: string[] = [];
@@ -608,10 +696,13 @@ export class CompetitorIntelligenceService {
     else if (differentials.evi < -10) threatAreas.push('EVI Score');
 
     if (differentials.mentionVolume > 20) advantageAreas.push('Mention Volume');
-    else if (differentials.mentionVolume < -20) threatAreas.push('Mention Volume');
+    else if (differentials.mentionVolume < -20)
+      threatAreas.push('Mention Volume');
 
-    if (differentials.journalists > 10) advantageAreas.push('Journalist Relationships');
-    else if (differentials.journalists < -10) threatAreas.push('Journalist Relationships');
+    if (differentials.journalists > 10)
+      advantageAreas.push('Journalist Relationships');
+    else if (differentials.journalists < -10)
+      threatAreas.push('Journalist Relationships');
 
     return {
       brandMetrics,
@@ -641,16 +732,19 @@ export class CompetitorIntelligenceService {
     startDate.setDate(startDate.getDate() - timeWindowDays);
 
     // Calculate overlap score using SQL function
-    const { data: overlapScore } = await this.supabase.rpc('calculate_overlap_score', {
-      p_competitor_id: competitorId,
-      p_org_id: orgId,
-      p_overlap_type: overlapType,
-      p_window_days: timeWindowDays,
-    });
+    const { data: overlapScore } = await this.supabase.rpc(
+      'calculate_overlap_score',
+      {
+        p_competitor_id: competitorId,
+        p_org_id: orgId,
+        p_overlap_type: overlapType,
+        p_window_days: timeWindowDays,
+      }
+    );
 
     // For journalist overlap, get shared vs exclusive journalists
     let shared: any[] = [];
-    let brandExclusive: any[] = [];
+    const brandExclusive: any[] = [];
     let competitorExclusive: any[] = [];
 
     if (overlapType === 'journalist_overlap') {
@@ -663,7 +757,9 @@ export class CompetitorIntelligenceService {
         .gte('published_at', startDate.toISOString())
         .not('journalist_id', 'is', null);
 
-      const competitorJournalists = new Set(competitorMentions?.map((m) => m.journalist_id) || []);
+      const competitorJournalists = new Set(
+        competitorMentions?.map((m) => m.journalist_id) || []
+      );
 
       // Brand journalists would come from media monitoring
       const brandJournalists = new Set<string>(); // Placeholder
@@ -681,9 +777,11 @@ export class CompetitorIntelligenceService {
     const sharedCount = shared.length;
     const brandExclusiveCount = brandExclusive.length;
     const competitorExclusiveCount = competitorExclusive.length;
-    const totalEntities = sharedCount + brandExclusiveCount + competitorExclusiveCount;
+    const totalEntities =
+      sharedCount + brandExclusiveCount + competitorExclusiveCount;
 
-    const exclusivityScore = totalEntities > 0 ? (brandExclusiveCount / totalEntities) * 100 : 0;
+    const exclusivityScore =
+      totalEntities > 0 ? (brandExclusiveCount / totalEntities) * 100 : 0;
 
     // Store overlap analysis
     const overlapRow = {
@@ -709,7 +807,8 @@ export class CompetitorIntelligenceService {
       .select()
       .single();
 
-    if (error) throw new Error(`Failed to create overlap analysis: ${error.message}`);
+    if (error)
+      throw new Error(`Failed to create overlap analysis: ${error.message}`);
 
     const advantageScore = exclusivityScore - 50; // Simple: >50% exclusive = advantage
 
@@ -753,13 +852,20 @@ export class CompetitorIntelligenceService {
       .eq('org_id', orgId);
 
     // Apply filters
-    if (filters.competitorId) query = query.eq('competitor_id', filters.competitorId);
-    if (filters.overlapType) query = query.eq('overlap_type', filters.overlapType);
-    if (filters.analyzedStart) query = query.gte('analyzed_at', filters.analyzedStart.toISOString());
-    if (filters.analyzedEnd) query = query.lte('analyzed_at', filters.analyzedEnd.toISOString());
-    if (filters.minOverlapScore !== undefined) query = query.gte('overlap_score', filters.minOverlapScore);
+    if (filters.competitorId)
+      query = query.eq('competitor_id', filters.competitorId);
+    if (filters.overlapType)
+      query = query.eq('overlap_type', filters.overlapType);
+    if (filters.analyzedStart)
+      query = query.gte('analyzed_at', filters.analyzedStart.toISOString());
+    if (filters.analyzedEnd)
+      query = query.lte('analyzed_at', filters.analyzedEnd.toISOString());
+    if (filters.minOverlapScore !== undefined)
+      query = query.gte('overlap_score', filters.minOverlapScore);
 
-    query = query.order('analyzed_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('analyzed_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: overlaps, count, error } = await query;
 
@@ -826,7 +932,8 @@ export class CompetitorIntelligenceService {
     const updates: any = {};
     if (data.isRead !== undefined) updates.is_read = data.isRead;
     if (data.isDismissed !== undefined) updates.is_dismissed = data.isDismissed;
-    if (data.userFeedback !== undefined) updates.user_feedback = data.userFeedback;
+    if (data.userFeedback !== undefined)
+      updates.user_feedback = data.userFeedback;
 
     const { data: insight, error } = await this.supabase
       .from('competitor_insights')
@@ -855,13 +962,19 @@ export class CompetitorIntelligenceService {
       .eq('org_id', orgId);
 
     // Apply filters
-    if (filters.competitorId) query = query.eq('competitor_id', filters.competitorId);
+    if (filters.competitorId)
+      query = query.eq('competitor_id', filters.competitorId);
     if (filters.category) query = query.eq('category', filters.category);
-    if (filters.isRead !== undefined) query = query.eq('is_read', filters.isRead);
-    if (filters.isDismissed !== undefined) query = query.eq('is_dismissed', filters.isDismissed);
-    if (filters.minImpactScore !== undefined) query = query.gte('impact_score', filters.minImpactScore);
-    if (filters.createdStart) query = query.gte('created_at', filters.createdStart.toISOString());
-    if (filters.createdEnd) query = query.lte('created_at', filters.createdEnd.toISOString());
+    if (filters.isRead !== undefined)
+      query = query.eq('is_read', filters.isRead);
+    if (filters.isDismissed !== undefined)
+      query = query.eq('is_dismissed', filters.isDismissed);
+    if (filters.minImpactScore !== undefined)
+      query = query.gte('impact_score', filters.minImpactScore);
+    if (filters.createdStart)
+      query = query.gte('created_at', filters.createdStart.toISOString());
+    if (filters.createdEnd)
+      query = query.lte('created_at', filters.createdEnd.toISOString());
 
     // Count unread
     const { count: unreadCount } = await this.supabase
@@ -870,7 +983,9 @@ export class CompetitorIntelligenceService {
       .eq('org_id', orgId)
       .eq('is_read', false);
 
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+    query = query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     const { data: insights, count, error } = await query;
 
@@ -899,7 +1014,12 @@ export class CompetitorIntelligenceService {
 
     // Get competitor info and metrics
     const competitor = await this.getCompetitor(orgId, data.competitorId);
-    const metrics = await this.getCompetitorMetrics(orgId, data.competitorId, startDate, endDate);
+    const metrics = await this.getCompetitorMetrics(
+      orgId,
+      data.competitorId,
+      startDate,
+      endDate
+    );
 
     // Build prompt based on category
     let prompt = '';
@@ -951,7 +1071,8 @@ What strategic opportunities exist?`;
           userPrompt: prompt,
           maxTokens: 500,
           temperature: 0.7,
-          systemPrompt: 'You are a competitive intelligence analyst. Provide concise, actionable insights.',
+          systemPrompt:
+            'You are a competitive intelligence analyst. Provide concise, actionable insights.',
         });
 
         llmModel = llmResponse.model;
@@ -961,13 +1082,16 @@ What strategic opportunities exist?`;
         const lines = response.split('\n').filter((l: string) => l.trim());
         title = lines[0] || `${data.category} insight for ${competitor.name}`;
         description = lines.slice(1, -1).join(' ') || response;
-        recommendation = lines[lines.length - 1] || 'Monitor competitor activity.';
+        recommendation =
+          lines[lines.length - 1] || 'Monitor competitor activity.';
       } else {
         // Fallback to rule-based insight when LLM not available
         throw new Error('LLM router not configured');
       }
     } catch (error) {
-      logger.warn('LLM insight generation failed, using rule-based fallback', { error });
+      logger.warn('LLM insight generation failed, using rule-based fallback', {
+        error,
+      });
       // Fallback to rule-based insight
       title = `${data.category.toUpperCase()}: ${competitor.name}`;
       description = `Competitive ${data.category} detected for ${competitor.name} over ${timeWindowDays}-day period.`;
@@ -975,7 +1099,10 @@ What strategic opportunities exist?`;
     }
 
     // Calculate impact and confidence scores
-    const impactScore = Math.min(100, (metrics.totalMentions / 10) * (metrics.recentAnomalies + 1));
+    const impactScore = Math.min(
+      100,
+      (metrics.totalMentions / 10) * (metrics.recentAnomalies + 1)
+    );
     const confidenceScore = metrics.totalMentions > 20 ? 85 : 60;
 
     // Create insight
@@ -1044,7 +1171,9 @@ What strategic opportunities exist?`;
       socialHandles: row.social_handles,
       isActive: row.is_active,
       trackedSince: new Date(row.tracked_since),
-      lastAnalyzedAt: row.last_analyzed_at ? new Date(row.last_analyzed_at) : null,
+      lastAnalyzedAt: row.last_analyzed_at
+        ? new Date(row.last_analyzed_at)
+        : null,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     };
@@ -1127,7 +1256,9 @@ What strategic opportunities exist?`;
       priorityScore: row.priority_score,
       supportingMetrics: row.supporting_metrics,
       supportingMentions: row.supporting_mentions,
-      timeWindowStart: row.time_window_start ? new Date(row.time_window_start) : null,
+      timeWindowStart: row.time_window_start
+        ? new Date(row.time_window_start)
+        : null,
       timeWindowEnd: row.time_window_end ? new Date(row.time_window_end) : null,
       generatedBy: row.generated_by as 'llm' | 'rule' | 'hybrid',
       llmModel: row.llm_model,

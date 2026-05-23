@@ -35,7 +35,9 @@ export async function getEVIHistory(
 
   const { data, error } = await supabase
     .from('evi_snapshots')
-    .select('evi_score, visibility_score, authority_score, momentum_score, calculated_at')
+    .select(
+      'evi_score, visibility_score, authority_score, momentum_score, calculated_at'
+    )
     .eq('org_id', orgId)
     .gte('calculated_at', since)
     .order('calculated_at', { ascending: true });
@@ -45,17 +47,19 @@ export async function getEVIHistory(
     return [];
   }
 
-  return (data ?? []).map((row: {
-    calculated_at: string;
-    evi_score: number;
-    visibility_score: number;
-    authority_score: number;
-    momentum_score: number;
-  }) => ({
-    date: row.calculated_at,
-    evi_score: Number(row.evi_score),
-    visibility_score: Number(row.visibility_score),
-    authority_score: Number(row.authority_score),
-    momentum_score: Number(row.momentum_score),
-  }));
+  return (data ?? []).map(
+    (row: {
+      calculated_at: string;
+      evi_score: number;
+      visibility_score: number;
+      authority_score: number;
+      momentum_score: number;
+    }) => ({
+      date: row.calculated_at,
+      evi_score: Number(row.evi_score),
+      visibility_score: Number(row.visibility_score),
+      authority_score: Number(row.authority_score),
+      momentum_score: Number(row.momentum_score),
+    })
+  );
 }

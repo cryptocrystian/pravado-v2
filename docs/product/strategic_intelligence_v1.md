@@ -22,38 +22,38 @@ The Strategic Intelligence Narrative Engine automatically aggregates data from a
 
 The engine pulls insights from 17 upstream systems:
 
-| System | Data Source | Sprint |
-|--------|-------------|--------|
-| PR Generator | Press releases, media coverage | S43 |
-| Media Monitoring | Coverage tracking, sentiment | S45 |
-| Media Alerts | Alert triggers, notifications | S48 |
-| Media Performance | Performance metrics, ROI | S57 |
-| Competitive Intelligence | Competitor analysis | S58 |
-| Crisis Engine | Crisis events, response metrics | S59 |
-| Brand Reputation | Brand health scores | S60 |
-| Brand Alerts | Brand monitoring alerts | S60 |
-| Governance | Compliance status, audit findings | S61 |
-| Risk Radar | Risk assessments, mitigation | S62 |
-| Exec Command Center | Real-time dashboards | S63 |
-| Exec Digest | Automated briefings | S63 |
-| Board Reports | Board-ready reports | S64 |
-| Investor Relations | IR communications | S64 |
-| Journalist Graph | Journalist relationships | S53 |
-| Media Lists | Curated media contacts | S52 |
-| Outreach Engine | Campaign performance | S49 |
+| System                   | Data Source                       | Sprint |
+| ------------------------ | --------------------------------- | ------ |
+| PR Generator             | Press releases, media coverage    | S43    |
+| Media Monitoring         | Coverage tracking, sentiment      | S45    |
+| Media Alerts             | Alert triggers, notifications     | S48    |
+| Media Performance        | Performance metrics, ROI          | S57    |
+| Competitive Intelligence | Competitor analysis               | S58    |
+| Crisis Engine            | Crisis events, response metrics   | S59    |
+| Brand Reputation         | Brand health scores               | S60    |
+| Brand Alerts             | Brand monitoring alerts           | S60    |
+| Governance               | Compliance status, audit findings | S61    |
+| Risk Radar               | Risk assessments, mitigation      | S62    |
+| Exec Command Center      | Real-time dashboards              | S63    |
+| Exec Digest              | Automated briefings               | S63    |
+| Board Reports            | Board-ready reports               | S64    |
+| Investor Relations       | IR communications                 | S64    |
+| Journalist Graph         | Journalist relationships          | S53    |
+| Media Lists              | Curated media contacts            | S52    |
+| Outreach Engine          | Campaign performance              | S49    |
 
 ### 2. Report Formats
 
-| Format | Use Case | Audience |
-|--------|----------|----------|
-| Quarterly Strategic Review | Regular strategic assessment | Executive Team |
-| Annual Strategic Assessment | Yearly comprehensive review | Board, Investors |
-| Board Strategy Brief | Condensed board-ready format | Board of Directors |
-| CEO Intelligence Brief | Daily/weekly executive summary | CEO, C-Suite |
-| Investor Strategy Update | IR-focused strategic narrative | Investors, Analysts |
-| Crisis Strategic Response | Crisis-mode strategic guidance | Crisis Team, Executives |
-| Competitive Strategy Report | Competitive positioning analysis | Strategy Team |
-| Custom | User-defined sections | Various |
+| Format                      | Use Case                         | Audience                |
+| --------------------------- | -------------------------------- | ----------------------- |
+| Quarterly Strategic Review  | Regular strategic assessment     | Executive Team          |
+| Annual Strategic Assessment | Yearly comprehensive review      | Board, Investors        |
+| Board Strategy Brief        | Condensed board-ready format     | Board of Directors      |
+| CEO Intelligence Brief      | Daily/weekly executive summary   | CEO, C-Suite            |
+| Investor Strategy Update    | IR-focused strategic narrative   | Investors, Analysts     |
+| Crisis Strategic Response   | Crisis-mode strategic guidance   | Crisis Team, Executives |
+| Competitive Strategy Report | Competitive positioning analysis | Strategy Team           |
+| Custom                      | User-defined sections            | Various                 |
 
 ### 3. Section Types
 
@@ -75,14 +75,14 @@ Reports are composed of modular sections:
 
 Each report calculates composite scores:
 
-| Score | Description | Range |
-|-------|-------------|-------|
-| Strategic Score | Overall strategic health | 0-100 |
-| Risk Score | Aggregate risk level | 0-100 |
-| Opportunity Score | Growth potential | 0-100 |
-| Messaging Score | Communication effectiveness | 0-100 |
-| Competitive Score | Competitive positioning | 0-100 |
-| Brand Health Score | Brand perception strength | 0-100 |
+| Score              | Description                 | Range |
+| ------------------ | --------------------------- | ----- |
+| Strategic Score    | Overall strategic health    | 0-100 |
+| Risk Score         | Aggregate risk level        | 0-100 |
+| Opportunity Score  | Growth potential            | 0-100 |
+| Messaging Score    | Communication effectiveness | 0-100 |
+| Competitive Score  | Competitive positioning     | 0-100 |
+| Brand Health Score | Brand perception strength   | 0-100 |
 
 ### 5. Workflow Management
 
@@ -194,18 +194,18 @@ strategic_intelligence_audit_log (
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/strategic-intelligence/reports` | List reports |
-| POST | `/api/v1/strategic-intelligence/reports` | Create report |
-| GET | `/api/v1/strategic-intelligence/reports/:id` | Get report with sections |
-| PUT | `/api/v1/strategic-intelligence/reports/:id` | Update report |
-| DELETE | `/api/v1/strategic-intelligence/reports/:id` | Delete report |
-| POST | `/api/v1/strategic-intelligence/reports/:id/generate` | Generate content |
-| POST | `/api/v1/strategic-intelligence/reports/:id/approve` | Approve report |
-| POST | `/api/v1/strategic-intelligence/reports/:id/publish` | Publish report |
-| POST | `/api/v1/strategic-intelligence/reports/:id/archive` | Archive report |
-| GET | `/api/v1/strategic-intelligence/stats` | Get statistics |
+| Method | Endpoint                                              | Description              |
+| ------ | ----------------------------------------------------- | ------------------------ |
+| GET    | `/api/v1/strategic-intelligence/reports`              | List reports             |
+| POST   | `/api/v1/strategic-intelligence/reports`              | Create report            |
+| GET    | `/api/v1/strategic-intelligence/reports/:id`          | Get report with sections |
+| PUT    | `/api/v1/strategic-intelligence/reports/:id`          | Update report            |
+| DELETE | `/api/v1/strategic-intelligence/reports/:id`          | Delete report            |
+| POST   | `/api/v1/strategic-intelligence/reports/:id/generate` | Generate content         |
+| POST   | `/api/v1/strategic-intelligence/reports/:id/approve`  | Approve report           |
+| POST   | `/api/v1/strategic-intelligence/reports/:id/publish`  | Publish report           |
+| POST   | `/api/v1/strategic-intelligence/reports/:id/archive`  | Archive report           |
+| GET    | `/api/v1/strategic-intelligence/stats`                | Get statistics           |
 
 ## Integration Points
 
@@ -251,7 +251,7 @@ Strategic reports may contain sensitive business intelligence:
 Enable the feature by setting:
 
 ```typescript
-ENABLE_STRATEGIC_INTELLIGENCE: true
+ENABLE_STRATEGIC_INTELLIGENCE: true;
 ```
 
 ### Environment Variables

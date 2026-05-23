@@ -18,13 +18,16 @@ import { getServerAccessToken, ServerAuthError } from './supabaseServerAuth';
 // ============================================================================
 
 function getApiBaseUrl(): string {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    || process.env.PRAVADO_API_BASE_URL
-    || process.env.API_BASE_URL;
+  const apiUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.PRAVADO_API_BASE_URL ||
+    process.env.API_BASE_URL;
 
   if (!apiUrl) {
     console.error('[backendProxy] CRITICAL: No API base URL configured');
-    throw new Error('API_URL_MISSING: No API base URL environment variable configured');
+    throw new Error(
+      'API_URL_MISSING: No API base URL environment variable configured'
+    );
   }
 
   return apiUrl;
@@ -98,7 +101,7 @@ export async function backendFetch<T = unknown>(
   });
 
   const headers: Record<string, string> = {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     ...(init.headers as Record<string, string>),
   };
 
@@ -114,7 +117,8 @@ export async function backendFetch<T = unknown>(
       cache: 'no-store',
     });
   } catch (fetchErr) {
-    const cause = fetchErr instanceof Error ? fetchErr.cause ?? fetchErr : fetchErr;
+    const cause =
+      fetchErr instanceof Error ? (fetchErr.cause ?? fetchErr) : fetchErr;
     const detail = cause instanceof Error ? cause.message : String(cause);
     console.error(`[backendProxy] Fetch failed for ${method} ${url}:`, detail);
     throw new BackendProxyError({
@@ -191,7 +195,7 @@ export async function backendFetchRaw(
   const url = `${apiBaseUrl}${path}`;
 
   const headers: Record<string, string> = {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     ...(init.headers as Record<string, string>),
   };
 
@@ -206,7 +210,8 @@ export async function backendFetchRaw(
       cache: 'no-store',
     });
   } catch (fetchErr) {
-    const cause = fetchErr instanceof Error ? fetchErr.cause ?? fetchErr : fetchErr;
+    const cause =
+      fetchErr instanceof Error ? (fetchErr.cause ?? fetchErr) : fetchErr;
     const detail = cause instanceof Error ? cause.message : String(cause);
     console.error(`[backendProxy] Raw fetch failed for ${url}:`, detail);
     throw new BackendProxyError({
@@ -231,7 +236,11 @@ export async function getStreamUrl(path: string): Promise<string> {
 /**
  * Helper to convert errors to HTTP response info
  */
-export function getErrorResponse(error: unknown): { status: number; message: string; code?: string } {
+export function getErrorResponse(error: unknown): {
+  status: number;
+  message: string;
+  code?: string;
+} {
   if (error instanceof ServerAuthError) {
     return {
       status: 401,

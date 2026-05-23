@@ -18,14 +18,21 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const data = await prBackendFetch(`/api/v1/pr-outreach/runs/${id}/advance`, {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
+    const data = await prBackendFetch(
+      `/api/v1/pr-outreach/runs/${id}/advance`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }
+    );
     return NextResponse.json(data);
   } catch (error: unknown) {
     const { status, message, code } = getErrorResponse(error);
-    console.error('[API /api/pr/outreach/runs/[id]/advance] POST Error:', { status, message, code });
+    console.error('[API /api/pr/outreach/runs/[id]/advance] POST Error:', {
+      status,
+      message,
+      code,
+    });
     return NextResponse.json({ error: message, code }, { status });
   }
 }

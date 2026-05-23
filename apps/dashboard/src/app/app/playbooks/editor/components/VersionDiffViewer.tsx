@@ -16,7 +16,10 @@ export interface VersionDiffViewerProps {
   };
 }
 
-export function VersionDiffViewer({ diff, latestVersion }: VersionDiffViewerProps) {
+export function VersionDiffViewer({
+  diff,
+  latestVersion,
+}: VersionDiffViewerProps) {
   if (!diff.hasChanges) {
     return (
       <div className="p-6 text-center text-gray-500">
@@ -75,7 +78,10 @@ export function VersionDiffViewer({ diff, latestVersion }: VersionDiffViewerProp
           </h4>
           <ul className="space-y-1">
             {diff.addedNodes.map((node, index) => (
-              <li key={index} className="text-sm text-green-800 flex items-center gap-2">
+              <li
+                key={index}
+                className="text-sm text-green-800 flex items-center gap-2"
+              >
                 <span className="font-mono text-xs bg-green-100 px-2 py-0.5 rounded">
                   {node.type}
                 </span>
@@ -102,7 +108,10 @@ export function VersionDiffViewer({ diff, latestVersion }: VersionDiffViewerProp
           </h4>
           <ul className="space-y-1">
             {diff.removedNodes.map((node, index) => (
-              <li key={index} className="text-sm text-red-800 flex items-center gap-2">
+              <li
+                key={index}
+                className="text-sm text-red-800 flex items-center gap-2"
+              >
                 <span className="font-mono text-xs bg-red-100 px-2 py-0.5 rounded">
                   {node.type}
                 </span>
@@ -169,7 +178,10 @@ export function VersionDiffViewer({ diff, latestVersion }: VersionDiffViewerProp
           </h4>
           <ul className="space-y-1">
             {diff.removedEdges.map((edge, index) => (
-              <li key={index} className="text-sm text-red-800 font-mono line-through">
+              <li
+                key={index}
+                className="text-sm text-red-800 font-mono line-through"
+              >
                 {edge.source} → {edge.target}
                 {edge.label && (
                   <span className="text-xs ml-2 text-red-600">

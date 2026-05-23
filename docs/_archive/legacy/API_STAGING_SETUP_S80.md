@@ -38,24 +38,25 @@ Before you begin, ensure you have:
 
 Fill in the following:
 
-| Setting | Value |
-|---------|-------|
-| **Name** | `pravado-api-staging` |
-| **Region** | Choose closest to your users (e.g., Oregon) |
-| **Branch** | `main` |
-| **Root Directory** | Leave empty (monorepo handling below) |
-| **Runtime** | Node |
+| Setting            | Value                                       |
+| ------------------ | ------------------------------------------- |
+| **Name**           | `pravado-api-staging`                       |
+| **Region**         | Choose closest to your users (e.g., Oregon) |
+| **Branch**         | `main`                                      |
+| **Root Directory** | Leave empty (monorepo handling below)       |
+| **Runtime**        | Node                                        |
 
 ### Step 1.4: Configure Build Settings
 
-| Setting | Value |
-|---------|-------|
+| Setting           | Value                                                                                                                                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Build Command** | `pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/validators build && pnpm --filter @pravado/utils build && pnpm --filter @pravado/feature-flags build && pnpm --filter @pravado/api build` |
-| **Start Command** | `node apps/api/dist/index.js` |
+| **Start Command** | `node apps/api/dist/index.js`                                                                                                                                                                                           |
 
 ### Step 1.5: Select Instance Type
 
 For staging:
+
 - **Free** tier is fine for testing
 - **Starter** ($7/month) for better performance
 
@@ -69,17 +70,17 @@ Click **"Advanced"** and add these environment variables:
 
 **Required:**
 
-| Key | Value | Notes |
-|-----|-------|-------|
-| `NODE_ENV` | `production` | |
-| `API_HOST` | `0.0.0.0` | Required for Render |
-| `API_PORT` | `3001` | Or use Render's default |
-| `SUPABASE_URL` | `https://xxxxx.supabase.co` | From Supabase dashboard |
-| `SUPABASE_SERVICE_ROLE_KEY` | `eyJ...` | From Supabase dashboard |
-| `SUPABASE_ANON_KEY` | `eyJ...` | From Supabase dashboard |
-| `CORS_ORIGIN` | `https://your-dashboard.vercel.app` | Your Vercel dashboard URL |
-| `COOKIE_SECRET` | `<random-32-chars>` | Generate a secure random string |
-| `DASHBOARD_URL` | `https://your-dashboard.vercel.app` | For email links |
+| Key                         | Value                               | Notes                           |
+| --------------------------- | ----------------------------------- | ------------------------------- |
+| `NODE_ENV`                  | `production`                        |                                 |
+| `API_HOST`                  | `0.0.0.0`                           | Required for Render             |
+| `API_PORT`                  | `3001`                              | Or use Render's default         |
+| `SUPABASE_URL`              | `https://xxxxx.supabase.co`         | From Supabase dashboard         |
+| `SUPABASE_SERVICE_ROLE_KEY` | `eyJ...`                            | From Supabase dashboard         |
+| `SUPABASE_ANON_KEY`         | `eyJ...`                            | From Supabase dashboard         |
+| `CORS_ORIGIN`               | `https://your-dashboard.vercel.app` | Your Vercel dashboard URL       |
+| `COOKIE_SECRET`             | `<random-32-chars>`                 | Generate a secure random string |
+| `DASHBOARD_URL`             | `https://your-dashboard.vercel.app` | For email links                 |
 
 **LLM Configuration (choose one):**
 
@@ -124,11 +125,13 @@ openssl rand -base64 32
 ### Step 3.2: Note Your Service URL
 
 Once deployed, Render provides a URL like:
+
 ```
 https://pravado-api-staging.onrender.com
 ```
 
 Save this - you'll need it for:
+
 - `NEXT_PUBLIC_API_URL` in Vercel
 - Health check verification
 
@@ -251,6 +254,7 @@ This ensures Render restarts the service if it becomes unhealthy.
 ### Build Fails: "Cannot find module"
 
 **Fix:** Ensure build command builds packages in order:
+
 ```
 pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/validators build && pnpm --filter @pravado/utils build && pnpm --filter @pravado/feature-flags build && pnpm --filter @pravado/api build
 ```
@@ -258,6 +262,7 @@ pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/val
 ### API Starts But Crashes Immediately
 
 **Check logs for:**
+
 - Missing environment variables
 - Invalid Supabase credentials
 - Port binding issues
@@ -267,6 +272,7 @@ pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/val
 ### CORS Errors from Dashboard
 
 **Fix:**
+
 1. Verify `CORS_ORIGIN` exactly matches your Vercel URL
 2. Include the protocol: `https://your-dashboard.vercel.app`
 3. No trailing slash
@@ -274,6 +280,7 @@ pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/val
 ### Database Connection Errors
 
 **Fix:**
+
 1. Verify Supabase credentials are correct
 2. Check Supabase project is not paused
 3. Verify migrations are applied
@@ -283,6 +290,7 @@ pnpm install && pnpm --filter @pravado/types build && pnpm --filter @pravado/val
 **Issue:** Render free tier spins down after inactivity.
 
 **Fix:**
+
 - Upgrade to Starter tier ($7/month)
 - Or accept 30-60 second cold starts
 
@@ -307,33 +315,33 @@ After adding `RENDER_DEPLOY_HOOK_STAGING` to GitHub Secrets, the workflow will a
 
 ### Render Service Settings
 
-| Setting | Value |
-|---------|-------|
-| Name | `pravado-api-staging` |
-| Branch | `main` |
-| Build Command | See Part 1.4 |
+| Setting       | Value                         |
+| ------------- | ----------------------------- |
+| Name          | `pravado-api-staging`         |
+| Branch        | `main`                        |
+| Build Command | See Part 1.4                  |
 | Start Command | `node apps/api/dist/index.js` |
-| Health Check | `/health/live` |
+| Health Check  | `/health/live`                |
 
 ### Required Environment Variables
 
-| Variable | Source |
-|----------|--------|
-| `NODE_ENV` | `production` |
-| `API_HOST` | `0.0.0.0` |
-| `SUPABASE_URL` | Supabase Dashboard |
+| Variable                    | Source             |
+| --------------------------- | ------------------ |
+| `NODE_ENV`                  | `production`       |
+| `API_HOST`                  | `0.0.0.0`          |
+| `SUPABASE_URL`              | Supabase Dashboard |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard |
-| `SUPABASE_ANON_KEY` | Supabase Dashboard |
-| `CORS_ORIGIN` | Your Vercel URL |
-| `COOKIE_SECRET` | Generate random |
+| `SUPABASE_ANON_KEY`         | Supabase Dashboard |
+| `CORS_ORIGIN`               | Your Vercel URL    |
+| `COOKIE_SECRET`             | Generate random    |
 
 ### Verification URLs
 
-| Endpoint | Purpose |
-|----------|---------|
-| `/health/live` | Liveness check |
+| Endpoint        | Purpose         |
+| --------------- | --------------- |
+| `/health/live`  | Liveness check  |
 | `/health/ready` | Readiness check |
-| `/health/info` | Full app info |
+| `/health/info`  | Full app info   |
 
 ---
 

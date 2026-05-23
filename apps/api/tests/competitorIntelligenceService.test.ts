@@ -43,10 +43,7 @@ describe('CompetitorIntelligenceService', () => {
       .from('ci_competitor_mentions')
       .delete()
       .eq('org_id', testOrgId);
-    await supabase
-      .from('ci_competitors')
-      .delete()
-      .eq('org_id', testOrgId);
+    await supabase.from('ci_competitors').delete().eq('org_id', testOrgId);
   });
 
   describe('Competitor Management', () => {
@@ -79,7 +76,10 @@ describe('CompetitorIntelligenceService', () => {
     });
 
     it('should get competitor by ID', async () => {
-      const competitor = await service.getCompetitor(testOrgId, testCompetitorId);
+      const competitor = await service.getCompetitor(
+        testOrgId,
+        testCompetitorId
+      );
 
       expect(competitor).toBeDefined();
       expect(competitor?.id).toBe(testCompetitorId);
@@ -94,7 +94,9 @@ describe('CompetitorIntelligenceService', () => {
 
       expect(result.competitors).toBeDefined();
       expect(result.competitors.length).toBeGreaterThan(0);
-      expect(result.competitors.some((c) => c.id === testCompetitorId)).toBe(true);
+      expect(result.competitors.some((c) => c.id === testCompetitorId)).toBe(
+        true
+      );
     });
 
     it('should update competitor details', async () => {
@@ -104,7 +106,11 @@ describe('CompetitorIntelligenceService', () => {
         keywords: ['competitor', 'tech', 'innovation', 'market'],
       };
 
-      const updated = await service.updateCompetitor(testOrgId, testCompetitorId, updateRequest);
+      const updated = await service.updateCompetitor(
+        testOrgId,
+        testCompetitorId,
+        updateRequest
+      );
 
       expect(updated).toBeDefined();
       expect(updated.name).toBe('Test Competitor Corp Updated');
@@ -113,9 +119,13 @@ describe('CompetitorIntelligenceService', () => {
     });
 
     it('should deactivate competitor', async () => {
-      const updated = await service.updateCompetitor(testOrgId, testCompetitorId, {
-        isActive: false,
-      });
+      const updated = await service.updateCompetitor(
+        testOrgId,
+        testCompetitorId,
+        {
+          isActive: false,
+        }
+      );
 
       expect(updated.isActive).toBe(false);
 
@@ -359,7 +369,11 @@ describe('CompetitorIntelligenceService', () => {
 
   describe('Competitor Evaluation', () => {
     it('should evaluate competitor and generate insights', async () => {
-      const result = await service.evaluateCompetitor(testOrgId, testCompetitorId, 30);
+      const result = await service.evaluateCompetitor(
+        testOrgId,
+        testCompetitorId,
+        30
+      );
 
       expect(result).toBeDefined();
       expect(result.snapshot).toBeDefined();
@@ -390,7 +404,9 @@ describe('CompetitorIntelligenceService', () => {
         keywords: [], // Empty keywords should fail
       };
 
-      await expect(service.createCompetitor(testOrgId, request)).rejects.toThrow();
+      await expect(
+        service.createCompetitor(testOrgId, request)
+      ).rejects.toThrow();
     });
   });
 

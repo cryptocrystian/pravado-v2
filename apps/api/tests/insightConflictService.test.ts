@@ -14,7 +14,8 @@ const createMockSupabase = () => {
   let mockData: any = { data: null, error: null };
 
   const chainMethods: any = {
-    then: (resolve: (value: any) => void) => Promise.resolve(mockData).then(resolve),
+    then: (resolve: (value: any) => void) =>
+      Promise.resolve(mockData).then(resolve),
   };
 
   const mockSelect = vi.fn(() => chainMethods);
@@ -222,11 +223,16 @@ describe('InsightConflictService', () => {
         error: null,
       });
 
-      const result = await service.updateConflict('org-1', 'conflict-1', 'user-1', {
-        title: 'Updated Conflict',
-        severity: 'critical',
-        status: 'analyzing',
-      });
+      const result = await service.updateConflict(
+        'org-1',
+        'conflict-1',
+        'user-1',
+        {
+          title: 'Updated Conflict',
+          severity: 'critical',
+          status: 'analyzing',
+        }
+      );
 
       expect(result.conflict).toBeDefined();
       expect(result.conflict?.title).toBe('Updated Conflict');
@@ -260,7 +266,12 @@ describe('InsightConflictService', () => {
         error: null,
       });
 
-      const result = await service.dismissConflict('org-1', 'conflict-1', 'user-1', 'Not relevant');
+      const result = await service.dismissConflict(
+        'org-1',
+        'conflict-1',
+        'user-1',
+        'Not relevant'
+      );
 
       expect(result.conflict).toBeDefined();
       expect(result.conflict?.status).toBe('dismissed');
@@ -294,7 +305,9 @@ describe('InsightConflictService', () => {
         count: 2,
       });
 
-      const result = await service.listConflictItems('org-1', { conflictId: 'conflict-1' });
+      const result = await service.listConflictItems('org-1', {
+        conflictId: 'conflict-1',
+      });
 
       expect(result.items).toBeDefined();
       expect(result.items.length).toBe(2);
@@ -309,7 +322,8 @@ describe('InsightConflictService', () => {
             id: 'resolution-1',
             conflict_id: 'conflict-1',
             resolution_type: 'ai_consensus',
-            resolved_summary: 'The consensus is that revenue increased moderately',
+            resolved_summary:
+              'The consensus is that revenue increased moderately',
             is_accepted: true,
             human_reviewed: true,
             created_at: new Date().toISOString(),
@@ -320,7 +334,9 @@ describe('InsightConflictService', () => {
         count: 1,
       });
 
-      const result = await service.listResolutions('org-1', { conflictId: 'conflict-1' });
+      const result = await service.listResolutions('org-1', {
+        conflictId: 'conflict-1',
+      });
 
       expect(result.resolutions).toBeDefined();
       expect(result.resolutions.length).toBe(1);
@@ -396,9 +412,7 @@ describe('InsightConflictService', () => {
               { id: 'n1', type: 'conflict', label: 'Test Conflict', data: {} },
               { id: 'n2', type: 'item', label: 'Item 1', data: {} },
             ],
-            edges: [
-              { id: 'e1', source: 'n1', target: 'n2', type: 'contains' },
-            ],
+            edges: [{ id: 'e1', source: 'n1', target: 'n2', type: 'contains' }],
             metadata: {
               totalNodes: 2,
               totalEdges: 1,
@@ -478,7 +492,9 @@ describe('InsightConflictService', () => {
         count: 2,
       });
 
-      const result = await service.listAuditLog('org-1', { conflictId: 'conflict-1' });
+      const result = await service.listAuditLog('org-1', {
+        conflictId: 'conflict-1',
+      });
 
       expect(result.events).toBeDefined();
       expect(result.events.length).toBe(2);
@@ -609,8 +625,16 @@ describe('InsightConflictService', () => {
           status: 'detected',
           title: 'Contradiction Test',
           source_entities: [
-            { entityType: 'narrative', entityId: 'e1', sourceSystem: 'system_a' },
-            { entityType: 'narrative', entityId: 'e2', sourceSystem: 'system_b' },
+            {
+              entityType: 'narrative',
+              entityId: 'e1',
+              sourceSystem: 'system_a',
+            },
+            {
+              entityType: 'narrative',
+              entityId: 'e2',
+              sourceSystem: 'system_b',
+            },
           ],
           affected_systems: ['system_a', 'system_b'],
           created_at: now,

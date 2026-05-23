@@ -14,8 +14,14 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { TiptapEditor, type TiptapEditorHandle, type HeadingNode, type SaveState } from './TiptapEditor';
+
 import { DocumentOutline } from './DocumentOutline';
+import {
+  TiptapEditor,
+  type TiptapEditorHandle,
+  type HeadingNode,
+  type SaveState,
+} from './TiptapEditor';
 import type { ContentStatus } from '../types';
 import { CONTENT_STATUS_CONFIG, CONTENT_TYPE_CONFIG } from '../types';
 
@@ -33,7 +39,12 @@ export interface ArticleEditorProps {
   /** Current status */
   status?: ContentStatus;
   /** Content type label */
-  contentType?: 'article' | 'email' | 'social_post' | 'landing_page' | 'campaign';
+  contentType?:
+    | 'article'
+    | 'email'
+    | 'social_post'
+    | 'landing_page'
+    | 'campaign';
   /** Called when content is auto-saved */
   onSave?: (data: { title: string; content: string }) => void;
   /** Called when status changes */
@@ -162,12 +173,9 @@ export function ArticleEditor({
   }, []);
 
   // Handle outline heading click
-  const handleHeadingClick = useCallback(
-    (pos: number) => {
-      editorRef.current?.scrollToPos(pos);
-    },
-    []
-  );
+  const handleHeadingClick = useCallback((pos: number) => {
+    editorRef.current?.scrollToPos(pos);
+  }, []);
 
   // Handle title Enter key -> move to editor
   const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -198,11 +206,23 @@ export function ArticleEditor({
               onClick={exitFocusMode}
               className="flex items-center gap-2 px-3 py-0.5 text-xs font-medium text-white/30 hover:text-white/60 bg-white/[0.02] hover:bg-white/[0.04] rounded transition-colors"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"
+                />
               </svg>
               Exit focus
-              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">Esc</kbd>
+              <kbd className="px-1 py-0.5 bg-white/5 rounded text-xs font-mono">
+                Esc
+              </kbd>
             </button>
           </div>
         </div>
@@ -217,8 +237,18 @@ export function ArticleEditor({
                 className="p-0.5 text-white/20 hover:text-white/50 hover:bg-white/5 rounded transition-colors shrink-0"
                 title="Back to content list"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
             )}
@@ -240,32 +270,70 @@ export function ArticleEditor({
                 className="p-1 rounded transition-colors text-white/30 hover:text-white/60 hover:bg-white/5"
                 title="Focus mode"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                  />
                 </svg>
               </button>
               <button
                 type="button"
                 onClick={() => setOutlineCollapsed(!outlineCollapsed)}
                 className={`p-1 rounded transition-colors ${
-                  outlineCollapsed ? 'text-white/30 hover:text-white/60' : 'text-brand-iris/50'
+                  outlineCollapsed
+                    ? 'text-white/30 hover:text-white/60'
+                    : 'text-brand-iris/50'
                 } hover:bg-white/5`}
                 title={outlineCollapsed ? 'Show outline' : 'Hide outline'}
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h10M4 18h6" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 6h16M4 10h16M4 14h10M4 18h6"
+                  />
                 </svg>
               </button>
               <button
                 type="button"
                 onClick={() => setMarginCollapsed(!marginCollapsed)}
                 className={`p-1 rounded transition-colors ${
-                  marginCollapsed ? 'text-white/30 hover:text-white/60' : 'text-brand-iris/50'
+                  marginCollapsed
+                    ? 'text-white/30 hover:text-white/60'
+                    : 'text-brand-iris/50'
                 } hover:bg-white/5`}
-                title={marginCollapsed ? 'Show intelligence panel' : 'Hide intelligence panel'}
+                title={
+                  marginCollapsed
+                    ? 'Show intelligence panel'
+                    : 'Hide intelligence panel'
+                }
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                  />
                 </svg>
               </button>
             </div>
@@ -305,14 +373,14 @@ export function ArticleEditor({
               <span className="w-px h-3 bg-white/[0.06]" />
 
               {/* Status badge */}
-              <span className={`px-1.5 py-0.5 text-xs font-semibold rounded ${statusConfig.color} bg-white/[0.03]`}>
+              <span
+                className={`px-1.5 py-0.5 text-xs font-semibold rounded ${statusConfig.color} bg-white/[0.03]`}
+              >
                 {statusConfig.label}
               </span>
 
               {/* Mode indicator */}
-              <span className="text-xs font-medium text-white/15">
-                Manual
-              </span>
+              <span className="text-xs font-medium text-white/15">Manual</span>
 
               <span className="flex-1" />
 
@@ -321,7 +389,9 @@ export function ArticleEditor({
                 <div className="flex items-center gap-2 text-xs text-white/20">
                   <span>{wordCount.toLocaleString()} words</span>
                   <span className="text-white/[0.06]">·</span>
-                  <span>{Math.max(1, Math.ceil(wordCount / 238))} min read</span>
+                  <span>
+                    {Math.max(1, Math.ceil(wordCount / 238))} min read
+                  </span>
                 </div>
               )}
 
@@ -335,16 +405,36 @@ export function ArticleEditor({
                 )}
                 {saveState === 'saved' && (
                   <span className="flex items-center gap-1 text-semantic-success/60">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     Saved
                   </span>
                 )}
                 {saveState === 'error' && (
                   <span className="flex items-center gap-1 text-semantic-danger/60">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01" />
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01"
+                      />
                     </svg>
                     Save failed
                   </span>
@@ -443,42 +533,86 @@ interface IntelligenceSection {
 const INTELLIGENCE_SECTIONS: IntelligenceSection[] = [
   {
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+        />
       </svg>
     ),
     title: 'Citation Health',
-    description: 'CiteMind will flag claims that need sources and verify existing citations.',
+    description:
+      'CiteMind will flag claims that need sources and verify existing citations.',
     status: 'coming_soon',
   },
   {
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M13 10V3L4 14h7v7l9-11h-7z"
+        />
       </svg>
     ),
     title: 'Authority Signals',
-    description: 'SAGE evaluates how content reinforces your entity authority and expertise.',
+    description:
+      'SAGE evaluates how content reinforces your entity authority and expertise.',
     status: 'coming_soon',
   },
   {
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
       </svg>
     ),
     title: 'Readability & Clarity',
-    description: 'Sentence complexity, passive voice detection, and reading level scoring.',
+    description:
+      'Sentence complexity, passive voice detection, and reading level scoring.',
     status: 'coming_soon',
   },
   {
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+        />
       </svg>
     ),
     title: 'Cross-Pillar Opportunities',
-    description: 'Connections to PR pitches, SEO keywords, and campaign themes.',
+    description:
+      'Connections to PR pitches, SEO keywords, and campaign themes.',
     status: 'coming_soon',
   },
 ];
@@ -488,8 +622,18 @@ function IntelligenceMargin() {
     <div className="h-full flex flex-col bg-slate-1">
       <div className="px-4 py-2.5 border-b border-white/[0.04] shrink-0">
         <div className="flex items-center gap-2">
-          <svg className="w-3.5 h-3.5 text-brand-iris/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <svg
+            className="w-3.5 h-3.5 text-brand-iris/40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            />
           </svg>
           <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/30">
             Intelligence
@@ -506,12 +650,18 @@ function IntelligenceMargin() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-brand-iris/30">{section.icon}</span>
-                <h4 className="text-xs font-semibold text-white/40">{section.title}</h4>
+                <h4 className="text-xs font-semibold text-white/40">
+                  {section.title}
+                </h4>
               </div>
-              <p className="text-xs text-white/20 leading-relaxed">{section.description}</p>
+              <p className="text-xs text-white/20 leading-relaxed">
+                {section.description}
+              </p>
               <div className="mt-1.5 flex items-center gap-1.5">
                 <span className="w-1 h-1 rounded-full bg-white/8" />
-                <span className="text-xs text-white/15 uppercase tracking-wider">Coming soon</span>
+                <span className="text-xs text-white/15 uppercase tracking-wider">
+                  Coming soon
+                </span>
               </div>
             </div>
           ))}

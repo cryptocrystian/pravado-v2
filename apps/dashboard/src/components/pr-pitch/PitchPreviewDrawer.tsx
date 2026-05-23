@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities -- literal quotes in JSX text are intentional; Phase 1 readability pass */
 'use client';
 
 /**
@@ -5,7 +6,10 @@
  * Slide-out drawer showing generated pitch preview
  */
 
-import type { GeneratedPitchPreview, PRPitchContactWithJournalist } from '@pravado/types';
+import type {
+  GeneratedPitchPreview,
+  PRPitchContactWithJournalist,
+} from '@pravado/types';
 import { useEffect, useState } from 'react';
 
 import { generatePitchPreview, queuePitchForContact } from '@/lib/prPitchApi';
@@ -53,7 +57,9 @@ export function PitchPreviewDrawer({
       });
       setPreview(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate preview');
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate preview'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -89,11 +95,14 @@ export function PitchPreviewDrawer({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Pitch Preview</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Pitch Preview
+            </h2>
             {contact && (
               <p className="text-sm text-gray-500">
                 For {contact.journalist.name}
-                {contact.journalist.outlet && ` at ${contact.journalist.outlet}`}
+                {contact.journalist.outlet &&
+                  ` at ${contact.journalist.outlet}`}
               </p>
             )}
           </div>
@@ -123,7 +132,9 @@ export function PitchPreviewDrawer({
             <div className="flex items-center justify-center h-48">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
-                <p className="mt-2 text-sm text-gray-500">Generating personalized pitch...</p>
+                <p className="mt-2 text-sm text-gray-500">
+                  Generating personalized pitch...
+                </p>
               </div>
             </div>
           ) : error ? (
@@ -188,7 +199,9 @@ export function PitchPreviewDrawer({
                         <p className="text-sm font-medium text-yellow-900 capitalize">
                           {suggestion.type}
                         </p>
-                        <p className="text-sm text-yellow-800 mt-1">{suggestion.reason}</p>
+                        <p className="text-sm text-yellow-800 mt-1">
+                          {suggestion.reason}
+                        </p>
                       </div>
                     ))}
                   </div>

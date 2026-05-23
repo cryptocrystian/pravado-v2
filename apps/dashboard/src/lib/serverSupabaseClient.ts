@@ -3,8 +3,8 @@
  * Sprint S99.1: Provides session access for server-side API calls
  */
 
-import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -36,7 +36,9 @@ export async function createServerSupabaseClient() {
 export async function getServerAccessToken(): Promise<string | null> {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     return session?.access_token || null;
   } catch (error) {
     console.error('[getServerAccessToken] Error:', error);

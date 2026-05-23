@@ -54,32 +54,32 @@ When multiple buttons do the same thing:
 
 The **primary CTA** is the single most important action for the current context.
 
-| Characteristic | Requirement |
-|----------------|-------------|
-| **Uniqueness** | Only ONE primary CTA per context |
-| **Visibility** | MUST be visible without scrolling |
+| Characteristic | Requirement                                      |
+| -------------- | ------------------------------------------------ |
+| **Uniqueness** | Only ONE primary CTA per context                 |
+| **Visibility** | MUST be visible without scrolling                |
 | **Prominence** | MUST be visually dominant over secondary actions |
-| **Clarity** | Label MUST clearly indicate what happens |
+| **Clarity**    | Label MUST clearly indicate what happens         |
 
 ### Secondary CTA
 
 **Secondary CTAs** are alternative actions that are less common or lower priority.
 
-| Characteristic | Requirement |
-|----------------|-------------|
-| **Visual Weight** | MUST be visually subordinate to primary |
-| **Placement** | May be near primary or contextually placed |
-| **Count** | Minimize (2-3 max per context) |
+| Characteristic    | Requirement                                |
+| ----------------- | ------------------------------------------ |
+| **Visual Weight** | MUST be visually subordinate to primary    |
+| **Placement**     | May be near primary or contextually placed |
+| **Count**         | Minimize (2-3 max per context)             |
 
 ### Tertiary Actions
 
 **Tertiary actions** are infrequent or administrative operations.
 
-| Characteristic | Requirement |
-|----------------|-------------|
-| **Visual Weight** | Subtle (text links, icon buttons, menus) |
-| **Placement** | Contextual or in overflow menus |
-| **Discoverability** | May require exploration |
+| Characteristic      | Requirement                              |
+| ------------------- | ---------------------------------------- |
+| **Visual Weight**   | Subtle (text links, icon buttons, menus) |
+| **Placement**       | Contextual or in overflow menus          |
+| **Discoverability** | May require exploration                  |
 
 ---
 
@@ -91,11 +91,11 @@ In Manual mode, the user is creating and editing.
 
 **Primary CTA Placement:**
 
-| Context | CTA Location | Rationale |
-|---------|--------------|-----------|
-| **Editor** | Within or adjacent to editor area | Action relates to content being edited |
-| **Triage View** | Inline with selected item OR header bar | Action relates to selection |
-| **Library** | Header bar or selection-dependent | Batch actions or item-specific |
+| Context         | CTA Location                            | Rationale                              |
+| --------------- | --------------------------------------- | -------------------------------------- |
+| **Editor**      | Within or adjacent to editor area       | Action relates to content being edited |
+| **Triage View** | Inline with selected item OR header bar | Action relates to selection            |
+| **Library**     | Header bar or selection-dependent       | Batch actions or item-specific         |
 
 **Gravity Rule:** CTAs should gravitate toward the content they affect.
 
@@ -105,11 +105,11 @@ In Copilot mode, the user is reviewing AI proposals.
 
 **Primary CTA Placement:**
 
-| Context | CTA Location | Rationale |
-|---------|--------------|-----------|
-| **Plan Review** | Adjacent to plan display | Approval/rejection relates to visible plan |
-| **Draft Review** | Adjacent to draft preview | Action relates to specific draft |
-| **Batch Approval** | Header or selection bar | Action relates to selected items |
+| Context            | CTA Location              | Rationale                                  |
+| ------------------ | ------------------------- | ------------------------------------------ |
+| **Plan Review**    | Adjacent to plan display  | Approval/rejection relates to visible plan |
+| **Draft Review**   | Adjacent to draft preview | Action relates to specific draft           |
+| **Batch Approval** | Header or selection bar   | Action relates to selected items           |
 
 **Gravity Rule:** Approval actions must be adjacent to what is being approved. Never separate the "Approve" button from the proposal by scroll or significant distance.
 
@@ -119,11 +119,11 @@ In Autopilot mode, the user handles exceptions.
 
 **Primary CTA Placement:**
 
-| Context | CTA Location | Rationale |
-|---------|--------------|-----------|
-| **Exception Card** | Within exception detail | Action resolves specific exception |
-| **All Clear State** | Minimal or absent | No action needed |
-| **Guardrail Alert** | Adjacent to alert | Action addresses the alert |
+| Context             | CTA Location            | Rationale                          |
+| ------------------- | ----------------------- | ---------------------------------- |
+| **Exception Card**  | Within exception detail | Action resolves specific exception |
+| **All Clear State** | Minimal or absent       | No action needed                   |
+| **Guardrail Alert** | Adjacent to alert       | Action addresses the alert         |
 
 **Gravity Rule:** Actions appear only where exceptions surface. No persistent CTAs waiting for work that doesn't exist.
 
@@ -134,11 +134,13 @@ In Autopilot mode, the user handles exceptions.
 ### Pattern 1: Inline CTA
 
 **When to Use:**
+
 - Action relates to a specific selected item
 - Context is narrow (detail panel, card, row action)
 - User's eye is already on the content
 
 **Implementation:**
+
 - Button appears within or immediately adjacent to content
 - Often in header bar of detail panel or card footer
 - No sticky positioning required
@@ -148,11 +150,13 @@ In Autopilot mode, the user handles exceptions.
 ### Pattern 2: Sticky Header CTA
 
 **When to Use:**
+
 - Action relates to the overall view, not a specific item
 - Long scrollable content below
 - User may scroll but should always see action
 
 **Implementation:**
+
 - Fixed to top of content area (not browser viewport)
 - Remains visible during scroll
 - Content scrolls beneath
@@ -162,11 +166,13 @@ In Autopilot mode, the user handles exceptions.
 ### Pattern 3: Sticky Footer CTA (Restricted)
 
 **When to Use:**
+
 - ONLY for long-form editors where content exceeds viewport
 - ONLY when content is actively being edited
 - NEVER for triage, approval, or dashboard views
 
 **Implementation:**
+
 - Fixed to bottom of viewport or container
 - Clear visual separation from content
 - Should not obscure content user needs to see
@@ -176,10 +182,12 @@ In Autopilot mode, the user handles exceptions.
 ### Pattern 4: Contextual CTA
 
 **When to Use:**
+
 - Action appears in response to user action (selection, hover)
 - Temporary affordance that reduces clutter when not needed
 
 **Implementation:**
+
 - Appears near the triggering element
 - Disappears when context changes
 - Should not cause layout shift
@@ -334,6 +342,6 @@ For any Pravado surface, verify:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-02-02 | Initial canonical version |
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-02-02 | Initial canonical version |

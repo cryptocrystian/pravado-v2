@@ -8,9 +8,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
+
 import { PitchWizard } from '@/components/pr/PitchWizard';
 import { mockJournalists } from '@/components/pr/pr-mock-data';
 
@@ -21,7 +22,7 @@ export default function NewPitchPage() {
   const preselected = useMemo(() => {
     if (!journalistName) return undefined;
     return mockJournalists.find(
-      (j) => j.name.toLowerCase() === journalistName.toLowerCase(),
+      (j) => j.name.toLowerCase() === journalistName.toLowerCase()
     );
   }, [journalistName]);
 

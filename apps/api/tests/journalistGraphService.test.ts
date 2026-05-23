@@ -33,7 +33,9 @@ describe('JournalistGraphService', () => {
       mockSupabase.from.mockReturnValue({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: mockProfile, error: null }),
+            single: vi
+              .fn()
+              .mockResolvedValue({ data: mockProfile, error: null }),
           }),
         }),
       });
@@ -130,7 +132,9 @@ describe('JournalistGraphService', () => {
       mockSupabase.from.mockReturnValue({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: mockActivity, error: null }),
+            single: vi
+              .fn()
+              .mockResolvedValue({ data: mockActivity, error: null }),
           }),
         }),
         update: vi.fn().mockReturnValue({
@@ -163,7 +167,10 @@ describe('JournalistGraphService', () => {
 
       mockSupabase.rpc.mockResolvedValue({ data: mockSummary, error: null });
 
-      const result = await service.calculateEngagementScore('profile-123', 'org-123');
+      const result = await service.calculateEngagementScore(
+        'profile-123',
+        'org-123'
+      );
 
       expect(result.engagementScore).toBeGreaterThan(0);
       expect(result.engagementScore).toBeLessThanOrEqual(1);

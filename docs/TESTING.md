@@ -321,10 +321,14 @@ it('returns user data', async () => {
 
 ```typescript
 // Bad
-it('works', () => { /* ... */ });
+it('works', () => {
+  /* ... */
+});
 
 // Good
-it('returns 404 when user not found', () => { /* ... */ });
+it('returns 404 when user not found', () => {
+  /* ... */
+});
 ```
 
 ### 3. One Assertion Per Test (Generally)
@@ -403,6 +407,7 @@ Tests run automatically in CI via GitHub Actions:
 1. **Check test file naming**: Files must end with `.test.ts` or be in `__tests__/`
 
 2. **Rebuild packages**:
+
    ```bash
    pnpm build
    ```

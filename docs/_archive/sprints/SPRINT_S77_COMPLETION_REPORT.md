@@ -23,26 +23,27 @@ Sprint S77 focused on creating the infrastructure and documentation needed for u
 
 A comprehensive TypeScript script that creates a complete demo organization with:
 
-| Domain | Records Created |
-|--------|-----------------|
-| Organization | 1 ("Pravado Demo Org") |
-| Users | 2 (exec + analyst) |
-| Playbooks | 3 with runs |
-| Crisis Incidents | 2 (active + monitoring) |
-| Scenarios | 3 (2 completed, 1 running) |
-| Orchestration Suites | 2 with runs |
-| Reality Maps | 2 with nodes/edges |
-| Insight Conflicts | 2 (detected + analyzing) |
-| Unified Narratives | 2 (published + draft) |
-| Exec Digests | 1 |
-| Board Reports | 1 |
-| Strategic Reports | 1 |
-| Reputation Reports | 2 |
-| Press Releases | 2 |
-| Media Sources | 3 |
-| Earned Mentions | 3 |
+| Domain               | Records Created            |
+| -------------------- | -------------------------- |
+| Organization         | 1 ("Pravado Demo Org")     |
+| Users                | 2 (exec + analyst)         |
+| Playbooks            | 3 with runs                |
+| Crisis Incidents     | 2 (active + monitoring)    |
+| Scenarios            | 3 (2 completed, 1 running) |
+| Orchestration Suites | 2 with runs                |
+| Reality Maps         | 2 with nodes/edges         |
+| Insight Conflicts    | 2 (detected + analyzing)   |
+| Unified Narratives   | 2 (published + draft)      |
+| Exec Digests         | 1                          |
+| Board Reports        | 1                          |
+| Strategic Reports    | 1                          |
+| Reputation Reports   | 2                          |
+| Press Releases       | 2                          |
+| Media Sources        | 3                          |
+| Earned Mentions      | 3                          |
 
 **Usage:**
+
 ```bash
 pnpm --filter @pravado/api seed:demo
 ```
@@ -58,6 +59,7 @@ Media & PR Intelligence → Executive Command Center → Unified Narratives
 ```
 
 **Steps covered:**
+
 1. Login as Demo Executive
 2. Explore Media & PR Intelligence
 3. Executive Command Center
@@ -77,6 +79,7 @@ Insight Conflicts ← Reality Maps ← Outcome Analysis
 ```
 
 **Steps covered:**
+
 1. Login as Demo User
 2. Crisis Dashboard
 3. Scenario Simulations
@@ -112,13 +115,13 @@ Includes sign-off section for formal UAT approval.
 
 ## Files Created/Modified
 
-| File | Change |
-|------|--------|
-| `apps/api/src/scripts/seedDemoOrg.ts` | **NEW** - Demo org seed script |
-| `apps/api/package.json` | Added `seed:demo` script |
-| `docs/GOLDEN_PATH_EXEC_NARRATIVE.md` | **NEW** - Golden Path #1 guide |
-| `docs/GOLDEN_PATH_CRISIS_REALITY_CONFLICTS.md` | **NEW** - Golden Path #2 guide |
-| `docs/UAT_CHECKLIST_V1.md` | **NEW** - UAT testing checklist |
+| File                                           | Change                          |
+| ---------------------------------------------- | ------------------------------- |
+| `apps/api/src/scripts/seedDemoOrg.ts`          | **NEW** - Demo org seed script  |
+| `apps/api/package.json`                        | Added `seed:demo` script        |
+| `docs/GOLDEN_PATH_EXEC_NARRATIVE.md`           | **NEW** - Golden Path #1 guide  |
+| `docs/GOLDEN_PATH_CRISIS_REALITY_CONFLICTS.md` | **NEW** - Golden Path #2 guide  |
+| `docs/UAT_CHECKLIST_V1.md`                     | **NEW** - UAT testing checklist |
 
 ---
 
@@ -142,6 +145,7 @@ All packages pass TypeScript validation with 0 errors:
 The seed script creates a coherent story across all systems:
 
 ### Crisis Thread
+
 - **Active Incident**: Data Breach Alert (High severity, Security type)
 - **Monitoring Incident**: Negative Social Media Campaign (Medium severity)
 - **Response**: Scenario simulations exploring responses
@@ -149,6 +153,7 @@ The seed script creates a coherent story across all systems:
 - **Conflicts**: Contradictory severity assessments to resolve
 
 ### Executive Thread
+
 - **Media Intelligence**: TechCrunch positive, Reuters neutral, Blog negative
 - **Brand Health**: Overall scores 78-82 (healthy)
 - **Narratives**: Q4 Performance + Crisis Response narratives
@@ -173,6 +178,7 @@ pnpm --filter @pravado/api seed:demo
 ### Following Golden Paths
 
 1. Start services:
+
    ```bash
    pnpm --filter @pravado/api dev
    pnpm --filter @pravado/dashboard dev

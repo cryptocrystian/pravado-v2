@@ -5,10 +5,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { type InvestorPackAuditLog, formatRelativeTime } from '@/lib/investorRelationsApi';
-import { cn } from '@/lib/utils';
+import type { InvestorEventType } from '@pravado/types';
 import {
   History,
   Plus,
@@ -20,7 +17,14 @@ import {
   FileText,
   Settings,
 } from 'lucide-react';
-import type { InvestorEventType } from '@pravado/types';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  type InvestorPackAuditLog,
+  formatRelativeTime,
+} from '@/lib/investorRelationsApi';
+import { cn } from '@/lib/utils';
 
 interface InvestorPackAuditLogProps {
   auditLogs: InvestorPackAuditLog[];
@@ -29,13 +33,25 @@ interface InvestorPackAuditLogProps {
 
 const ACTION_CONFIG: Record<
   InvestorEventType,
-  { icon: React.ComponentType<{ className?: string }>; color: string; label: string }
+  {
+    icon: React.ComponentType<{ className?: string }>;
+    color: string;
+    label: string;
+  }
 > = {
   created: { icon: Plus, color: 'green', label: 'Created' },
   updated: { icon: Edit, color: 'blue', label: 'Updated' },
   status_changed: { icon: Settings, color: 'indigo', label: 'Status Changed' },
-  section_generated: { icon: RefreshCw, color: 'indigo', label: 'Section Generated' },
-  section_regenerated: { icon: RefreshCw, color: 'blue', label: 'Section Regenerated' },
+  section_generated: {
+    icon: RefreshCw,
+    color: 'indigo',
+    label: 'Section Generated',
+  },
+  section_regenerated: {
+    icon: RefreshCw,
+    color: 'blue',
+    label: 'Section Regenerated',
+  },
   section_edited: { icon: FileText, color: 'yellow', label: 'Section Edited' },
   qna_generated: { icon: HelpCircle, color: 'purple', label: 'Q&A Generated' },
   qna_created: { icon: HelpCircle, color: 'green', label: 'Q&A Created' },
@@ -43,7 +59,10 @@ const ACTION_CONFIG: Record<
   archived: { icon: Archive, color: 'gray', label: 'Archived' },
 };
 
-export function InvestorPackAuditLogComponent({ auditLogs, className }: InvestorPackAuditLogProps) {
+export function InvestorPackAuditLogComponent({
+  auditLogs,
+  className,
+}: InvestorPackAuditLogProps) {
   if (auditLogs.length === 0) {
     return (
       <Card className={className}>
@@ -124,30 +143,34 @@ export function InvestorPackAuditLogComponent({ auditLogs, className }: Investor
                         <span className="text-gray-400">System</span>
                       )}
                       {' performed '}
-                      <span className="font-medium">{log.eventType.replace(/_/g, ' ')}</span>
+                      <span className="font-medium">
+                        {log.eventType.replace(/_/g, ' ')}
+                      </span>
                     </div>
 
                     {/* Show token usage if present */}
                     {log.tokensUsed && (
                       <div className="mt-1 text-xs text-gray-400">
                         {log.tokensUsed.toLocaleString()} tokens used
-                        {log.durationMs && ` | ${(log.durationMs / 1000).toFixed(1)}s`}
+                        {log.durationMs &&
+                          ` | ${(log.durationMs / 1000).toFixed(1)}s`}
                       </div>
                     )}
 
                     {/* Show relevant details */}
-                    {log.detailsJson && Object.keys(log.detailsJson).length > 0 && (
-                      <div className="mt-2 text-xs text-gray-500">
-                        <details>
-                          <summary className="cursor-pointer hover:text-gray-700">
-                            View details
-                          </summary>
-                          <pre className="mt-1 p-2 bg-white rounded text-xs overflow-x-auto">
-                            {JSON.stringify(log.detailsJson, null, 2)}
-                          </pre>
-                        </details>
-                      </div>
-                    )}
+                    {log.detailsJson &&
+                      Object.keys(log.detailsJson).length > 0 && (
+                        <div className="mt-2 text-xs text-gray-500">
+                          <details>
+                            <summary className="cursor-pointer hover:text-gray-700">
+                              View details
+                            </summary>
+                            <pre className="mt-1 p-2 bg-white rounded text-xs overflow-x-auto">
+                              {JSON.stringify(log.detailsJson, null, 2)}
+                            </pre>
+                          </details>
+                        </div>
+                      )}
                   </div>
                 </div>
               );

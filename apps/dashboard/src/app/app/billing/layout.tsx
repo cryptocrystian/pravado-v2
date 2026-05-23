@@ -3,13 +3,17 @@
  * DS v3 topbar shell (no legacy sidebar)
  */
 
-import { getCurrentUser } from '@/lib/getCurrentUser';
 import { SettingsShell } from '@/components/settings/SettingsShell';
+import { getCurrentUser } from '@/lib/getCurrentUser';
 import { MSWProvider } from '@/mocks/MSWProvider';
 
 export const dynamic = 'force-dynamic';
 
-export default async function BillingLayout({ children }: { children: React.ReactNode }) {
+export default async function BillingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getCurrentUser();
 
   return (

@@ -3,7 +3,7 @@
  * Cross-domain synthesis engine API endpoints
  */
 
-import { FastifyPluginAsync } from 'fastify';
+import { isEnabled } from '@pravado/feature-flags';
 import {
   createNarrativeSchema,
   updateNarrativeSchema,
@@ -20,8 +20,9 @@ import {
   narrativeIdParamSchema,
   narrativeSectionIdParamSchema,
 } from '@pravado/validators';
+import { FastifyPluginAsync } from 'fastify';
+
 import * as unifiedNarrativeService from '../../services/unifiedNarrativeService';
-import { isEnabled } from '@pravado/feature-flags';
 
 const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
   // Feature flag check middleware
@@ -29,14 +30,21 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     if (!isEnabled('ENABLE_UNIFIED_NARRATIVE_V2')) {
       return reply.status(403).send({
         success: false,
-        error: 'Unified Narrative Generator V2 feature is not enabled for this organization',
+        error:
+          'Unified Narrative Generator V2 feature is not enabled for this organization',
       });
     }
   });
 
   // Helper to get service context from request
-  const getContext = (request: { supabase: unknown; orgId: string; userId: string; userEmail?: string }) => ({
-    supabase: request.supabase as unifiedNarrativeService.ServiceContext['supabase'],
+  const getContext = (request: {
+    supabase: unknown;
+    orgId: string;
+    userId: string;
+    userEmail?: string;
+  }) => ({
+    supabase:
+      request.supabase as unifiedNarrativeService.ServiceContext['supabase'],
     orgId: request.orgId,
     userId: request.userId,
     userEmail: request.userEmail || '',
@@ -94,7 +102,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = updateNarrativeSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const narrative = await unifiedNarrativeService.updateNarrative(ctx, narrativeId, input);
+    const narrative = await unifiedNarrativeService.updateNarrative(
+      ctx,
+      narrativeId,
+      input
+    );
 
     return reply.send({ success: true, narrative });
   });
@@ -125,7 +137,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = generateNarrativeSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const result = await unifiedNarrativeService.generateNarrative(ctx, narrativeId, input);
+    const result = await unifiedNarrativeService.generateNarrative(
+      ctx,
+      narrativeId,
+      input
+    );
 
     return reply.send({ success: true, ...result });
   });
@@ -144,7 +160,12 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = updateNarrativeSectionSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const section = await unifiedNarrativeService.updateSection(ctx, narrativeId, sectionId, input);
+    const section = await unifiedNarrativeService.updateSection(
+      ctx,
+      narrativeId,
+      sectionId,
+      input
+    );
 
     return reply.send({ success: true, section });
   });
@@ -153,16 +174,24 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
    * Regenerate a section
    * POST /api/v1/unified-narratives/:narrativeId/sections/:sectionId/regenerate
    */
-  fastify.post('/:narrativeId/sections/:sectionId/regenerate', async (request, reply) => {
-    const { narrativeId } = narrativeIdParamSchema.parse(request.params);
-    const { sectionId } = narrativeSectionIdParamSchema.parse(request.params);
-    const input = regenerateNarrativeSectionSchema.parse(request.body || {});
-    const ctx = getContext(request as never);
+  fastify.post(
+    '/:narrativeId/sections/:sectionId/regenerate',
+    async (request, reply) => {
+      const { narrativeId } = narrativeIdParamSchema.parse(request.params);
+      const { sectionId } = narrativeSectionIdParamSchema.parse(request.params);
+      const input = regenerateNarrativeSectionSchema.parse(request.body || {});
+      const ctx = getContext(request as never);
 
-    const section = await unifiedNarrativeService.regenerateSection(ctx, narrativeId, sectionId, input);
+      const section = await unifiedNarrativeService.regenerateSection(
+        ctx,
+        narrativeId,
+        sectionId,
+        input
+      );
 
-    return reply.send({ success: true, section });
-  });
+      return reply.send({ success: true, section });
+    }
+  );
 
   // ============================================================================
   // DELTA COMPUTATION ENDPOINTS
@@ -177,7 +206,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = computeDeltaSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const result = await unifiedNarrativeService.computeDelta(ctx, narrativeId, input);
+    const result = await unifiedNarrativeService.computeDelta(
+      ctx,
+      narrativeId,
+      input
+    );
 
     return reply.send({ success: true, ...result });
   });
@@ -195,7 +228,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const query = getNarrativeInsightsQuerySchema.parse(request.query);
     const ctx = getContext(request as never);
 
-    const result = await unifiedNarrativeService.getInsights(ctx, narrativeId, query);
+    const result = await unifiedNarrativeService.getInsights(
+      ctx,
+      narrativeId,
+      query
+    );
 
     return reply.send({ success: true, ...result });
   });
@@ -213,7 +250,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = approveNarrativeSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const narrative = await unifiedNarrativeService.approveNarrative(ctx, narrativeId, input);
+    const narrative = await unifiedNarrativeService.approveNarrative(
+      ctx,
+      narrativeId,
+      input
+    );
 
     return reply.send({ success: true, narrative });
   });
@@ -227,7 +268,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = publishNarrativeSchema.parse(request.body || {});
     const ctx = getContext(request as never);
 
-    const narrative = await unifiedNarrativeService.publishNarrative(ctx, narrativeId, input);
+    const narrative = await unifiedNarrativeService.publishNarrative(
+      ctx,
+      narrativeId,
+      input
+    );
 
     return reply.send({ success: true, narrative });
   });
@@ -238,10 +283,14 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
    */
   fastify.post('/:narrativeId/archive', async (request, reply) => {
     const { narrativeId } = narrativeIdParamSchema.parse(request.params);
-    const body = request.body as { archiveReason?: string } || {};
+    const body = (request.body as { archiveReason?: string }) || {};
     const ctx = getContext(request as never);
 
-    const narrative = await unifiedNarrativeService.archiveNarrative(ctx, narrativeId, body.archiveReason);
+    const narrative = await unifiedNarrativeService.archiveNarrative(
+      ctx,
+      narrativeId,
+      body.archiveReason
+    );
 
     return reply.send({ success: true, narrative });
   });
@@ -259,7 +308,11 @@ const unifiedNarrativeRoutes: FastifyPluginAsync = async (fastify) => {
     const input = exportNarrativeSchema.parse(request.body);
     const ctx = getContext(request as never);
 
-    const result = await unifiedNarrativeService.exportNarrative(ctx, narrativeId, input);
+    const result = await unifiedNarrativeService.exportNarrative(
+      ctx,
+      narrativeId,
+      input
+    );
 
     return reply.send({ success: true, ...result });
   });

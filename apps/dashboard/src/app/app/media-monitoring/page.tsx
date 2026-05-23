@@ -36,7 +36,8 @@ type ViewMode = 'articles' | 'mentions';
 export default function MediaMonitoringPage() {
   // Sources state
   const [sources, setSources] = useState<MediaMonitoringSource[]>([]);
-  const [selectedSource, setSelectedSource] = useState<MediaMonitoringSource | null>(null);
+  const [selectedSource, setSelectedSource] =
+    useState<MediaMonitoringSource | null>(null);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
 
   // Articles state
@@ -46,14 +47,17 @@ export default function MediaMonitoringPage() {
   // Mentions state
   const [mentions, setMentions] = useState<MentionWithArticle[]>([]);
   const [isLoadingMentions, setIsLoadingMentions] = useState(false);
-  const [sentimentFilter, setSentimentFilter] = useState<MentionSentiment | null>(null);
+  const [sentimentFilter, setSentimentFilter] =
+    useState<MentionSentiment | null>(null);
 
   // Stats state
   const [stats, setStats] = useState<MediaMonitoringStats | null>(null);
 
   // UI state
   const [viewMode, setViewMode] = useState<ViewMode>('articles');
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(
+    null
+  );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Ingest form state
@@ -193,7 +197,9 @@ export default function MediaMonitoringPage() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Media Monitoring</h1>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Media Monitoring
+            </h1>
             <p className="text-sm text-gray-500">
               {selectedSource ? selectedSource.name : 'All Sources'}
             </p>
@@ -319,15 +325,21 @@ export default function MediaMonitoringPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-green-600">Positive</span>
-                      <span className="font-medium">{stats.positiveMentions}</span>
+                      <span className="font-medium">
+                        {stats.positiveMentions}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Neutral</span>
-                      <span className="font-medium">{stats.neutralMentions}</span>
+                      <span className="font-medium">
+                        {stats.neutralMentions}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-red-600">Negative</span>
-                      <span className="font-medium">{stats.negativeMentions}</span>
+                      <span className="font-medium">
+                        {stats.negativeMentions}
+                      </span>
                     </div>
                   </div>
                 </div>

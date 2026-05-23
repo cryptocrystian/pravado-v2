@@ -103,10 +103,13 @@ describe('Scenario Playbook E2E Tests', () => {
         ],
       };
 
-      const { response, data } = await apiRequest('/api/v1/scenario-playbooks/playbooks', {
-        method: 'POST',
-        body: playbookData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/scenario-playbooks/playbooks',
+        {
+          method: 'POST',
+          body: playbookData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -242,10 +245,13 @@ describe('Scenario Playbook E2E Tests', () => {
         metadata: { priority: 'P1' },
       };
 
-      const { response, data } = await apiRequest('/api/v1/scenario-playbooks/scenarios', {
-        method: 'POST',
-        body: scenarioData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/scenario-playbooks/scenarios',
+        {
+          method: 'POST',
+          body: scenarioData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -415,12 +421,19 @@ describe('Scenario Playbook E2E Tests', () => {
       if (response.ok && data.projectedMetrics?.timeline) {
         expect(data.projectedMetrics.timeline).toBeDefined();
         expect(Array.isArray(data.projectedMetrics.timeline)).toBe(true);
-        data.projectedMetrics.timeline.forEach((point: { day: number; sentimentProjected: number; coverageProjected: number; riskLevel: string }) => {
-          expect(point.day).toBeDefined();
-          expect(point.sentimentProjected).toBeDefined();
-          expect(point.coverageProjected).toBeDefined();
-          expect(point.riskLevel).toBeDefined();
-        });
+        data.projectedMetrics.timeline.forEach(
+          (point: {
+            day: number;
+            sentimentProjected: number;
+            coverageProjected: number;
+            riskLevel: string;
+          }) => {
+            expect(point.day).toBeDefined();
+            expect(point.sentimentProjected).toBeDefined();
+            expect(point.coverageProjected).toBeDefined();
+            expect(point.riskLevel).toBeDefined();
+          }
+        );
       }
     });
   });
@@ -440,10 +453,13 @@ describe('Scenario Playbook E2E Tests', () => {
         scenarioId: createdScenarioId,
       };
 
-      const { response, data } = await apiRequest('/api/v1/scenario-playbooks/runs', {
-        method: 'POST',
-        body: runData,
-      });
+      const { response, data } = await apiRequest(
+        '/api/v1/scenario-playbooks/runs',
+        {
+          method: 'POST',
+          body: runData,
+        }
+      );
 
       if (response.ok) {
         expect(response.status).toBe(201);
@@ -574,7 +590,9 @@ describe('Scenario Playbook E2E Tests', () => {
       );
 
       if (response.ok && data.steps) {
-        const readyStep = data.steps.find((s: { status: string }) => s.status === 'ready');
+        const readyStep = data.steps.find(
+          (s: { status: string }) => s.status === 'ready'
+        );
         if (readyStep) {
           createdStepId = readyStep.id;
           expect(readyStep.status).toBe('ready');
@@ -630,7 +648,9 @@ describe('Scenario Playbook E2E Tests', () => {
 
       if (!getResponse.ok || !getData.steps) return;
 
-      const readyStep = getData.steps.find((s: { status: string }) => s.status === 'ready');
+      const readyStep = getData.steps.find(
+        (s: { status: string }) => s.status === 'ready'
+      );
       if (!readyStep) return;
 
       const rejectionData = {
@@ -652,13 +672,10 @@ describe('Scenario Playbook E2E Tests', () => {
       }
 
       // Cancel the extra run
-      await apiRequest(
-        `/api/v1/scenario-playbooks/runs/${runData.id}/cancel`,
-        {
-          method: 'POST',
-          body: { reason: 'E2E test cleanup' },
-        }
-      );
+      await apiRequest(`/api/v1/scenario-playbooks/runs/${runData.id}/cancel`, {
+        method: 'POST',
+        body: { reason: 'E2E test cleanup' },
+      });
     });
   });
 
@@ -668,7 +685,9 @@ describe('Scenario Playbook E2E Tests', () => {
 
   describe('Statistics Operations', () => {
     it('should get scenario playbook statistics', async () => {
-      const { response, data } = await apiRequest('/api/v1/scenario-playbooks/stats');
+      const { response, data } = await apiRequest(
+        '/api/v1/scenario-playbooks/stats'
+      );
 
       if (response.ok) {
         expect(data.totalPlaybooks).toBeDefined();
@@ -829,10 +848,13 @@ describe('Scenario Playbook E2E Tests', () => {
         steps: [],
       };
 
-      const { response } = await apiRequest('/api/v1/scenario-playbooks/playbooks', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/scenario-playbooks/playbooks',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -844,10 +866,13 @@ describe('Scenario Playbook E2E Tests', () => {
         steps: [], // No steps
       };
 
-      const { response } = await apiRequest('/api/v1/scenario-playbooks/playbooks', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/scenario-playbooks/playbooks',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -859,10 +884,13 @@ describe('Scenario Playbook E2E Tests', () => {
         // Missing playbookId
       };
 
-      const { response } = await apiRequest('/api/v1/scenario-playbooks/scenarios', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/scenario-playbooks/scenarios',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 422]).toContain(response.status);
     });
@@ -874,10 +902,13 @@ describe('Scenario Playbook E2E Tests', () => {
         scenarioType: 'crisis',
       };
 
-      const { response } = await apiRequest('/api/v1/scenario-playbooks/scenarios', {
-        method: 'POST',
-        body: invalidData,
-      });
+      const { response } = await apiRequest(
+        '/api/v1/scenario-playbooks/scenarios',
+        {
+          method: 'POST',
+          body: invalidData,
+        }
+      );
 
       expect([400, 404, 500]).toContain(response.status);
     });
@@ -968,10 +999,13 @@ describe('Scenario Playbook E2E Tests', () => {
 
       if (!getResponse.ok || !getData.steps) {
         // Cleanup
-        await apiRequest(`/api/v1/scenario-playbooks/runs/${runData.id}/cancel`, {
-          method: 'POST',
-          body: { reason: 'cleanup' },
-        });
+        await apiRequest(
+          `/api/v1/scenario-playbooks/runs/${runData.id}/cancel`,
+          {
+            method: 'POST',
+            body: { reason: 'cleanup' },
+          }
+        );
         await apiRequest(`/api/v1/scenario-playbooks/scenarios/${scData.id}`, {
           method: 'DELETE',
         });

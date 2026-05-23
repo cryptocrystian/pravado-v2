@@ -85,6 +85,7 @@ When the `v1.0.0-rc1` tag is pushed:
 2. **deploy-dashboard.yml** will NOT auto-trigger (requires manual dispatch for production)
 
 To deploy RC1:
+
 1. Go to GitHub Actions
 2. Select "Deploy API" or "Deploy Dashboard"
 3. Click "Run workflow"
@@ -94,6 +95,7 @@ To deploy RC1:
 ### Vercel (Dashboard)
 
 If using Vercel GitHub integration:
+
 - Preview deployments trigger on PR/branch pushes
 - Production deployments trigger on main branch
 - Tag pushes do NOT auto-deploy
@@ -101,6 +103,7 @@ If using Vercel GitHub integration:
 ### Render/Fly/Railway (API)
 
 Configure your platform to:
+
 - Watch for tags matching `v*`
 - Or trigger via deploy webhook after tag push
 
@@ -188,14 +191,14 @@ git tag -a v1.0.0-rc2 -m "..."
 
 ## Tag Naming Convention
 
-| Tag Pattern | Meaning |
-|-------------|---------|
-| `v1.0.0-rc1` | Release Candidate 1 |
-| `v1.0.0-rc2` | Release Candidate 2 |
-| `v1.0.0` | General Availability |
-| `v1.0.1` | Patch release |
-| `v1.1.0` | Minor release |
-| `v2.0.0` | Major release |
+| Tag Pattern  | Meaning              |
+| ------------ | -------------------- |
+| `v1.0.0-rc1` | Release Candidate 1  |
+| `v1.0.0-rc2` | Release Candidate 2  |
+| `v1.0.0`     | General Availability |
+| `v1.0.1`     | Patch release        |
+| `v1.1.0`     | Minor release        |
+| `v2.0.0`     | Major release        |
 
 ---
 

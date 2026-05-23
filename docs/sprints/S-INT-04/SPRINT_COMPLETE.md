@@ -10,12 +10,14 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 ## Deliverables
 
 ### 1. Database Migration (`82_citemind_tables.sql`)
+
 - `citemind_scores` table: 6 factor scores, overall score, gate_status, recommendations, factor_breakdown JSONB
 - `citemind_schemas` table: schema_type, schema_json JSONB for JSON-LD structured data
 - RLS policies for org member access
 - Performance indexes: `idx_citemind_latest(content_item_id, scored_at DESC)`, `idx_citemind_org(org_id, gate_status)`
 
 ### 2. CiteMind Quality Scorer (`citeMindQualityScorer.ts`)
+
 - 6-factor heuristic scoring engine (no LLM required for scoring)
 - Weighted formula: `overall = (entity x 0.20) + (claim x 0.20) + (structure x 0.15) + (authority x 0.20) + (schema x 0.10) + (citation x 0.15)`
 - Gate thresholds: >= 75 passed, >= 55 warning, < 55 blocked
@@ -24,12 +26,14 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 - Functions: `scoreContentItem()`, `scoreAndPersist()`, factor-specific scorers
 
 ### 3. CiteMind Schema Generator (`citeMindSchemaGenerator.ts`)
+
 - JSON-LD structured data generation for content items
 - Heuristic type detection: FAQPage, HowTo, BlogPosting, Article
 - Template generators for each schema type
 - Upserts to `citemind_schemas` table
 
 ### 4. CiteMind Publish Gate Service (`citeMindPublishGateService.ts`)
+
 - `checkGate()` - returns allowed/score/gate_status/recommendations
 - `acknowledgeGate()` - logs warning override to audit_logs
 - `getLatestScore()` - fetch latest score from DB
@@ -37,12 +41,14 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 - Feature flag bypass: if `ENABLE_CITEMIND` false, always allows publishing
 
 ### 5. Background Worker (`citeMindScoringWorker.ts`)
+
 - BullMQ worker processing `citemind:score` queue jobs
 - Registered in `bullmqQueue.ts` with `enqueueCiteMindScore()` function
 - Fire-and-forget integration in content PUT `/items/:id` route (triggered on body updates)
 - Concurrency: 2 workers
 
 ### 6. API Routes (`/api/v1/citemind/`)
+
 - `POST /score/:contentItemId` - trigger scoring (sync, returns score)
 - `GET /score/:contentItemId` - get latest score
 - `GET /scores` - list scores for org (with gate_status filter)
@@ -51,6 +57,7 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 - `GET /gate/:contentItemId` - check gate status
 
 ### 7. Dashboard Integration
+
 - **Proxy routes**: `/api/citemind/score/[id]` (GET/POST), `/api/citemind/gate/[id]/acknowledge` (POST)
 - **SWR hooks** (`useCiteMind.ts`): `useCiteMindScore()`, `useCiteMindTrigger()`, `useCiteMindGateAcknowledge()`
 - **CiteMindStatusIndicator**: Rewritten with 6-factor score breakdown, expandable bars, recommendations
@@ -58,6 +65,7 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 - **ContextRailEditor**: Live CiteMind data from API, "Run CiteMind Analysis" button
 
 ### 8. SAGE Integration
+
 - `content_low_citemind` signal emitted when content scores < 55 (blocked)
 - Signal includes: score, gate_status, top recommendation
 - 7-day TTL, medium/high priority based on score severity
@@ -65,6 +73,7 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 - Stub proposal template in `proposal.ts`
 
 ### 9. Feature Flag
+
 - `ENABLE_CITEMIND: true` in `packages/feature-flags/src/flags.ts`
 
 ## Architecture Decisions
@@ -77,6 +86,7 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 ## Files Created/Modified
 
 ### Created
+
 - `apps/api/supabase/migrations/82_citemind_tables.sql`
 - `apps/api/src/services/citeMind/citeMindQualityScorer.ts`
 - `apps/api/src/services/citeMind/citeMindSchemaGenerator.ts`
@@ -88,6 +98,7 @@ Build the CiteMind content quality scoring engine and publish gate. When content
 - `apps/dashboard/src/lib/useCiteMind.ts`
 
 ### Modified
+
 - `apps/api/src/server.ts` - registered citeMind routes
 - `apps/api/src/queue/bullmqQueue.ts` - added CiteMind queue + worker + enqueue function
 - `apps/api/src/routes/content/index.ts` - fire-and-forget scoring on content update

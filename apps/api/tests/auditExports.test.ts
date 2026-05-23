@@ -185,7 +185,9 @@ describe('AuditExportService', () => {
       const csv = exportService.generateCSV(entries);
 
       // Check header
-      expect(csv).toContain('ID,Timestamp,Event Type,Severity,Actor Type,User ID,IP Address,User Agent,Context');
+      expect(csv).toContain(
+        'ID,Timestamp,Event Type,Severity,Actor Type,User ID,IP Address,User Agent,Context'
+      );
 
       // Check first row
       expect(csv).toContain('entry-1');

@@ -9,11 +9,15 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { BrandVoiceWizard, VoiceCard } from '@/components/settings/BrandVoiceWizard';
+import { useState } from 'react';
+
 import { mockBrandVoice } from '@/components/content/content-mock-data';
 import type { BrandVoice } from '@/components/content/content-mock-data';
+import {
+  BrandVoiceWizard,
+  VoiceCard,
+} from '@/components/settings/BrandVoiceWizard';
 
 export default function BrandVoiceSettingsPage() {
   const [voices, setVoices] = useState<BrandVoice[]>([mockBrandVoice]);

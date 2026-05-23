@@ -7,7 +7,11 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import type {
+  CrisisAction,
+  CrisisActionStatus,
+  CrisisUrgency,
+} from '@pravado/types';
 import {
   CheckCircle2,
   ChevronDown,
@@ -22,24 +26,11 @@ import {
   User,
   X,
 } from 'lucide-react';
-import type {
-  CrisisAction,
-  CrisisActionStatus,
-  CrisisUrgency,
-} from '@pravado/types';
-import {
-  ACTION_STATUS_COLORS,
-  ACTION_TYPE_LABELS,
-  URGENCY_LABELS,
-  formatTimeAgo,
-  calculateUrgencyFromDue,
-} from '@/lib/crisisApi';
-import { cn } from '@/lib/utils';
+import React, { useState, useCallback } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Progress } from '@/components/ui/progress';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -48,6 +39,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  ACTION_STATUS_COLORS,
+  ACTION_TYPE_LABELS,
+  URGENCY_LABELS,
+  formatTimeAgo,
+  calculateUrgencyFromDue,
+} from '@/lib/crisisApi';
+import { cn } from '@/lib/utils';
 
 interface CrisisActionListProps {
   actions: CrisisAction[];
@@ -97,7 +98,8 @@ export default function CrisisActionList({
   // Calculate completion stats
   const completedCount = actions.filter((a) => a.status === 'completed').length;
   const totalCount = actions.length;
-  const completionRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const completionRate =
+    totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const handleAction = useCallback(
     async (
@@ -175,7 +177,9 @@ export default function CrisisActionList({
                     checked={filterStatus.includes(status)}
                     onCheckedChange={() => toggleStatusFilter(status)}
                   >
-                    <span className="capitalize">{status.replace('_', ' ')}</span>
+                    <span className="capitalize">
+                      {status.replace('_', ' ')}
+                    </span>
                   </DropdownMenuCheckboxItem>
                 ))}
                 <DropdownMenuSeparator />
@@ -242,7 +246,8 @@ export default function CrisisActionList({
                     className={cn(
                       'border rounded-lg p-3 transition-all',
                       urgency === 'immediate' && 'border-red-300 bg-red-50/30',
-                      urgency === 'urgent' && 'border-orange-300 bg-orange-50/30',
+                      urgency === 'urgent' &&
+                        'border-orange-300 bg-orange-50/30',
                       action.status === 'completed' && 'opacity-60'
                     )}
                   >
@@ -270,7 +275,11 @@ export default function CrisisActionList({
                           </Badge>
                           <Badge
                             variant="outline"
-                            className={cn('text-xs', urgencyColors.bg, urgencyColors.text)}
+                            className={cn(
+                              'text-xs',
+                              urgencyColors.bg,
+                              urgencyColors.text
+                            )}
                           >
                             {URGENCY_LABELS[urgency]}
                           </Badge>
@@ -331,7 +340,8 @@ export default function CrisisActionList({
                           )}
                           {action.confidenceScore !== undefined && (
                             <div className="text-white/50">
-                              Confidence: {(action.confidenceScore * 100).toFixed(0)}%
+                              Confidence:{' '}
+                              {(action.confidenceScore * 100).toFixed(0)}%
                             </div>
                           )}
                         </div>
@@ -363,7 +373,9 @@ export default function CrisisActionList({
                                 <Button
                                   variant="default"
                                   size="sm"
-                                  onClick={() => handleAction(action, onApprove)}
+                                  onClick={() =>
+                                    handleAction(action, onApprove)
+                                  }
                                   disabled={isProcessing}
                                 >
                                   {isProcessing ? (

@@ -28,7 +28,12 @@ export const prPitchContactStatusSchema = z.enum([
   'failed',
 ]);
 
-export const prPitchStepTypeSchema = z.enum(['email', 'social_dm', 'phone', 'other']);
+export const prPitchStepTypeSchema = z.enum([
+  'email',
+  'social_dm',
+  'phone',
+  'other',
+]);
 
 export const prPitchEventTypeSchema = z.enum([
   'queued',
@@ -132,7 +137,10 @@ export const listPRPitchSequencesSchema = z.object({
   search: z.string().max(100).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
-  sortBy: z.enum(['createdAt', 'updatedAt', 'name']).optional().default('createdAt'),
+  sortBy: z
+    .enum(['createdAt', 'updatedAt', 'name'])
+    .optional()
+    .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -143,7 +151,10 @@ export const listPRPitchContactsSchema = z.object({
   search: z.string().max(100).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
   offset: z.coerce.number().int().min(0).optional().default(0),
-  sortBy: z.enum(['createdAt', 'lastEventAt', 'status']).optional().default('createdAt'),
+  sortBy: z
+    .enum(['createdAt', 'lastEventAt', 'status'])
+    .optional()
+    .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -151,11 +162,25 @@ export const listPRPitchContactsSchema = z.object({
 // TYPE EXPORTS
 // ========================================
 
-export type CreatePRPitchSequenceSchemaType = z.infer<typeof createPRPitchSequenceSchema>;
-export type UpdatePRPitchSequenceSchemaType = z.infer<typeof updatePRPitchSequenceSchema>;
-export type CreatePRPitchStepSchemaType = z.infer<typeof createPRPitchStepSchema>;
-export type UpdatePRPitchStepSchemaType = z.infer<typeof updatePRPitchStepSchema>;
+export type CreatePRPitchSequenceSchemaType = z.infer<
+  typeof createPRPitchSequenceSchema
+>;
+export type UpdatePRPitchSequenceSchemaType = z.infer<
+  typeof updatePRPitchSequenceSchema
+>;
+export type CreatePRPitchStepSchemaType = z.infer<
+  typeof createPRPitchStepSchema
+>;
+export type UpdatePRPitchStepSchemaType = z.infer<
+  typeof updatePRPitchStepSchema
+>;
 export type AttachContactsSchemaType = z.infer<typeof attachContactsSchema>;
-export type GeneratePitchPreviewSchemaType = z.infer<typeof generatePitchPreviewSchema>;
-export type ListPRPitchSequencesSchemaType = z.infer<typeof listPRPitchSequencesSchema>;
-export type ListPRPitchContactsSchemaType = z.infer<typeof listPRPitchContactsSchema>;
+export type GeneratePitchPreviewSchemaType = z.infer<
+  typeof generatePitchPreviewSchema
+>;
+export type ListPRPitchSequencesSchemaType = z.infer<
+  typeof listPRPitchSequencesSchema
+>;
+export type ListPRPitchContactsSchemaType = z.infer<
+  typeof listPRPitchContactsSchema
+>;

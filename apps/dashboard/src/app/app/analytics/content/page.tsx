@@ -6,18 +6,29 @@
  */
 
 import { useCallback } from 'react';
-import { ContentTable } from '@/components/analytics/ContentTable';
+
+import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
+import {
+  mockContentRows,
+  mockNarratives,
+} from '@/components/analytics/analytics-mock-data';
 import { CitationVelocityChart } from '@/components/analytics/CitationVelocityChart';
 import { CiteMindDistribution } from '@/components/analytics/CiteMindDistribution';
-import { mockContentRows, mockNarratives } from '@/components/analytics/analytics-mock-data';
-import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
+import { ContentTable } from '@/components/analytics/ContentTable';
 import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
 
 export default function ContentAnalyticsPage() {
   const handleExport = useCallback(() => {
     const csv = arrayToCsv(
       ['Title', 'Type', 'CiteMind Score', 'Citations', 'EVI Lift', 'Trend'],
-      mockContentRows.map(r => [r.title, r.type, r.citeMind, r.citations, r.eviLift, r.trend])
+      mockContentRows.map((r) => [
+        r.title,
+        r.type,
+        r.citeMind,
+        r.citations,
+        r.eviLift,
+        r.trend,
+      ])
     );
     downloadCsv('pravado-analytics-content.csv', csv);
   }, []);

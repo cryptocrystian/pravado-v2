@@ -24,7 +24,8 @@ const mockConflicts: InsightConflict[] = [
     id: 'conflict-1',
     orgId: 'org-123',
     title: 'Revenue Projection Contradiction',
-    description: 'Conflicting revenue projections between investor relations and market analysis',
+    description:
+      'Conflicting revenue projections between investor relations and market analysis',
     conflictType: 'contradiction',
     severity: 'critical',
     status: 'detected',
@@ -35,7 +36,10 @@ const mockConflicts: InsightConflict[] = [
     confidenceScore: 0.92,
     impactAssessment: {
       affectedAreas: ['Financial Planning', 'Investor Communications'],
-      potentialConsequences: ['Misaligned stakeholder expectations', 'Budget discrepancies'],
+      potentialConsequences: [
+        'Misaligned stakeholder expectations',
+        'Budget discrepancies',
+      ],
       urgencyLevel: 'high',
     },
     metadata: { contextWindow: 'Q1-2024' },
@@ -46,7 +50,8 @@ const mockConflicts: InsightConflict[] = [
     id: 'conflict-2',
     orgId: 'org-123',
     title: 'Market Share Data Divergence',
-    description: 'Different market share figures from competitive intelligence vs internal reports',
+    description:
+      'Different market share figures from competitive intelligence vs internal reports',
     conflictType: 'divergence',
     severity: 'high',
     status: 'analyzing',
@@ -63,7 +68,8 @@ const mockConflicts: InsightConflict[] = [
     id: 'conflict-3',
     orgId: 'org-123',
     title: 'Customer Sentiment Ambiguity',
-    description: 'Unclear customer sentiment signals across multiple data sources',
+    description:
+      'Unclear customer sentiment signals across multiple data sources',
     conflictType: 'ambiguity',
     severity: 'medium',
     status: 'resolved',
@@ -91,7 +97,8 @@ const mockConflicts: InsightConflict[] = [
     affectedEntities: ['Q4 Trends'],
     confidenceScore: 0.45,
     dismissedAt: '2024-01-12T12:00:00Z',
-    dismissalReason: 'Data confirmed as intentionally excluded - historical context only',
+    dismissalReason:
+      'Data confirmed as intentionally excluded - historical context only',
     createdAt: '2024-01-12T11:00:00Z',
     updatedAt: '2024-01-12T12:00:00Z',
   },
@@ -145,7 +152,8 @@ const mockResolution: ConflictResolution = {
   conflictId: 'conflict-3',
   resolutionType: 'ai_consensus',
   status: 'accepted',
-  summary: 'Weighted average of sentiment scores with source reliability factored in',
+  summary:
+    'Weighted average of sentiment scores with source reliability factored in',
   details: {
     methodology: 'Bayesian sentiment aggregation',
     confidenceFactors: ['source_reliability', 'recency', 'sample_size'],
@@ -153,8 +161,10 @@ const mockResolution: ConflictResolution = {
   },
   resolvedValue: 72,
   confidenceScore: 0.85,
-  aiReasoning: 'Combined sentiment analysis across sources with reliability weighting produces a neutral-positive overall sentiment score of 72/100. This accounts for the variance in methodology across data sources.',
-  consensusNarrative: 'Customer sentiment is moderately positive with a score of 72/100. The apparent ambiguity resulted from different measurement methodologies across sources, which have been reconciled using weighted averaging.',
+  aiReasoning:
+    'Combined sentiment analysis across sources with reliability weighting produces a neutral-positive overall sentiment score of 72/100. This accounts for the variance in methodology across data sources.',
+  consensusNarrative:
+    'Customer sentiment is moderately positive with a score of 72/100. The apparent ambiguity resulted from different measurement methodologies across sources, which have been reconciled using weighted averaging.',
   createdAt: '2024-01-13T13:30:00Z',
   updatedAt: '2024-01-13T14:00:00Z',
   acceptedAt: '2024-01-13T14:00:00Z',
@@ -166,13 +176,15 @@ const mockClusters: ConflictCluster[] = [
     id: 'cluster-1',
     orgId: 'org-123',
     name: 'Financial Data Conflicts',
-    description: 'Cluster of conflicts related to financial projections and reporting',
+    description:
+      'Cluster of conflicts related to financial projections and reporting',
     conflictIds: ['conflict-1', 'conflict-2'],
     conflictCount: 2,
     dominantType: 'contradiction',
     dominantSeverity: 'critical',
     commonPatterns: ['Revenue discrepancy', 'Cross-system data mismatch'],
-    rootCauseHypothesis: 'Different calculation methodologies between investor relations and market analysis teams',
+    rootCauseHypothesis:
+      'Different calculation methodologies between investor relations and market analysis teams',
     createdAt: '2024-01-15T11:00:00Z',
     updatedAt: '2024-01-15T11:00:00Z',
   },
@@ -342,11 +354,18 @@ const mockStats: InsightConflictStats = {
 };
 
 // Mock fetch for API calls
-const mockFetch = async (url: string, options?: RequestInit): Promise<Response> => {
+const mockFetch = async (
+  url: string,
+  options?: RequestInit
+): Promise<Response> => {
   const path = url.replace('http://localhost:4000', '');
 
   // List conflicts
-  if (path.startsWith('/api/v1/insight-conflicts') && !path.includes('/') && (!options || options.method === 'GET' || !options.method)) {
+  if (
+    path.startsWith('/api/v1/insight-conflicts') &&
+    !path.includes('/') &&
+    (!options || options.method === 'GET' || !options.method)
+  ) {
     // Check for query parameters
     const urlObj = new URL(url, 'http://localhost:4000');
     const status = urlObj.searchParams.get('status');
@@ -356,20 +375,27 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
     let filteredConflicts = [...mockConflicts];
 
     if (status) {
-      filteredConflicts = filteredConflicts.filter(c => c.status === status);
+      filteredConflicts = filteredConflicts.filter((c) => c.status === status);
     }
     if (severity) {
-      filteredConflicts = filteredConflicts.filter(c => c.severity === severity);
+      filteredConflicts = filteredConflicts.filter(
+        (c) => c.severity === severity
+      );
     }
     if (conflictType) {
-      filteredConflicts = filteredConflicts.filter(c => c.conflictType === conflictType);
+      filteredConflicts = filteredConflicts.filter(
+        (c) => c.conflictType === conflictType
+      );
     }
 
-    return new Response(JSON.stringify({
-      conflicts: filteredConflicts,
-      total: filteredConflicts.length,
-      hasMore: false,
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        conflicts: filteredConflicts,
+        total: filteredConflicts.length,
+        hasMore: false,
+      }),
+      { status: 200 }
+    );
   }
 
   // Get stats
@@ -378,60 +404,93 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
   }
 
   // Run detection
-  if (path === '/api/v1/insight-conflicts/detect' && options?.method === 'POST') {
-    return new Response(JSON.stringify({
-      detected: 2,
-      conflicts: [mockConflicts[0], mockConflicts[4]],
-    }), { status: 200 });
+  if (
+    path === '/api/v1/insight-conflicts/detect' &&
+    options?.method === 'POST'
+  ) {
+    return new Response(
+      JSON.stringify({
+        detected: 2,
+        conflicts: [mockConflicts[0], mockConflicts[4]],
+      }),
+      { status: 200 }
+    );
   }
 
   // Batch analyze
-  if (path === '/api/v1/insight-conflicts/batch/analyze' && options?.method === 'POST') {
+  if (
+    path === '/api/v1/insight-conflicts/batch/analyze' &&
+    options?.method === 'POST'
+  ) {
     const body = JSON.parse(options.body as string);
-    return new Response(JSON.stringify({
-      processed: body.conflictIds.length,
-      results: body.conflictIds.map((id: string) => ({
-        conflictId: id,
-        success: true,
-      })),
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        processed: body.conflictIds.length,
+        results: body.conflictIds.map((id: string) => ({
+          conflictId: id,
+          success: true,
+        })),
+      }),
+      { status: 200 }
+    );
   }
 
   // Batch resolve
-  if (path === '/api/v1/insight-conflicts/batch/resolve' && options?.method === 'POST') {
+  if (
+    path === '/api/v1/insight-conflicts/batch/resolve' &&
+    options?.method === 'POST'
+  ) {
     const body = JSON.parse(options.body as string);
-    return new Response(JSON.stringify({
-      processed: body.conflictIds.length,
-      results: body.conflictIds.map((id: string) => ({
-        conflictId: id,
-        success: true,
-        resolutionId: `resolution-${id}`,
-      })),
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        processed: body.conflictIds.length,
+        results: body.conflictIds.map((id: string) => ({
+          conflictId: id,
+          success: true,
+          resolutionId: `resolution-${id}`,
+        })),
+      }),
+      { status: 200 }
+    );
   }
 
   // Batch dismiss
-  if (path === '/api/v1/insight-conflicts/batch/dismiss' && options?.method === 'POST') {
+  if (
+    path === '/api/v1/insight-conflicts/batch/dismiss' &&
+    options?.method === 'POST'
+  ) {
     const body = JSON.parse(options.body as string);
-    return new Response(JSON.stringify({
-      processed: body.conflictIds.length,
-      results: body.conflictIds.map((id: string) => ({
-        conflictId: id,
-        success: true,
-      })),
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        processed: body.conflictIds.length,
+        results: body.conflictIds.map((id: string) => ({
+          conflictId: id,
+          success: true,
+        })),
+      }),
+      { status: 200 }
+    );
   }
 
   // List clusters
-  if (path === '/api/v1/insight-conflicts/clusters' && (!options || options.method === 'GET')) {
-    return new Response(JSON.stringify({
-      clusters: mockClusters,
-      total: mockClusters.length,
-    }), { status: 200 });
+  if (
+    path === '/api/v1/insight-conflicts/clusters' &&
+    (!options || options.method === 'GET')
+  ) {
+    return new Response(
+      JSON.stringify({
+        clusters: mockClusters,
+        total: mockClusters.length,
+      }),
+      { status: 200 }
+    );
   }
 
   // Create cluster
-  if (path === '/api/v1/insight-conflicts/clusters' && options?.method === 'POST') {
+  if (
+    path === '/api/v1/insight-conflicts/clusters' &&
+    options?.method === 'POST'
+  ) {
     const body = JSON.parse(options.body as string);
     const newCluster: ConflictCluster = {
       id: 'cluster-new',
@@ -441,68 +500,91 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    return new Response(JSON.stringify({ cluster: newCluster }), { status: 201 });
+    return new Response(JSON.stringify({ cluster: newCluster }), {
+      status: 201,
+    });
   }
 
   // Get conflict by ID
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d$/) && (!options || options.method === 'GET')) {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d$/) &&
+    (!options || options.method === 'GET')
+  ) {
     const conflictId = path.split('/').pop();
-    const conflict = mockConflicts.find(c => c.id === conflictId);
+    const conflict = mockConflicts.find((c) => c.id === conflictId);
     if (conflict) {
       return new Response(JSON.stringify({ conflict }), { status: 200 });
     }
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+    });
   }
 
   // Get conflict items
   if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/items/)) {
     const conflictId = path.split('/')[3];
-    const items = mockConflictItems.filter(i => i.conflictId === conflictId);
+    const items = mockConflictItems.filter((i) => i.conflictId === conflictId);
     return new Response(JSON.stringify({ items }), { status: 200 });
   }
 
   // Get conflict graph
   if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/graph/)) {
-    return new Response(JSON.stringify({ graph: mockGraphData }), { status: 200 });
+    return new Response(JSON.stringify({ graph: mockGraphData }), {
+      status: 200,
+    });
   }
 
   // Get conflict audit log
   if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/audit-log/)) {
     const conflictId = path.split('/')[3];
-    const events = mockAuditLog.filter(e => e.conflictId === conflictId);
-    return new Response(JSON.stringify({
-      events,
-      total: events.length,
-      hasMore: false,
-    }), { status: 200 });
+    const events = mockAuditLog.filter((e) => e.conflictId === conflictId);
+    return new Response(
+      JSON.stringify({
+        events,
+        total: events.length,
+        hasMore: false,
+      }),
+      { status: 200 }
+    );
   }
 
   // Analyze conflict
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/analyze/) && options?.method === 'POST') {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/analyze/) &&
+    options?.method === 'POST'
+  ) {
     const conflictId = path.split('/')[3];
-    const conflict = mockConflicts.find(c => c.id === conflictId);
+    const conflict = mockConflicts.find((c) => c.id === conflictId);
     if (conflict) {
-      return new Response(JSON.stringify({
-        conflict: {
-          ...conflict,
-          status: 'analyzing',
-          analysisStartedAt: new Date().toISOString(),
-        },
-        analysis: {
-          rootCauseHypothesis: 'Different calculation methodologies',
-          severityJustification: 'Critical due to financial implications',
-          suggestedResolutionStrategies: ['ai_consensus', 'source_priority'],
-          relatedConflicts: [],
-        },
-      }), { status: 200 });
+      return new Response(
+        JSON.stringify({
+          conflict: {
+            ...conflict,
+            status: 'analyzing',
+            analysisStartedAt: new Date().toISOString(),
+          },
+          analysis: {
+            rootCauseHypothesis: 'Different calculation methodologies',
+            severityJustification: 'Critical due to financial implications',
+            suggestedResolutionStrategies: ['ai_consensus', 'source_priority'],
+            relatedConflicts: [],
+          },
+        }),
+        { status: 200 }
+      );
     }
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+    });
   }
 
   // Resolve conflict
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/resolve/) && options?.method === 'POST') {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/resolve/) &&
+    options?.method === 'POST'
+  ) {
     const conflictId = path.split('/')[3];
-    const conflict = mockConflicts.find(c => c.id === conflictId);
+    const conflict = mockConflicts.find((c) => c.id === conflictId);
     const body = JSON.parse(options.body as string);
     if (conflict) {
       const resolution: ConflictResolution = {
@@ -518,49 +600,68 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      return new Response(JSON.stringify({
-        conflict: {
-          ...conflict,
-          status: 'resolved',
-          resolvedAt: new Date().toISOString(),
-          resolutionId: resolution.id,
-        },
-        resolution,
-      }), { status: 200 });
+      return new Response(
+        JSON.stringify({
+          conflict: {
+            ...conflict,
+            status: 'resolved',
+            resolvedAt: new Date().toISOString(),
+            resolutionId: resolution.id,
+          },
+          resolution,
+        }),
+        { status: 200 }
+      );
     }
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+    });
   }
 
   // Dismiss conflict
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/dismiss/) && options?.method === 'POST') {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/dismiss/) &&
+    options?.method === 'POST'
+  ) {
     const conflictId = path.split('/')[3];
-    const conflict = mockConflicts.find(c => c.id === conflictId);
+    const conflict = mockConflicts.find((c) => c.id === conflictId);
     const body = JSON.parse(options.body as string);
     if (conflict) {
-      return new Response(JSON.stringify({
-        conflict: {
-          ...conflict,
-          status: 'dismissed',
-          dismissedAt: new Date().toISOString(),
-          dismissalReason: body.reason,
-        },
-      }), { status: 200 });
+      return new Response(
+        JSON.stringify({
+          conflict: {
+            ...conflict,
+            status: 'dismissed',
+            dismissedAt: new Date().toISOString(),
+            dismissalReason: body.reason,
+          },
+        }),
+        { status: 200 }
+      );
     }
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+    });
   }
 
   // Review resolution
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/review/) && options?.method === 'POST') {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d\/review/) &&
+    options?.method === 'POST'
+  ) {
     const body = JSON.parse(options.body as string);
-    return new Response(JSON.stringify({
-      resolution: {
-        ...mockResolution,
-        status: body.accept ? 'accepted' : 'rejected',
-        acceptedAt: body.accept ? new Date().toISOString() : undefined,
-        rejectedAt: !body.accept ? new Date().toISOString() : undefined,
-        reviewFeedback: body.feedback,
-      },
-    }), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        resolution: {
+          ...mockResolution,
+          status: body.accept ? 'accepted' : 'rejected',
+          acceptedAt: body.accept ? new Date().toISOString() : undefined,
+          rejectedAt: !body.accept ? new Date().toISOString() : undefined,
+          reviewFeedback: body.feedback,
+        },
+      }),
+      { status: 200 }
+    );
   }
 
   // Create conflict
@@ -575,34 +676,56 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    return new Response(JSON.stringify({ conflict: newConflict }), { status: 201 });
+    return new Response(JSON.stringify({ conflict: newConflict }), {
+      status: 201,
+    });
   }
 
   // Update conflict
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d$/) && options?.method === 'PATCH') {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d$/) &&
+    options?.method === 'PATCH'
+  ) {
     const conflictId = path.split('/').pop();
-    const conflict = mockConflicts.find(c => c.id === conflictId);
+    const conflict = mockConflicts.find((c) => c.id === conflictId);
     const body = JSON.parse(options.body as string);
     if (conflict) {
-      return new Response(JSON.stringify({
-        conflict: { ...conflict, ...body, updatedAt: new Date().toISOString() },
-      }), { status: 200 });
+      return new Response(
+        JSON.stringify({
+          conflict: {
+            ...conflict,
+            ...body,
+            updatedAt: new Date().toISOString(),
+          },
+        }),
+        { status: 200 }
+      );
     }
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+    });
   }
 
   // Delete conflict
-  if (path.match(/\/api\/v1\/insight-conflicts\/conflict-\d$/) && options?.method === 'DELETE') {
+  if (
+    path.match(/\/api\/v1\/insight-conflicts\/conflict-\d$/) &&
+    options?.method === 'DELETE'
+  ) {
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   }
 
   // Get graph edge
   if (path.match(/\/api\/v1\/insight-conflicts\/graph\/edges/)) {
-    return new Response(JSON.stringify({ edges: mockGraphData.edges }), { status: 200 });
+    return new Response(JSON.stringify({ edges: mockGraphData.edges }), {
+      status: 200,
+    });
   }
 
   // Create graph edge
-  if (path === '/api/v1/insight-conflicts/graph/edges' && options?.method === 'POST') {
+  if (
+    path === '/api/v1/insight-conflicts/graph/edges' &&
+    options?.method === 'POST'
+  ) {
     const body = JSON.parse(options.body as string);
     const newEdge = {
       id: 'edge-new',
@@ -631,7 +754,9 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('List Conflicts', () => {
     it('should display list of conflicts', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts'
+      );
       const data = await response.json();
 
       expect(data.conflicts).toHaveLength(5);
@@ -639,28 +764,44 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should filter conflicts by status', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts?status=detected');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts?status=detected'
+      );
       const data = await response.json();
 
-      expect(data.conflicts.every((c: InsightConflict) => c.status === 'detected')).toBe(true);
+      expect(
+        data.conflicts.every((c: InsightConflict) => c.status === 'detected')
+      ).toBe(true);
     });
 
     it('should filter conflicts by severity', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts?severity=critical');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts?severity=critical'
+      );
       const data = await response.json();
 
-      expect(data.conflicts.every((c: InsightConflict) => c.severity === 'critical')).toBe(true);
+      expect(
+        data.conflicts.every((c: InsightConflict) => c.severity === 'critical')
+      ).toBe(true);
     });
 
     it('should filter conflicts by type', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts?conflictType=contradiction');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts?conflictType=contradiction'
+      );
       const data = await response.json();
 
-      expect(data.conflicts.every((c: InsightConflict) => c.conflictType === 'contradiction')).toBe(true);
+      expect(
+        data.conflicts.every(
+          (c: InsightConflict) => c.conflictType === 'contradiction'
+        )
+      ).toBe(true);
     });
 
     it('should display all conflict types', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts'
+      );
       const data = await response.json();
 
       const types = data.conflicts.map((c: InsightConflict) => c.conflictType);
@@ -672,7 +813,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should display all severity levels', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts'
+      );
       const data = await response.json();
 
       const severities = data.conflicts.map((c: InsightConflict) => c.severity);
@@ -683,7 +826,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should display all status values', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts'
+      );
       const data = await response.json();
 
       const statuses = data.conflicts.map((c: InsightConflict) => c.status);
@@ -694,7 +839,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should include confidence scores', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts'
+      );
       const data = await response.json();
 
       data.conflicts.forEach((c: InsightConflict) => {
@@ -711,7 +858,9 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('View Conflict Details', () => {
     it('should display conflict details', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1'
+      );
       const data = await response.json();
 
       expect(data.conflict.title).toBe('Revenue Projection Contradiction');
@@ -720,7 +869,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should load conflict items', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/items');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/items'
+      );
       const data = await response.json();
 
       expect(data.items).toHaveLength(2);
@@ -729,16 +880,22 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should display impact assessment', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1'
+      );
       const data = await response.json();
 
       expect(data.conflict.impactAssessment).toBeDefined();
-      expect(data.conflict.impactAssessment.affectedAreas).toContain('Financial Planning');
+      expect(data.conflict.impactAssessment.affectedAreas).toContain(
+        'Financial Planning'
+      );
       expect(data.conflict.impactAssessment.urgencyLevel).toBe('high');
     });
 
     it('should display source information', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1'
+      );
       const data = await response.json();
 
       expect(data.conflict.sourceSystem).toBe('unified_graph');
@@ -746,7 +903,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should display affected entities', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1'
+      );
       const data = await response.json();
 
       expect(data.conflict.affectedEntities).toContain('Revenue Q1');
@@ -754,7 +913,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should return 404 for non-existent conflict', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-999');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-999'
+      );
 
       expect(response.status).toBe(404);
     });
@@ -766,11 +927,14 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Analyze Conflict', () => {
     it('should trigger conflict analysis', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/analyze',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -779,11 +943,14 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should return analysis results', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/analyze',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }
+      );
       const data = await response.json();
 
       expect(data.analysis).toBeDefined();
@@ -792,14 +959,19 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should suggest resolution strategies', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/analyze',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }
+      );
       const data = await response.json();
 
-      expect(data.analysis.suggestedResolutionStrategies).toContain('ai_consensus');
+      expect(data.analysis.suggestedResolutionStrategies).toContain(
+        'ai_consensus'
+      );
     });
   });
 
@@ -809,13 +981,16 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Resolve Conflict', () => {
     it('should resolve a conflict', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          resolutionType: 'ai_consensus',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/resolve',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            resolutionType: 'ai_consensus',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -825,13 +1000,16 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should create resolution with AI reasoning', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          resolutionType: 'ai_consensus',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/resolve',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            resolutionType: 'ai_consensus',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.resolution.aiReasoning).toBeDefined();
@@ -839,24 +1017,30 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should support different resolution types', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-2/resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          resolutionType: 'source_priority',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-2/resolve',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            resolutionType: 'source_priority',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.resolution.resolutionType).toBe('source_priority');
     });
 
     it('should include confidence score in resolution', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/resolve',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }
+      );
       const data = await response.json();
 
       expect(data.resolution.confidenceScore).toBeDefined();
@@ -870,13 +1054,16 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Dismiss Conflict', () => {
     it('should dismiss a conflict with reason', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/dismiss', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reason: 'Confirmed as false positive',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/dismiss',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reason: 'Confirmed as false positive',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -892,14 +1079,17 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Review Resolution', () => {
     it('should accept a resolution', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-3/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accept: true,
-          feedback: 'Resolution is accurate',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-3/review',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accept: true,
+            feedback: 'Resolution is accurate',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -908,14 +1098,17 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should reject a resolution', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-3/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accept: false,
-          feedback: 'Resolution needs adjustment',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-3/review',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accept: false,
+            feedback: 'Resolution needs adjustment',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.resolution.status).toBe('rejected');
@@ -923,14 +1116,17 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should include feedback in review', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-3/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accept: true,
-          feedback: 'Methodology is sound',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-3/review',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accept: true,
+            feedback: 'Methodology is sound',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(data.resolution.reviewFeedback).toBe('Methodology is sound');
@@ -943,7 +1139,9 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Conflict Graph', () => {
     it('should load graph data', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph'
+      );
       const data = await response.json();
 
       expect(data.graph).toBeDefined();
@@ -952,17 +1150,23 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should have correct node types', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph'
+      );
       const data = await response.json();
 
-      const nodeTypes = data.graph.nodes.map((n: ConflictGraphData['nodes'][0]) => n.type);
+      const nodeTypes = data.graph.nodes.map(
+        (n: ConflictGraphData['nodes'][0]) => n.type
+      );
       expect(nodeTypes).toContain('conflict');
       expect(nodeTypes).toContain('item');
       expect(nodeTypes).toContain('source');
     });
 
     it('should have metadata', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph'
+      );
       const data = await response.json();
 
       expect(data.graph.metadata.totalNodes).toBe(4);
@@ -971,7 +1175,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should have positioned nodes', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph'
+      );
       const data = await response.json();
 
       data.graph.nodes.forEach((node: ConflictGraphData['nodes'][0]) => {
@@ -981,7 +1187,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should have styled edges', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/graph'
+      );
       const data = await response.json();
 
       data.graph.edges.forEach((edge: ConflictGraphData['edges'][0]) => {
@@ -997,35 +1205,49 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Audit Log', () => {
     it('should display audit events', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log'
+      );
       const data = await response.json();
 
       expect(data.events.length).toBeGreaterThan(0);
     });
 
     it('should show event types', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log'
+      );
       const data = await response.json();
 
-      const eventTypes = data.events.map((e: InsightConflictAuditLog) => e.eventType);
+      const eventTypes = data.events.map(
+        (e: InsightConflictAuditLog) => e.eventType
+      );
       expect(eventTypes).toContain('created');
       expect(eventTypes).toContain('analyzed');
     });
 
     it('should show actor types', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log'
+      );
       const data = await response.json();
 
-      const actorTypes = data.events.map((e: InsightConflictAuditLog) => e.actorType);
+      const actorTypes = data.events.map(
+        (e: InsightConflictAuditLog) => e.actorType
+      );
       expect(actorTypes).toContain('system');
       expect(actorTypes).toContain('ai');
     });
 
     it('should include state changes', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1/audit-log'
+      );
       const data = await response.json();
 
-      const eventWithState = data.events.find((e: InsightConflictAuditLog) => e.previousState);
+      const eventWithState = data.events.find(
+        (e: InsightConflictAuditLog) => e.previousState
+      );
       expect(eventWithState).toBeDefined();
       expect(eventWithState.newState).toBeDefined();
     });
@@ -1037,14 +1259,18 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Conflict Stats', () => {
     it('should display statistics', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/stats');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/stats'
+      );
       const data = await response.json();
 
       expect(data.stats.totalConflicts).toBe(5);
     });
 
     it('should show status breakdown', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/stats');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/stats'
+      );
       const data = await response.json();
 
       expect(data.stats.byStatus.detected).toBe(2);
@@ -1054,7 +1280,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should show severity breakdown', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/stats');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/stats'
+      );
       const data = await response.json();
 
       expect(data.stats.bySeverity.critical).toBe(1);
@@ -1062,7 +1290,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should show type breakdown', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/stats');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/stats'
+      );
       const data = await response.json();
 
       expect(data.stats.byType.contradiction).toBe(1);
@@ -1070,7 +1300,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should include resolution metrics', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/stats');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/stats'
+      );
       const data = await response.json();
 
       expect(data.stats.averageResolutionTime).toBeDefined();
@@ -1084,13 +1316,16 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Batch Operations', () => {
     it('should batch analyze conflicts', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/batch/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          conflictIds: ['conflict-1', 'conflict-5'],
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/batch/analyze',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conflictIds: ['conflict-1', 'conflict-5'],
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -1099,14 +1334,17 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should batch resolve conflicts', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/batch/resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          conflictIds: ['conflict-1', 'conflict-2'],
-          resolutionType: 'ai_consensus',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/batch/resolve',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conflictIds: ['conflict-1', 'conflict-2'],
+            resolutionType: 'ai_consensus',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -1115,14 +1353,17 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should batch dismiss conflicts', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/batch/dismiss', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          conflictIds: ['conflict-4', 'conflict-5'],
-          reason: 'Bulk dismissal - low priority items',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/batch/dismiss',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conflictIds: ['conflict-4', 'conflict-5'],
+            reason: 'Bulk dismissal - low priority items',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -1136,13 +1377,16 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Conflict Detection', () => {
     it('should run detection and find conflicts', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/detect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sourceSystems: ['unified_graph', 'unified_narrative'],
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/detect',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sourceSystems: ['unified_graph', 'unified_narrative'],
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -1157,7 +1401,9 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Conflict Clusters', () => {
     it('should list clusters', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/clusters');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/clusters'
+      );
       const data = await response.json();
 
       expect(data.clusters).toHaveLength(1);
@@ -1165,7 +1411,9 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should display cluster metadata', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/clusters');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/clusters'
+      );
       const data = await response.json();
 
       const cluster = data.clusters[0];
@@ -1175,22 +1423,27 @@ describe('Insight Conflicts E2E Tests', () => {
     });
 
     it('should show root cause hypothesis', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/clusters');
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/clusters'
+      );
       const data = await response.json();
 
       expect(data.clusters[0].rootCauseHypothesis).toBeDefined();
     });
 
     it('should create a new cluster', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/clusters', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'New Cluster',
-          description: 'Test cluster',
-          conflictIds: ['conflict-1', 'conflict-2'],
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/clusters',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'New Cluster',
+            description: 'Test cluster',
+            conflictIds: ['conflict-1', 'conflict-2'],
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(201);
@@ -1205,18 +1458,21 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Create Conflict', () => {
     it('should create a new conflict', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'New Test Conflict',
-          description: 'A manually created conflict for testing',
-          conflictType: 'contradiction',
-          severity: 'high',
-          sourceSystem: 'unified_graph',
-          sourceIds: ['source-1'],
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'New Test Conflict',
+            description: 'A manually created conflict for testing',
+            conflictType: 'contradiction',
+            severity: 'high',
+            sourceSystem: 'unified_graph',
+            sourceIds: ['source-1'],
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(201);
@@ -1231,14 +1487,17 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Update Conflict', () => {
     it('should update conflict details', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-1', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Updated Title',
-          severity: 'high',
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-1',
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Updated Title',
+            severity: 'high',
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -1253,9 +1512,12 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Delete Conflict', () => {
     it('should delete a conflict', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/conflict-4', {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/conflict-4',
+        {
+          method: 'DELETE',
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -1269,16 +1531,19 @@ describe('Insight Conflicts E2E Tests', () => {
 
   describe('Graph Edges', () => {
     it('should create a graph edge', async () => {
-      const response = await fetch('http://localhost:4000/api/v1/insight-conflicts/graph/edges', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'conflict-1',
-          target: 'conflict-2',
-          edgeType: 'related_to',
-          weight: 0.75,
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:4000/api/v1/insight-conflicts/graph/edges',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'conflict-1',
+            target: 'conflict-2',
+            edgeType: 'related_to',
+            weight: 0.75,
+          }),
+        }
+      );
       const data = await response.json();
 
       expect(response.status).toBe(201);

@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from 'react';
+
 import { useAnalyticsDate } from './AnalyticsDateContext';
 
 interface Metrics {
@@ -36,8 +37,12 @@ function MetricCard({
 }) {
   return (
     <div className="bg-panel border border-border-subtle rounded-xl p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-1">{label}</p>
-      <p className={`text-3xl font-bold tabular-nums ${positive !== undefined ? (positive ? 'text-semantic-success' : 'text-semantic-error') : 'text-white/95'}`}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-1">
+        {label}
+      </p>
+      <p
+        className={`text-3xl font-bold tabular-nums ${positive !== undefined ? (positive ? 'text-semantic-success' : 'text-semantic-error') : 'text-white/95'}`}
+      >
         {value}
       </p>
       <p className="text-xs text-white/50 mt-1">{sub}</p>
@@ -62,16 +67,27 @@ export function HeadlineMetrics() {
   useEffect(() => {
     async function load() {
       const [eviRes, contentRes, citationsRes] = await Promise.all([
-        fetch('/api/evi/current').then(r => r.json()).catch(() => null),
-        fetch('/api/content/items').then(r => r.json()).catch(() => null),
-        fetch('/api/citemind/monitor/summary').then(r => r.json()).catch(() => null),
+        fetch('/api/evi/current')
+          .then((r) => r.json())
+          .catch(() => null),
+        fetch('/api/content/items')
+          .then((r) => r.json())
+          .catch(() => null),
+        fetch('/api/citemind/monitor/summary')
+          .then((r) => r.json())
+          .catch(() => null),
       ]);
 
       setMetrics({
         eviDelta: eviRes?.data?.delta ?? eviRes?.delta ?? 0,
-        contentPublished: Array.isArray(contentRes?.data) ? contentRes.data.length : (contentRes?.count ?? 0),
+        contentPublished: Array.isArray(contentRes?.data)
+          ? contentRes.data.length
+          : (contentRes?.count ?? 0),
         earnedPlacements: 0,
-        aiCitations: citationsRes?.data?.total_citations ?? citationsRes?.total_citations ?? 0,
+        aiCitations:
+          citationsRes?.data?.total_citations ??
+          citationsRes?.total_citations ??
+          0,
       });
     }
 

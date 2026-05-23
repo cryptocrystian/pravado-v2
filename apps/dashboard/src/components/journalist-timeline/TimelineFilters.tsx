@@ -16,15 +16,39 @@ interface TimelineFiltersProps {
   onReset: () => void;
 }
 
-const eventTypeOptions: { value: TimelineEventType; label: string; category: string }[] = [
-  { value: 'press_release_generated', label: 'Press Release Generated', category: 'Press Releases' },
-  { value: 'press_release_sent', label: 'Press Release Sent', category: 'Press Releases' },
+const eventTypeOptions: {
+  value: TimelineEventType;
+  label: string;
+  category: string;
+}[] = [
+  {
+    value: 'press_release_generated',
+    label: 'Press Release Generated',
+    category: 'Press Releases',
+  },
+  {
+    value: 'press_release_sent',
+    label: 'Press Release Sent',
+    category: 'Press Releases',
+  },
   { value: 'pitch_sent', label: 'Pitch Sent', category: 'Pitch Engine' },
   { value: 'pitch_replied', label: 'Pitch Replied', category: 'Pitch Engine' },
   { value: 'outreach_sent', label: 'Outreach Sent', category: 'Outreach' },
-  { value: 'outreach_replied', label: 'Outreach Replied', category: 'Outreach' },
-  { value: 'coverage_published', label: 'Coverage Published', category: 'Media Monitoring' },
-  { value: 'media_mention', label: 'Media Mention', category: 'Media Monitoring' },
+  {
+    value: 'outreach_replied',
+    label: 'Outreach Replied',
+    category: 'Outreach',
+  },
+  {
+    value: 'coverage_published',
+    label: 'Coverage Published',
+    category: 'Media Monitoring',
+  },
+  {
+    value: 'media_mention',
+    label: 'Media Mention',
+    category: 'Media Monitoring',
+  },
   { value: 'manual_note', label: 'Manual Note', category: 'Custom' },
 ];
 
@@ -40,14 +64,21 @@ const sourceSystemOptions: { value: TimelineSourceSystem; label: string }[] = [
   { value: 'manual', label: 'Manual' },
 ];
 
-const sentimentOptions: { value: TimelineSentiment; label: string; color: string }[] = [
+const sentimentOptions: {
+  value: TimelineSentiment;
+  label: string;
+  color: string;
+}[] = [
   { value: 'positive', label: 'Positive', color: 'text-green-600' },
   { value: 'neutral', label: 'Neutral', color: 'text-gray-600' },
   { value: 'negative', label: 'Negative', color: 'text-red-600' },
   { value: 'unknown', label: 'Unknown', color: 'text-gray-400' },
 ];
 
-export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProps) {
+export function TimelineFilters({
+  onFilterChange,
+  onReset,
+}: TimelineFiltersProps) {
   const [filters, setFilters] = useState<TimelineQuery>({});
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -70,7 +101,10 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
     const newEventTypes = current.includes(eventType)
       ? current.filter((t) => t !== eventType)
       : [...current, eventType];
-    handleFilterUpdate('eventTypes', newEventTypes.length > 0 ? newEventTypes : undefined);
+    handleFilterUpdate(
+      'eventTypes',
+      newEventTypes.length > 0 ? newEventTypes : undefined
+    );
   };
 
   const toggleSourceSystem = (source: TimelineSourceSystem) => {
@@ -78,7 +112,10 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
     const newSources = current.includes(source)
       ? current.filter((s) => s !== source)
       : [...current, source];
-    handleFilterUpdate('sourceSystems', newSources.length > 0 ? newSources : undefined);
+    handleFilterUpdate(
+      'sourceSystems',
+      newSources.length > 0 ? newSources : undefined
+    );
   };
 
   const toggleSentiment = (sentiment: TimelineSentiment) => {
@@ -86,7 +123,10 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
     const newSentiments = current.includes(sentiment)
       ? current.filter((s) => s !== sentiment)
       : [...current, sentiment];
-    handleFilterUpdate('sentiments', newSentiments.length > 0 ? newSentiments : undefined);
+    handleFilterUpdate(
+      'sentiments',
+      newSentiments.length > 0 ? newSentiments : undefined
+    );
   };
 
   return (
@@ -158,10 +198,7 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
                 <input
                   type="radio"
                   name="timeRange"
-                  checked={
-                    !filters.last30Days &&
-                    !filters.last90Days
-                  }
+                  checked={!filters.last30Days && !filters.last90Days}
                   onChange={() => {
                     handleFilterUpdate('last30Days', undefined);
                     handleFilterUpdate('last90Days', undefined);
@@ -185,7 +222,9 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
                 >
                   <input
                     type="checkbox"
-                    checked={filters.sentiments?.includes(option.value) || false}
+                    checked={
+                      filters.sentiments?.includes(option.value) || false
+                    }
                     onChange={() => toggleSentiment(option.value)}
                   />
                   <span className={`text-sm ${option.color}`}>
@@ -209,11 +248,15 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
                 >
                   <input
                     type="checkbox"
-                    checked={filters.eventTypes?.includes(option.value) || false}
+                    checked={
+                      filters.eventTypes?.includes(option.value) || false
+                    }
                     onChange={() => toggleEventType(option.value)}
                   />
                   <span className="text-sm text-gray-700">{option.label}</span>
-                  <span className="text-xs text-gray-500">({option.category})</span>
+                  <span className="text-xs text-gray-500">
+                    ({option.category})
+                  </span>
                 </label>
               ))}
             </div>
@@ -246,7 +289,11 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
           {/* Relevance Score */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Min Relevance Score: {filters.minRelevanceScore ? Math.round(filters.minRelevanceScore * 100) : 0}%
+              Min Relevance Score:{' '}
+              {filters.minRelevanceScore
+                ? Math.round(filters.minRelevanceScore * 100)
+                : 0}
+              %
             </label>
             <input
               type="range"
@@ -271,7 +318,10 @@ export function TimelineFilters({ onFilterChange, onReset }: TimelineFiltersProp
                 type="checkbox"
                 checked={filters.hasCluster === true}
                 onChange={(e) =>
-                  handleFilterUpdate('hasCluster', e.target.checked || undefined)
+                  handleFilterUpdate(
+                    'hasCluster',
+                    e.target.checked || undefined
+                  )
                 }
               />
               <span className="text-sm text-gray-700">

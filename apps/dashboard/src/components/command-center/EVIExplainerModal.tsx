@@ -14,6 +14,7 @@
  */
 
 import { useState } from 'react';
+
 import type { EVIDriverType } from './types';
 
 interface EVIExplainerModalProps {
@@ -29,20 +30,24 @@ interface EVIExplainerModalProps {
 }
 
 // Driver config for display
-const driverConfig: Record<EVIDriverType, {
-  label: string;
-  weight: string;
-  color: string;
-  icon: string;
-  description: string;
-  tips: string[];
-}> = {
+const driverConfig: Record<
+  EVIDriverType,
+  {
+    label: string;
+    weight: string;
+    color: string;
+    icon: string;
+    description: string;
+    tips: string[];
+  }
+> = {
   visibility: {
     label: 'Visibility',
     weight: '40%',
     color: 'brand-cyan',
     icon: '👁',
-    description: 'How often your brand appears in AI answers, press coverage, and search results.',
+    description:
+      'How often your brand appears in AI answers, press coverage, and search results.',
     tips: [
       'Secure press coverage in tier-1 publications',
       'Optimize content for AI citation patterns',
@@ -77,14 +82,41 @@ const driverConfig: Record<EVIDriverType, {
 
 // Status band config
 const statusBands = [
-  { range: '0-40', label: 'At Risk', color: 'semantic-danger', description: 'Urgent action needed to improve brand visibility' },
-  { range: '41-60', label: 'Emerging', color: 'brand-amber', description: 'Building momentum, focus on growth opportunities' },
-  { range: '61-80', label: 'Competitive', color: 'brand-cyan', description: 'Strong position, maintain and optimize' },
-  { range: '81-100', label: 'Dominant', color: 'semantic-success', description: 'Market leader, focus on defense and expansion' },
+  {
+    range: '0-40',
+    label: 'At Risk',
+    color: 'semantic-danger',
+    description: 'Urgent action needed to improve brand visibility',
+  },
+  {
+    range: '41-60',
+    label: 'Emerging',
+    color: 'brand-amber',
+    description: 'Building momentum, focus on growth opportunities',
+  },
+  {
+    range: '61-80',
+    label: 'Competitive',
+    color: 'brand-cyan',
+    description: 'Strong position, maintain and optimize',
+  },
+  {
+    range: '81-100',
+    label: 'Dominant',
+    color: 'semantic-success',
+    description: 'Market leader, focus on defense and expansion',
+  },
 ];
 
-export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EVIExplainerModalProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'formula' | 'improve'>('overview');
+export function EVIExplainerModal({
+  isOpen,
+  onClose,
+  currentScore,
+  drivers,
+}: EVIExplainerModalProps) {
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'formula' | 'improve'
+  >('overview');
 
   if (!isOpen) return null;
 
@@ -93,7 +125,11 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
         visibility: drivers.visibility,
         authority: drivers.authority,
         momentum: drivers.momentum,
-        calculated: (drivers.visibility * 0.4 + drivers.authority * 0.35 + drivers.momentum * 0.25).toFixed(1),
+        calculated: (
+          drivers.visibility * 0.4 +
+          drivers.authority * 0.35 +
+          drivers.momentum * 0.25
+        ).toFixed(1),
       }
     : {
         visibility: 72.5,
@@ -127,8 +163,18 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/5 text-white/50 hover:text-white transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -141,9 +187,10 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
               onClick={() => setActiveTab(tab)}
               className={`
                 flex-1 px-4 py-2 text-sm font-semibold rounded-lg transition-all
-                ${activeTab === tab
-                  ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
-                  : 'text-white/55 hover:text-white/90 hover:bg-slate-4'
+                ${
+                  activeTab === tab
+                    ? 'bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30'
+                    : 'text-white/55 hover:text-white/90 hover:bg-slate-4'
                 }
               `}
             >
@@ -160,11 +207,17 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
             <div className="space-y-4">
               {/* Definition */}
               <div className="p-4 bg-page border border-border-subtle rounded-lg">
-                <h3 className="text-sm font-semibold text-white mb-2">The North Star for Modern PR</h3>
+                <h3 className="text-sm font-semibold text-white mb-2">
+                  The North Star for Modern PR
+                </h3>
                 <p className="text-sm text-white/70 leading-relaxed">
-                  <strong className="text-brand-cyan">EVI (Earned Visibility Index)</strong> is a single score from 0-100
-                  that measures your brand&apos;s earned media presence across AI answers, press coverage, and search visibility.
-                  It combines three key drivers: <span className="text-brand-cyan">Visibility</span>,
+                  <strong className="text-brand-cyan">
+                    EVI (Earned Visibility Index)
+                  </strong>{' '}
+                  is a single score from 0-100 that measures your brand&apos;s
+                  earned media presence across AI answers, press coverage, and
+                  search visibility. It combines three key drivers:{' '}
+                  <span className="text-brand-cyan">Visibility</span>,
                   <span className="text-brand-iris ml-1">Authority</span>, and
                   <span className="text-brand-magenta ml-1">Momentum</span>.
                 </p>
@@ -174,24 +227,41 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
               {currentScore && (
                 <div className="p-4 bg-brand-cyan/5 border border-brand-cyan/20 rounded-lg">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Your Current EVI</span>
-                    <span className="text-3xl font-bold text-brand-cyan">{currentScore.toFixed(1)}</span>
+                    <span className="text-sm text-white/70">
+                      Your Current EVI
+                    </span>
+                    <span className="text-3xl font-bold text-brand-cyan">
+                      {currentScore.toFixed(1)}
+                    </span>
                   </div>
                 </div>
               )}
 
               {/* Status Bands */}
               <div>
-                <h4 className="text-xs text-white/50 uppercase tracking-wide mb-2">Status Bands</h4>
+                <h4 className="text-xs text-white/50 uppercase tracking-wide mb-2">
+                  Status Bands
+                </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {statusBands.map((band) => (
-                    <div key={band.label} className="p-3 bg-page border border-border-subtle rounded-lg">
+                    <div
+                      key={band.label}
+                      className="p-3 bg-page border border-border-subtle rounded-lg"
+                    >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`w-2 h-2 rounded-full bg-${band.color}`} />
-                        <span className="text-sm font-semibold text-white">{band.label}</span>
-                        <span className="text-xs text-white/40 ml-auto">{band.range}</span>
+                        <span
+                          className={`w-2 h-2 rounded-full bg-${band.color}`}
+                        />
+                        <span className="text-sm font-semibold text-white">
+                          {band.label}
+                        </span>
+                        <span className="text-xs text-white/40 ml-auto">
+                          {band.range}
+                        </span>
                       </div>
-                      <p className="text-xs text-white/50">{band.description}</p>
+                      <p className="text-xs text-white/50">
+                        {band.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -203,7 +273,9 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
             <div className="space-y-4">
               {/* Formula */}
               <div className="p-4 bg-page border border-border-subtle rounded-lg">
-                <h3 className="text-sm font-semibold text-white mb-3">The EVI Formula</h3>
+                <h3 className="text-sm font-semibold text-white mb-3">
+                  The EVI Formula
+                </h3>
                 <div className="p-4 bg-slate-1 rounded-lg font-mono text-center">
                   <span className="text-brand-cyan">EVI</span>
                   <span className="text-white/50 mx-2">=</span>
@@ -220,18 +292,33 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
 
               {/* Drivers */}
               <div>
-                <h4 className="text-xs text-white/50 uppercase tracking-wide mb-2">The Three Drivers</h4>
+                <h4 className="text-xs text-white/50 uppercase tracking-wide mb-2">
+                  The Three Drivers
+                </h4>
                 <div className="space-y-2">
-                  {(['visibility', 'authority', 'momentum'] as EVIDriverType[]).map((driver) => {
+                  {(
+                    ['visibility', 'authority', 'momentum'] as EVIDriverType[]
+                  ).map((driver) => {
                     const config = driverConfig[driver];
                     return (
-                      <div key={driver} className={`p-3 bg-${config.color}/5 border border-${config.color}/20 rounded-lg`}>
+                      <div
+                        key={driver}
+                        className={`p-3 bg-${config.color}/5 border border-${config.color}/20 rounded-lg`}
+                      >
                         <div className="flex items-center gap-2 mb-1">
                           <span>{config.icon}</span>
-                          <span className={`text-sm font-semibold text-${config.color}`}>{config.label}</span>
-                          <span className="text-xs text-white/40 ml-auto">{config.weight} weight</span>
+                          <span
+                            className={`text-sm font-semibold text-${config.color}`}
+                          >
+                            {config.label}
+                          </span>
+                          <span className="text-xs text-white/40 ml-auto">
+                            {config.weight} weight
+                          </span>
                         </div>
-                        <p className="text-xs text-white/60">{config.description}</p>
+                        <p className="text-xs text-white/60">
+                          {config.description}
+                        </p>
                       </div>
                     );
                   })}
@@ -240,39 +327,59 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
 
               {/* Worked Example */}
               <div className="p-4 bg-page border border-border-subtle rounded-lg">
-                <h3 className="text-sm font-semibold text-white mb-3">Worked Example</h3>
+                <h3 className="text-sm font-semibold text-white mb-3">
+                  Worked Example
+                </h3>
                 <div className="space-y-2 font-mono text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-brand-cyan">Visibility</span>
                     <span className="text-white/40">=</span>
-                    <span className="text-white">{workedExample.visibility}</span>
+                    <span className="text-white">
+                      {workedExample.visibility}
+                    </span>
                     <span className="text-white/40">× 0.40 =</span>
-                    <span className="text-brand-cyan">{(workedExample.visibility * 0.4).toFixed(1)}</span>
+                    <span className="text-brand-cyan">
+                      {(workedExample.visibility * 0.4).toFixed(1)}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-brand-iris">Authority</span>
                     <span className="text-white/40">=</span>
-                    <span className="text-white">{workedExample.authority}</span>
+                    <span className="text-white">
+                      {workedExample.authority}
+                    </span>
                     <span className="text-white/40">× 0.35 =</span>
-                    <span className="text-brand-iris">{(workedExample.authority * 0.35).toFixed(1)}</span>
+                    <span className="text-brand-iris">
+                      {(workedExample.authority * 0.35).toFixed(1)}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-brand-magenta">Momentum</span>
                     <span className="text-white/40">=</span>
                     <span className="text-white">{workedExample.momentum}</span>
                     <span className="text-white/40">× 0.25 =</span>
-                    <span className="text-brand-magenta">{(workedExample.momentum * 0.25).toFixed(1)}</span>
+                    <span className="text-brand-magenta">
+                      {(workedExample.momentum * 0.25).toFixed(1)}
+                    </span>
                   </div>
                   <div className="pt-2 border-t border-border-subtle flex items-center gap-2">
                     <span className="text-white font-semibold">EVI</span>
                     <span className="text-white/40">=</span>
-                    <span className="text-brand-cyan">{(workedExample.visibility * 0.4).toFixed(1)}</span>
+                    <span className="text-brand-cyan">
+                      {(workedExample.visibility * 0.4).toFixed(1)}
+                    </span>
                     <span className="text-white/40">+</span>
-                    <span className="text-brand-iris">{(workedExample.authority * 0.35).toFixed(1)}</span>
+                    <span className="text-brand-iris">
+                      {(workedExample.authority * 0.35).toFixed(1)}
+                    </span>
                     <span className="text-white/40">+</span>
-                    <span className="text-brand-magenta">{(workedExample.momentum * 0.25).toFixed(1)}</span>
+                    <span className="text-brand-magenta">
+                      {(workedExample.momentum * 0.25).toFixed(1)}
+                    </span>
                     <span className="text-white/40">=</span>
-                    <span className="text-xl font-bold text-semantic-success">{workedExample.calculated}</span>
+                    <span className="text-xl font-bold text-semantic-success">
+                      {workedExample.calculated}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -282,42 +389,63 @@ export function EVIExplainerModal({ isOpen, onClose, currentScore, drivers }: EV
           {activeTab === 'improve' && (
             <div className="space-y-4">
               <p className="text-sm text-white/70">
-                Focus on the driver with the lowest score relative to its weight for maximum EVI impact.
+                Focus on the driver with the lowest score relative to its weight
+                for maximum EVI impact.
               </p>
 
-              {(['visibility', 'authority', 'momentum'] as EVIDriverType[]).map((driver) => {
-                const config = driverConfig[driver];
-                return (
-                  <div key={driver} className={`p-4 bg-${config.color}/5 border border-${config.color}/20 rounded-lg`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">{config.icon}</span>
-                      <span className={`text-sm font-bold text-${config.color}`}>
-                        Improve {config.label} ({config.weight})
-                      </span>
+              {(['visibility', 'authority', 'momentum'] as EVIDriverType[]).map(
+                (driver) => {
+                  const config = driverConfig[driver];
+                  return (
+                    <div
+                      key={driver}
+                      className={`p-4 bg-${config.color}/5 border border-${config.color}/20 rounded-lg`}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-lg">{config.icon}</span>
+                        <span
+                          className={`text-sm font-bold text-${config.color}`}
+                        >
+                          Improve {config.label} ({config.weight})
+                        </span>
+                      </div>
+                      <ul className="space-y-2">
+                        {config.tips.map((tip, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <svg
+                              className={`w-4 h-4 text-${config.color} flex-shrink-0 mt-0.5`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span className="text-sm text-white/70">{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <ul className="space-y-2">
-                      {config.tips.map((tip, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <svg className={`w-4 h-4 text-${config.color} flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-sm text-white/70">{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
 
               {/* Quick Win */}
               <div className="p-4 bg-semantic-success/5 border border-semantic-success/20 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">💡</span>
-                  <span className="text-sm font-bold text-semantic-success">Quick Win Tip</span>
+                  <span className="text-sm font-bold text-semantic-success">
+                    Quick Win Tip
+                  </span>
                 </div>
                 <p className="text-sm text-white/70">
-                  Structured data (schema markup) is often the fastest way to boost Authority.
-                  It helps AI models understand and cite your content correctly.
+                  Structured data (schema markup) is often the fastest way to
+                  boost Authority. It helps AI models understand and cite your
+                  content correctly.
                 </p>
               </div>
             </div>

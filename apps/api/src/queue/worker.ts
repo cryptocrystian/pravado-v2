@@ -81,7 +81,9 @@ export class WorkerPool {
       this.processNextJobs();
     }, this.config.pollIntervalMs);
 
-    console.log(`[WorkerPool] Started with ${this.config.maxConcurrency} workers`);
+    console.log(
+      `[WorkerPool] Started with ${this.config.maxConcurrency} workers`
+    );
   }
 
   /**
@@ -143,11 +145,12 @@ export class WorkerPool {
     worker.status = 'busy';
     worker.currentJobId = job.id;
 
-    const processingPromise = this.executeJobWithWorker(workerId, job)
-      .finally(() => {
+    const processingPromise = this.executeJobWithWorker(workerId, job).finally(
+      () => {
         // Clean up promise reference
         this.processingPromises.delete(workerId);
-      });
+      }
+    );
 
     this.processingPromises.set(workerId, processingPromise);
   }
@@ -185,11 +188,17 @@ export class WorkerPool {
       worker.jobsProcessed += 1;
       worker.lastJobCompletedAt = new Date().toISOString();
     } catch (error) {
-      console.error(`[Worker ${workerId}] Error processing job ${job.id}:`, error);
+      console.error(
+        `[Worker ${workerId}] Error processing job ${job.id}:`,
+        error
+      );
 
       // Mark job as failed if not already
       if (job.status !== 'failed') {
-        this.queue.failJob(job.id, error instanceof Error ? error : new Error(String(error)));
+        this.queue.failJob(
+          job.id,
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     } finally {
       // Mark worker as idle

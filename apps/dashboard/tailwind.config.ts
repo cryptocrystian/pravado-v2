@@ -15,7 +15,14 @@ const config: Config = {
     extend: {
       // Font Family
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: [
+          'Inter',
+          'system-ui',
+          '-apple-system',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif',
+        ],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
 

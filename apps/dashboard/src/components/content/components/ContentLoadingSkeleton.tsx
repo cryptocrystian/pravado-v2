@@ -17,11 +17,12 @@ interface ContentLoadingSkeletonProps {
   type?: 'card' | 'list' | 'dashboard' | 'calendar';
 }
 
-const DENSITY_CONFIG: Record<DensityLevel, { height: string; count: number }> = {
-  comfortable: { height: 'h-44', count: 3 },
-  standard: { height: 'h-24', count: 5 },
-  compact: { height: 'h-12', count: 8 },
-};
+const DENSITY_CONFIG: Record<DensityLevel, { height: string; count: number }> =
+  {
+    comfortable: { height: 'h-44', count: 3 },
+    standard: { height: 'h-24', count: 5 },
+    compact: { height: 'h-12', count: 8 },
+  };
 
 export function ContentLoadingSkeleton({
   density = 'comfortable',
@@ -198,7 +199,10 @@ function DashboardSkeleton() {
           <div className="space-y-2">
             <div className="h-3 w-20 bg-slate-4 rounded animate-pulse" />
             {[1, 2, 3].map((i) => (
-              <div key={i} className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+              <div
+                key={i}
+                className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg animate-pulse"
+              >
                 <div className="h-3 w-28 bg-slate-4 rounded mb-1.5" />
                 <div className="h-2 w-16 bg-slate-4 rounded" />
               </div>
@@ -207,7 +211,10 @@ function DashboardSkeleton() {
           <div className="space-y-2">
             <div className="h-3 w-20 bg-slate-4 rounded animate-pulse" />
             {[1, 2].map((i) => (
-              <div key={i} className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg animate-pulse">
+              <div
+                key={i}
+                className="p-2.5 bg-slate-2 border border-border-subtle rounded-lg animate-pulse"
+              >
                 <div className="h-3 w-32 bg-slate-4 rounded mb-1.5" />
                 <div className="h-2 w-20 bg-slate-4 rounded" />
               </div>

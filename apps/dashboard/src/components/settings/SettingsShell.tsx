@@ -8,6 +8,7 @@
  */
 
 import type { ReactNode } from 'react';
+
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 
 interface SettingsShellProps {
@@ -18,7 +19,13 @@ interface SettingsShellProps {
   userAvatarUrl?: string;
 }
 
-export function SettingsShell({ children, orgName, userName, userEmail, userAvatarUrl }: SettingsShellProps) {
+export function SettingsShell({
+  children,
+  orgName,
+  userName,
+  userEmail,
+  userAvatarUrl,
+}: SettingsShellProps) {
   return (
     <div className="min-h-screen bg-page flex flex-col">
       <CommandCenterTopbar
@@ -27,9 +34,7 @@ export function SettingsShell({ children, orgName, userName, userEmail, userAvat
         userEmail={userEmail}
         userAvatarUrl={userAvatarUrl}
       />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   );
 }

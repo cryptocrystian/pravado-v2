@@ -6,6 +6,7 @@
  */
 
 import type { ConflictStats } from '@pravado/types';
+
 import {
   formatResolutionRate,
   formatAvgResolutionTime,
@@ -76,11 +77,25 @@ export function ConflictStatsCard({ stats, loading }: ConflictStatsCardProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
         {/* By severity */}
         <div>
-          <h4 className="text-sm font-medium text-gray-500 mb-3">By Severity</h4>
+          <h4 className="text-sm font-medium text-gray-500 mb-3">
+            By Severity
+          </h4>
           <div className="grid grid-cols-4 gap-2">
-            <MiniStat label="Critical" value={stats.criticalCount} color="bg-red-500" />
-            <MiniStat label="High" value={stats.highCount} color="bg-orange-500" />
-            <MiniStat label="Medium" value={stats.mediumCount} color="bg-yellow-500" />
+            <MiniStat
+              label="Critical"
+              value={stats.criticalCount}
+              color="bg-red-500"
+            />
+            <MiniStat
+              label="High"
+              value={stats.highCount}
+              color="bg-orange-500"
+            />
+            <MiniStat
+              label="Medium"
+              value={stats.mediumCount}
+              color="bg-yellow-500"
+            />
             <MiniStat label="Low" value={stats.lowCount} color="bg-green-500" />
           </div>
         </div>
@@ -122,10 +137,23 @@ export function ConflictStatsCard({ stats, loading }: ConflictStatsCardProps) {
       {stats.clusterCount > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
             </svg>
-            <span>{stats.clusterCount} conflict cluster{stats.clusterCount !== 1 ? 's' : ''} identified</span>
+            <span>
+              {stats.clusterCount} conflict cluster
+              {stats.clusterCount !== 1 ? 's' : ''} identified
+            </span>
           </div>
         </div>
       )}

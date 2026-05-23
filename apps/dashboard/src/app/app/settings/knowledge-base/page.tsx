@@ -10,8 +10,9 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { KnowledgeBaseSection } from '@/components/settings/KnowledgeBaseSection';
+
 import { kbCategories } from '@/components/content/content-mock-data';
+import { KnowledgeBaseSection } from '@/components/settings/KnowledgeBaseSection';
 
 export default function KnowledgeBaseSettingsPage() {
   return (

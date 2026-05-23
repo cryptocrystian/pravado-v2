@@ -9,7 +9,11 @@ interface JournalistListItemProps {
   onClick: () => void;
 }
 
-export function JournalistListItem({ journalist, isActive, onClick }: JournalistListItemProps) {
+export function JournalistListItem({
+  journalist,
+  isActive,
+  onClick,
+}: JournalistListItemProps) {
   const citBadge = citationBadgeConfig[journalist.aiCitation];
   const relDot = relationshipDotConfig[journalist.relationship];
 
@@ -25,14 +29,20 @@ export function JournalistListItem({ journalist, isActive, onClick }: Journalist
     >
       {/* Avatar */}
       <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-        <span className="text-xs font-medium text-white/70">{journalist.initials}</span>
+        <span className="text-xs font-medium text-white/70">
+          {journalist.initials}
+        </span>
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium text-white truncate">{journalist.name}</span>
-          <span className="text-[13px] text-white/50 truncate">{journalist.publication}</span>
+          <span className="text-sm font-medium text-white truncate">
+            {journalist.name}
+          </span>
+          <span className="text-[13px] text-white/50 truncate">
+            {journalist.publication}
+          </span>
         </div>
         <div className="flex flex-wrap gap-1 mt-1">
           {journalist.beats.slice(0, 2).map((beat) => (
@@ -41,14 +51,18 @@ export function JournalistListItem({ journalist, isActive, onClick }: Journalist
             </span>
           ))}
           {journalist.beats.length > 2 && (
-            <span className="text-xs text-white/30">+{journalist.beats.length - 2}</span>
+            <span className="text-xs text-white/30">
+              +{journalist.beats.length - 2}
+            </span>
           )}
         </div>
       </div>
 
       {/* Right side: AI Citation + Relationship dot */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${citBadge.bg} ${citBadge.text}`}>
+        <span
+          className={`text-xs font-medium px-2 py-0.5 rounded-full ${citBadge.bg} ${citBadge.text}`}
+        >
           {journalist.aiCitation.toUpperCase()}
         </span>
         <div className={`w-1.5 h-1.5 rounded-full ${relDot}`} />

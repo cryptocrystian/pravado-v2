@@ -62,7 +62,9 @@ export class SEOSerpService {
     }
 
     // Map results
-    const mappedResults: SEOSerpResult[] = results.map(this.mapSerpResultFromDb);
+    const mappedResults: SEOSerpResult[] = results.map(
+      this.mapSerpResultFromDb
+    );
 
     // Extract top competitors (competitors with ranks 1-10)
     const topCompetitors = results
@@ -76,14 +78,19 @@ export class SEOSerpService {
 
     // Find our best rank (if we're in the results)
     const ourResults = results.filter((r) => !r.is_competitor);
-    const ourBestRank = ourResults.length > 0 ? Math.min(...ourResults.map((r) => r.rank)) : null;
+    const ourBestRank =
+      ourResults.length > 0 ? Math.min(...ourResults.map((r) => r.rank)) : null;
 
     // Get latest capture time
     const capturedAt =
       results.length > 0
-        ? results.reduce((latest, r) =>
-            new Date(r.last_seen_at) > new Date(latest) ? r.last_seen_at : latest
-          , results[0].last_seen_at)
+        ? results.reduce(
+            (latest, r) =>
+              new Date(r.last_seen_at) > new Date(latest)
+                ? r.last_seen_at
+                : latest,
+            results[0].last_seen_at
+          )
         : new Date().toISOString();
 
     return {
@@ -99,7 +106,10 @@ export class SEOSerpService {
   /**
    * Get competitor gap analysis for a keyword
    */
-  async getCompetitorDiff(orgId: string, keywordId: string): Promise<CompetitorGap[]> {
+  async getCompetitorDiff(
+    orgId: string,
+    keywordId: string
+  ): Promise<CompetitorGap[]> {
     // Get SERP snapshot
     const snapshot = await this.getSerpSnapshotForKeyword(orgId, keywordId);
 

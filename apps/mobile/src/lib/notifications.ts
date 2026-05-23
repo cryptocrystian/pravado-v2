@@ -1,6 +1,7 @@
-import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+
 import { apiFetch } from './api';
 
 Notifications.setNotificationHandler({
@@ -42,7 +43,10 @@ export async function registerForPushNotifications(): Promise<string | null> {
       }),
     });
   } catch (err) {
-    console.warn('[Notifications] Failed to register token with API (endpoint may not exist yet):', err);
+    console.warn(
+      '[Notifications] Failed to register token with API (endpoint may not exist yet):',
+      err
+    );
   }
 
   if (Platform.OS === 'android') {

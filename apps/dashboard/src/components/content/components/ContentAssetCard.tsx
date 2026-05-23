@@ -29,13 +29,31 @@ interface ContentAssetCardProps {
 // STATUS CONFIG — DS v3.1 semantic pattern
 // ============================================
 
-const STATUS_CONFIG: Record<ContentStatus, { label: string; classes: string }> = {
-  draft:        { label: 'Draft',        classes: 'bg-white/10 text-white/60 border-white/20' },
-  needs_review: { label: 'Needs Review', classes: 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20' },
-  ready:        { label: 'Ready',        classes: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20' },
-  published:    { label: 'Published',    classes: 'bg-semantic-success/10 text-semantic-success border-semantic-success/20' },
-  archived:     { label: 'Archived',     classes: 'bg-white/5 text-white/40 border-white/10' },
-};
+const STATUS_CONFIG: Record<ContentStatus, { label: string; classes: string }> =
+  {
+    draft: {
+      label: 'Draft',
+      classes: 'bg-white/10 text-white/60 border-white/20',
+    },
+    needs_review: {
+      label: 'Needs Review',
+      classes:
+        'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
+    },
+    ready: {
+      label: 'Ready',
+      classes: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20',
+    },
+    published: {
+      label: 'Published',
+      classes:
+        'bg-semantic-success/10 text-semantic-success border-semantic-success/20',
+    },
+    archived: {
+      label: 'Archived',
+      classes: 'bg-white/5 text-white/40 border-white/10',
+    },
+  };
 
 // ============================================
 // CITEMIND SCORE HELPERS
@@ -66,7 +84,11 @@ function getCiteDotColor(score: number): string {
 // COMPACT ROW (25+ cards)
 // ============================================
 
-function CompactCard({ asset, isSelected, onClick }: Pick<ContentAssetCardProps, 'asset' | 'isSelected' | 'onClick'>) {
+function CompactCard({
+  asset,
+  isSelected,
+  onClick,
+}: Pick<ContentAssetCardProps, 'asset' | 'isSelected' | 'onClick'>) {
   const citeMindScore = asset.authoritySignals?.citationEligibilityScore ?? 0;
   const status = STATUS_CONFIG[asset.status];
 
@@ -82,18 +104,26 @@ function CompactCard({ asset, isSelected, onClick }: Pick<ContentAssetCardProps,
       `}
     >
       {/* CiteMind dot — color signal only */}
-      <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getCiteDotColor(citeMindScore)}`} />
+      <span
+        className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getCiteDotColor(citeMindScore)}`}
+      />
 
       {/* Title */}
-      <span className="flex-1 text-sm font-medium text-white/85 truncate">{asset.title}</span>
+      <span className="flex-1 text-sm font-medium text-white/85 truncate">
+        {asset.title}
+      </span>
 
       {/* Score number */}
-      <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${getCiteScoreColor(citeMindScore)}`}>
+      <span
+        className={`text-sm font-bold tabular-nums flex-shrink-0 ${getCiteScoreColor(citeMindScore)}`}
+      >
         {citeMindScore}
       </span>
 
       {/* Status badge — text only, no bg */}
-      <span className={`text-[11px] font-bold uppercase tracking-wider flex-shrink-0 ${getCiteScoreColor(citeMindScore)}`}>
+      <span
+        className={`text-[11px] font-bold uppercase tracking-wider flex-shrink-0 ${getCiteScoreColor(citeMindScore)}`}
+      >
         {status.label}
       </span>
     </div>
@@ -122,16 +152,22 @@ function StandardCard({ asset, isSelected, onClick }: ContentAssetCardProps) {
     >
       {/* Row 1: Status badge (left) + CiteMind block (right) */}
       <div className="flex items-start justify-between gap-2 mb-2">
-        <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${status.classes}`}>
+        <span
+          className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${status.classes}`}
+        >
           {status.label}
         </span>
 
         {/* CiteMind score — text-xl per standard density spec */}
         <div className="flex flex-col items-end">
-          <span className={`text-xl font-bold tabular-nums leading-none ${getCiteScoreColor(citeMindScore)}`}>
+          <span
+            className={`text-xl font-bold tabular-nums leading-none ${getCiteScoreColor(citeMindScore)}`}
+          >
             {citeMindScore}
           </span>
-          <span className={`text-[11px] font-bold uppercase tracking-wider ${getCiteScoreColor(citeMindScore)} opacity-70`}>
+          <span
+            className={`text-[11px] font-bold uppercase tracking-wider ${getCiteScoreColor(citeMindScore)} opacity-70`}
+          >
             CiteMind
           </span>
         </div>
@@ -145,10 +181,15 @@ function StandardCard({ asset, isSelected, onClick }: ContentAssetCardProps) {
       {/* Row 3: EVI delta */}
       {eviDelta !== 0 && (
         <div className="flex justify-end mt-2">
-          <span className={`text-[13px] font-bold tabular-nums ${eviDelta > 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-            {eviDelta > 0 ? '+' : ''}{eviDelta.toFixed(1)}
+          <span
+            className={`text-[13px] font-bold tabular-nums ${eviDelta > 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}
+          >
+            {eviDelta > 0 ? '+' : ''}
+            {eviDelta.toFixed(1)}
           </span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-1">EVI pts</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-1">
+            EVI pts
+          </span>
         </div>
       )}
     </div>
@@ -159,7 +200,11 @@ function StandardCard({ asset, isSelected, onClick }: ContentAssetCardProps) {
 // COMFORTABLE CARD (≤12 cards) — Full layout
 // ============================================
 
-function ComfortableCard({ asset, isSelected, onClick }: ContentAssetCardProps) {
+function ComfortableCard({
+  asset,
+  isSelected,
+  onClick,
+}: ContentAssetCardProps) {
   const citeMindScore = asset.authoritySignals?.citationEligibilityScore ?? 0;
   const aiIngestion = asset.authoritySignals?.aiIngestionLikelihood ?? 0;
   const crossPillar = asset.authoritySignals?.crossPillarImpact ?? 0;
@@ -179,19 +224,27 @@ function ComfortableCard({ asset, isSelected, onClick }: ContentAssetCardProps) 
       {/* Row 1 — Status badge (left) + CiteMind block (right) */}
       <div className="flex items-start justify-between">
         {/* Status badge */}
-        <span className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${status.classes}`}>
+        <span
+          className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${status.classes}`}
+        >
           {status.label}
         </span>
 
         {/* CiteMind block — THE PRIMARY VISUAL ANCHOR */}
         <div className="flex flex-col items-end">
-          <span className={`text-2xl font-bold tabular-nums leading-none ${getCiteScoreColor(citeMindScore)}`}>
+          <span
+            className={`text-2xl font-bold tabular-nums leading-none ${getCiteScoreColor(citeMindScore)}`}
+          >
             {citeMindScore}
           </span>
-          <span className={`text-[11px] font-bold uppercase tracking-wider mt-0.5 ${getCiteScoreColor(citeMindScore)} opacity-70`}>
+          <span
+            className={`text-[11px] font-bold uppercase tracking-wider mt-0.5 ${getCiteScoreColor(citeMindScore)} opacity-70`}
+          >
             CiteMind
           </span>
-          <span className={`text-[11px] uppercase tracking-wider ${getCiteScoreColor(citeMindScore)} opacity-60`}>
+          <span
+            className={`text-[11px] uppercase tracking-wider ${getCiteScoreColor(citeMindScore)} opacity-60`}
+          >
             {getCiteScoreLabel(citeMindScore)}
           </span>
         </div>
@@ -211,10 +264,18 @@ function ComfortableCard({ asset, isSelected, onClick }: ContentAssetCardProps) 
 
       {/* Row 4 — Secondary metrics */}
       <div className="flex items-center gap-1 text-[13px] text-white/50">
-        <span className={`font-bold tabular-nums ${getCiteScoreColor(aiIngestion)}`}>{aiIngestion}</span>
+        <span
+          className={`font-bold tabular-nums ${getCiteScoreColor(aiIngestion)}`}
+        >
+          {aiIngestion}
+        </span>
         <span className="text-white/40">AI Ingestion</span>
         <span className="text-white/30 mx-1">&middot;</span>
-        <span className={`font-bold tabular-nums ${getCiteScoreColor(crossPillar)}`}>{crossPillar}</span>
+        <span
+          className={`font-bold tabular-nums ${getCiteScoreColor(crossPillar)}`}
+        >
+          {crossPillar}
+        </span>
         <span className="text-white/40">Cross-Pillar</span>
       </div>
 
@@ -244,10 +305,15 @@ function ComfortableCard({ asset, isSelected, onClick }: ContentAssetCardProps) 
         {/* EVI delta */}
         {eviDelta !== 0 && (
           <div className="flex items-center">
-            <span className={`text-[13px] font-bold tabular-nums ${eviDelta > 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}>
-              {eviDelta > 0 ? '+' : ''}{eviDelta.toFixed(1)}
+            <span
+              className={`text-[13px] font-bold tabular-nums ${eviDelta > 0 ? 'text-semantic-success' : 'text-semantic-danger'}`}
+            >
+              {eviDelta > 0 ? '+' : ''}
+              {eviDelta.toFixed(1)}
             </span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-0.5">EVI pts</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-0.5">
+              EVI pts
+            </span>
           </div>
         )}
       </div>
@@ -259,7 +325,11 @@ function ComfortableCard({ asset, isSelected, onClick }: ContentAssetCardProps) 
         )}
         {asset.wordCount && <span>&middot;</span>}
         <span>
-          Updated {new Date(asset.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          Updated{' '}
+          {new Date(asset.updatedAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          })}
         </span>
       </div>
     </div>
@@ -278,10 +348,28 @@ export function ContentAssetCard({
   hasSageRecommendation = false,
 }: ContentAssetCardProps) {
   if (density === 'compact') {
-    return <CompactCard asset={asset} isSelected={isSelected} onClick={onClick} />;
+    return (
+      <CompactCard asset={asset} isSelected={isSelected} onClick={onClick} />
+    );
   }
   if (density === 'standard') {
-    return <StandardCard asset={asset} density={density} isSelected={isSelected} onClick={onClick} hasSageRecommendation={hasSageRecommendation} />;
+    return (
+      <StandardCard
+        asset={asset}
+        density={density}
+        isSelected={isSelected}
+        onClick={onClick}
+        hasSageRecommendation={hasSageRecommendation}
+      />
+    );
   }
-  return <ComfortableCard asset={asset} density={density} isSelected={isSelected} onClick={onClick} hasSageRecommendation={hasSageRecommendation} />;
+  return (
+    <ComfortableCard
+      asset={asset}
+      density={density}
+      isSelected={isSelected}
+      onClick={onClick}
+      hasSageRecommendation={hasSageRecommendation}
+    />
+  );
 }
