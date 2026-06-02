@@ -24,10 +24,23 @@ function PostHogPageviewTracker() {
   return null;
 }
 
+// Track 0C item 12: PostHog initializes only when BOTH the key is non-empty
+// AND NEXT_PUBLIC_POSTHOG_ENABLED is the literal string "true". This prevents
+// the dev project from accidentally capturing beta-user events when a stale
+// key is still set in env, and gives the architect a single env flag to flip
+// once the beta-project key is verified in the PostHog dashboard.
+function isPostHogEnabled(): boolean {
+  return (
+    process.env.NEXT_PUBLIC_POSTHOG_ENABLED === 'true' &&
+    !!process.env.NEXT_PUBLIC_POSTHOG_KEY
+  );
+}
+
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    if (!key) return;
+    if (!isPostHogEnabled()) return;
+
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
 
     posthog.init(key, {
       api_host:
@@ -42,7 +55,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  if (!isPostHogEnabled()) {
     return <>{children}</>;
   }
 
