@@ -35,6 +35,9 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
+      - name: Check for mock data leaks (Phase 0 Track 0B)
+        run: bash scripts/detect-mock-leaks.sh
+
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
