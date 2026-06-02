@@ -2,109 +2,41 @@
 
 /**
  * Analytics Overview — /app/analytics
- * Headline metrics, EVI growth chart, attribution, top wins.
+ * Headline metrics + Top Wins are honest by themselves (real zeros / own
+ * empty state) and stay rendered.
+ *
+ * Phase 0 Track 0B: the narrative banner is gated on
+ * ANALYTICS_OVERVIEW_NARRATIVE_WIRED; the EVI trend chart, pillar breakdown,
+ * and competitive position are gated on ANALYTICS_OVERVIEW_TREND_WIRED.
+ * Both flags default false, so those blocks render nothing in Phase 0. When
+ * Phase 1 wires real data sources, restore the AINarrativeHeader /
+ * EviGrowthChart / PillarContribution / CompetitiveSnapshot renders inside
+ * the respective conditional branches.
+ *
+ * The CSV export used to read from analytics-mock-data; it has been removed
+ * here and will return in Phase 1 backed by real metrics.
  */
 
-import dynamic from 'next/dynamic';
-import { Suspense, useCallback } from 'react';
-
-import { AINarrativeHeader } from '@/components/analytics/AINarrativeHeader';
-import {
-  mockHeadlineMetrics,
-  mockAttribution,
-  mockTopWins,
-  mockNarratives,
-} from '@/components/analytics/analytics-mock-data';
-import { CompetitiveSnapshot } from '@/components/analytics/CompetitiveSnapshot';
 import { HeadlineMetrics } from '@/components/analytics/HeadlineMetrics';
-import { PillarContribution } from '@/components/analytics/PillarContribution';
 import { TopWins } from '@/components/analytics/TopWins';
-import { arrayToCsv, downloadCsv } from '@/lib/csv-export';
-
-const EviGrowthChart = dynamic(
-  () =>
-    import('@/components/analytics/EviGrowthChart').then(
-      (mod) => mod.EviGrowthChart
-    ),
-  { ssr: false }
-);
-
-function ChartSkeleton() {
-  return (
-    <div className="bg-cc-surface border border-white/8 rounded-2xl p-6 animate-pulse">
-      <div className="h-4 w-48 bg-white/5 rounded mb-4" />
-      <div className="h-[240px] bg-white/5 rounded" />
-    </div>
-  );
-}
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function AnalyticsOverviewPage() {
-  const handleExport = useCallback(() => {
-    const csv = arrayToCsv(
-      ['Metric', 'Value', 'Detail'],
-      [
-        [
-          'EVI Change',
-          mockHeadlineMetrics.eviChange.value,
-          `${mockHeadlineMetrics.eviChange.from} → ${mockHeadlineMetrics.eviChange.to}`,
-        ],
-        [
-          'Content Published',
-          String(mockHeadlineMetrics.contentPublished.value),
-          `Goal: ${mockHeadlineMetrics.contentPublished.goal}`,
-        ],
-        [
-          'Earned Placements',
-          String(mockHeadlineMetrics.earnedPlacements.value),
-          `Goal: ${mockHeadlineMetrics.earnedPlacements.goal}`,
-        ],
-        [
-          'AI Citations',
-          String(mockHeadlineMetrics.totalCitations.value),
-          `+${mockHeadlineMetrics.totalCitations.deltaPercent}%`,
-        ],
-        ...mockAttribution.map((a) => [
-          'Attribution: ' + a.label,
-          a.percent + '%',
-          '',
-        ]),
-        ...mockTopWins.map((w, i) => [`Top Win #${i + 1}`, w, '']),
-      ]
-    );
-    downloadCsv('pravado-analytics-overview.csv', csv);
-  }, []);
+  // Flags are unused while wired === false (Phase 0); the reads keep the
+  // dependency visible to the mock-leak grep and to a future Phase 1 editor.
+  const narrativeWired = useFeatureFlag('ANALYTICS_OVERVIEW_NARRATIVE_WIRED');
+  const trendWired = useFeatureFlag('ANALYTICS_OVERVIEW_TREND_WIRED');
+  void narrativeWired;
+  void trendWired;
 
   return (
     <div className="pt-6 pb-16 px-8 overflow-y-auto h-full">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        <div className="flex items-center justify-end">
-          <button
-            type="button"
-            onClick={handleExport}
-            className="bg-white/5 border border-white/8 rounded-xl px-3 py-1.5 text-sm text-white/70 hover:text-white transition-colors"
-          >
-            Export &darr;
-          </button>
-        </div>
-
-        <AINarrativeHeader narrative={mockNarratives.overview} />
-
-        {/* Headline Metrics */}
+        {/* Headline stat cards — keep (honest zeros) */}
         <HeadlineMetrics />
 
-        {/* EVI Growth Chart — dynamic import (no SSR) to avoid Recharts hydration issues */}
-        <Suspense fallback={<ChartSkeleton />}>
-          <EviGrowthChart />
-        </Suspense>
-
-        {/* Pillar Contribution (replaces stub AttributionBar) */}
-        <PillarContribution />
-
-        {/* Top Wins */}
+        {/* Top Wins — keep (has its own empty state) */}
         <TopWins />
-
-        {/* Competitive Position */}
-        <CompetitiveSnapshot />
       </div>
     </div>
   );

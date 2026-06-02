@@ -8,7 +8,18 @@
  *   Copilot   → SAGE pitch recommendation queue
  *   Autopilot → Exception console + activity log
  *
- * Mode state lives in PRModeContext (provided by PRShell).
+ * Mode state lives in PRModeContext (provided by PRShell). Default is
+ * Copilot for Phase 0 (the exemplary path per the May 12 audit).
+ *
+ * Phase 0 Track 0B:
+ *   - Manual mode is gated behind PR_ACTION_QUEUE_MANUAL_WIRED. Until the
+ *     manual action queue has a real backend (the May 12 audit caught it
+ *     mixing mockCriticalHigh into the inbox response), it renders
+ *     ComingSoonGate.
+ *   - mockActions / mockJournalists / mockConversation imports removed at
+ *     the page level; the ConversationThread modal (manual-only) is no
+ *     longer rendered. pr-mock-data.ts itself stays for the SAGE journalists
+ *     tab per the Feb brief exemption.
  */
 
 export const dynamic = 'force-dynamic';
@@ -17,16 +28,9 @@ import { Lightning, ArrowRight, Clock } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-import { ConversationThread } from '@/components/pr/ConversationThread';
-import {
-  mockActions,
-  mockJournalists,
-  mockConversation,
-} from '@/components/pr/pr-mock-data';
-import type { PRActionItem } from '@/components/pr/pr-mock-data';
-import { PRActionCard } from '@/components/pr/PRActionCard';
+import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
 import { usePRMode } from '@/components/pr/PRModeContext';
-import { fetchInbox, adaptInboxToPRAction } from '@/lib/prApi';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 // ============================================
 // URGENCY BADGE
@@ -38,75 +42,6 @@ const URGENCY_STYLES = {
   medium: 'bg-white/5 text-white/45',
   low: 'bg-white/5 text-white/30',
 };
-
-// ============================================
-// MANUAL VIEW
-// ============================================
-
-function ManualView({
-  actions,
-  isLoading,
-  onDismiss,
-  onOpenThread,
-}: {
-  actions: PRActionItem[];
-  isLoading: boolean;
-  onDismiss: (id: string) => void;
-  onOpenThread: () => void;
-}) {
-  const criticalHigh = actions.filter(
-    (a) => a.priority === 'critical' || a.priority === 'high'
-  );
-  const mediumLow = actions.filter(
-    (a) => a.priority === 'medium' || a.priority === 'low'
-  );
-
-  if (actions.length === 0 && !isLoading) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-white/45">
-          You&apos;re all caught up — no actions pending.
-        </p>
-        <p className="text-white/30 text-sm mt-2">
-          SAGE will surface journalist opportunities as it monitors your
-          visibility signals.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={`grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-6 ${isLoading ? 'opacity-50' : ''}`}
-    >
-      <div>
-        <h2 className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-3">
-          Critical &amp; High
-        </h2>
-        {criticalHigh.map((action) => (
-          <PRActionCard
-            key={action.id}
-            action={action}
-            onDismiss={() => onDismiss(action.id)}
-            onSecondary={action.journalistId ? onOpenThread : undefined}
-          />
-        ))}
-      </div>
-      <div>
-        <h2 className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-3">
-          Medium &amp; Low
-        </h2>
-        {mediumLow.map((action) => (
-          <PRActionCard
-            key={action.id}
-            action={action}
-            onDismiss={() => onDismiss(action.id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // ============================================
 // COPILOT VIEW
@@ -373,66 +308,21 @@ function AutopilotView() {
 
 export default function PRActionQueuePage() {
   const { mode } = usePRMode();
-  const [actions, setActions] = useState<PRActionItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showThread, setShowThread] = useState(false);
+  const manualWired = useFeatureFlag('PR_ACTION_QUEUE_MANUAL_WIRED');
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        setIsLoading(true);
-        const data = await fetchInbox();
-        if (!cancelled) {
-          const mockCriticalHigh = mockActions.filter(
-            (a) => a.priority === 'critical' || a.priority === 'high'
-          );
-          if (data.items.length > 0) {
-            setActions([
-              ...mockCriticalHigh,
-              ...data.items.map(adaptInboxToPRAction),
-            ]);
-          } else {
-            setActions(mockActions);
-          }
-        }
-      } catch {
-        if (!cancelled) setActions(mockActions);
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  function handleDismiss(id: string) {
-    setActions((prev) => prev.filter((a) => a.id !== id));
+  if (mode === 'manual' && !manualWired) {
+    return <ComingSoonGate pillar="PR" subsurface="Manual mode" />;
   }
 
   return (
     <div className="pt-6 pb-16 px-8">
-      {mode === 'manual' && (
-        <ManualView
-          actions={actions}
-          isLoading={isLoading}
-          onDismiss={handleDismiss}
-          onOpenThread={() => setShowThread(true)}
-        />
-      )}
       {mode === 'copilot' && <CopilotView />}
       {mode === 'autopilot' && <AutopilotView />}
-
-      <ConversationThread
-        journalist={mockJournalists[0]}
-        messages={mockConversation}
-        open={showThread}
-        onClose={() => setShowThread(false)}
-      />
+      {mode === 'manual' && (
+        // Manual view returns in Phase 1 once the action queue has a
+        // backend; for now it's gated above so this branch is unreachable.
+        <CopilotView />
+      )}
     </div>
   );
 }

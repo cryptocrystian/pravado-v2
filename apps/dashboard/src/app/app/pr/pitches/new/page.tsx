@@ -2,43 +2,24 @@
 
 /**
  * Pitch Creation — /app/pr/pitches/new
- * 5-step wizard for creating and sending pitches.
- * Reads ?journalist= query param from cross-pillar flows (Content → PR).
+ *
+ * Phase 0 Track 0B: gated behind PR_PITCHES_WIRED (same flag as
+ * /app/pr/pitches itself). The wizard used mockJournalists to resolve
+ * cross-pillar journalist preselection from `?journalist=` query params —
+ * delete that fallback. Phase 1 restores the 5-step wizard backed by real
+ * journalist data.
  */
 
 export const dynamic = 'force-dynamic';
 
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
-
-import { PitchWizard } from '@/components/pr/PitchWizard';
-import { mockJournalists } from '@/components/pr/pr-mock-data';
+import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function NewPitchPage() {
-  const searchParams = useSearchParams();
-  const journalistName = searchParams?.get('journalist');
-
-  const preselected = useMemo(() => {
-    if (!journalistName) return undefined;
-    return mockJournalists.find(
-      (j) => j.name.toLowerCase() === journalistName.toLowerCase()
-    );
-  }, [journalistName]);
-
-  return (
-    <div className="pt-6 pb-16 px-8">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Back link */}
-        <Link
-          href="/app/pr/pitches"
-          className="text-sm text-white/45 hover:text-white/70 transition-colors mb-6 inline-block"
-        >
-          &larr; Back to Pitches
-        </Link>
-
-        <PitchWizard preselectedJournalist={preselected} />
-      </div>
-    </div>
-  );
+  const wired = useFeatureFlag('PR_PITCHES_WIRED');
+  if (!wired) {
+    return <ComingSoonGate pillar="PR" subsurface="Pitches" />;
+  }
+  // Phase 1 restores the wizard render here.
+  return null;
 }

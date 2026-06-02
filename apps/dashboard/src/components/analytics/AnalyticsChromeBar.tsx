@@ -36,7 +36,11 @@ const TABS = [
   { label: 'Content', href: '/app/analytics/content' },
   { label: 'PR', href: '/app/analytics/pr' },
   { label: 'SEO', href: '/app/analytics/seo' },
-  { label: 'Reports', href: '/app/analytics/reports' },
+  // Reports REMOVED in Phase 0 Track 0B — Board/Investor PDF was the highest
+  // reputational risk surface (fabricated EVI 74.2 stats shareable to actual
+  // investors). Route file persists behind a ComingSoonGate for deep-link
+  // safety; nav entry returns only after Phase 1 W5 defines a data-confidence
+  // threshold. See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0B-MOCK-CONTAINMENT.md
 ];
 
 // ============================================

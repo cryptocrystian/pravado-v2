@@ -8,8 +8,8 @@
  * dark until Phase 1.
  */
 
-import { useMemo } from 'react';
 import { isEnabled, type FlagName } from '@pravado/feature-flags';
+import { useMemo } from 'react';
 
 export function useFeatureFlag(flag: FlagName): boolean {
   return useMemo(() => isEnabled(flag), [flag]);

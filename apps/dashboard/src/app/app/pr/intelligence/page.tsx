@@ -2,20 +2,26 @@
 
 /**
  * PR Intelligence — /app/pr/intelligence
- * Stub page. Full functionality requires SAGE backend.
+ *
+ * Phase 0 Track 0B: the "Set up topic clusters" CTA card stays (it's an
+ * honest empty-state). The fabricated topic-activity list below it is
+ * gated on PR_INTELLIGENCE_WIRED and the `mockTopicActivity` import is
+ * removed.
  */
 
 export const dynamic = 'force-dynamic';
 
-import { Lightning, ArrowRight, TrendUp } from '@phosphor-icons/react';
+import { Lightning, ArrowRight } from '@phosphor-icons/react';
 
-import { mockTopicActivity } from '@/components/pr/pr-mock-data';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function IntelligencePage() {
+  const wired = useFeatureFlag('PR_INTELLIGENCE_WIRED');
+
   return (
     <div className="pt-6 pb-16 px-8">
       <div className="max-w-[1600px] mx-auto">
-        {/* Stub card */}
+        {/* Honest empty-state card — always shown */}
         <div className="bg-cc-surface border border-white/8 rounded-2xl p-8 text-center mb-8">
           <Lightning
             size={48}
@@ -38,41 +44,12 @@ export default function IntelligencePage() {
           </button>
         </div>
 
-        {/* Topic activity preview cards */}
-        <div className="space-y-3 max-w-[600px]">
-          {mockTopicActivity.map((topic) => (
-            <div
-              key={topic.topic}
-              className="bg-cc-surface border border-white/8 rounded-xl p-4 flex items-center justify-between"
-            >
-              <div>
-                <h3 className="text-sm font-semibold text-white">
-                  {topic.topic}
-                </h3>
-                <p className="text-xs text-white/70 mt-0.5">
-                  {topic.articles} articles this week
-                  {topic.delta && (
-                    <span className="text-white/45 ml-1">({topic.delta})</span>
-                  )}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {topic.trending && (
-                  <span className="flex items-center gap-1 text-xs font-medium bg-cc-cyan/10 text-cc-cyan px-2 py-0.5 rounded-full">
-                    <TrendUp size={10} weight="bold" />
-                    TRENDING
-                  </span>
-                )}
-                <button
-                  type="button"
-                  className="text-xs text-cc-cyan hover:text-cc-cyan/80 transition-colors"
-                >
-                  View journalists
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Topic activity list — gated. Phase 1 wires real topic-activity data. */}
+        {wired ? (
+          <div className="space-y-3 max-w-[600px]">
+            {/* Phase 1 restores the topic-activity cards here. */}
+          </div>
+        ) : null}
       </div>
     </div>
   );
