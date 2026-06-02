@@ -1379,11 +1379,11 @@ export default function AIIntroPage() {
                   <p className="text-[14px] text-white/40">
                     {proposals.length > 0
                       ? `${proposals.length} prioritized actions based on your competitive position.`
-                      : 'SAGE is still processing. Proposals will appear in your Command Center shortly.'}
+                      : 'Your first proposals are being generated and will appear in your Command Center within a few minutes — no need to wait here.'}
                   </p>
                 </div>
 
-                {proposals.length > 0 ? (
+                {proposals.length > 0 && (
                   <div className="space-y-3 mb-8">
                     {proposals.map((p) => (
                       <div
@@ -1416,13 +1416,6 @@ export default function AIIntroPage() {
                         </div>
                       </div>
                     ))}
-                  </div>
-                ) : (
-                  <div className="bg-slate-2 border border-slate-4 rounded-xl p-8 text-center mb-8">
-                    <p className="text-[14px] text-white/50">
-                      SAGE is still generating proposals. They'll be ready in
-                      your Command Center.
-                    </p>
                   </div>
                 )}
 

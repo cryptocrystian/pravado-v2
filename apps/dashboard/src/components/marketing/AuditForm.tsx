@@ -472,7 +472,7 @@ export function AuditForm({
         }}
       >
         No credit card required &middot; Results in under 30 seconds &middot;
-        SOC 2 compliant
+        Encrypted in transit and at rest
       </p>
 
       {/* Mobile reflow — name + company stack at narrow viewports.   */}

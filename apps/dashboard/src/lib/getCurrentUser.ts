@@ -77,14 +77,25 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
     const activeOrg = orgs.length > 0 ? orgs[0] : null;
     const now = new Date().toISOString();
 
+    // Track 0C item 10: identity fallback chain. Supabase magic-link auth
+    // does NOT populate raw_user_meta_data by default, so we accept three
+    // possible name claims (full_name, fullName, name) before returning null.
+    // The topbar then renders an email-prefix fallback so the user menu is
+    // never literal "User" with no email. Full plumbing (wizard sets display
+    // name via supabase.auth.updateUser) is Phase 1 work.
+    const fullName =
+      user.user_metadata?.full_name ??
+      user.user_metadata?.fullName ??
+      user.user_metadata?.name ??
+      null;
+
     return {
       user: {
         id: user.id,
-        email: user.email || null,
-        fullName:
-          user.user_metadata?.full_name || user.user_metadata?.name || null,
+        email: user.email ?? null,
+        fullName,
         avatarUrl:
-          user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+          user.user_metadata?.avatar_url ?? user.user_metadata?.picture ?? null,
         createdAt: user.created_at || now,
         updatedAt: user.updated_at || now,
       },

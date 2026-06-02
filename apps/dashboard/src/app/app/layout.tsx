@@ -14,14 +14,21 @@ import { getCurrentUser } from '@/lib/getCurrentUser';
 // Force dynamic rendering to avoid SSG errors
 export const dynamic = 'force-dynamic';
 
-// Fallback org/user for when session is unavailable (middleware handles auth gate)
+// Fallback org/user for when session is unavailable (middleware handles auth gate).
+// Track 0C item 10: do NOT default fullName to literal "User" here — the topbar
+// renders an email-prefix fallback or the literal "You" if no identity at all.
+// Defaulting here would short-circuit the topbar's honest fallback chain.
 const FALLBACK_ORG = {
   id: '',
   name: 'Workspace',
   createdAt: '',
   updatedAt: '',
 };
-const FALLBACK_USER = { fullName: 'User', email: null, avatarUrl: null };
+const FALLBACK_USER: {
+  fullName: string | null;
+  email: string | null;
+  avatarUrl: string | null;
+} = { fullName: null, email: null, avatarUrl: null };
 
 export default async function AppLayout({
   children,
