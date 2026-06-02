@@ -437,12 +437,12 @@ export default function LoginPage() {
                 />
               </div>
               <h1 className="text-xl font-semibold text-white">
-                {isSignUp ? 'Create your account' : 'Welcome back'}
+                {isSignUp ? 'Create your account' : 'Sign in to Pravado'}
               </h1>
               <p className="text-sm text-muted">
                 {isSignUp
                   ? 'Start orchestrating your PR, content, and SEO'
-                  : 'Sign in to continue to your dashboard'}
+                  : 'New here? A magic link creates your account automatically.'}
               </p>
             </div>
 
@@ -514,7 +514,13 @@ export default function LoginPage() {
                     autoComplete="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      // Clear stale "Check your email" success + any error
+                      // when the user edits the field (Track 0C item 3a).
+                      if (message) setMessage(null);
+                      if (error) setError(null);
+                    }}
                     className="input-field"
                     placeholder="you@company.com"
                   />
