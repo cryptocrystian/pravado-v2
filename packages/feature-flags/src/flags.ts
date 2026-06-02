@@ -164,6 +164,42 @@ export const FLAGS = {
 
   // Editor v2 flags
   ENABLE_EDITOR_V2: true, // Editor v2: callout blocks, paste sanitization, inline link editing, block affordances
+
+  // ========================================================================
+  // Phase 0 Track 0B — Mock containment gates (each surface ungates when
+  // wired to real data in Phase 1). All default false.
+  // See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0B-MOCK-CONTAINMENT.md
+  // ========================================================================
+
+  // Command Center
+  CC_ENTITY_MAP_WIRED: false,
+
+  // PR pillar
+  PR_ACTION_QUEUE_MANUAL_WIRED: false,
+  PR_JOURNALISTS_WIRED: false,
+  PR_PITCHES_WIRED: false,
+  PR_INTELLIGENCE_WIRED: false,
+
+  // Content pillar
+  CONTENT_EDITOR_WIRED: false,
+
+  // Analytics pillar
+  ANALYTICS_OVERVIEW_NARRATIVE_WIRED: false,
+  ANALYTICS_OVERVIEW_TREND_WIRED: false,
+  ANALYTICS_CONTENT_WIRED: false,
+  ANALYTICS_PR_WIRED: false,
+  ANALYTICS_SEO_WIRED: false,
+  ANALYTICS_REPORTS_WIRED: false, // Reports nav entry REMOVED in Phase 0; flag kept for the route-file early-return + Phase 1 reactivation.
+
+  // SEO pillar (Overview is exemplary — not gated)
+  SEO_TOPICS_WIRED: false,
+  SEO_COMPETITORS_WIRED: false,
+  SEO_CITATIONS_WIRED: false,
+  SEO_RECOMMENDATIONS_WIRED: false,
+
+  // Settings
+  SETTINGS_BRAND_VOICE_WIRED: false,
+  SETTINGS_KNOWLEDGE_BASE_WIRED: false,
 } as const;
 
 export type FlagName = keyof typeof FLAGS;

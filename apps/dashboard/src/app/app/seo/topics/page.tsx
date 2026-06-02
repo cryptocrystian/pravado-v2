@@ -3,25 +3,21 @@
 /**
  * Topic Clusters — /app/seo/topics
  * Split-pane: 300px cluster list | flex cluster detail.
+ *
+ * Phase 0 Track 0B: gated behind SEO_TOPICS_WIRED until real cluster data
+ * lands. Mock cluster fallback removed.
  */
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
-
-import { ClusterDetail } from '@/components/seo/ClusterDetail';
-import { mockClusters } from '@/components/seo/seo-mock-data';
-import { TopicClusterList } from '@/components/seo/TopicClusterList';
+import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function TopicsPage() {
-  const [selectedId, setSelectedId] = useState('tc-1');
-
-  const selectedCluster = mockClusters.find((c) => c.id === selectedId) ?? null;
-
-  return (
-    <div className="flex h-[calc(100vh-49px)] overflow-hidden">
-      <TopicClusterList selectedId={selectedId} onSelect={setSelectedId} />
-      <ClusterDetail cluster={selectedCluster} />
-    </div>
-  );
+  const wired = useFeatureFlag('SEO_TOPICS_WIRED');
+  if (!wired) {
+    return <ComingSoonGate pillar="SEO" subsurface="Topic Clusters" />;
+  }
+  // Phase 1 wires real cluster data + restores split-pane render.
+  return null;
 }

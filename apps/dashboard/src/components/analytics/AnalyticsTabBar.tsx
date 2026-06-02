@@ -12,7 +12,7 @@ const tabs = [
   { label: 'Content', href: '/app/analytics/content' },
   { label: 'PR', href: '/app/analytics/pr' },
   { label: 'SEO', href: '/app/analytics/seo' },
-  { label: 'Reports', href: '/app/analytics/reports' },
+  // Reports REMOVED in Phase 0 Track 0B (see AnalyticsChromeBar.tsx).
 ];
 
 export function AnalyticsTabBar() {
