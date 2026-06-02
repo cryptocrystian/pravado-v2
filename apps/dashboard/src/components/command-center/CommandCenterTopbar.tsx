@@ -11,34 +11,38 @@
  */
 
 /**
- * CommandCenterTopbar v2.0 - UX Pilot Reference Match
+ * CommandCenterTopbar v2.1 — Phase 0 Track 0C UX hygiene pass
  *
  * AI-native, topbar-centric navigation with polished styling:
  *
- * GROUPING (per UX Pilot):
- * - Left cluster: Pravado wordmark + AI status dot, Org selector
+ * GROUPING:
+ * - Left cluster: Pravado wordmark + " / OrgName " mark (item 9 — real org name)
  * - Middle cluster: Surface navigation (prominent, with glow active states)
- * - Center-right: Omni-Tray trigger (ONLY search-like affordance)
- * - Right cluster: AI Active indicator, context chips, notifications, user menu
+ * - Right cluster: AI Active indicator + user menu only
  *
- * NAVIGATION PROMINENCE:
- * - Nav items use text-sm font (not xs)
- * - Inactive: text-white/70 (lighter than before)
- * - Active: text-white + bg-brand-cyan/15 + border + glow + underline
- * - Consistent spacing between items
+ * Phase 0 Track 0C removals (audit findings):
+ * - Notification bell (item 6) — was non-functional, unread dot was fabricated.
+ *   Returns in Phase 1 with a real notifications endpoint.
+ * - SAGE / CRAFT / CiteMind chips (item 7) — looked interactive but only
+ *   toggled their own visual state. Phase 1 can bring them back as real
+ *   filters if useful.
+ * - "Account" menu item (item 8) — duplicated Settings (same href). Removed.
+ * - "Billing" menu item (item 5) — billing page is hidden in Phase 0.
  *
- * IMPORTANT: Only ONE search-like element exists (Omni-Tray trigger).
- * Do NOT add additional search inputs.
+ * Phase 0 Track 0C additions:
+ * - Org name displayed next to logo (item 9 — prop renamed from `_orgName`).
+ * - User identity fallback (item 10 — email-prefix when fullName is null;
+ *   real email surfaced in dropdown; literal "User" replaced with "You" as
+ *   last-resort fallback). The full Supabase metadata plumbing (wizard
+ *   captures display name) is Phase 1 work — tracked separately.
  *
  * @see /docs/canon/COMMAND-CENTER-UI.md
+ * @see /docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0C-UX-HYGIENE.md
  */
 
 import {
   CaretDown,
-  Bell,
   Gear,
-  User,
-  CreditCard,
   BookOpen,
   ChatDots,
   SignOut,
@@ -74,14 +78,19 @@ function UserMenu({
   userEmail,
   userAvatarUrl,
 }: {
-  userName: string;
+  userName?: string;
   userEmail?: string;
   userAvatarUrl?: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const displayName = userName || userEmail?.split('@')[0] || 'User';
-  const displayEmail = userEmail || '';
+
+  // Track 0C item 10: identity fallback chain. Never literal "User" —
+  // that string is too ambiguous. "You" is the last-resort honest label.
+  const emailPrefix = userEmail ? userEmail.split('@')[0] : null;
+  const displayName = userName || emailPrefix || 'You';
+  const displayEmail = userEmail ?? '';
+  const avatarLetter = (displayName || 'Y').charAt(0).toUpperCase();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -104,10 +113,10 @@ function UserMenu({
     window.location.href = '/login';
   };
 
+  // Track 0C item 8: Account duplicated Settings (same href) — removed.
+  // Track 0C item 5: Billing hidden in Phase 0 — removed.
   const menuItems = [
     { label: 'Settings', icon: <Gear size={16} />, href: '/app/settings' },
-    { label: 'Account', icon: <User size={16} />, href: '/app/settings' },
-    { label: 'Billing', icon: <CreditCard size={16} />, href: '/app/billing' },
   ];
 
   const helpItems = [
@@ -133,14 +142,15 @@ function UserMenu({
         className="flex items-center gap-1.5 p-1 rounded-lg hover:bg-slate-4 transition-colors group"
       >
         {userAvatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- third-party avatar URL, not a Next-managed static asset
           <img
             src={userAvatarUrl}
-            alt={userName}
+            alt={displayName}
             className="w-9 h-9 rounded-full ring-2 ring-border-subtle"
           />
         ) : (
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-iris to-brand-magenta flex items-center justify-center text-white text-xs font-bold ring-2 ring-border-subtle">
-            {(displayName || 'U').charAt(0).toUpperCase()}
+            {avatarLetter}
           </div>
         )}
         <CaretDown
@@ -151,14 +161,16 @@ function UserMenu({
 
       {open && (
         <div className="absolute right-0 top-full mt-2 w-56 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden">
-          {/* User info */}
+          {/* User info — item 10: surface email so the user can verify */}
           <div className="px-4 py-3 border-b border-slate-4">
             <p className="font-medium text-white text-sm truncate">
               {displayName}
             </p>
-            <p className="text-xs truncate" style={{ color: '#7A7A8A' }}>
-              {displayEmail}
-            </p>
+            {displayEmail && (
+              <p className="text-xs truncate" style={{ color: '#7A7A8A' }}>
+                {displayEmail}
+              </p>
+            )}
           </div>
 
           {/* Main nav */}
@@ -213,33 +225,12 @@ function UserMenu({
 // ── Main Topbar ─────────────────────────────────────────────
 
 export function CommandCenterTopbar({
-  orgName: _orgName = 'Pravado Test 01',
-  userName = 'User',
+  orgName,
+  userName,
   userEmail,
   userAvatarUrl,
 }: CommandCenterTopbarProps) {
   const pathname = usePathname();
-  const [activeChips, setActiveChips] = useState<Set<string>>(
-    new Set(['sage', 'citemind'])
-  );
-
-  const toggleChip = (chipId: string) => {
-    setActiveChips((prev) => {
-      const next = new Set(prev);
-      if (next.has(chipId)) {
-        next.delete(chipId);
-      } else {
-        next.add(chipId);
-      }
-      return next;
-    });
-  };
-
-  const contextChips = [
-    { id: 'sage', label: 'SAGE\u2122', color: 'brand-cyan' },
-    { id: 'craft', label: 'CRAFT\u2122', color: 'brand-magenta' },
-    { id: 'citemind', label: 'CiteMind\u2122', color: 'brand-iris' },
-  ];
 
   // Check if a nav item is active
   const isActive = (href: string) => {
@@ -256,10 +247,10 @@ export function CommandCenterTopbar({
     <>
       <header className="sticky top-0 z-50 h-20 bg-slate-1/95 backdrop-blur-xl border-b border-border-subtle flex items-center px-3 gap-4">
         {/* ============================================
-            LEFT CLUSTER: Logo + Org Selector
+            LEFT CLUSTER: Logo + Org Name
             ============================================ */}
         <div className="flex items-center gap-3 flex-shrink-0 pl-2">
-          {/* Pravado Wordmark + AI Status */}
+          {/* Pravado Wordmark + " / OrgName " */}
           <Link
             href="/app/command-center"
             className="flex items-center gap-1.5 group"
@@ -269,6 +260,11 @@ export function CommandCenterTopbar({
               PRAVADO
             </span>
           </Link>
+          {orgName && (
+            <span className="hidden md:inline text-white/40 text-sm">
+              / {orgName}
+            </span>
+          )}
         </div>
 
         {/* ============================================
@@ -302,7 +298,9 @@ export function CommandCenterTopbar({
         </nav>
 
         {/* ============================================
-            RIGHT CLUSTER: AI Status + Chips + Notif + User
+            RIGHT CLUSTER: AI Status + User Menu
+            (Item 6: notification bell removed)
+            (Item 7: SAGE/CRAFT/CiteMind chips removed)
             ============================================ */}
         <div className="flex items-center gap-1.5">
           {/* AI Active Indicator */}
@@ -312,48 +310,6 @@ export function CommandCenterTopbar({
               AI Active
             </span>
           </div>
-
-          {/* Context Toggle Chips */}
-          <div className="hidden xl:flex items-center gap-1">
-            {contextChips.map((chip) => {
-              const isChipActive = activeChips.has(chip.id);
-              return (
-                <button
-                  key={chip.id}
-                  onClick={() => toggleChip(chip.id)}
-                  className={`
-                    flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium
-                    transition-all duration-200 border
-                    ${
-                      isChipActive
-                        ? chip.color === 'brand-magenta'
-                          ? 'bg-brand-magenta/10 text-brand-magenta border-brand-magenta/25 shadow-[0_0_8px_rgba(232,121,249,0.15)]'
-                          : 'bg-brand-iris/10 text-brand-iris border-brand-iris/25 shadow-[0_0_8px_rgba(168,85,247,0.15)]'
-                        : 'bg-transparent text-white/55 border-border-subtle hover:border-slate-5 hover:text-white/80'
-                    }
-                  `}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      isChipActive
-                        ? chip.color === 'brand-magenta'
-                          ? 'bg-brand-magenta'
-                          : 'bg-brand-iris'
-                        : 'bg-white/35'
-                    }`}
-                  />
-                  {chip.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Notifications */}
-          <button className="relative p-2 text-white/55 hover:text-white hover:bg-slate-4 rounded-lg transition-colors">
-            <Bell weight="regular" className="w-6 h-6" />
-            {/* Notification badge */}
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-brand-magenta shadow-[0_0_4px_rgba(232,121,249,0.6)]" />
-          </button>
 
           {/* User Menu */}
           <UserMenu
