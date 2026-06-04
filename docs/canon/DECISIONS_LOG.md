@@ -665,3 +665,13 @@ The decision was made in conversation on 2026-04-21 and never written to canon. 
 - **DECISION (Phase 0 Track 0C item 12 — PostHog kill switch):** `PostHogProvider` now requires BOTH `NEXT_PUBLIC_POSTHOG_ENABLED === 'true'` AND `NEXT_PUBLIC_POSTHOG_KEY` non-empty before initializing. `.env.example` defaults `_ENABLED=false` so a stale dev key never auto-captures beta-user events. Production key verification in the PostHog dashboard remains an architect task before flipping `_ENABLED=true`.
 
 (End)
+
+## 2026-06-03
+
+- **GATE SATISFIED (Phase 0 exit):** CI green on 3 consecutive runs over 24h+ on main. Anchor Run 1 at 2026-06-02T20:39:23Z (commit e4fdd67), Run 2 at 2026-06-02T21:55:24Z (commit adb03890), Run 3 at 2026-06-04T18:58:32Z (commit adb03890, workflow_dispatch via ). Total spread: 46h 19m 9s (≥24h). Phase 0 Fire Break sprint closed. Beta launch unblocked.
+
+- **OBSERVATION (Phase 0.5 scope):** Two pre-existing workflow failures discovered during the 24h watch — deploy-dashboard.yml validators typecheck (#15) and deploy-api.yml workflow parse failure (#16). Neither blocks the CI gate signal. Both filed as Phase 1 P2 with  label. Phase 0.5 Observability sprint absorbs both.
+
+- **OBSERVATION (scheduled-task Run 3 dispatch failure — operational note):** A scheduled task was armed at fire-at 2026-06-03T20:45:00Z to fire Run 3 in a fresh agent context. The task ran (lastRunAt 2026-06-03T20:45:37Z) but the  dispatch never landed — no Run 3 visible on main when checked at 2026-06-04T18:57Z. Run 3 was therefore fired manually from this session at 2026-06-04T18:58:32Z. Phase 0.5 should not rely on scheduled-task agents for time-gated CI triggers without verifying their gh-CLI auth context first.
+
+(End)
