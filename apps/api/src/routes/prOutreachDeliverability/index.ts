@@ -17,6 +17,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
+import { captureRawBody } from '../../lib/captureRawBody';
 import { requireUser } from '../../middleware/requireUser';
 import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
 
@@ -464,18 +465,18 @@ export default async function prOutreachDeliverabilityRoutes(
    * POST /api/pr-outreach-deliverability/webhooks/:provider
    * Process webhook events from email providers (S98 - with signature validation)
    */
-  fastify.post(
+  fastify.post<{ Params: { provider: string } }>(
     '/webhooks/:provider',
     {
-      // For SendGrid signature validation, we need the raw body
-      config: {
-        rawBody: true,
-      },
+      // Raw body is required for HMAC signature verification (SendGrid /
+      // Mailgun). Plan 06d replaced the `fastify-raw-body` plugin (Fastify
+      // ^5.x peer dep, repo on 4.29.1) with this per-route preParsing hook —
+      // see apps/api/src/lib/captureRawBody.ts. The hook decorates
+      // `request.rawBody` with the byte-exact Buffer that arrived on the
+      // wire, then re-streams it so Fastify body parsing continues normally.
+      preParsing: captureRawBody,
     },
-    async (
-      request: FastifyRequest<{ Params: { provider: string } }>,
-      reply: FastifyReply
-    ) => {
+    async (request, reply: FastifyReply) => {
       const { provider } = request.params;
 
       // Validate provider
@@ -501,26 +502,27 @@ export default async function prOutreachDeliverabilityRoutes(
         'x-twilio-email-event-webhook-timestamp'
       ] as string;
 
-      // Raw body required for HMAC signature verification. The route opts into
-      // @fastify/raw-body via `config: { rawBody: true }` above; the plugin is
-      // registered with global:false in server.ts. If rawBody is missing here,
-      // the plugin is misconfigured and we must REJECT the webhook (cannot fall
-      // back to JSON.stringify(request.body) ? re-serialized bytes ? original
-      // wire bytes, so signature verification would silently fail and the event
-      // would be ack'd to SendGrid while being dropped here. See Track 0D
-      // Group 1 B1 / DECISIONS_LOG 2026-05-15.).
+      // Raw body required for HMAC signature verification. The route's
+      // `preParsing: captureRawBody` hook (above) decorates `request.rawBody`
+      // with the byte-exact Buffer that arrived on the wire. If `rawBody` is
+      // missing here, the hook didn't run — REJECT the webhook with 500.
+      // NEVER fall back to JSON.stringify(request.body): re-serialized bytes
+      // do not match the bytes SendGrid signed, so HMAC verification would
+      // silently fail and the event would be ack'd while being dropped here.
+      // (Track 0D Group 1 B1 hardening principle; DECISIONS_LOG 2026-05-15,
+      // 2026-06-05.)
       const rawBody = request.rawBody?.toString();
       if (!rawBody) {
         fastify.log.error(
-          { provider, hasRawBody: false },
-          'Webhook rejected: raw body unavailable. @fastify/raw-body plugin must be registered globally:false with this route opted-in via config.rawBody:true.'
+          { provider, hasRawBody: false, requestId: request.id },
+          'Webhook rejected: raw body unavailable. captureRawBody preParsing hook did not decorate request.rawBody.'
         );
         return reply.status(500).send({
           success: false,
           error: {
             code: 'RAW_BODY_UNAVAILABLE',
             message:
-              'Webhook signature validation requires raw body; plugin misconfiguration.',
+              'Webhook signature validation requires raw body; preParsing hook misconfigured.',
           },
         });
       }

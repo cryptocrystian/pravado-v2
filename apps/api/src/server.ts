@@ -11,18 +11,16 @@ import { createLogger } from '@pravado/utils';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import Fastify from 'fastify';
-import rawBody from 'fastify-raw-body';
 
-// Module augmentation for fastify-raw-body ? the plugin's own plugin.d.ts
-// declares this but moduleResolution:Bundler doesn't pick it up because
-// the package's package.json#exports is empty. Mirror here so all routes
-// in apps/api see `FastifyRequest.rawBody` and `FastifyContextConfig.rawBody`.
+// Raw-body capture moved to a per-route `preParsing` hook (see
+// apps/api/src/lib/captureRawBody.ts). The `fastify-raw-body` plugin was
+// removed in Plan 06d because its `^5.x` peer-dep crashed every Render
+// deploy since 2026-05-23 (commit 6c27359c). The `FastifyRequest.rawBody`
+// type augmentation below stays so route handlers can still read the
+// decoration set by the hook.
 declare module 'fastify' {
   interface FastifyRequest {
     rawBody?: string | Buffer;
-  }
-  interface FastifyContextConfig {
-    rawBody?: boolean;
   }
 }
 
@@ -122,14 +120,8 @@ export async function createServer() {
     disableRequestLogging: false,
   });
 
-  // Raw-body plugin (route opt-in via config.rawBody: true) ? required for
-  // SendGrid webhook HMAC signature verification at /api/pr-outreach-deliverability/webhooks/:provider
-  await server.register(rawBody, {
-    field: 'rawBody',
-    global: false,
-    encoding: 'utf8',
-    runFirst: true,
-  });
+  // Raw-body capture is per-route via a `preParsing` hook — see
+  // apps/api/src/lib/captureRawBody.ts. No global plugin registration needed.
 
   await server.register(cookie, {
     secret: config.COOKIE_SECRET,
