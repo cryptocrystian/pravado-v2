@@ -10,7 +10,7 @@ const BASE = process.env.PLAYWRIGHT_BASE_URL || 'https://app.pravado.io';
 test.describe('Auth flows', () => {
   test('login page loads with Google + Microsoft buttons', async ({ page }) => {
     await page.goto(`${BASE}/login`);
-    await expect(page.getByText('Welcome back')).toBeVisible();
+    await expect(page.getByText('Sign in to Pravado')).toBeVisible();
     await expect(page.getByText('Continue with Google')).toBeVisible();
     await expect(page.getByText('Continue with Microsoft')).toBeVisible();
   });
