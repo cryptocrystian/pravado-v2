@@ -702,6 +702,6 @@ The decision was made in conversation on 2026-04-21 and never written to canon. 
   - PR #28 — Plan 04 (scheduled CI cron + email to christian@saipienlabs.com via dawidd6/action-send-mail) — `phase-0-5/04-cron`
   - PR #29 — Plan 05 (husky v9 + lint-staged + monitored-dir clean-check) — `phase-0-5/05-pre-commit`
   - PR #30 — Plan 06c (validators @types/node; closes #15) — `phase-0-5/06c-validators-types-node`
-  Each PR's implementation begins independently. Each requires 16/16 CI green (including Plan 06d API startup smoke test, now permanent) and architect diff review before merge.
+    Each PR's implementation begins independently. Each requires 16/16 CI green (including Plan 06d API startup smoke test, now permanent) and architect diff review before merge.
 
 (End)
