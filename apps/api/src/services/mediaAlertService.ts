@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:mediaAlertService');
 /**
  * Media Alert Service (Sprint S43)
  * Core service for media monitoring alerts, smart signals, and rule-based event generation
@@ -34,6 +35,7 @@ import {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // ========================================
 // SERVICE CONFIGURATION
 // ========================================
@@ -366,7 +368,7 @@ export class MediaAlertService {
     mention: EarnedMention
   ): Promise<MediaAlertEvent[]> {
     if (this.debugMode) {
-      console.log(
+      logger.info(
         `[MediaAlertService] Evaluating rules for new mention: ${mention.id}`
       );
     }
@@ -491,7 +493,7 @@ export class MediaAlertService {
    */
   async evaluateRulesForWindow(orgId: string): Promise<MediaAlertEvent[]> {
     if (this.debugMode) {
-      console.log(
+      logger.info(
         `[MediaAlertService] Evaluating time-window rules for org: ${orgId}`
       );
     }
@@ -578,7 +580,7 @@ export class MediaAlertService {
     const { count, error } = await countQuery;
 
     if (error) {
-      console.error(
+      logger.error(
         `Failed to count mentions for volume spike: ${error.message}`
       );
       return null;
@@ -779,7 +781,7 @@ export class MediaAlertService {
     );
 
     if (statsError) {
-      console.error(`Failed to fetch alert stats: ${statsError.message}`);
+      logger.error(`Failed to fetch alert stats: ${statsError.message}`);
       // Fallback to manual calculation
       return this.getSignalsOverviewFallback(orgId);
     }

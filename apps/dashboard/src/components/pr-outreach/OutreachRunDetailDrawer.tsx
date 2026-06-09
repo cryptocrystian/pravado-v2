@@ -14,6 +14,12 @@ import {
   stopOutreachRun,
 } from '@/lib/prOutreachApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:pr-outreach:OutreachRunDetailDrawer'
+);
+
 export interface OutreachRunDetailDrawerProps {
   runId: string;
   onClose: () => void;
@@ -39,7 +45,7 @@ export function OutreachRunDetailDrawer({
       const data = await getOutreachRun(runId);
       setRun(data);
     } catch (error) {
-      console.error('Failed to load run:', error);
+      logger.error('Failed to load run:', error);
       alert('Failed to load run details');
     } finally {
       setLoading(false);
@@ -55,7 +61,7 @@ export function OutreachRunDetailDrawer({
       onRunChange();
       loadRun();
     } catch (error) {
-      console.error('Failed to stop run:', error);
+      logger.error('Failed to stop run:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
@@ -73,7 +79,7 @@ export function OutreachRunDetailDrawer({
       onRunChange();
       loadRun();
     } catch (error) {
-      console.error('Failed to advance run:', error);
+      logger.error('Failed to advance run:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );

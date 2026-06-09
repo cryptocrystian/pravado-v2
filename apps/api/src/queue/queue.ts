@@ -13,7 +13,9 @@ import type {
   JobExecutionContext,
 } from './jobs';
 import { DEFAULT_QUEUE_CONFIG } from './jobs';
+import { createLogger } from '../lib/logger';
 
+const logger = createLogger('api:queue:queue');
 /**
  * Queue statistics
  */
@@ -331,7 +333,7 @@ export class JobQueue {
     if (this.isRunning) return;
 
     this.isRunning = true;
-    console.log('[Queue] Started');
+    logger.info('[Queue] Started');
   }
 
   /**
@@ -347,7 +349,7 @@ export class JobQueue {
       this.pollInterval = null;
     }
 
-    console.log('[Queue] Stopped');
+    logger.info('[Queue] Stopped');
   }
 
   /**

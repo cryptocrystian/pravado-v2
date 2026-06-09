@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:personality:personalityStore');
 /**
  * Personality Store Service (Sprint S11)
  * Handles CRUD operations for agent personalities and assignments
@@ -10,6 +11,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../../lib/logger';
 export interface PersonalityStoreOptions {
   debugMode?: boolean;
 }
@@ -49,7 +51,7 @@ export class PersonalityStore {
     data: CreatePersonalityInput
   ): Promise<AgentPersonality> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Creating personality', {
+      logger.info('[PersonalityStore] Creating personality', {
         orgId,
         slug: data.slug,
       });
@@ -84,7 +86,7 @@ export class PersonalityStore {
     data: UpdatePersonalityInput
   ): Promise<AgentPersonality> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Updating personality', {
+      logger.info('[PersonalityStore] Updating personality', {
         orgId,
         personalityId,
       });
@@ -124,7 +126,7 @@ export class PersonalityStore {
     offset: number = 0
   ): Promise<AgentPersonality[]> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Listing personalities', {
+      logger.info('[PersonalityStore] Listing personalities', {
         orgId,
         limit,
         offset,
@@ -153,7 +155,7 @@ export class PersonalityStore {
     id: string
   ): Promise<AgentPersonality | null> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Getting personality', { orgId, id });
+      logger.info('[PersonalityStore] Getting personality', { orgId, id });
     }
 
     const { data, error } = await this.supabase
@@ -181,7 +183,7 @@ export class PersonalityStore {
     slug: string
   ): Promise<AgentPersonality | null> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Getting personality by slug', {
+      logger.info('[PersonalityStore] Getting personality by slug', {
         orgId,
         slug,
       });
@@ -213,7 +215,7 @@ export class PersonalityStore {
     personalityId: string
   ): Promise<void> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Assigning personality to agent', {
+      logger.info('[PersonalityStore] Assigning personality to agent', {
         orgId,
         agentId,
         personalityId,
@@ -265,7 +267,7 @@ export class PersonalityStore {
     agentId: string
   ): Promise<AgentPersonality | null> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Getting personality for agent', {
+      logger.info('[PersonalityStore] Getting personality for agent', {
         orgId,
         agentId,
       });
@@ -293,7 +295,7 @@ export class PersonalityStore {
     agentId: string
   ): Promise<void> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Removing personality from agent', {
+      logger.info('[PersonalityStore] Removing personality from agent', {
         orgId,
         agentId,
       });
@@ -317,7 +319,7 @@ export class PersonalityStore {
    */
   async listAssignments(orgId: string): Promise<PersonalityAssignment[]> {
     if (this.debugMode) {
-      console.log('[PersonalityStore] Listing assignments', { orgId });
+      logger.info('[PersonalityStore] Listing assignments', { orgId });
     }
 
     const { data, error } = await this.supabase

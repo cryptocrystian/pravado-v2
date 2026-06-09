@@ -6,9 +6,10 @@
  * No database schema required - purely for runtime stability monitoring.
  */
 
-import { createLogger } from '@pravado/utils';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { z } from 'zod';
+
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('api:client-logs');
 

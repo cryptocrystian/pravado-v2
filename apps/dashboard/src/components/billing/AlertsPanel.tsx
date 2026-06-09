@@ -10,6 +10,9 @@
 import type { BillingAlertRecord, BillingAlertSummary } from '@pravado/types';
 import { useEffect, useState } from 'react';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger('dashboard:components:billing:AlertsPanel');
 /**
  * API Response types
  */
@@ -95,7 +98,7 @@ export function AlertsPanel() {
       }
     } catch (err) {
       const error = err as Error;
-      console.error('Failed to fetch alerts:', error);
+      logger.error('Failed to fetch alerts:', error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -144,7 +147,7 @@ export function AlertsPanel() {
       }
     } catch (err) {
       const error = err as Error;
-      console.error('Failed to acknowledge alert:', error);
+      logger.error('Failed to acknowledge alert:', error);
       alert(`Failed to acknowledge alert: ${error.message}`);
     } finally {
       setAcknowledging((prev) => {

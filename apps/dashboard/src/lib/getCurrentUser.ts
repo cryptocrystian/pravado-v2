@@ -11,6 +11,9 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
+import { createServerLogger } from './serverLogger';
+
+const logger = createServerLogger('dashboard:lib:getCurrentUser');
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -40,12 +43,12 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
     } = await supabase.auth.getSession();
 
     if (error || !session?.user) {
-      console.log('[getCurrentUser] No session:', error?.message ?? 'no user');
+      logger.info('[getCurrentUser] No session:', error?.message ?? 'no user');
       return null;
     }
 
     const user = session.user;
-    console.log('[getCurrentUser] User:', user.email);
+    logger.info('[getCurrentUser] User:', user.email);
 
     // Use service-role client for org queries (bypasses RLS)
     const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -58,7 +61,7 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
       .eq('user_id', user.id);
 
     if (membershipError) {
-      console.error(
+      logger.error(
         '[getCurrentUser] Org membership error:',
         membershipError.message
       );
@@ -103,7 +106,7 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
       activeOrg,
     };
   } catch (error) {
-    console.error('[getCurrentUser] Error:', error);
+    logger.error('[getCurrentUser] Error:', error);
     return null;
   }
 }

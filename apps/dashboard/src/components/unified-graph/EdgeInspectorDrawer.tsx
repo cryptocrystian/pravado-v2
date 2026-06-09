@@ -39,6 +39,12 @@ import {
   updateEdge,
 } from '@/lib/unifiedGraphApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:unified-graph:EdgeInspectorDrawer'
+);
+
 interface EdgeInspectorDrawerProps {
   edgeId: string | null;
   onClose: () => void;
@@ -81,7 +87,7 @@ export function EdgeInspectorDrawer({
           isBidirectional: result.edge.isBidirectional,
         });
       } catch (error) {
-        console.error('Failed to fetch edge:', error);
+        logger.error('Failed to fetch edge:', error);
       } finally {
         setIsLoading(false);
       }
@@ -108,7 +114,7 @@ export function EdgeInspectorDrawer({
       const result = await getEdgeWithNodes(edgeId);
       setData(result);
     } catch (error) {
-      console.error('Failed to update edge:', error);
+      logger.error('Failed to update edge:', error);
     } finally {
       setIsSaving(false);
     }

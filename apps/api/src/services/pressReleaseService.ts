@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:pressReleaseService');
 /**
  * Press Release Service (Sprint S38)
  * AI-powered press release generation engine
@@ -39,6 +40,7 @@ import type {
 import type { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // Event emitter for generation progress
 export const prGenerationEmitter = new EventEmitter();
 
@@ -369,7 +371,7 @@ Return a JSON array of 5 angle objects.`;
         }));
       }
     } catch (error) {
-      console.error(
+      logger.error(
         '[PressRelease] LLM angle generation failed, using fallback:',
         error instanceof Error ? error.message : error
       );
@@ -684,7 +686,7 @@ Return a JSON array of 10 headline strings.`;
         }));
       }
     } catch (error) {
-      console.error(
+      logger.error(
         '[PressRelease] LLM headline generation failed, using fallback:',
         error instanceof Error ? error.message : error
       );
@@ -1010,7 +1012,7 @@ Return a JSON object with the press release sections.`;
         };
       }
     } catch (error) {
-      console.error(
+      logger.error(
         '[PressRelease] LLM draft generation failed, using fallback:',
         error instanceof Error ? error.message : error
       );
@@ -1720,7 +1722,7 @@ Return a JSON object with the press release sections.`;
 
     if (error) {
       if (this.debugMode) {
-        console.error('Similarity search failed:', error);
+        logger.error('Similarity search failed:', error);
       }
       return [];
     }

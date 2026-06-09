@@ -12,6 +12,10 @@ import type {
   PersonalityProfile,
 } from '@pravado/types';
 
+import { createLogger } from '../lib/logger';
+
+const logger = createLogger('api:services:collaborationCoordinator');
+
 export interface CollaborationCoordinatorOptions {
   initialSharedState?: Record<string, unknown>;
   personality?: PersonalityProfile; // S11: Optional personality configuration
@@ -45,7 +49,7 @@ export class CollaborationCoordinator {
     });
 
     if (this.debugMode) {
-      console.log('[CollaborationCoordinator] Message recorded:', message);
+      logger.info('[CollaborationCoordinator] Message recorded:', message);
     }
 
     // Check if this is an escalation message
@@ -107,7 +111,7 @@ export class CollaborationCoordinator {
       // For now, we always escalate if requested, but log the personality influence
       // In production, this could probabilistically skip escalation based on personality
       if (this.debugMode) {
-        console.log(
+        logger.info(
           `[CollaborationCoordinator] Personality influence on escalation:`,
           {
             sensitivity,
@@ -125,7 +129,7 @@ export class CollaborationCoordinator {
       this.escalationLevel = level;
 
       if (this.debugMode) {
-        console.log(
+        logger.info(
           `[CollaborationCoordinator] Escalated to ${level}: ${reason}`
         );
       }
@@ -158,7 +162,7 @@ export class CollaborationCoordinator {
     };
 
     if (this.debugMode) {
-      console.log('[CollaborationCoordinator] Shared state updated:', update);
+      logger.info('[CollaborationCoordinator] Shared state updated:', update);
     }
   }
 
@@ -180,7 +184,7 @@ export class CollaborationCoordinator {
     // - How to frame requests (assertive vs. cooperative)
     // - Willingness to accept delegated tasks
     if (this.personality && this.debugMode) {
-      console.log(
+      logger.info(
         `[CollaborationCoordinator] Collaboration style: ${this.personality.collaborationStyle}`
       );
     }
@@ -292,7 +296,7 @@ export class CollaborationCoordinator {
   setPersonality(personality: PersonalityProfile | undefined): void {
     this.personality = personality;
     if (this.debugMode && personality) {
-      console.log('[CollaborationCoordinator] Personality set:', {
+      logger.info('[CollaborationCoordinator] Personality set:', {
         tone: personality.tone,
         style: personality.style,
         riskTolerance: personality.riskTolerance,

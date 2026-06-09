@@ -5,6 +5,9 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 
+import { createLogger } from '../lib/clientLogger';
+
+const logger = createLogger('dashboard:hooks:useExecutionStream');
 /**
  * Execution event types (matches backend)
  */
@@ -139,7 +142,7 @@ export function useExecutionStream(
           error: null,
         }));
         retryCountRef.current = 0;
-        console.log('[SSE] Connected to execution stream');
+        logger.info('[SSE] Connected to execution stream');
       });
 
       // Listen to all execution event types
@@ -159,14 +162,14 @@ export function useExecutionStream(
             const event: ExecutionEvent = JSON.parse(e.data);
             addEvent(event);
           } catch (err) {
-            console.error('[SSE] Failed to parse event:', err);
+            logger.error('[SSE] Failed to parse event:', err);
           }
         });
       });
 
       // Error handling
       eventSource.onerror = (error) => {
-        console.error('[SSE] Connection error:', error);
+        logger.error('[SSE] Connection error:', error);
         eventSource.close();
 
         setState((prev) => ({
@@ -180,7 +183,7 @@ export function useExecutionStream(
           retryCountRef.current++;
           const delay = retryDelay * Math.pow(2, retryCountRef.current - 1);
 
-          console.log(
+          logger.info(
             `[SSE] Retrying connection in ${delay}ms (attempt ${retryCountRef.current}/${maxRetries})`
           );
 
@@ -195,7 +198,7 @@ export function useExecutionStream(
         }
       };
     } catch (err) {
-      console.error('[SSE] Failed to create EventSource:', err);
+      logger.error('[SSE] Failed to create EventSource:', err);
       setState((prev) => ({
         ...prev,
         connected: false,

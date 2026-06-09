@@ -7,9 +7,11 @@ import { apiEnvSchema, validateEnv } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { OpsMetricsService } from '../../services/opsMetricsService';
 
+const logger = createLogger('api:routes:ops');
 /**
  * Helper to get user's org ID
  */
@@ -80,7 +82,7 @@ export async function opsRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Ops] Failed to fetch overview', { error });
+      logger.error('[Ops] Failed to fetch overview', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -105,7 +107,7 @@ export async function opsRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Ops] Failed to fetch queue stats', { error });
+      logger.error('[Ops] Failed to fetch queue stats', { error });
       return reply.code(500).send({
         success: false,
         error: {

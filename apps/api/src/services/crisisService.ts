@@ -61,8 +61,10 @@ import {
   CRISIS_SECTION_CONFIGS,
   MitigationLevel,
 } from '@pravado/types';
-import { LlmRouter, createLogger } from '@pravado/utils';
+import { LlmRouter } from '@pravado/utils';
 import { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('crisis-service');
 

@@ -20,7 +20,6 @@ import type {
   AuditQueryResult,
   AuditSeverity,
 } from '@pravado/types';
-import { createLogger } from '@pravado/utils';
 import {
   AUDIT_EVENT_METADATA,
   getEventCategories,
@@ -28,6 +27,8 @@ import {
   getEventsByCategory,
 } from '@pravado/validators';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('audit-service');
 

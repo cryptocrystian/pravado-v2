@@ -7,7 +7,9 @@
  */
 
 import type { EditorEvent } from './editorEventTypes';
+import { createLogger } from '../../lib/logger';
 
+const logger = createLogger('api:events:editor:editorEventBus');
 type EventHandler = (event: EditorEvent) => void;
 
 interface Subscription {
@@ -80,7 +82,7 @@ export class EditorEventBus {
       try {
         sub.handler(event);
       } catch (error) {
-        console.error(
+        logger.error(
           `Error in event handler for playbook ${event.playbookId}:`,
           error
         );

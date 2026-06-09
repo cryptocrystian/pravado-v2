@@ -21,7 +21,11 @@ import {
 
 import { modeStyles, pillarAccents, priorityStyles } from './pillar-accents';
 import type { ActionItem } from './types';
+import { createLogger } from '../../lib/clientLogger';
 
+const logger = createLogger(
+  'dashboard:components:command-center:ActionPeekDrawer'
+);
 interface ActionPeekDrawerProps {
   action: ActionItem | null;
   isOpen: boolean;
@@ -258,7 +262,7 @@ export function ActionPeekDrawer({
               `}
               onClick={() => {
                 // TODO: Implement primary action
-                console.log('Primary CTA:', action.cta.primary);
+                logger.info('Primary CTA:', action.cta.primary);
               }}
             >
               {action.cta.primary}
@@ -267,7 +271,7 @@ export function ActionPeekDrawer({
               className="px-4 py-2.5 text-sm font-medium text-white/70 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors"
               onClick={() => {
                 // TODO: Implement secondary action
-                console.log('Secondary CTA:', action.cta.secondary);
+                logger.info('Secondary CTA:', action.cta.secondary);
               }}
             >
               {action.cta.secondary}

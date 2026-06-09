@@ -35,9 +35,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { RiskRadarService } from '../../services/riskRadarService';
 
+const logger = createLogger('api:routes:riskRadar');
 /**
  * Helper to get user's org ID
  */
@@ -141,7 +143,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to get dashboard', { error });
+        logger.error('[RiskRadar] Failed to get dashboard', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -194,7 +196,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to list snapshots', { error });
+        logger.error('[RiskRadar] Failed to list snapshots', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -244,7 +246,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(201).send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to create snapshot', { error });
+        logger.error('[RiskRadar] Failed to create snapshot', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -286,7 +288,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to get active snapshot', { error });
+        logger.error('[RiskRadar] Failed to get active snapshot', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -345,7 +347,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to get snapshot', { error });
+        logger.error('[RiskRadar] Failed to get snapshot', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -404,7 +406,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to get snapshot detail', { error });
+        logger.error('[RiskRadar] Failed to get snapshot detail', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -469,7 +471,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to update snapshot', { error });
+        logger.error('[RiskRadar] Failed to update snapshot', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -519,7 +521,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, message: 'Snapshot archived' });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to archive snapshot', { error });
+        logger.error('[RiskRadar] Failed to archive snapshot', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -587,7 +589,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to list indicators', { error });
+        logger.error('[RiskRadar] Failed to list indicators', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -637,7 +639,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to rebuild indicators', { error });
+        logger.error('[RiskRadar] Failed to rebuild indicators', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -705,7 +707,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to list forecasts', { error });
+        logger.error('[RiskRadar] Failed to list forecasts', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -770,7 +772,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(201).send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to create forecast', { error });
+        logger.error('[RiskRadar] Failed to create forecast', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -829,7 +831,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to get forecast', { error });
+        logger.error('[RiskRadar] Failed to get forecast', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -894,7 +896,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to regenerate forecast', { error });
+        logger.error('[RiskRadar] Failed to regenerate forecast', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -962,7 +964,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to list drivers', { error });
+        logger.error('[RiskRadar] Failed to list drivers', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1014,7 +1016,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to identify drivers', { error });
+        logger.error('[RiskRadar] Failed to identify drivers', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1080,7 +1082,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to list notes', { error });
+        logger.error('[RiskRadar] Failed to list notes', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1145,7 +1147,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(201).send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to create note', { error });
+        logger.error('[RiskRadar] Failed to create note', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1210,7 +1212,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to update note', { error });
+        logger.error('[RiskRadar] Failed to update note', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1256,7 +1258,7 @@ export async function riskRadarRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, message: 'Note deleted' });
       } catch (err) {
         const error = err as Error;
-        console.error('[RiskRadar] Failed to delete note', { error });
+        logger.error('[RiskRadar] Failed to delete note', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },

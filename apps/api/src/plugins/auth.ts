@@ -1,8 +1,9 @@
-import { createLogger } from '@pravado/utils';
 import { validateEnv, apiEnvSchema } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('api:auth');
 

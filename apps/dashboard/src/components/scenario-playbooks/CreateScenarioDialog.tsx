@@ -14,8 +14,12 @@ import {
 } from '@pravado/types';
 import { useState, useEffect } from 'react';
 
+import { createLogger } from '../../lib/clientLogger';
 import { createScenario, listPlaybooks } from '../../lib/scenarioPlaybookApi';
 
+const logger = createLogger(
+  'dashboard:components:scenario-playbooks:CreateScenarioDialog'
+);
 interface CreateScenarioDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -93,7 +97,7 @@ export function CreateScenarioDialog({
       const response = await listPlaybooks({ limit: 100 });
       setPlaybooks(response.playbooks);
     } catch (err) {
-      console.error('Failed to load playbooks:', err);
+      logger.error('Failed to load playbooks:', err);
     } finally {
       setLoadingPlaybooks(false);
     }

@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:evi:eviDeltaService');
 /**
  * EVI Delta Service (Sprint S-INT-01)
  *
@@ -7,6 +8,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../../lib/logger';
 // ============================================================================
 // Types
 // ============================================================================
@@ -38,7 +40,7 @@ export async function getEVIDelta(
     .limit(2);
 
   if (error) {
-    console.error('[EVI Delta] Query failed:', error.message);
+    logger.error('[EVI Delta] Query failed:', error.message);
     return {
       delta: 0,
       deltaPercent: 0,

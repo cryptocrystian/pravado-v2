@@ -17,7 +17,11 @@ import { resolveDiscovery } from '@/lib/journalistDiscoveryApi';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { SocialProfileChips } from './SocialProfileChips';
 import { SourceTypeBadge } from './SourceTypeBadge';
+import { createLogger } from '../../lib/clientLogger';
 
+const logger = createLogger(
+  'dashboard:components:journalist-discovery:DiscoveryDetailDrawer'
+);
 export interface DiscoveryDetailDrawerProps {
   discovery: DiscoveredJournalist;
   onClose: () => void;
@@ -57,7 +61,7 @@ export function DiscoveryDetailDrawer({
       onResolved();
       onClose();
     } catch (error) {
-      console.error('Failed to resolve discovery:', error);
+      logger.error('Failed to resolve discovery:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );

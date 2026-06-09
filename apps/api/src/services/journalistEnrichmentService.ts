@@ -34,8 +34,9 @@ import type {
   FindDuplicatesResponse,
   MergeSuggestionsResponse,
 } from '@pravado/types';
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('journalist-enrichment-service');
 

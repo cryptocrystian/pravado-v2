@@ -9,6 +9,9 @@ import type { OutreachRun } from '@pravado/types';
 
 import { stopOutreachRun } from '@/lib/prOutreachApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger('dashboard:components:pr-outreach:OutreachRunList');
 export interface OutreachRunListProps {
   runs: OutreachRun[];
   selectedRun: OutreachRun | null;
@@ -37,7 +40,7 @@ export function OutreachRunList({
       await stopOutreachRun(run.id, 'manual_stop');
       onRunChange();
     } catch (error) {
-      console.error('Failed to stop run:', error);
+      logger.error('Failed to stop run:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );

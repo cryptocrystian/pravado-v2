@@ -15,9 +15,13 @@ import type {
 } from '@pravado/types';
 import { useState, useEffect } from 'react';
 
+import { createLogger } from '../../lib/clientLogger';
 import { PROBABILITY_MODELS, NARRATIVE_STYLES } from '../../lib/realityMapApi';
 import { listSuites } from '../../lib/scenarioOrchestrationApi';
 
+const logger = createLogger(
+  'dashboard:components:reality-maps:RealityCreateForm'
+);
 interface RealityCreateFormProps {
   map?: RealityMap;
   onSubmit: (
@@ -68,7 +72,7 @@ export function RealityCreateForm({
       const result = await listSuites({ limit: 100, status: 'configured' });
       setSuites(result.suites.map((s) => ({ id: s.id, name: s.name })));
     } catch (err) {
-      console.error('Failed to load suites', err);
+      logger.error('Failed to load suites', err);
     }
   };
 

@@ -22,10 +22,12 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { createMediaCrawlerService } from '../../services/mediaCrawlerService';
 import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
 
+const logger = createLogger('api:routes:mediaMonitoring:rss');
 /**
  * Register RSS and crawler routes
  */
@@ -115,7 +117,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: { feed },
         });
       } catch (error) {
-        console.error('Failed to add RSS feed:', error);
+        logger.error('Failed to add RSS feed:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -172,7 +174,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list RSS feeds:', error);
+        logger.error('Failed to list RSS feeds:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -225,7 +227,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: { feed },
         });
       } catch (error) {
-        console.error('Failed to get RSS feed:', error);
+        logger.error('Failed to get RSS feed:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -282,7 +284,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: { feed },
         });
       } catch (error) {
-        console.error('Failed to update RSS feed:', error);
+        logger.error('Failed to update RSS feed:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -325,7 +327,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: { message: 'RSS feed deactivated' },
         });
       } catch (error) {
-        console.error('Failed to deactivate RSS feed:', error);
+        logger.error('Failed to deactivate RSS feed:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -393,7 +395,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           },
         });
       } catch (error) {
-        console.error('Failed to fetch RSS feeds:', error);
+        logger.error('Failed to fetch RSS feeds:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -452,7 +454,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: { job },
         });
       } catch (error) {
-        console.error('Failed to create crawl job:', error);
+        logger.error('Failed to create crawl job:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -511,7 +513,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list crawl jobs:', error);
+        logger.error('Failed to list crawl jobs:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -557,7 +559,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           },
         });
       } catch (error) {
-        console.error('Failed to run crawl jobs:', error);
+        logger.error('Failed to run crawl jobs:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -602,7 +604,7 @@ export async function rssRoutes(server: FastifyInstance): Promise<void> {
           data: { stats },
         });
       } catch (error) {
-        console.error('Failed to get stats:', error);
+        logger.error('Failed to get stats:', error);
         return reply.status(500).send({
           success: false,
           error: {

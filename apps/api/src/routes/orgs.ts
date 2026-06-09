@@ -10,11 +10,7 @@ import type {
   ListMembersResponse,
   ResendInviteResponse,
 } from '@pravado/types';
-import {
-  buildInviteEmailHtml,
-  buildInviteEmailText,
-  createLogger,
-} from '@pravado/utils';
+import { buildInviteEmailHtml, buildInviteEmailText } from '@pravado/utils';
 import {
   validateEnv,
   apiEnvSchema,
@@ -25,6 +21,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../lib/logger';
 import { requireOrg } from '../middleware/requireOrg';
 import { requireRole } from '../middleware/requireRole';
 import { requireUser } from '../middleware/requireUser';

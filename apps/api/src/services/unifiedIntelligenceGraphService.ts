@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:unifiedIntelligenceGraphService');
 /**
  * Unified Intelligence Graph Service (Sprint S66)
  * Global Insight Fabric & Unified Intelligence Graph V1
@@ -50,6 +51,7 @@ import {
 import { SupabaseClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
+import { createLogger } from '../lib/logger';
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -308,7 +310,7 @@ async function logAuditEvent(
       execution_time_ms: options.executionTimeMs,
     });
   } catch (error) {
-    console.error('Failed to log audit event:', error);
+    logger.error('Failed to log audit event:', error);
   }
 }
 
@@ -1375,7 +1377,7 @@ Format your response as JSON with the following structure:
       keyRelationships: result.keyRelationships || [],
     };
   } catch (error) {
-    console.error('Failed to generate path explanation:', error);
+    logger.error('Failed to generate path explanation:', error);
     return {
       path,
       explanation: 'Failed to generate explanation',
@@ -1909,7 +1911,7 @@ export async function createSnapshot(
   if (error) throw new Error(`Failed to create snapshot: ${error.message}`);
 
   // Start generation in background
-  generateSnapshotAsync(ctx, snapshot.id, input).catch(console.error);
+  generateSnapshotAsync(ctx, snapshot.id, input).catch(logger.error);
 
   return mapDbSnapshot(snapshot);
 }
@@ -2106,7 +2108,7 @@ export async function regenerateSnapshot(
       | 'incremental'
       | 'metrics_only',
     computeDiff: true,
-  }).catch(console.error);
+  }).catch(logger.error);
 
   await logAuditEvent(ctx, GraphEventType.SNAPSHOT_REGENERATED, {
     snapshotId,

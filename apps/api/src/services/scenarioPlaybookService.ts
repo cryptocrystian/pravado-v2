@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:scenarioPlaybookService');
 /**
  * Scenario Simulation & Autonomous Playbook Orchestration Service (Sprint S67)
  * Backend service for scenario-based playbook simulation, orchestration, and execution
@@ -53,6 +54,7 @@ import {
 import { SupabaseClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
+import { createLogger } from '../lib/logger';
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -388,7 +390,7 @@ async function logAuditEvent(
       actor_email: options.email,
     });
   } catch (error) {
-    console.error('Failed to log scenario audit event:', error);
+    logger.error('Failed to log scenario audit event:', error);
   }
 }
 
@@ -1126,7 +1128,7 @@ export async function simulateScenario(
       simulatedAt: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('Simulation failed:', error);
+    logger.error('Simulation failed:', error);
     throw new Error(`Simulation failed: ${error}`);
   }
 }
@@ -1828,7 +1830,7 @@ Provide a JSON response with:
 
     return JSON.parse(content);
   } catch (error) {
-    console.error('Step simulation failed:', error);
+    logger.error('Step simulation failed:', error);
     return {
       success: true,
       outcome: 'Step executed (simulation unavailable)',
@@ -1912,7 +1914,7 @@ Provide a JSON response with:
       recommendations = result.recommendations || [];
     }
   } catch (error) {
-    console.error('Failed to generate run summary:', error);
+    logger.error('Failed to generate run summary:', error);
     narrativeSummary = `Completed ${executedSteps.length} steps with ${failedSteps.length} failures.`;
   }
 

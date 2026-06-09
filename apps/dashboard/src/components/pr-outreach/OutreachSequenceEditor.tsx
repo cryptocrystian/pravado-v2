@@ -21,6 +21,12 @@ import {
   updateOutreachSequence,
 } from '@/lib/prOutreachApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:pr-outreach:OutreachSequenceEditor'
+);
+
 export interface OutreachSequenceEditorProps {
   sequence: OutreachSequence | null;
   onClose: () => void;
@@ -56,7 +62,7 @@ export function OutreachSequenceEditor({
           setSteps(data.steps);
         })
         .catch((error) => {
-          console.error('Failed to load sequence:', error);
+          logger.error('Failed to load sequence:', error);
           alert('Failed to load sequence');
         })
         .finally(() => setLoading(false));
@@ -117,7 +123,7 @@ export function OutreachSequenceEditor({
 
       onSave();
     } catch (error) {
-      console.error('Failed to save sequence:', error);
+      logger.error('Failed to save sequence:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
@@ -168,7 +174,7 @@ export function OutreachSequenceEditor({
       handleUpdateStep(index, 'subjectTemplate', draft.subject);
       handleUpdateStep(index, 'bodyTemplate', draft.body);
     } catch (error) {
-      console.error('Failed to generate AI draft:', error);
+      logger.error('Failed to generate AI draft:', error);
       alert('Failed to generate draft. Please try again.');
     } finally {
       setGeneratingStepIndex(null);

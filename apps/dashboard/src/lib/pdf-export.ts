@@ -1,3 +1,7 @@
+import { createLogger } from './clientLogger';
+
+const logger = createLogger('dashboard:lib:pdf-export');
+
 /**
  * PDF Export Utility — uses window.print() with print-specific styling.
  *
@@ -11,7 +15,7 @@
  * then moved back after printing.
  */
 export function generatePdf(element: HTMLElement, _filename: string): void {
-  console.log('[PDF] Starting print-based generation...');
+  logger.info('[PDF] Starting print-based generation...');
 
   // Create a print container that will be the only thing visible during print
   const printContainer = document.createElement('div');
@@ -57,5 +61,5 @@ export function generatePdf(element: HTMLElement, _filename: string): void {
   document.body.removeChild(printContainer);
   document.head.removeChild(printStyle);
 
-  console.log('[PDF] Print dialog closed');
+  logger.info('[PDF] Print dialog closed');
 }

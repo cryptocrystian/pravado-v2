@@ -10,6 +10,11 @@ import { useEffect, useState } from 'react';
 
 import { generateMergePreview } from '@/lib/journalistDiscoveryApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:journalist-discovery:MergeConflictResolver'
+);
 type MergeConflict = MergePreview['conflicts'][number];
 
 export interface MergeConflictResolverProps {
@@ -56,7 +61,7 @@ export function MergeConflictResolver({
       });
       setResolutions(initialResolutions);
     } catch (error) {
-      console.error('Failed to load merge preview:', error);
+      logger.error('Failed to load merge preview:', error);
       alert('Failed to load merge preview');
       onCancel();
     } finally {

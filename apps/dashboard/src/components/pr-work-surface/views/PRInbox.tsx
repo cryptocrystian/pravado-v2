@@ -55,6 +55,7 @@ import {
 import type { AutomationMode } from '@/lib/mode-preferences';
 import { useMode } from '@/lib/ModeContext';
 
+import { createLogger } from '../../../lib/clientLogger';
 import {
   priorityStyles,
   modeStyles,
@@ -62,6 +63,9 @@ import {
 } from '../prWorkSurfaceStyles';
 import type { InboxItem, InboxItemType, SAGEDimension, Mode } from '../types';
 
+const logger = createLogger(
+  'dashboard:components:pr-work-surface:views:PRInbox'
+);
 // ============================================
 // API TYPES & FETCHER
 // ============================================
@@ -1834,11 +1838,11 @@ export function PRInbox() {
   }, [router, selectedItem]);
 
   const handleSnooze = useCallback(() => {
-    console.log('Snooze:', selectedId);
+    logger.info('Snooze:', selectedId);
   }, [selectedId]);
 
   const handleDismiss = useCallback(() => {
-    console.log('Dismiss:', selectedId);
+    logger.info('Dismiss:', selectedId);
     setSelectedId(null);
   }, [selectedId]);
 
@@ -1851,7 +1855,7 @@ export function PRInbox() {
   }, [router, selectedItem]);
 
   const handleAddNote = useCallback(() => {
-    console.log('Add note:', selectedId);
+    logger.info('Add note:', selectedId);
   }, [selectedId]);
 
   if (items.length === 0 && safeMode !== 'autopilot') {
@@ -1979,9 +1983,9 @@ export function PRInbox() {
       {modeBehavior.showQueueControls && (
         <PRQueueControlsBand
           itemCount={items.length}
-          onReorderByPriority={() => console.log('Reorder by priority')}
-          onReorderByDue={() => console.log('Reorder by due date')}
-          onBatchSnooze={() => console.log('Batch snooze low priority')}
+          onReorderByPriority={() => logger.info('Reorder by priority')}
+          onReorderByDue={() => logger.info('Reorder by due date')}
+          onBatchSnooze={() => logger.info('Batch snooze low priority')}
         />
       )}
 

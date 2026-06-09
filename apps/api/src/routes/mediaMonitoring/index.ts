@@ -20,10 +20,12 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { createMediaAlertService } from '../../services/mediaAlertService'; // S43
 import { createMediaMonitoringService } from '../../services/mediaMonitoringService';
 
+const logger = createLogger('api:routes:mediaMonitoring');
 /**
  * Register media monitoring routes
  */
@@ -130,7 +132,7 @@ export async function mediaMonitoringRoutes(
           data: { source },
         });
       } catch (error) {
-        console.error('Failed to create source:', error);
+        logger.error('Failed to create source:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -189,7 +191,7 @@ export async function mediaMonitoringRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list sources:', error);
+        logger.error('Failed to list sources:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -243,7 +245,7 @@ export async function mediaMonitoringRoutes(
           data: { source },
         });
       } catch (error) {
-        console.error('Failed to get source:', error);
+        logger.error('Failed to get source:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -300,7 +302,7 @@ export async function mediaMonitoringRoutes(
           data: { source },
         });
       } catch (error) {
-        console.error('Failed to update source:', error);
+        logger.error('Failed to update source:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -343,7 +345,7 @@ export async function mediaMonitoringRoutes(
           data: { message: 'Source deactivated' },
         });
       } catch (error) {
-        console.error('Failed to deactivate source:', error);
+        logger.error('Failed to deactivate source:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -416,7 +418,7 @@ export async function mediaMonitoringRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to ingest article:', error);
+        logger.error('Failed to ingest article:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -475,7 +477,7 @@ export async function mediaMonitoringRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list articles:', error);
+        logger.error('Failed to list articles:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -531,7 +533,7 @@ export async function mediaMonitoringRoutes(
           data: { article },
         });
       } catch (error) {
-        console.error('Failed to get article:', error);
+        logger.error('Failed to get article:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -596,7 +598,7 @@ export async function mediaMonitoringRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to detect mentions:', error);
+        logger.error('Failed to detect mentions:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -655,7 +657,7 @@ export async function mediaMonitoringRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list mentions:', error);
+        logger.error('Failed to list mentions:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -700,7 +702,7 @@ export async function mediaMonitoringRoutes(
           data: { stats },
         });
       } catch (error) {
-        console.error('Failed to get stats:', error);
+        logger.error('Failed to get stats:', error);
         return reply.status(500).send({
           success: false,
           error: {

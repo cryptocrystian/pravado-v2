@@ -12,7 +12,9 @@
 import 'server-only';
 
 import { getServerAccessToken, ServerAuthError } from './supabaseServerAuth';
+import { createServerLogger } from '../lib/serverLogger';
 
+const logger = createServerLogger('dashboard:server:prBackendProxy');
 // ============================================================================
 // Configuration
 // ============================================================================
@@ -25,8 +27,8 @@ function getApiBaseUrl(): string {
     process.env.API_BASE_URL;
 
   if (!apiUrl) {
-    console.error('[prBackendProxy] CRITICAL: No API base URL configured');
-    console.error(
+    logger.error('[prBackendProxy] CRITICAL: No API base URL configured');
+    logger.error(
       '[prBackendProxy] Set NEXT_PUBLIC_API_URL, PRAVADO_API_BASE_URL, or API_BASE_URL'
     );
     throw new Error(
@@ -70,7 +72,7 @@ export class BackendProxyError extends Error {
 
 function debugLog(message: string, data?: Record<string, unknown>) {
   if (DEBUG_AUTH) {
-    console.log(`[prBackendProxy] ${message}`, data || '');
+    logger.info(`[prBackendProxy] ${message}`, data || '');
   }
 }
 

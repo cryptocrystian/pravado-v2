@@ -55,9 +55,10 @@ import {
   INVESTOR_SECTION_TYPE_LABELS,
   DEFAULT_QUARTERLY_EARNINGS_SECTIONS,
 } from '@pravado/types';
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('investor-relations-service');
 

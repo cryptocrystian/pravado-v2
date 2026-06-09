@@ -5,8 +5,7 @@
  * Uses the existing @pravado/utils logger under the hood.
  */
 
-import { createLogger, type Logger } from '@pravado/utils';
-
+import { createLogger, type Logger } from './logger';
 /**
  * Operation context for logging
  */

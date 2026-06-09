@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:prPitchService');
 /**
  * PR Pitch Service (Sprint S39)
  * Personalized PR pitch and outreach sequence engine
@@ -47,6 +48,7 @@ import {
 import type { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // Event emitter for pitch generation progress
 export const prPitchEmitter = new EventEmitter();
 
@@ -419,7 +421,7 @@ export class PRPitchService {
       return this.parseLLMPitchResponse(content, context, step);
     } catch (error) {
       if (this.debugMode) {
-        console.error('LLM pitch generation failed:', error);
+        logger.error('LLM pitch generation failed:', error);
       }
       return this.generateFallbackPitch(context, step, sequence);
     }

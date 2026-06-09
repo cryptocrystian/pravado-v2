@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:journalistDiscoveryService');
 /**
  * Journalist Discovery Service (Sprint S48)
  * Automated discovery and enrichment of journalists from multiple sources
@@ -23,7 +24,7 @@ import type {
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { JournalistGraphService } from './journalistGraphService';
-
+import { createLogger } from '../lib/logger';
 // =============================================
 // String Similarity Utilities
 // =============================================
@@ -726,7 +727,7 @@ export class JournalistDiscoveryService {
     );
 
     if (error) {
-      console.error('Error finding duplicates:', error);
+      logger.error('Error finding duplicates:', error);
       return [];
     }
 

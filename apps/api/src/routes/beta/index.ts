@@ -14,9 +14,11 @@ import { randomBytes } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireAdmin } from '../../middleware/requireAdmin';
 import { requireUser } from '../../middleware/requireUser';
 
+const logger = createLogger('api:routes:beta');
 function generateInviteCode(): string {
   return `PRAVADO-${randomBytes(4).toString('hex').toUpperCase()}`;
 }
@@ -177,10 +179,10 @@ export async function betaRoutes(server: FastifyInstance) {
         html: buildWaitlistConfirmationHtml(normalizedEmail),
         text: `You're on the Pravado waitlist! We're reviewing applications and will get back to you within 48 hours. Questions? hello@pravado.io`,
       });
-      console.log(`[Beta] Waitlist confirmation sent to ${normalizedEmail}`);
+      logger.info(`[Beta] Waitlist confirmation sent to ${normalizedEmail}`);
     } catch (emailErr) {
       // Non-blocking — log but don't fail the request
-      console.error(
+      logger.error(
         `[Beta] Failed to send confirmation to ${normalizedEmail}:`,
         emailErr instanceof Error ? emailErr.message : emailErr
       );
@@ -208,7 +210,7 @@ export async function betaRoutes(server: FastifyInstance) {
       // Non-critical
     }
 
-    console.log(
+    logger.info(
       `[Beta] New request: ${normalizedEmail} (${companyName || 'no company'})`
     );
 
@@ -333,11 +335,11 @@ export async function betaRoutes(server: FastifyInstance) {
           html: buildInviteCodeEmailHtml(betaReq.email, inviteCode),
           text: `You're approved for Pravado beta! Your invite code: ${inviteCode}. Create your account at https://app.pravado.io/login`,
         });
-        console.log(
+        logger.info(
           `[Beta] Invite code sent to ${betaReq.email}: ${inviteCode}`
         );
       } catch (emailErr) {
-        console.error(
+        logger.error(
           `[Beta] Failed to send invite to ${betaReq.email}:`,
           emailErr instanceof Error ? emailErr.message : emailErr
         );

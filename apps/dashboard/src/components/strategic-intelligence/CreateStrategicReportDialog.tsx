@@ -34,6 +34,12 @@ import {
   type CreateStrategicReport,
 } from '@/lib/strategicIntelligenceApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:strategic-intelligence:CreateStrategicReportDialog'
+);
+
 interface CreateStrategicReportDialogProps {
   onSuccess?: () => void;
   children?: React.ReactNode;
@@ -84,7 +90,7 @@ export function CreateStrategicReportDialog({
       });
       onSuccess?.();
     } catch (error) {
-      console.error('Failed to create report:', error);
+      logger.error('Failed to create report:', error);
     } finally {
       setIsLoading(false);
     }

@@ -32,6 +32,11 @@ import {
 } from '@/lib/brandReputationApi';
 import { cn } from '@/lib/utils';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:brand-reputation:ReputationAlertsList'
+);
 interface ReputationAlertsListProps {
   alerts: BrandReputationAlert[];
   totalCount: number;
@@ -57,7 +62,7 @@ export function ReputationAlertsList({
       await acknowledgeAlert(alertId);
       onAlertAction?.();
     } catch (error) {
-      console.error('Failed to acknowledge alert:', error);
+      logger.error('Failed to acknowledge alert:', error);
     } finally {
       setLoadingAlertId(null);
     }
@@ -72,7 +77,7 @@ export function ReputationAlertsList({
       await resolveAlert(alertId, notes);
       onAlertAction?.();
     } catch (error) {
-      console.error('Failed to resolve alert:', error);
+      logger.error('Failed to resolve alert:', error);
     } finally {
       setLoadingAlertId(null);
     }

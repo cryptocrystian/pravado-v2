@@ -27,6 +27,11 @@ import {
 } from '@/lib/mediaPerformanceApi';
 import { cn } from '@/lib/utils';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:media-performance:InsightNarrativePanel'
+);
 interface InsightNarrativePanelProps {
   insights: MediaPerformanceInsight[];
   title?: string;
@@ -69,7 +74,7 @@ export function InsightNarrativePanel({
       await dismissInsight(insight.id);
       onInsightDismissed?.(insight.id);
     } catch (error) {
-      console.error('Failed to dismiss insight:', error);
+      logger.error('Failed to dismiss insight:', error);
     } finally {
       setDismissingIds((prev) => {
         const next = new Set(prev);
@@ -85,7 +90,7 @@ export function InsightNarrativePanel({
         await markInsightAsRead(insight.id);
         onInsightRead?.(insight.id);
       } catch (error) {
-        console.error('Failed to mark insight as read:', error);
+        logger.error('Failed to mark insight as read:', error);
       }
     }
     onInsightClick?.(insight);

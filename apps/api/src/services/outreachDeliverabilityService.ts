@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:outreachDeliverabilityService');
 /**
  * PR Outreach Deliverability Service (Sprint S45)
  * Handles email deliverability tracking, provider integration, and engagement analytics
@@ -25,6 +26,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // =============================================
 // Database Mappers
 // =============================================
@@ -257,7 +259,7 @@ class SendGridEmailProvider extends EmailProviderBase {
     // If no webhook verification key configured, skip validation (dev mode)
     const verificationKey = this.config.webhookKey;
     if (!verificationKey) {
-      console.warn(
+      logger.warn(
         '[SendGrid] No webhook verification key configured, skipping signature validation'
       );
       return true;
@@ -265,7 +267,7 @@ class SendGridEmailProvider extends EmailProviderBase {
 
     // Require signature and timestamp for validation
     if (!signature || !timestamp) {
-      console.error(
+      logger.error(
         '[SendGrid] Missing signature or timestamp for webhook validation'
       );
       return false;
@@ -289,12 +291,12 @@ class SendGridEmailProvider extends EmailProviderBase {
       const isValid = verifier.verify(verificationKey, signatureBuffer);
 
       if (!isValid) {
-        console.error('[SendGrid] Webhook signature validation failed');
+        logger.error('[SendGrid] Webhook signature validation failed');
       }
 
       return isValid;
     } catch (error) {
-      console.error('[SendGrid] Webhook signature validation error:', error);
+      logger.error('[SendGrid] Webhook signature validation error:', error);
       return false;
     }
   }

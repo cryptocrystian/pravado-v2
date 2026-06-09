@@ -20,10 +20,10 @@ import type {
   UsageCheckResult,
 } from '@pravado/types';
 import { BillingQuotaError } from '@pravado/types';
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { StripeService } from './stripeService';
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('billing-service');
 

@@ -14,12 +14,17 @@
 
 import { useState, useCallback } from 'react';
 
+import { createLogger } from '../../../lib/clientLogger';
 import { derivativeStatus, card, text, interactive, label } from '../tokens';
 import type {
   DerivativeType,
   DerivativeSurface,
   CiteMindStatus,
 } from '../types';
+
+const logger = createLogger(
+  'dashboard:components:content:components:DerivativesPanel'
+);
 
 // ============================================
 // TYPES
@@ -363,7 +368,7 @@ export function DerivativesPanel({
         setCopiedType(type);
         setTimeout(() => setCopiedType(null), 2000);
       } catch (err) {
-        console.error('Failed to copy:', err);
+        logger.error('Failed to copy:', err);
       }
     },
     []

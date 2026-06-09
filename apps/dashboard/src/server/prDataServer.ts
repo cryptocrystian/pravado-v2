@@ -14,6 +14,9 @@ import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+import { createServerLogger } from '../lib/serverLogger';
+
+const logger = createServerLogger('dashboard:server:prDataServer');
 // ============================================================================
 // Configuration
 // ============================================================================
@@ -25,7 +28,7 @@ function getApiBaseUrl(): string {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) {
     // In production, this is a critical misconfiguration
-    console.error('[prDataServer] CRITICAL: NEXT_PUBLIC_API_URL is not set');
+    logger.error('[prDataServer] CRITICAL: NEXT_PUBLIC_API_URL is not set');
     throw new Error(
       'API_URL_MISSING: NEXT_PUBLIC_API_URL environment variable is not configured'
     );
@@ -43,7 +46,7 @@ const DEBUG_AUTH = process.env.NEXT_PUBLIC_DEBUG_AUTH === 'true';
 
 function debugLog(message: string, data?: Record<string, unknown>) {
   if (DEBUG_AUTH) {
-    console.log(
+    logger.info(
       `[prDataServer] ${message}`,
       data ? JSON.stringify(data, null, 2) : ''
     );
@@ -97,12 +100,12 @@ export async function getServerAccessToken(): Promise<string> {
   });
 
   if (error) {
-    console.error('[prDataServer] Supabase session error:', error.message);
+    logger.error('[prDataServer] Supabase session error:', error.message);
     throw new Error(`AUTH_SESSION_ERROR: ${error.message}`);
   }
 
   if (!session?.access_token) {
-    console.error('[prDataServer] No access token in session');
+    logger.error('[prDataServer] No access token in session');
     throw new Error(
       'AUTH_MISSING: No Supabase access token available in server request context'
     );
@@ -170,7 +173,7 @@ export async function authedApiFetch<T>(
     const errorMessage =
       errorBody?.error?.message ||
       `HTTP ${response.status}: ${response.statusText}`;
-    console.error('[prDataServer] API request failed:', {
+    logger.error('[prDataServer] API request failed:', {
       url,
       status: response.status,
       error: errorMessage,
@@ -182,7 +185,7 @@ export async function authedApiFetch<T>(
 
   if (!result.success) {
     const errorMessage = result.error?.message || 'Unknown API error';
-    console.error('[prDataServer] API returned error:', {
+    logger.error('[prDataServer] API returned error:', {
       url,
       error: result.error,
     });

@@ -7,8 +7,9 @@
  * 3. Recent relationship events that create pitch windows
  */
 
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('sage:pr-ingestor');
 

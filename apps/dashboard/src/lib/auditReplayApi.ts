@@ -1,8 +1,3 @@
-/**
- * Audit Replay API Client (Sprint S37)
- * Client-side API helpers for audit replay functionality
- */
-
 import type {
   AuditReplayFilters,
   AuditReplayRun,
@@ -13,6 +8,15 @@ import type {
   ReplaySSEEvent,
   StateDiff,
 } from '@pravado/types';
+
+import { createLogger } from './clientLogger';
+
+/**
+ * Audit Replay API Client (Sprint S37)
+ * Client-side API helpers for audit replay functionality
+ */
+
+const logger = createLogger('dashboard:lib:auditReplayApi');
 
 // Re-export types for convenience
 export type {
@@ -203,7 +207,7 @@ export function subscribeToReplayEvents(
           break;
       }
     } catch (err) {
-      console.error('Failed to parse SSE event:', err);
+      logger.error('Failed to parse SSE event:', err);
     }
   };
 

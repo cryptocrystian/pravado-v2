@@ -22,8 +22,12 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
 
+import { createLogger } from '../../../lib/clientLogger';
 import type { Pitch, PitchStatus, MediaContact } from '../types';
 
+const logger = createLogger(
+  'dashboard:components:pr-work-surface:views:PRPitches'
+);
 // ============================================
 // API TYPES & FETCHER
 // ============================================
@@ -824,7 +828,7 @@ function PitchDetailPanel({
         process.env.NODE_ENV === 'development' &&
         process.env.NEXT_PUBLIC_PRAVADO_STRICT_API === '1'
       ) {
-        console.error('[Manual Send] Missing required IDs:', {
+        logger.error('[Manual Send] Missing required IDs:', {
           sequenceId: pitch.sequenceId,
           contactId: pitch.contactId,
         });
@@ -865,7 +869,7 @@ function PitchDetailPanel({
 
       // Dev logging for attribution tracking
       if (process.env.NODE_ENV === 'development') {
-        console.log('[Manual Send] Success:', {
+        logger.info('[Manual Send] Success:', {
           eventId: data.eventId,
           newStatus: data.newStatus,
           eviAttribution: data.eviAttribution,
@@ -880,7 +884,7 @@ function PitchDetailPanel({
         process.env.NODE_ENV === 'development' &&
         process.env.NEXT_PUBLIC_PRAVADO_STRICT_API === '1'
       ) {
-        console.error('[Manual Send] Error:', message);
+        logger.error('[Manual Send] Error:', message);
       }
     } finally {
       setIsSending(false);
@@ -1608,7 +1612,7 @@ export function PRPitches() {
         onClose={() => setIsNewPitchModalOpen(false)}
         onSuccess={() => {
           // Modal handles revalidation, just log success
-          console.log('[PRPitches] New pitch created successfully');
+          logger.info('[PRPitches] New pitch created successfully');
         }}
       />
     </div>

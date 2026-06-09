@@ -9,11 +9,14 @@ import { apiEnvSchema, validateEnv } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import {
   AuditReplayService,
   replayEventEmitter,
 } from '../../services/auditReplayService';
+
+const logger = createLogger('api:routes:auditReplay');
 
 /**
  * Check if user has admin role
@@ -114,7 +117,7 @@ export async function auditReplayRoutes(
         // Start processing the job asynchronously
         setImmediate(() => {
           replayService.processReplayJob(job.id, orgId).catch((err) => {
-            console.error('Replay job processing failed:', err);
+            logger.error('Replay job processing failed:', err);
           });
         });
 
@@ -126,7 +129,7 @@ export async function auditReplayRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to create replay job:', error);
+        logger.error('Failed to create replay job:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -188,7 +191,7 @@ export async function auditReplayRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to get replay job:', error);
+        logger.error('Failed to get replay job:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -253,7 +256,7 @@ export async function auditReplayRoutes(
         try {
           reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
         } catch (err) {
-          console.error('Failed to send SSE event:', err);
+          logger.error('Failed to send SSE event:', err);
         }
       };
 
@@ -356,7 +359,7 @@ export async function auditReplayRoutes(
           data: snapshot,
         });
       } catch (error) {
-        console.error('Failed to get snapshot:', error);
+        logger.error('Failed to get snapshot:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -406,7 +409,7 @@ export async function auditReplayRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to list replay jobs:', error);
+        logger.error('Failed to list replay jobs:', error);
         return reply.status(500).send({
           success: false,
           error: {

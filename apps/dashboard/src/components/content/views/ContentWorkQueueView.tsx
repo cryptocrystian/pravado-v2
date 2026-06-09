@@ -37,6 +37,7 @@ import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
 import { ExplainabilityDrawer } from '../orchestration/ExplainabilityDrawer';
 import type { TriggerAction } from '../orchestration/OrchestrationEditorShell';
+import { createLogger } from '../../../lib/clientLogger';
 import type {
   AuthoritySignals,
   ContentClusterDTO,
@@ -56,6 +57,10 @@ import {
   ManualWorkbench,
   type QueueItem,
 } from '../work-queue';
+
+const logger = createLogger(
+  'dashboard:components:content:views:ContentWorkQueueView'
+);
 
 // ============================================
 // TYPES
@@ -1249,7 +1254,7 @@ function ExecutionGravityPane({
             }}
             onClearSelection={() => setSelectedBatchIds(new Set())}
             onBatchAction={(action) =>
-              console.log('Batch action:', action, selectedBatchIds)
+              logger.info('Batch action', { action, selectedBatchIds })
             }
           />
         )}

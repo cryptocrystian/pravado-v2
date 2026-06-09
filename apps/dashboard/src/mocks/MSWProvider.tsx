@@ -16,6 +16,9 @@
 
 import { useEffect, type ReactNode } from 'react';
 
+import { createLogger } from '../lib/clientLogger';
+
+const logger = createLogger('dashboard:mocks:MSWProvider');
 interface MSWProviderProps {
   children: ReactNode;
 }
@@ -30,7 +33,7 @@ export function MSWProvider({ children }: MSWProviderProps) {
           registrations.forEach((reg) => {
             if (reg.active?.scriptURL?.includes('mockServiceWorker')) {
               reg.unregister().then(() => {
-                console.log('[MSW] Stale service worker unregistered');
+                logger.info('[MSW] Stale service worker unregistered');
               });
             }
           });
@@ -41,7 +44,7 @@ export function MSWProvider({ children }: MSWProviderProps) {
 
     import('./browser')
       .then(({ initMocks }) => initMocks())
-      .catch((error) => console.error('[MSW] Failed to initialize:', error));
+      .catch((error) => logger.error('[MSW] Failed to initialize:', error));
   }, []);
 
   // Always render children — never gate SSR output behind client-side state.

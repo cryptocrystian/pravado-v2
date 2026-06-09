@@ -39,6 +39,12 @@ import {
   updateNode,
 } from '@/lib/unifiedGraphApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:unified-graph:NodeInspectorDrawer'
+);
+
 interface NodeInspectorDrawerProps {
   nodeId: string | null;
   onClose: () => void;
@@ -79,7 +85,7 @@ export function NodeInspectorDrawer({
           tags: result.node.tags.join(', '),
         });
       } catch (error) {
-        console.error('Failed to fetch node:', error);
+        logger.error('Failed to fetch node:', error);
       } finally {
         setIsLoading(false);
       }
@@ -108,7 +114,7 @@ export function NodeInspectorDrawer({
       const result = await getNodeWithConnections(nodeId);
       setData(result);
     } catch (error) {
-      console.error('Failed to update node:', error);
+      logger.error('Failed to update node:', error);
     } finally {
       setIsSaving(false);
     }

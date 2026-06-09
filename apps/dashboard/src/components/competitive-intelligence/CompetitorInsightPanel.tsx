@@ -31,6 +31,11 @@ import {
 } from '@/lib/competitorIntelligenceApi';
 import { cn } from '@/lib/utils';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:competitive-intelligence:CompetitorInsightPanel'
+);
 interface CompetitorInsightPanelProps {
   insight: CompetitorInsight;
   onUpdate?: (insight: CompetitorInsight) => void;
@@ -66,7 +71,7 @@ export function CompetitorInsightPanel({
       const updated = await updateInsight(insight.id, { isRead: true });
       onUpdate?.(updated);
     } catch (error) {
-      console.error('Failed to mark insight as read:', error);
+      logger.error('Failed to mark insight as read:', error);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +83,7 @@ export function CompetitorInsightPanel({
       const updated = await updateInsight(insight.id, { isDismissed: true });
       onUpdate?.(updated);
     } catch (error) {
-      console.error('Failed to dismiss insight:', error);
+      logger.error('Failed to dismiss insight:', error);
     } finally {
       setIsLoading(false);
     }

@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:stepHandlers');
 /**
  * Step Handlers Registry (Sprint S18)
  * Maps step types to their execution handlers
@@ -5,6 +6,7 @@
 
 import type { StepExecutionContext, PlaybookStepType } from '@pravado/types';
 
+import { createLogger } from '../../lib/logger';
 /**
  * Step handler interface
  */
@@ -19,7 +21,7 @@ const agentHandler: StepHandler = {
   async execute(context: StepExecutionContext): Promise<unknown> {
     // TODO: Implement agent execution logic (Sprint S7+)
     // For now, return mock success
-    console.log(`[AgentHandler] Executing agent step: ${context.step.key}`);
+    logger.info(`[AgentHandler] Executing agent step: ${context.step.key}`);
 
     return {
       success: true,
@@ -34,7 +36,7 @@ const agentHandler: StepHandler = {
  */
 const dataHandler: StepHandler = {
   async execute(context: StepExecutionContext): Promise<unknown> {
-    console.log(`[DataHandler] Executing data step: ${context.step.key}`);
+    logger.info(`[DataHandler] Executing data step: ${context.step.key}`);
 
     const config = context.step.config as {
       operation?: string;
@@ -69,7 +71,7 @@ const dataHandler: StepHandler = {
  */
 const branchHandler: StepHandler = {
   async execute(context: StepExecutionContext): Promise<unknown> {
-    console.log(`[BranchHandler] Executing branch step: ${context.step.key}`);
+    logger.info(`[BranchHandler] Executing branch step: ${context.step.key}`);
 
     const config = context.step.config as {
       condition?: string;
@@ -130,7 +132,7 @@ const branchHandler: StepHandler = {
  */
 const apiHandler: StepHandler = {
   async execute(context: StepExecutionContext): Promise<unknown> {
-    console.log(`[ApiHandler] Executing API step: ${context.step.key}`);
+    logger.info(`[ApiHandler] Executing API step: ${context.step.key}`);
 
     const config = context.step.config as {
       url?: string;

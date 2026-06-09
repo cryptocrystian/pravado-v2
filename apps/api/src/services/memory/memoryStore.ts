@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:memory:memoryStore');
 /**
  * Memory Store Service (Sprint S10)
  * Handles persistence of semantic memory, episodic traces, and memory links
@@ -12,6 +13,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../../lib/logger';
 export interface MemoryStoreOptions {
   debugMode?: boolean;
 }
@@ -47,7 +49,7 @@ export class MemoryStore {
     ttlSeconds?: number | null
   ): Promise<AgentMemory> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Saving semantic memory', {
+      logger.info('[MemoryStore] Saving semantic memory', {
         orgId,
         importance,
         source,
@@ -86,7 +88,7 @@ export class MemoryStore {
     embedding: number[]
   ): Promise<EpisodicTrace> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Saving episodic trace', {
+      logger.info('[MemoryStore] Saving episodic trace', {
         orgId,
         runId,
         stepKey,
@@ -122,7 +124,7 @@ export class MemoryStore {
     weight: number = 1.0
   ): Promise<MemoryLink> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Linking memory to entity', {
+      logger.info('[MemoryStore] Linking memory to entity', {
         memoryId,
         entityType,
         entityId,
@@ -153,7 +155,7 @@ export class MemoryStore {
    */
   async updateImportance(memoryId: string, importance: number): Promise<void> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Updating memory importance', {
+      logger.info('[MemoryStore] Updating memory importance', {
         memoryId,
         importance,
       });
@@ -177,7 +179,7 @@ export class MemoryStore {
     options: PruneMemoryOptions = {}
   ): Promise<number> {
     if (this.debugMode) {
-      console.log('[MemoryStore] Pruning memories', { orgId, options });
+      logger.info('[MemoryStore] Pruning memories', { orgId, options });
     }
 
     const { expiredOnly = true, minImportance = 0, limit = 100 } = options;

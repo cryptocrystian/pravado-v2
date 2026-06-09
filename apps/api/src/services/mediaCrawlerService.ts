@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:mediaCrawlerService');
 /**
  * Media Crawler Service (Sprint S41, updated S98)
  * Automated media ingestion pipeline with RSS feeds and crawl jobs
@@ -39,7 +40,7 @@ import {
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { MediaMonitoringService } from './mediaMonitoringService';
-
+import { createLogger } from '../lib/logger';
 // ========================================
 // SERVICE CONFIGURATION
 // ========================================
@@ -83,7 +84,7 @@ export class MediaCrawlerService {
     input: CreateRSSFeedInput
   ): Promise<MediaRSSFeed> {
     if (this.debugMode) {
-      console.log('[MediaCrawler] Adding RSS feed:', { orgId, url: input.url });
+      logger.info('[MediaCrawler] Adding RSS feed:', { orgId, url: input.url });
     }
 
     const { data, error } = await this.supabase
@@ -252,7 +253,7 @@ export class MediaCrawlerService {
    */
   async fetchRSS(feedUrl: string): Promise<RSSArticleItem[]> {
     if (this.debugMode) {
-      console.log('[MediaCrawler] Fetching RSS feed:', feedUrl);
+      logger.info('[MediaCrawler] Fetching RSS feed:', feedUrl);
     }
 
     try {
@@ -279,7 +280,7 @@ export class MediaCrawlerService {
       return this.parseRSSXML(xmlContent, feedUrl);
     } catch (error) {
       if (this.debugMode) {
-        console.error('[MediaCrawler] Failed to fetch RSS:', error);
+        logger.error('[MediaCrawler] Failed to fetch RSS:', error);
       }
 
       // If fetch fails, return empty array (caller can retry)
@@ -351,7 +352,7 @@ export class MediaCrawlerService {
       }
 
       if (this.debugMode) {
-        console.log(
+        logger.info(
           `[MediaCrawler] Parsed ${articles.length} articles from ${feedUrl}`
         );
       }
@@ -359,7 +360,7 @@ export class MediaCrawlerService {
       return articles;
     } catch (error) {
       if (this.debugMode) {
-        console.error('[MediaCrawler] Failed to parse RSS XML:', error);
+        logger.error('[MediaCrawler] Failed to parse RSS XML:', error);
       }
       return [];
     }
@@ -577,7 +578,7 @@ export class MediaCrawlerService {
     const normalizedUrl = this.normalizeURL(input.url);
 
     if (this.debugMode) {
-      console.log('[MediaCrawler] Creating crawl job:', {
+      logger.info('[MediaCrawler] Creating crawl job:', {
         orgId,
         url: normalizedUrl,
       });
@@ -593,7 +594,7 @@ export class MediaCrawlerService {
 
     if (existing) {
       if (this.debugMode) {
-        console.log('[MediaCrawler] Crawl job already exists:', existing.id);
+        logger.info('[MediaCrawler] Crawl job already exists:', existing.id);
       }
       return transformCrawlJobRecord(existing as MediaCrawlJobRecord);
     }
@@ -795,7 +796,7 @@ export class MediaCrawlerService {
     feedId: string
   ): Promise<RSSIngestionResult> {
     if (this.debugMode) {
-      console.log('[MediaCrawler] Ingesting from RSS feed:', feedId);
+      logger.info('[MediaCrawler] Ingesting from RSS feed:', feedId);
     }
 
     const feed = await this.getRSSFeed(orgId, feedId);
@@ -940,7 +941,7 @@ export class MediaCrawlerService {
         const result = await this.ingestFromRSSFeed(orgId, feed.id);
         results.push(result);
       } catch (error) {
-        console.error(`Failed to ingest from feed ${feed.id}:`, error);
+        logger.error(`Failed to ingest from feed ${feed.id}:`, error);
         results.push({
           feed,
           articles: [],
@@ -970,7 +971,7 @@ export class MediaCrawlerService {
     htmlSnapshot: string | null;
   }> {
     if (this.debugMode) {
-      console.log('[MediaCrawler] Crawling URL:', url);
+      logger.info('[MediaCrawler] Crawling URL:', url);
     }
 
     try {
@@ -1016,7 +1017,7 @@ export class MediaCrawlerService {
       const keywords = this.extractKeywords($);
 
       if (this.debugMode) {
-        console.log('[MediaCrawler] Extracted content:', {
+        logger.info('[MediaCrawler] Extracted content:', {
           url,
           titleLength: title.length,
           contentLength: content.length,
@@ -1034,7 +1035,7 @@ export class MediaCrawlerService {
       };
     } catch (error) {
       if (this.debugMode) {
-        console.error('[MediaCrawler] Failed to crawl URL:', error);
+        logger.error('[MediaCrawler] Failed to crawl URL:', error);
       }
 
       // Return minimal data with error indication
@@ -1302,7 +1303,7 @@ export class MediaCrawlerService {
 
     if (job.status === 'success') {
       if (this.debugMode) {
-        console.log('[MediaCrawler] Job already completed:', jobId);
+        logger.info('[MediaCrawler] Job already completed:', jobId);
       }
       return {
         job,
@@ -1371,7 +1372,7 @@ export class MediaCrawlerService {
         error instanceof Error ? error.message : 'Unknown error during crawl';
 
       if (this.debugMode) {
-        console.error('[MediaCrawler] Job execution failed:', {
+        logger.error('[MediaCrawler] Job execution failed:', {
           jobId,
           error: errorMsg,
         });
@@ -1398,7 +1399,7 @@ export class MediaCrawlerService {
     batchSize: number = 10
   ): Promise<CrawlJobResult[]> {
     if (this.debugMode) {
-      console.log('[MediaCrawler] Processing pending jobs:', {
+      logger.info('[MediaCrawler] Processing pending jobs:', {
         orgId,
         batchSize,
       });
@@ -1414,7 +1415,7 @@ export class MediaCrawlerService {
 
     if (!pendingJobs || pendingJobs.length === 0) {
       if (this.debugMode) {
-        console.log('[MediaCrawler] No pending jobs found');
+        logger.info('[MediaCrawler] No pending jobs found');
       }
       return [];
     }
@@ -1423,7 +1424,7 @@ export class MediaCrawlerService {
     const orgJobs = pendingJobs.filter((j: any) => j.org_id === orgId);
 
     if (this.debugMode) {
-      console.log('[MediaCrawler] Found pending jobs:', orgJobs.length);
+      logger.info('[MediaCrawler] Found pending jobs:', orgJobs.length);
     }
 
     const results: CrawlJobResult[] = [];
@@ -1438,7 +1439,7 @@ export class MediaCrawlerService {
           await this.sleep(this.retryDelayMs);
         }
       } catch (error) {
-        console.error(`Failed to execute job ${jobData.id}:`, error);
+        logger.error(`Failed to execute job ${jobData.id}:`, error);
         results.push({
           job: transformCrawlJobRecord(jobData),
           article: null,
@@ -1466,7 +1467,7 @@ export class MediaCrawlerService {
 
       if (error) {
         if (this.debugMode) {
-          console.error('Stats RPC failed:', error);
+          logger.error('Stats RPC failed:', error);
         }
         // Fallback to individual queries
         return await this.getStatsFallback(orgId);
@@ -1484,7 +1485,7 @@ export class MediaCrawlerService {
       };
     } catch (error) {
       if (this.debugMode) {
-        console.error('Stats query failed:', error);
+        logger.error('Stats query failed:', error);
       }
       return await this.getStatsFallback(orgId);
     }

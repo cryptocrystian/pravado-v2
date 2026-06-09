@@ -15,9 +15,10 @@
 
 import { randomBytes } from 'crypto';
 
-import { createLogger } from '@pravado/utils';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('api:admin');
 

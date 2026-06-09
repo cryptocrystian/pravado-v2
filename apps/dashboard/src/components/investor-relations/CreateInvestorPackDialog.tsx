@@ -37,6 +37,12 @@ import {
   type CreateInvestorPack,
 } from '@/lib/investorRelationsApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:investor-relations:CreateInvestorPackDialog'
+);
+
 interface CreateInvestorPackDialogProps {
   onSuccess?: () => void;
   children?: React.ReactNode;
@@ -83,7 +89,7 @@ export function CreateInvestorPackDialog({
       });
       onSuccess?.();
     } catch (error) {
-      console.error('Failed to create pack:', error);
+      logger.error('Failed to create pack:', error);
     } finally {
       setIsLoading(false);
     }

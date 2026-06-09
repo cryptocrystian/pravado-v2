@@ -2,29 +2,19 @@
  * Fastify server setup
  */
 
+import { randomUUID } from 'node:crypto';
+
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { FLAGS } from '@pravado/feature-flags';
-import { createLogger } from '@pravado/utils';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import Fastify from 'fastify';
 
-// Raw-body capture moved to a per-route `preParsing` hook (see
-// apps/api/src/lib/captureRawBody.ts). The `fastify-raw-body` plugin was
-// removed in Plan 06d because its `^5.x` peer-dep crashed every Render
-// deploy since 2026-05-23 (commit 6c27359c). The `FastifyRequest.rawBody`
-// type augmentation below stays so route handlers can still read the
-// decoration set by the hook.
-declare module 'fastify' {
-  interface FastifyRequest {
-    rawBody?: string | Buffer;
-  }
-}
-
 import { config } from './config';
+import { createLogger, fastifyLoggerOptions } from './lib/logger';
 import { authPlugin } from './plugins/auth';
 import { mailerPlugin } from './plugins/mailer';
 import { platformFreezePlugin } from './plugins/platformFreeze';
@@ -91,6 +81,18 @@ import strategicIntelligenceRoutes from './routes/strategicIntelligence'; // S65
 import unifiedGraphRoutes from './routes/unifiedGraph'; // S66
 import unifiedNarrativeRoutes from './routes/unifiedNarratives'; // S70
 
+// Raw-body capture moved to a per-route `preParsing` hook (see
+// apps/api/src/lib/captureRawBody.ts). The `fastify-raw-body` plugin was
+// removed in Plan 06d because its `^5.x` peer-dep crashed every Render
+// deploy since 2026-05-23 (commit 6c27359c). The `FastifyRequest.rawBody`
+// type augmentation below stays so route handlers can still read the
+// decoration set by the hook.
+declare module 'fastify' {
+  interface FastifyRequest {
+    rawBody?: string | Buffer;
+  }
+}
+
 const logger = createLogger('api:server');
 
 export async function createServer() {
@@ -115,7 +117,12 @@ export async function createServer() {
   }
 
   const server = Fastify({
-    logger: false, // We use our custom logger
+    // Phase 0.5 Plan 02: Pino logger config (apps/api/src/lib/logger.ts).
+    // `request.log` is automatically a Pino child carrying `requestId`.
+    logger: fastifyLoggerOptions,
+    // UUID v4 request IDs — surfaced via X-Request-Id header (onRequest
+    // hook below) so the dashboard can correlate errors to backend logs.
+    genReqId: () => randomUUID(),
     requestIdLogLabel: 'requestId',
     disableRequestLogging: false,
   });
@@ -170,15 +177,12 @@ export async function createServer() {
   // When PLATFORM_FREEZE=true, blocks write operations to core intelligence domains
   await server.register(platformFreezePlugin);
 
-  // Add request logging + Sentry context tagging (S-INT-08)
-  server.addHook('onRequest', async (request) => {
-    logger.info('Incoming request', {
-      method: request.method,
-      url: request.url,
-      requestId: request.id,
-    });
+  // Surface request IDs to the client (Phase 0.5 Plan 02) + tag Sentry
+  // with org context (S-INT-08). Request/response logging is handled by
+  // Fastify's built-in Pino integration — see `logger:` config above.
+  server.addHook('onRequest', async (request, reply) => {
+    reply.header('X-Request-Id', request.id);
 
-    // Tag Sentry with org context
     if (process.env.SENTRY_DSN) {
       const user = (request as any).user;
       if (user) {
@@ -188,16 +192,6 @@ export async function createServer() {
         Sentry.setTag('org_id', 'unauthenticated');
       }
     }
-  });
-
-  // Add response logging
-  server.addHook('onResponse', async (request, reply) => {
-    logger.info('Request completed', {
-      method: request.method,
-      url: request.url,
-      statusCode: reply.statusCode,
-      requestId: request.id,
-    });
   });
 
   // Register routes
