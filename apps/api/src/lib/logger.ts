@@ -90,7 +90,13 @@ export const serviceLogger: Logger = pino({ ...baseOptions, transport });
 // becomes a Pino child binding.
 // ----------------------------------------------------------------------------
 
-type LogMeta = Record<string, unknown>;
+/**
+ * Compat meta is intentionally `unknown` so existing call sites — many of
+ * which pass `Error` from a `catch (err) {}` block or a `PostgrestError`
+ * from Supabase — type-check without per-call narrowing. The wrapper
+ * methods below normalize into a shape Pino understands.
+ */
+type LogMeta = unknown;
 
 export interface CompatLogger {
   debug(message: string, meta?: LogMeta): void;
@@ -99,23 +105,41 @@ export interface CompatLogger {
   error(message: string, meta?: LogMeta): void;
 }
 
+function normalizeMeta(meta: unknown): Record<string, unknown> | undefined {
+  if (meta === undefined || meta === null) return undefined;
+  if (meta instanceof Error) {
+    return { err: meta };
+  }
+  if (typeof meta === 'object' && !Array.isArray(meta)) {
+    // Object-like (POJOs, Supabase errors, etc.) — Pino spreads these
+    // into the log record, matching the previous utils.Logger shape.
+    return meta as Record<string, unknown>;
+  }
+  // Primitive / array — wrap so Pino still emits a structured record.
+  return { data: meta };
+}
+
 class CompatLoggerImpl implements CompatLogger {
   constructor(private readonly child: Logger) {}
 
   debug(message: string, meta?: LogMeta): void {
-    if (meta) this.child.debug(meta, message);
+    const m = normalizeMeta(meta);
+    if (m) this.child.debug(m, message);
     else this.child.debug(message);
   }
   info(message: string, meta?: LogMeta): void {
-    if (meta) this.child.info(meta, message);
+    const m = normalizeMeta(meta);
+    if (m) this.child.info(m, message);
     else this.child.info(message);
   }
   warn(message: string, meta?: LogMeta): void {
-    if (meta) this.child.warn(meta, message);
+    const m = normalizeMeta(meta);
+    if (m) this.child.warn(m, message);
     else this.child.warn(message);
   }
   error(message: string, meta?: LogMeta): void {
-    if (meta) this.child.error(meta, message);
+    const m = normalizeMeta(meta);
+    if (m) this.child.error(m, message);
     else this.child.error(message);
   }
 }
