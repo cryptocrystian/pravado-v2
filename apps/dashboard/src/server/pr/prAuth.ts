@@ -15,6 +15,9 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+import { createServerLogger } from '../../lib/serverLogger';
+
+const logger = createServerLogger('dashboard:server:pr:prAuth');
 export type PRAuthStatus =
   | 'ok'
   | 'missing_session'
@@ -96,7 +99,7 @@ export async function authenticatePRRequest(): Promise<PRAuthResult> {
       .limit(1);
 
     if (orgError) {
-      console.error('[prAuth] Org lookup error:', orgError.message);
+      logger.error('[prAuth] Org lookup error:', orgError.message);
       return {
         status: 'no_org',
         userId: user.id,
@@ -122,7 +125,7 @@ export async function authenticatePRRequest(): Promise<PRAuthResult> {
       client: userClient,
     };
   } catch (err) {
-    console.error('[prAuth] Auth error:', err);
+    logger.error('[prAuth] Auth error:', err);
     return {
       status: 'error',
       error: err instanceof Error ? err.message : 'Unknown auth error',
@@ -205,7 +208,7 @@ export async function withPRAuth<T>(
     return addPRAuthHeader(response, 'ok');
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('[PR API] Handler error:', message);
+    logger.error('[PR API] Handler error:', message);
 
     const response = NextResponse.json(
       { error: message, code: 'HANDLER_ERROR' },

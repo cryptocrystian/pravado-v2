@@ -42,6 +42,12 @@ import {
   explainPath,
 } from '@/lib/unifiedGraphApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:unified-graph:GraphQueryBuilder'
+);
+
 interface GraphQueryBuilderProps {
   onResults?: (results: GraphQueryResponse) => void;
   onSelectNode?: (nodeId: string) => void;
@@ -176,7 +182,7 @@ export function GraphQueryBuilder({
         }
       }
     } catch (error) {
-      console.error('Query failed:', error);
+      logger.error('Query failed:', error);
     } finally {
       setIsLoading(false);
     }

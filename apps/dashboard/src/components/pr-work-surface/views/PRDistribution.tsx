@@ -21,10 +21,14 @@
 
 import { useState, useMemo } from 'react';
 
+import { createLogger } from '../../../lib/clientLogger';
 import { DistributionDecisionMatrix } from '../components/DistributionDecisionMatrix';
 import { buttonStyles, prAccent } from '../prWorkSurfaceStyles';
 import type { PressRelease, Distribution, DistributionTrack } from '../types';
 
+const logger = createLogger(
+  'dashboard:components:pr-work-surface:views:PRDistribution'
+);
 // ============================================
 // TYPES - Scheduled Sends
 // ============================================
@@ -593,7 +597,7 @@ export function PRDistribution() {
 
   const handleDistribute = (tracks: DistributionTrack[]) => {
     // In real implementation, this would call the API
-    console.log('Distributing to tracks:', tracks);
+    logger.info('Distributing to tracks:', tracks);
     alert(`Distribution initiated for tracks: ${tracks.join(', ')}`);
   };
 
@@ -602,12 +606,12 @@ export function PRDistribution() {
   };
 
   const handleReschedule = (id: string) => {
-    console.log('Reschedule:', id);
+    logger.info('Reschedule:', id);
     setShowSendLaterPicker(true);
   };
 
   const handleScheduleSend = (date: Date) => {
-    console.log('New scheduled send at:', date);
+    logger.info('New scheduled send at:', date);
     // In real implementation, this would update the scheduled send
   };
 

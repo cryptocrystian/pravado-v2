@@ -1,3 +1,7 @@
+import { createLogger } from '../clientLogger';
+
+const logger = createLogger('dashboard:lib:env:pr-config');
+
 /**
  * PR Pillar Runtime Configuration
  * Sprint S100.1: Environment flags for demo mode and strict API behavior
@@ -102,15 +106,15 @@ export function getPRConfigCached(): PRConfig {
  */
 export function logPRConfig(): void {
   const config = getPRConfig();
-  console.log('[PR Config] Environment flags:');
-  console.log(
+  logger.info('[PR Config] Environment flags:');
+  logger.info(
     `  - PRAVADO_DEMO_MODE: ${config.isDemoMode ? 'ENABLED' : 'disabled'}`
   );
-  console.log(
+  logger.info(
     `  - PRAVADO_STRICT_API: ${config.isStrictApi ? 'ENABLED' : 'disabled'}`
   );
-  console.log(`  - Allow mock fallback: ${config.allowMockFallback}`);
-  console.log(`  - Environment: ${config.environment}`);
+  logger.info(`  - Allow mock fallback: ${config.allowMockFallback}`);
+  logger.info(`  - Environment: ${config.environment}`);
 }
 
 /**

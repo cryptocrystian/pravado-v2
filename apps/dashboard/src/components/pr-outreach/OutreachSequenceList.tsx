@@ -12,6 +12,12 @@ import {
   updateOutreachSequence,
 } from '@/lib/prOutreachApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:pr-outreach:OutreachSequenceList'
+);
+
 export interface OutreachSequenceListProps {
   sequences: OutreachSequence[];
   selectedSequence: OutreachSequence | null;
@@ -43,7 +49,7 @@ export function OutreachSequenceList({
       });
       onSequenceChange();
     } catch (error) {
-      console.error('Failed to toggle sequence:', error);
+      logger.error('Failed to toggle sequence:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
@@ -66,7 +72,7 @@ export function OutreachSequenceList({
       await deleteOutreachSequence(sequence.id);
       onSequenceChange();
     } catch (error) {
-      console.error('Failed to delete sequence:', error);
+      logger.error('Failed to delete sequence:', error);
       alert(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );

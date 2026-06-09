@@ -6,8 +6,10 @@
  */
 
 import { API_BASE_URL } from './apiConfig';
+import { createLogger } from './clientLogger';
 import { getServerAccessToken } from './serverSupabaseClient';
 
+const logger = createLogger('dashboard:lib:serverApiClient');
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -36,7 +38,7 @@ export async function serverFetch<T>(
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   } else {
-    console.warn('[serverFetch] No auth token available for:', endpoint);
+    logger.warn('[serverFetch] No auth token available for:', endpoint);
   }
 
   const url = endpoint.startsWith('http')

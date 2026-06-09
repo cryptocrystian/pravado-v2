@@ -40,7 +40,11 @@ import {
 import { cn } from '@/lib/utils';
 
 import { CompetitorScoreBadge } from './CompetitorScoreBadge';
+import { createLogger } from '../../lib/clientLogger';
 
+const logger = createLogger(
+  'dashboard:components:competitive-intelligence:CompetitorComparisonDrawer'
+);
 interface CompetitorComparisonDrawerProps {
   competitor: Competitor | null;
   open: boolean;
@@ -81,7 +85,7 @@ export function CompetitorComparisonDrawer({
       setAnalytics(analyticsData);
       setOverlap(overlapData);
     } catch (error) {
-      console.error('Failed to load comparison data:', error);
+      logger.error('Failed to load comparison data:', error);
     } finally {
       setIsLoading(false);
     }

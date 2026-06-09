@@ -14,6 +14,9 @@ import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+import { createServerLogger } from '../lib/serverLogger';
+
+const logger = createServerLogger('dashboard:server:supabaseServerAuth');
 // ============================================================================
 // Configuration
 // ============================================================================
@@ -52,7 +55,7 @@ function debugLog(message: string, data?: Record<string, unknown>) {
     if (safeData.tokenPrefix) {
       safeData.tokenPrefix = String(safeData.tokenPrefix).slice(0, 8) + '...';
     }
-    console.log(`[AUTH] ${message}`, safeData);
+    logger.info(`[AUTH] ${message}`, safeData);
   }
 }
 

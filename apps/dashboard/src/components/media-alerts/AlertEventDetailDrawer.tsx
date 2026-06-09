@@ -8,6 +8,11 @@ import { useState } from 'react';
 
 import { markAlertEventsRead } from '@/lib/mediaAlertsApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:media-alerts:AlertEventDetailDrawer'
+);
 interface AlertEventDetailDrawerProps {
   event: MediaAlertEvent;
   isOpen: boolean;
@@ -33,7 +38,7 @@ export function AlertEventDetailDrawer({
       onEventChange();
       onClose();
     } catch (error) {
-      console.error('Failed to mark event:', error);
+      logger.error('Failed to mark event:', error);
     } finally {
       setIsMarking(false);
     }

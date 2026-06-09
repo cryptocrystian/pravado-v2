@@ -15,6 +15,9 @@ import type {
 } from '@/lib/auditApi';
 import { getAuditEventTypes } from '@/lib/auditApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger('dashboard:components:audit:AuditFilters');
 interface AuditFiltersProps {
   filters: AuditQueryFilters;
   onChange: (filters: AuditQueryFilters) => void;
@@ -48,7 +51,7 @@ export function AuditFilters({
       setEventTypes(data.eventTypes);
       setCategories(data.categories);
     } catch (error) {
-      console.error('Failed to load event types:', error);
+      logger.error('Failed to load event types:', error);
     }
   }
 

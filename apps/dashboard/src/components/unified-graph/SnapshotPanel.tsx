@@ -48,6 +48,10 @@ import {
   regenerateSnapshot,
 } from '@/lib/unifiedGraphApi';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger('dashboard:components:unified-graph:SnapshotPanel');
+
 interface SnapshotPanelProps {
   onSelect?: (snapshot: IntelligenceGraphSnapshot) => void;
 }
@@ -65,7 +69,7 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
       const result = await listSnapshots({ limit: 20 });
       setSnapshots(result.snapshots);
     } catch (error) {
-      console.error('Failed to fetch snapshots:', error);
+      logger.error('Failed to fetch snapshots:', error);
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +95,7 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
       setNewSnapshotDescription('');
       fetchSnapshots();
     } catch (error) {
-      console.error('Failed to create snapshot:', error);
+      logger.error('Failed to create snapshot:', error);
     } finally {
       setIsCreating(false);
     }
@@ -102,7 +106,7 @@ export function SnapshotPanel({ onSelect }: SnapshotPanelProps) {
       await regenerateSnapshot(snapshotId);
       fetchSnapshots();
     } catch (error) {
-      console.error('Failed to regenerate snapshot:', error);
+      logger.error('Failed to regenerate snapshot:', error);
     }
   };
 

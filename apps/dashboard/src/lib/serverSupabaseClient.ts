@@ -6,6 +6,9 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+import { createServerLogger } from './serverLogger';
+
+const logger = createServerLogger('dashboard:lib:serverSupabaseClient');
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
@@ -41,7 +44,7 @@ export async function getServerAccessToken(): Promise<string | null> {
     } = await supabase.auth.getSession();
     return session?.access_token || null;
   } catch (error) {
-    console.error('[getServerAccessToken] Error:', error);
+    logger.error('[getServerAccessToken] Error:', error);
     return null;
   }
 }

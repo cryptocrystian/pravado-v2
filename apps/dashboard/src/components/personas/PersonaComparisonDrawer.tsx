@@ -37,6 +37,11 @@ import {
 } from '@/lib/personaApi';
 import { cn } from '@/lib/utils';
 
+import { createLogger } from '../../lib/clientLogger';
+
+const logger = createLogger(
+  'dashboard:components:personas:PersonaComparisonDrawer'
+);
 interface PersonaComparisonDrawerProps {
   comparison: PersonaComparisonResult | null;
   isOpen: boolean;
@@ -92,7 +97,7 @@ export function PersonaComparisonDrawer({
       await onMerge(sourceId, targetId);
       onClose();
     } catch (error) {
-      console.error('Merge failed:', error);
+      logger.error('Merge failed:', error);
     } finally {
       setIsMerging(false);
     }

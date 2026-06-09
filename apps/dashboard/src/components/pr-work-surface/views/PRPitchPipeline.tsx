@@ -15,6 +15,7 @@
 
 import { useState, useMemo } from 'react';
 
+import { createLogger } from '../../../lib/clientLogger';
 import { ImpactStrip } from '../components/ImpactStrip';
 import { prAccent, typography, buttonStyles } from '../prWorkSurfaceStyles';
 import type {
@@ -23,6 +24,10 @@ import type {
   MediaContact,
   Pitch,
 } from '../types';
+
+const logger = createLogger(
+  'dashboard:components:pr-work-surface:views:PRPitchPipeline'
+);
 
 // ============================================
 // STAGE CONFIG (DS3)
@@ -755,13 +760,16 @@ export function PRPitchPipeline() {
   }, [items]);
 
   const handleAction = (item: PitchPipelineItem, action: string) => {
-    console.log('Pipeline action:', action, item.id);
+    logger.info('Pipeline action', { action, itemId: item.id });
     // Route to appropriate screen based on action
   };
 
   const handleBulkAction = (action: string) => {
     if (selectedItems.size === 0) return;
-    console.log('Bulk action:', action, Array.from(selectedItems));
+    logger.info('Bulk action', {
+      action,
+      selectedItems: Array.from(selectedItems),
+    });
     // Implement safe bulk actions
   };
 

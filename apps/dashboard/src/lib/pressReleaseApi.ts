@@ -1,8 +1,3 @@
-/**
- * Press Release API Client (Sprint S38)
- * Client-side API helpers for press release generator
- */
-
 import type {
   PRDetailResponse,
   PRGeneratedRelease,
@@ -13,6 +8,15 @@ import type {
   PROptimizationResult,
   PRSimilarityResponse,
 } from '@pravado/types';
+
+import { createLogger } from './clientLogger';
+
+/**
+ * Press Release API Client (Sprint S38)
+ * Client-side API helpers for press release generator
+ */
+
+const logger = createLogger('dashboard:lib:pressReleaseApi');
 
 // Re-export types for convenience
 export type {
@@ -218,7 +222,7 @@ export function subscribeToGenerationProgress(
           break;
       }
     } catch (err) {
-      console.error('Failed to parse SSE event:', err);
+      logger.error('Failed to parse SSE event:', err);
     }
   };
 

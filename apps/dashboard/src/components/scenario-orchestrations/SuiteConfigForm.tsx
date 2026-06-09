@@ -15,10 +15,15 @@ import type {
 import { useState, useEffect } from 'react';
 
 import { listSimulations } from '../../lib/aiScenarioSimulationApi';
+import { createLogger } from '../../lib/clientLogger';
 import {
   CONDITION_TYPE_LABELS,
   CONDITION_TYPE_DESCRIPTIONS,
 } from '../../lib/scenarioOrchestrationApi';
+
+const logger = createLogger(
+  'dashboard:components:scenario-orchestrations:SuiteConfigForm'
+);
 
 interface SuiteConfigFormProps {
   suite?: ScenarioSuite;
@@ -77,7 +82,7 @@ export function SuiteConfigForm({
       });
       setSimulations(result.simulations);
     } catch (err) {
-      console.error('Failed to load simulations', err);
+      logger.error('Failed to load simulations', err);
     }
   };
 

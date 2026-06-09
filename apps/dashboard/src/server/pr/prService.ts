@@ -19,6 +19,9 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 import { getPRConfig } from '@/lib/env/pr-config';
 
+import { createServerLogger } from '../../lib/serverLogger';
+
+const logger = createServerLogger('dashboard:server:pr:prService');
 // ============================================
 // TYPES
 // ============================================
@@ -910,7 +913,7 @@ export function createPRService(
   const config = getPRConfig();
 
   if (config.showBackendStatus) {
-    console.log(
+    logger.info(
       `[PRService] Creating service for org: ${orgId.substring(0, 8)}...`
     );
   }

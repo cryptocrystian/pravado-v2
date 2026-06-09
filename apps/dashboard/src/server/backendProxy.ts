@@ -12,7 +12,9 @@
 import 'server-only';
 
 import { getServerAccessToken, ServerAuthError } from './supabaseServerAuth';
+import { createServerLogger } from '../lib/serverLogger';
 
+const logger = createServerLogger('dashboard:server:backendProxy');
 // ============================================================================
 // Configuration
 // ============================================================================
@@ -24,7 +26,7 @@ function getApiBaseUrl(): string {
     process.env.API_BASE_URL;
 
   if (!apiUrl) {
-    console.error('[backendProxy] CRITICAL: No API base URL configured');
+    logger.error('[backendProxy] CRITICAL: No API base URL configured');
     throw new Error(
       'API_URL_MISSING: No API base URL environment variable configured'
     );
@@ -66,7 +68,7 @@ export class BackendProxyError extends Error {
 
 function debugLog(message: string, data?: Record<string, unknown>) {
   if (DEBUG_AUTH) {
-    console.log(`[backendProxy] ${message}`, data || '');
+    logger.info(`[backendProxy] ${message}`, data || '');
   }
 }
 
@@ -120,7 +122,7 @@ export async function backendFetch<T = unknown>(
     const cause =
       fetchErr instanceof Error ? (fetchErr.cause ?? fetchErr) : fetchErr;
     const detail = cause instanceof Error ? cause.message : String(cause);
-    console.error(`[backendProxy] Fetch failed for ${method} ${url}:`, detail);
+    logger.error(`[backendProxy] Fetch failed for ${method} ${url}:`, detail);
     throw new BackendProxyError({
       status: 502,
       message: `Backend unreachable: ${detail}`,
@@ -213,7 +215,7 @@ export async function backendFetchRaw(
     const cause =
       fetchErr instanceof Error ? (fetchErr.cause ?? fetchErr) : fetchErr;
     const detail = cause instanceof Error ? cause.message : String(cause);
-    console.error(`[backendProxy] Raw fetch failed for ${url}:`, detail);
+    logger.error(`[backendProxy] Raw fetch failed for ${url}:`, detail);
     throw new BackendProxyError({
       status: 502,
       message: `Backend unreachable: ${detail}`,

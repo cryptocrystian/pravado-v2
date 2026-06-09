@@ -12,7 +12,9 @@
 import { setupWorker } from 'msw/browser';
 
 import { handlers } from './handlers';
+import { createLogger } from '../lib/clientLogger';
 
+const logger = createLogger('dashboard:mocks:browser');
 export const worker = setupWorker(...handlers);
 
 /**
@@ -21,14 +23,14 @@ export const worker = setupWorker(...handlers);
  */
 export async function initMocks(): Promise<void> {
   if (typeof window === 'undefined') {
-    console.warn('[MSW] Cannot initialize in non-browser environment');
+    logger.warn('[MSW] Cannot initialize in non-browser environment');
     return;
   }
 
   const isMswEnabled = process.env.NEXT_PUBLIC_MSW_ENABLED === 'true';
 
   if (!isMswEnabled) {
-    console.log(
+    logger.info(
       '[MSW] Mocking disabled (set NEXT_PUBLIC_MSW_ENABLED=true to enable)'
     );
     return;
@@ -42,13 +44,13 @@ export async function initMocks(): Promise<void> {
       },
     });
 
-    console.log('[MSW] Mock Service Worker started successfully');
-    console.log('[MSW] Intercepting Command Center API endpoints:');
-    console.log('  - GET /api/command-center/action-stream');
-    console.log('  - GET /api/command-center/intelligence-canvas');
-    console.log('  - GET /api/command-center/strategy-panel');
-    console.log('  - GET /api/command-center/orchestration-calendar');
+    logger.info('[MSW] Mock Service Worker started successfully');
+    logger.info('[MSW] Intercepting Command Center API endpoints:');
+    logger.info('  - GET /api/command-center/action-stream');
+    logger.info('  - GET /api/command-center/intelligence-canvas');
+    logger.info('  - GET /api/command-center/strategy-panel');
+    logger.info('  - GET /api/command-center/orchestration-calendar');
   } catch (error) {
-    console.error('[MSW] Failed to start Mock Service Worker:', error);
+    logger.error('[MSW] Failed to start Mock Service Worker:', error);
   }
 }

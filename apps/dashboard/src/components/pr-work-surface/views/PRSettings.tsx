@@ -15,9 +15,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+import { createLogger } from '../../../lib/clientLogger';
 import { buttonStyles, glowEffects } from '../prWorkSurfaceStyles';
 import type { AutomationMode, AutomationCeiling, PRGuardrails } from '../types';
 
+const logger = createLogger(
+  'dashboard:components:pr-work-surface:views:PRSettings'
+);
 // ============================================
 // TOAST COMPONENT
 // ============================================
@@ -737,7 +741,7 @@ export function PRSettings() {
 
   const handleSave = useCallback(() => {
     // In real implementation, this would save to API
-    console.log('Saving guardrails:', guardrails);
+    logger.info('Saving guardrails:', guardrails);
     setToastMessage('Settings saved successfully');
     setToastVisible(true);
   }, [guardrails]);

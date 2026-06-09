@@ -5,6 +5,9 @@
 
 import { createBrowserClient } from '@supabase/ssr';
 
+import { createLogger } from './clientLogger';
+
+const logger = createLogger('dashboard:lib:supabaseClient');
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey =
@@ -12,9 +15,9 @@ const supabaseAnonKey =
 
 // Debug: Log initialization (only in browser)
 if (typeof window !== 'undefined') {
-  console.log('[Supabase] Initializing browser client with cookie storage');
-  console.log('[Supabase] URL:', supabaseUrl.substring(0, 30) + '...');
-  console.log(
+  logger.info('[Supabase] Initializing browser client with cookie storage');
+  logger.info('[Supabase] URL:', supabaseUrl.substring(0, 30) + '...');
+  logger.info(
     '[Supabase] Key prefix:',
     supabaseAnonKey.substring(0, 20) + '...'
   );
@@ -24,7 +27,7 @@ if (typeof window !== 'undefined') {
     supabaseUrl.includes('placeholder') ||
     supabaseAnonKey.includes('placeholder')
   ) {
-    console.error(
+    logger.error(
       '[Supabase] WARNING: Using placeholder values! Check NEXT_PUBLIC_SUPABASE_* env vars'
     );
   }

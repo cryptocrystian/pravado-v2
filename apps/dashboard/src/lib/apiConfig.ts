@@ -1,3 +1,7 @@
+import { createLogger } from './clientLogger';
+
+const logger = createLogger('dashboard:lib:apiConfig');
+
 /**
  * Centralized API Configuration (Sprint S99 Fix)
  *
@@ -15,7 +19,7 @@ function getApiBaseUrl(): string {
       typeof window !== 'undefined' &&
       !window.location.hostname.includes('localhost')
     ) {
-      console.error(
+      logger.error(
         '[API Config] CRITICAL: NEXT_PUBLIC_API_URL is not set in production/staging environment. ' +
           'API calls will fail. Please set this environment variable in Vercel.'
       );

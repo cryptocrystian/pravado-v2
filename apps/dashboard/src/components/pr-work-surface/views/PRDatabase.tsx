@@ -19,6 +19,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import useSWR from 'swr';
 
+import { createLogger } from '../../../lib/clientLogger';
 import { ContactFormModal } from '../components/ContactFormModal';
 import { prAccent, buttonStyles, typography } from '../prWorkSurfaceStyles';
 import type {
@@ -33,6 +34,10 @@ import type {
   SavedSegment,
   DataQualityStats,
 } from '../types';
+
+const logger = createLogger(
+  'dashboard:components:pr-work-surface:views:PRDatabase'
+);
 
 // ============================================
 // API TYPES & FETCHER
@@ -1924,12 +1929,12 @@ export function PRDatabase() {
   }, []);
 
   const handleBulkAddToSegment = useCallback(() => {
-    console.log('Add to segment:', Array.from(selectedIds));
+    logger.info('Add to segment:', Array.from(selectedIds));
     // Placeholder - would open segment selection modal
   }, [selectedIds]);
 
   const handleBulkMarkForVerification = useCallback(() => {
-    console.log('Mark for verification:', Array.from(selectedIds));
+    logger.info('Mark for verification:', Array.from(selectedIds));
     // Placeholder - would mark contacts for verification
     clearSelection();
   }, [selectedIds, clearSelection]);
@@ -2209,7 +2214,7 @@ export function PRDatabase() {
             activeSegmentId={activeSegmentId}
             onSelectSegment={handleSelectSegment}
             onSaveCurrentFilters={() => {
-              console.log('Save current filters as segment');
+              logger.info('Save current filters as segment');
             }}
           />
           <DataQualityPanel
@@ -2456,7 +2461,7 @@ export function PRDatabase() {
                           className="px-2 py-1 font-medium text-brand-magenta hover:text-white hover:bg-brand-magenta/15 rounded transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
-                            console.log('Create pitch for:', contact.name);
+                            logger.info('Create pitch for:', contact.name);
                           }}
                         >
                           Pitch
@@ -2467,7 +2472,7 @@ export function PRDatabase() {
                           className="px-2 py-1 font-medium text-white/55 hover:text-white hover:bg-white/5 rounded transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
-                            console.log('Log touch for:', contact.name);
+                            logger.info('Log touch for:', contact.name);
                           }}
                         >
                           Log touch
