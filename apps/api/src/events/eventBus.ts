@@ -4,7 +4,9 @@
  */
 
 import type { ExecutionEvent } from './eventTypes';
+import { createLogger } from '../lib/logger';
 
+const logger = createLogger('api:events:eventBus');
 type EventHandler = (event: ExecutionEvent) => void;
 
 interface Subscription {
@@ -78,7 +80,7 @@ class ExecutionEventBus {
         sub.handler(event);
       } catch (error) {
         // Log errors but don't let one handler failure affect others
-        console.error(`Error in event handler for run ${event.runId}:`, error);
+        logger.error(`Error in event handler for run ${event.runId}:`, error);
       }
     }
   }
