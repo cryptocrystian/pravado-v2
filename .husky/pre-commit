@@ -1,0 +1,16 @@
+# Phase 0.5 Plan 05 — pre-commit hook chain.
+#
+# Three gates, in this order, each non-zero exit aborts the commit:
+#   1. `lint-staged` — prettier / eslint --fix on staged files only
+#   2. `check-monitored-dirs.mjs` — reject if any unstaged file lives in a
+#      monitored directory (prevents the Track 0D "untracked agency routes"
+#      pattern from recurring)
+#   3. `check-zone-identifier.mjs` — reject `*:Zone.Identifier` Windows
+#      metadata files
+#
+# Emergency escape: `git commit --no-verify` skips all three. Use sparingly.
+# See docs/DEVELOPMENT.md for the full rationale + setup notes.
+
+pnpm exec lint-staged
+node scripts/check-monitored-dirs.mjs
+node scripts/check-zone-identifier.mjs
