@@ -14,7 +14,7 @@ Plan 03 ships:
 - `apps/dashboard` /health new — JSON response with Next.js + Vercel deployment metadata + Supabase reachability
 - Both responses include `version: process.env.VERCEL_GIT_COMMIT_SHA || process.env.RENDER_GIT_COMMIT || 'unknown'` per architect refinement
 - Tests asserting the `deps` object never leaks API keys, internal URLs, or error stack traces per architect refinement
-- `docs/operations/UPTIME_MONITORING.md` — copy-paste UptimeRobot config
+- `docs/deployment/UPTIME_MONITORING.md` — copy-paste UptimeRobot config
 
 ## Scope
 
@@ -36,7 +36,7 @@ Plan 03 ships:
 
 | File                                   | Action                                                                                                                                                                                                                                                                |
 | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `docs/operations/UPTIME_MONITORING.md` | new — instructions to set up UptimeRobot monitors at `https://pravado-api.onrender.com/health` and `https://app.pravado.io/health`, 5-min interval, email alerts to `christian@saipienlabs.com`. **Setup itself happens outside this PR** — doc is copy-paste config. |
+| `docs/deployment/UPTIME_MONITORING.md` | new — instructions to set up UptimeRobot monitors at `https://pravado-api.onrender.com/health` and `https://app.pravado.io/health`, 5-min interval, email alerts to `christian@saipienlabs.com`. **Setup itself happens outside this PR** — doc is copy-paste config. |
 
 ## Architect-approved refinement
 
