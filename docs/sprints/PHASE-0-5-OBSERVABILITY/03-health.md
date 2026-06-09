@@ -9,6 +9,7 @@
 The api ships a basic `/health` ({status, version, checks: {database, redis}}). It's not aware of Resend, Stripe, or any other downstream dep. The dashboard has no /health at all. UptimeRobot can't tell us anything richer than "200 OK" without endpoints designed for monitoring.
 
 Plan 03 ships:
+
 - `apps/api` /health expanded with downstream dep status (Supabase, Resend SDK init, Stripe SDK init) — but **no real calls to those services** per spec
 - `apps/dashboard` /health new — JSON response with Next.js + Vercel deployment metadata + Supabase reachability
 - Both responses include `version: process.env.VERCEL_GIT_COMMIT_SHA || process.env.RENDER_GIT_COMMIT || 'unknown'` per architect refinement
@@ -19,22 +20,22 @@ Plan 03 ships:
 
 ### apps/api
 
-| File | Action |
-|---|---|
+| File                                  | Action                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `apps/api/src/routes/health/index.ts` | expand: `{status, version, deps: {supabase, resend, stripe}, checks: {database, redis}}`. supabase = ping `auth.getSession` (no-op); resend = verify SDK initializes with `RESEND_API_KEY`; stripe = verify SDK initializes with `STRIPE_SECRET_KEY`. NO real outbound calls. 200 if all up; 503 with detail if any degraded. Version from `RENDER_GIT_COMMIT` env or `'unknown'`. |
-| `apps/api/tests/health.test.ts` | new — happy path + each dep failure case + **assertions that the response body contains no API key fragments, no internal URLs, no stack traces** |
+| `apps/api/tests/health.test.ts`       | new — happy path + each dep failure case + **assertions that the response body contains no API key fragments, no internal URLs, no stack traces**                                                                                                                                                                                                                                  |
 
 ### apps/dashboard
 
-| File | Action |
-|---|---|
-| `apps/dashboard/src/app/health/route.ts` | new — Next.js Route Handler. `{status, version, vercel: {env, deployment, region}, deps: {supabase}}`. supabase ping = same as api side. Version from `VERCEL_GIT_COMMIT_SHA` env or `'unknown'`. |
-| `apps/dashboard/src/app/health/route.test.ts` | new — same key-leak / URL-leak / stack-leak assertions |
+| File                                          | Action                                                                                                                                                                                            |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/dashboard/src/app/health/route.ts`      | new — Next.js Route Handler. `{status, version, vercel: {env, deployment, region}, deps: {supabase}}`. supabase ping = same as api side. Version from `VERCEL_GIT_COMMIT_SHA` env or `'unknown'`. |
+| `apps/dashboard/src/app/health/route.test.ts` | new — same key-leak / URL-leak / stack-leak assertions                                                                                                                                            |
 
 ### Uptime monitoring
 
-| File | Action |
-|---|---|
+| File                                   | Action                                                                                                                                                                                                                                                                |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `docs/operations/UPTIME_MONITORING.md` | new — instructions to set up UptimeRobot monitors at `https://pravado-api.onrender.com/health` and `https://app.pravado.io/health`, 5-min interval, email alerts to `christian@saipienlabs.com`. **Setup itself happens outside this PR** — doc is copy-paste config. |
 
 ## Architect-approved refinement
