@@ -1,0 +1,189 @@
+name: CI Scheduled
+
+# Phase 0.5 Plan 04 — scheduled CI cron on main.
+#
+# Runs the full CI suite (Lint / Type Check / Test / Build) every 12 hours
+# against main. On failure, emails christian@saipienlabs.com via the
+# existing SMTP_* secrets reused from the apps/api email pipeline (no
+# duplicate secrets — see the spec doc).
+#
+# This is the permanent heartbeat that replaces the Phase 0 scheduled-task
+# pattern (Run 3 dispatch silently failed; surfaced 22 hours late). If the
+# cron stops firing, the absence of green-runs in the main branch's
+# workflow history becomes itself a signal.
+#
+# Spec: docs/sprints/PHASE-0-5-OBSERVABILITY/04-cron.md
+
+on:
+  schedule:
+    - cron: '0 */12 * * *' # every 12h at minute 0 UTC
+  workflow_dispatch: # manual fire for verification + debugging
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linters
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Check for mock data leaks (Phase 0 Track 0B)
+        run: bash scripts/detect-mock-leaks.sh
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run type checking
+        run: pnpm typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test
+
+      # Same Plan 06d structural signal as ci.yml — boots apps/api for
+      # 5 seconds and fails the run if the process exited.
+      - name: API startup smoke test
+        working-directory: apps/api
+        env:
+          NODE_ENV: test
+          SUPABASE_URL: https://test.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: test-service-role-key
+          SUPABASE_ANON_KEY: test-anon-key
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
+          COOKIE_SECRET: test-cookie-secret
+        run: |
+          node --import tsx src/index.ts > /tmp/api-smoke.log 2>&1 &
+          API_PID=$!
+          sleep 5
+          if ! kill -0 $API_PID 2>/dev/null; then
+            echo "::error::API process exited during startup — Track-0D-class failure"
+            echo "--- /tmp/api-smoke.log ---"
+            cat /tmp/api-smoke.log
+            exit 1
+          fi
+          echo "API still alive after 5s — startup OK"
+          kill $API_PID 2>/dev/null || true
+          wait $API_PID 2>/dev/null || true
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+  notify-on-failure:
+    name: Notify on failure
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test, build]
+    # Run only when at least one upstream job failed. `always()` is
+    # required so this job runs even after a `needs` failure; `failure()`
+    # restricts it to the failure case.
+    if: ${{ always() && failure() }}
+    steps:
+      - name: Email christian@saipienlabs.com
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: ${{ secrets.SMTP_FROM }}
+          to: christian@saipienlabs.com
+          subject: '[Pravado CI Scheduled] FAILURE on main (run #${{ github.run_number }})'
+          body: |
+            The scheduled CI run on main failed.
+
+            Workflow: ${{ github.workflow }}
+            Run URL:  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Commit:   ${{ github.sha }}
+            Trigger:  ${{ github.event_name }}
+
+            Job results (per `needs` evaluation at notify time):
+              lint:      ${{ needs.lint.result }}
+              typecheck: ${{ needs.typecheck.result }}
+              test:      ${{ needs.test.result }}
+              build:     ${{ needs.build.result }}
+
+            See the run URL for details, including the API startup smoke test
+            log if that's where it broke.
+
+            This message was sent by `.github/workflows/ci-scheduled.yml`
+            (Phase 0.5 Plan 04).
