@@ -9,9 +9,10 @@ import type {
   StripeCheckoutSessionResponse,
   StripeSubscriptionStatus,
 } from '@pravado/types';
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('stripe-service');
 

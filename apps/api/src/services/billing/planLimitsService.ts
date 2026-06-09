@@ -5,8 +5,9 @@
  * Works alongside existing BillingService for quota checking.
  */
 
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('plan-limits');
 

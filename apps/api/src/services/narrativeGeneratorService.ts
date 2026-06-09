@@ -18,11 +18,12 @@ import type {
   NarrativeRecommendation,
   TimelineStats,
 } from '@pravado/types';
-import { LlmRouter, createLogger } from '@pravado/utils';
+import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { BillingService } from './billingService';
 import { JournalistTimelineService } from './journalistTimelineService';
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('narrative-generator-service');
 

@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:strategicIntelligenceService');
 /**
  * Strategic Intelligence Narrative Engine Service (Sprint S65)
  * CEO-level unified strategic intelligence reports synthesizing all Pravado systems
@@ -51,6 +52,7 @@ import type {
 } from '@pravado/validators';
 import { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -1132,7 +1134,7 @@ export async function generateReport(
         );
       }
     } catch (llmError) {
-      console.error(`Failed to generate section ${sectionType}:`, llmError);
+      logger.error(`Failed to generate section ${sectionType}:`, llmError);
       // Continue with other sections
     }
   }

@@ -13,21 +13,8 @@ import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import Fastify from 'fastify';
 
-import { createLogger, fastifyLoggerOptions } from './lib/logger';
-
-// Raw-body capture moved to a per-route `preParsing` hook (see
-// apps/api/src/lib/captureRawBody.ts). The `fastify-raw-body` plugin was
-// removed in Plan 06d because its `^5.x` peer-dep crashed every Render
-// deploy since 2026-05-23 (commit 6c27359c). The `FastifyRequest.rawBody`
-// type augmentation below stays so route handlers can still read the
-// decoration set by the hook.
-declare module 'fastify' {
-  interface FastifyRequest {
-    rawBody?: string | Buffer;
-  }
-}
-
 import { config } from './config';
+import { createLogger, fastifyLoggerOptions } from './lib/logger';
 import { authPlugin } from './plugins/auth';
 import { mailerPlugin } from './plugins/mailer';
 import { platformFreezePlugin } from './plugins/platformFreeze';
@@ -93,6 +80,18 @@ import { siloTaxAuditRoutes } from './routes/siloTaxAudit';
 import strategicIntelligenceRoutes from './routes/strategicIntelligence'; // S65
 import unifiedGraphRoutes from './routes/unifiedGraph'; // S66
 import unifiedNarrativeRoutes from './routes/unifiedNarratives'; // S70
+
+// Raw-body capture moved to a per-route `preParsing` hook (see
+// apps/api/src/lib/captureRawBody.ts). The `fastify-raw-body` plugin was
+// removed in Plan 06d because its `^5.x` peer-dep crashed every Render
+// deploy since 2026-05-23 (commit 6c27359c). The `FastifyRequest.rawBody`
+// type augmentation below stays so route handlers can still read the
+// decoration set by the hook.
+declare module 'fastify' {
+  interface FastifyRequest {
+    rawBody?: string | Buffer;
+  }
+}
 
 const logger = createLogger('api:server');
 

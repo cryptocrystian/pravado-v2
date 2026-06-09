@@ -5,8 +5,7 @@
  * Handles token refresh, API calls, and upsert logic.
  */
 
-import { createLogger } from '@pravado/utils';
-
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('service:gsc-sync');
 
 // ============================================================================

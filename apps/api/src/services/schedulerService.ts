@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:schedulerService');
 /**
  * Scheduler Service (Sprint S42)
  * Manages scheduled background tasks and cron job execution
@@ -26,7 +27,7 @@ import {
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { MediaCrawlerService } from './mediaCrawlerService';
-
+import { createLogger } from '../lib/logger';
 // ========================================
 // SERVICE CONFIGURATION
 // ========================================
@@ -122,7 +123,7 @@ export class SchedulerService {
 
   private log(message: string, data?: any): void {
     if (this.debugMode) {
-      console.log(`[Scheduler] ${message}`, data || '');
+      logger.info(`[Scheduler] ${message}`, data || '');
     }
   }
 

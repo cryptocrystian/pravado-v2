@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:memory:contextAssembler');
 /**
  * Context Assembler Service (Sprint S10)
  * Assembles comprehensive context for agent step execution
@@ -15,7 +16,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { MemoryRetrievalService } from './memoryRetrieval';
 import { MemoryStore } from './memoryStore';
-
+import { createLogger } from '../../lib/logger';
 export interface ContextAssemblerOptions {
   debugMode?: boolean;
   defaultTokenBudget?: number;
@@ -72,7 +73,7 @@ export class ContextAssembler {
     } = input;
 
     if (this.debugMode) {
-      console.log('[ContextAssembler] Assembling context for step', {
+      logger.info('[ContextAssembler] Assembling context for step', {
         orgId,
         playbookId: playbook.id,
         stepKey: step.key,
@@ -124,7 +125,7 @@ export class ContextAssembler {
     };
 
     if (this.debugMode) {
-      console.log('[ContextAssembler] Context assembled', {
+      logger.info('[ContextAssembler] Context assembled', {
         memoriesCount: semanticMemories.items.length,
         episodicTracesCount: episodicTraces.length,
         linkedEntitiesCount: Object.keys(linkedEntities).length,
@@ -144,7 +145,7 @@ export class ContextAssembler {
     const embedding = new Array(1536).fill(0).map(() => Math.random());
 
     if (this.debugMode) {
-      console.log('[ContextAssembler] Generated embedding (stub)', {
+      logger.info('[ContextAssembler] Generated embedding (stub)', {
         length: embedding.length,
       });
     }
@@ -210,7 +211,7 @@ export class ContextAssembler {
 
     if (error) {
       if (this.debugMode) {
-        console.warn(
+        logger.warn(
           `[ContextAssembler] Failed to fetch entity ${entityType}:${entityId}`,
           error
         );
@@ -298,7 +299,7 @@ export class ContextAssembler {
     }
 
     if (this.debugMode) {
-      console.log('[ContextAssembler] Context trimmed', {
+      logger.info('[ContextAssembler] Context trimmed', {
         originalTokens: context.tokenBudget.used,
         trimmedTokens: trimmedContext.tokenBudget.used,
         memoriesRemaining: trimmedContext.memories.length,

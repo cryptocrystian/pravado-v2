@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:evi:eviCalculationService');
 /**
  * EVI Calculation Service (Sprint S-INT-01)
  *
@@ -17,6 +18,7 @@ import {
   type VisibilitySignals,
   type AuthoritySignals,
 } from './eviSignalAggregator';
+import { createLogger } from '../../lib/logger';
 
 // ============================================================================
 // Types
@@ -318,7 +320,7 @@ export async function calculateEVI(
   });
 
   if (error) {
-    console.error('[EVI] Failed to save snapshot:', error.message);
+    logger.error('[EVI] Failed to save snapshot:', error.message);
     // Don't throw — still return the calculated score
   }
 

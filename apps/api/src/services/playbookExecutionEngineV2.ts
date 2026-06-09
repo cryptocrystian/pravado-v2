@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:playbookExecutionEngineV2');
 /**
  * Playbook Execution Engine V2 (Sprint S18)
  * Async execution engine with job queue and parallel step execution
@@ -16,6 +17,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { BillingService } from './billingService';
 import { stepHandlers } from './stepHandlers';
 import { executionEventBus } from '../events/eventBus';
+import { createLogger } from '../lib/logger';
 import { ExecutionDispatcher } from '../queue/executionDispatcher';
 import type {
   PlaybookStepJob,
@@ -97,7 +99,7 @@ export class PlaybookExecutionEngineV2 {
    */
   start(): void {
     this.workerPool.start();
-    console.log('[ExecutionEngineV2] Started');
+    logger.info('[ExecutionEngineV2] Started');
   }
 
   /**
@@ -105,7 +107,7 @@ export class PlaybookExecutionEngineV2 {
    */
   async stop(): Promise<void> {
     await this.workerPool.stop();
-    console.log('[ExecutionEngineV2] Stopped');
+    logger.info('[ExecutionEngineV2] Stopped');
   }
 
   /**
@@ -213,7 +215,7 @@ export class PlaybookExecutionEngineV2 {
 
     // Update billing usage counters (S28 - best effort, non-blocking)
     this.updateBillingUsage(orgId).catch((error) => {
-      console.warn('[ExecutionEngineV2] Failed to update billing usage', {
+      logger.warn('[ExecutionEngineV2] Failed to update billing usage', {
         error,
         orgId,
       });
@@ -703,7 +705,7 @@ export class PlaybookExecutionEngineV2 {
         body: JSON.stringify(payload),
       });
     } catch (error) {
-      console.error('[ExecutionEngineV2] Webhook failed:', error);
+      logger.error('[ExecutionEngineV2] Webhook failed:', error);
       // Don't throw - webhook failures shouldn't fail execution
     }
   }
@@ -768,7 +770,7 @@ export class PlaybookExecutionEngineV2 {
       }
     } catch (error) {
       // Best effort - don't fail the execution if billing update fails
-      console.warn('[ExecutionEngineV2] Failed to update billing usage', {
+      logger.warn('[ExecutionEngineV2] Failed to update billing usage', {
         error,
         orgId,
       });

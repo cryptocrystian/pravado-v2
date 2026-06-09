@@ -43,8 +43,10 @@ import {
   TalkingPointFact,
   SECTION_TYPE_CONFIGS,
 } from '@pravado/types';
-import { LlmRouter, createLogger } from '@pravado/utils';
+import { LlmRouter } from '@pravado/utils';
 import { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('media-briefing-service');
 

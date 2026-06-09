@@ -14,13 +14,14 @@ import type {
   GeneratedBrief,
   ContentItem,
 } from '@pravado/types';
-import { LlmRouter, createLogger } from '@pravado/utils';
+import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { BillingService } from './billingService';
 import { ContentService } from './contentService';
 import { PersonalityStore } from './personality/personalityStore';
 import { SEOKeywordService } from './seoKeywordService';
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('brief-generator-service');
 

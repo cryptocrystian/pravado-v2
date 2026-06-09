@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:mediaMonitoringService');
 /**
  * Media Monitoring Service (Sprint S40)
  * Core service for media monitoring, article ingestion, and earned mention detection
@@ -45,7 +46,7 @@ import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { MediaAlertService } from './mediaAlertService';
-
+import { createLogger } from '../lib/logger';
 // ========================================
 // SERVICE CONFIGURATION
 // ========================================
@@ -414,7 +415,7 @@ export class MediaMonitoringService {
       return response.completion.trim();
     } catch (error) {
       if (this.debugMode) {
-        console.error('Summary generation failed:', error);
+        logger.error('Summary generation failed:', error);
       }
       return content.substring(0, 200) + (content.length > 200 ? '...' : '');
     }
@@ -462,7 +463,7 @@ export class MediaMonitoringService {
       };
     } catch (error) {
       if (this.debugMode) {
-        console.error('Embedding generation failed:', error);
+        logger.error('Embedding generation failed:', error);
       }
       return { vector: null, generated: false, dimensions: 0 };
     }
@@ -497,7 +498,7 @@ export class MediaMonitoringService {
       return keywords.slice(0, 10);
     } catch (error) {
       if (this.debugMode) {
-        console.error('Keyword extraction failed:', error);
+        logger.error('Keyword extraction failed:', error);
       }
       return this.extractKeywordsFallback(content, title);
     }
@@ -894,7 +895,7 @@ export class MediaMonitoringService {
             await this.mediaAlertService.evaluateRulesForNewMention(mention);
           } catch (alertError) {
             // Log but don't fail mention detection if alert evaluation fails
-            console.error(
+            logger.error(
               'Failed to evaluate alert rules for mention:',
               alertError
             );
@@ -1003,7 +1004,7 @@ ${content.substring(0, 6000)}`;
       }));
     } catch (error) {
       if (this.debugMode) {
-        console.error('LLM mention detection failed:', error);
+        logger.error('LLM mention detection failed:', error);
       }
       return this.detectMentionsFallback(content, title, entities);
     }
@@ -1268,7 +1269,7 @@ ${content.substring(0, 6000)}`;
     if (error) {
       // Fallback if RPC not available
       if (this.debugMode) {
-        console.error('Stats RPC failed:', error);
+        logger.error('Stats RPC failed:', error);
       }
 
       // Manual calculation
@@ -1377,7 +1378,7 @@ ${content.substring(0, 6000)}`;
 
     if (error) {
       if (this.debugMode) {
-        console.error('Similar articles search failed:', error);
+        logger.error('Similar articles search failed:', error);
       }
       return [];
     }

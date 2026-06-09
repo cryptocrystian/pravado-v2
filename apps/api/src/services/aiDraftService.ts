@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:aiDraftService');
 /**
  * AI Draft Generation Service (Sprint S98)
  * Generates personalized pitch emails and responses using LLM
@@ -5,6 +6,7 @@
 
 import { routeLLM } from '@pravado/utils';
 
+import { createLogger } from '../lib/logger';
 /**
  * Context for generating a pitch draft
  */
@@ -91,7 +93,7 @@ export class AIDraftService {
       };
     } catch (error) {
       // Fallback to template if LLM fails
-      console.error('LLM generation failed, using fallback:', error);
+      logger.error('LLM generation failed, using fallback:', error);
       return this.generateFallbackDraft(context);
     }
   }
@@ -137,7 +139,7 @@ export class AIDraftService {
         generatedAt: new Date(),
       };
     } catch (error) {
-      console.error('LLM generation failed, using fallback:', error);
+      logger.error('LLM generation failed, using fallback:', error);
       return this.generateFallbackDraft(context);
     }
   }

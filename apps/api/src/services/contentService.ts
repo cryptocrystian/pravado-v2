@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:contentService');
 /**
  * Content Intelligence Service (Sprint S12)
  * Handles content library, briefs, clusters, and gap detection
@@ -15,6 +16,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 export interface ContentServiceOptions {
   debugMode?: boolean;
 }
@@ -490,7 +492,7 @@ export class ContentService {
    */
   async rebuildTopicClusters(orgId: string): Promise<ContentClusterDTO[]> {
     if (this.debugMode) {
-      console.log('[ContentService] Rebuilding topic clusters (stub)');
+      logger.info('[ContentService] Rebuilding topic clusters (stub)');
     }
 
     // S12 V1: Simple stub clustering

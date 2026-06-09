@@ -5,10 +5,9 @@
  * Uses Hunter.io domain search across industry-relevant publications.
  */
 
-import { createLogger } from '@pravado/utils';
-
 import { searchPublication } from './hunterEnrichmentService';
 import { getPublicationsForIndustries } from './publicationResolver';
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('service:journalist-discovery');
 

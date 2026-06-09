@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:auditReplayService');
 /**
  * Audit Replay Service (Sprint S37)
  * Reconstructs past system state using audit logs
@@ -29,6 +30,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // Event emitter for SSE streaming
 export const replayEventEmitter = new EventEmitter();
 
@@ -163,7 +165,7 @@ export class AuditReplayService {
     const { data, error } = await query;
 
     if (error) {
-      console.error('Failed to fetch audit logs for replay:', error);
+      logger.error('Failed to fetch audit logs for replay:', error);
       throw new Error(`Failed to fetch audit logs: ${error.message}`);
     }
 
@@ -621,7 +623,7 @@ export class AuditReplayService {
       .single();
 
     if (error) {
-      console.error('Failed to create replay job:', error);
+      logger.error('Failed to create replay job:', error);
       return null;
     }
 
@@ -643,7 +645,7 @@ export class AuditReplayService {
       .single();
 
     if (error) {
-      console.error('Failed to get replay job:', error);
+      logger.error('Failed to get replay job:', error);
       return null;
     }
 
@@ -666,7 +668,7 @@ export class AuditReplayService {
       .range(offset, offset + limit - 1);
 
     if (error) {
-      console.error('Failed to list replay jobs:', error);
+      logger.error('Failed to list replay jobs:', error);
       return { runs: [], total: 0 };
     }
 
@@ -710,7 +712,7 @@ export class AuditReplayService {
       .eq('id', jobId);
 
     if (error) {
-      console.error('Failed to update replay job status:', error);
+      logger.error('Failed to update replay job status:', error);
       return false;
     }
 
@@ -1016,7 +1018,7 @@ export class AuditReplayService {
         },
       });
     } catch (error) {
-      console.error('Replay job failed:', error);
+      logger.error('Replay job failed:', error);
 
       await this.updateReplayJobStatus(jobId, 'failed', {
         finishedAt: new Date().toISOString(),
@@ -1059,7 +1061,7 @@ export class AuditReplayService {
       });
 
     if (error) {
-      console.error('Failed to store snapshot:', error);
+      logger.error('Failed to store snapshot:', error);
     }
   }
 
@@ -1078,7 +1080,7 @@ export class AuditReplayService {
       .single();
 
     if (error) {
-      console.error('Failed to get snapshot:', error);
+      logger.error('Failed to get snapshot:', error);
       return null;
     }
 
@@ -1096,7 +1098,7 @@ export class AuditReplayService {
       .order('snapshot_index', { ascending: true });
 
     if (error) {
-      console.error('Failed to get timeline:', error);
+      logger.error('Failed to get timeline:', error);
       return [];
     }
 

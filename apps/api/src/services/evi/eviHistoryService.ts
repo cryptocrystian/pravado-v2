@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:evi:eviHistoryService');
 /**
  * EVI History Service (Sprint S-INT-01)
  *
@@ -6,6 +7,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../../lib/logger';
 // ============================================================================
 // Types
 // ============================================================================
@@ -43,7 +45,7 @@ export async function getEVIHistory(
     .order('calculated_at', { ascending: true });
 
   if (error) {
-    console.error('[EVI History] Query failed:', error.message);
+    logger.error('[EVI History] Query failed:', error.message);
     return [];
   }
 

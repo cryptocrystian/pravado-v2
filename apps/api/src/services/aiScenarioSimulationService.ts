@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:aiScenarioSimulationService');
 /**
  * AI Scenario Simulation Service (Sprint S71)
  *
@@ -60,6 +61,7 @@ import { AI_AGENT_PRESETS } from '@pravado/types';
 import { routeLLM } from '@pravado/utils';
 import { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // ============================================================================
 // SERVICE CONTEXT
 // ============================================================================
@@ -236,7 +238,7 @@ async function logAuditEvent(
       details,
     });
   } catch (error) {
-    console.error('Failed to log audit event:', error);
+    logger.error('Failed to log audit event:', error);
   }
 }
 
@@ -1543,7 +1545,7 @@ async function generateAgentTurn(
       sentiment,
     };
   } catch (error) {
-    console.error('LLM generation error:', error);
+    logger.error('LLM generation error:', error);
     return {
       content: `[${agent.displayName} is considering their response...]`,
       model: 'fallback',
@@ -1747,7 +1749,7 @@ Analyze this scenario and provide outcomes and recommendations.`;
       ),
     };
   } catch (error) {
-    console.error('Outcome generation error:', error);
+    logger.error('Outcome generation error:', error);
     return {
       outcomes: [
         {

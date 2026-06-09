@@ -17,11 +17,12 @@ import type {
   RewriteResult,
   AgentPersonality,
 } from '@pravado/types';
-import { LlmRouter, createLogger } from '@pravado/utils';
+import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { BillingService } from './billingService';
 import { ContentQualityService } from './contentQualityService';
+import { createLogger } from '../lib/logger';
 import { PersonalityStore } from './personality/personalityStore';
 
 const logger = createLogger('content-rewrite-service');

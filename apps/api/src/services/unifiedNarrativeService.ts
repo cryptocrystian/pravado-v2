@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:unifiedNarrativeService');
 /**
  * Unified Narrative Generator V2 Service (Sprint S70)
  * Cross-domain synthesis engine for multi-layer narrative documents
@@ -51,6 +52,7 @@ import type {
 } from '@pravado/validators';
 import { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -1283,7 +1285,7 @@ export async function generateNarrative(
         }
       );
     } catch (llmError) {
-      console.error(`Failed to generate section ${sectionType}:`, llmError);
+      logger.error(`Failed to generate section ${sectionType}:`, llmError);
     }
   }
 

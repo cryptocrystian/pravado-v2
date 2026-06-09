@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:brandReputationService');
 /**
  * Brand Reputation Intelligence Service (Sprint S56)
  *
@@ -33,6 +34,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -455,7 +457,7 @@ export class BrandReputationService {
         data.mentionVelocity = mentions.length / Math.max(daysInWindow, 1);
       }
     } catch (err) {
-      console.error('Error fetching media mentions:', err);
+      logger.error('Error fetching media mentions:', err);
     }
 
     // Try to get crisis data (S55)
@@ -490,7 +492,7 @@ export class BrandReputationService {
         });
       }
     } catch (err) {
-      console.error('Error fetching crisis data:', err);
+      logger.error('Error fetching crisis data:', err);
     }
 
     // Try to get outreach data (S44)
@@ -509,7 +511,7 @@ export class BrandReputationService {
         });
       }
     } catch (err) {
-      console.error('Error fetching outreach data:', err);
+      logger.error('Error fetching outreach data:', err);
     }
 
     // Try to get competitive intelligence data (S53)
@@ -531,7 +533,7 @@ export class BrandReputationService {
         }
       }
     } catch (err) {
-      console.error('Error fetching competitor data:', err);
+      logger.error('Error fetching competitor data:', err);
     }
 
     // Count reputation events in window
@@ -547,7 +549,7 @@ export class BrandReputationService {
         data.eventCount = count || 0;
       }
     } catch (err) {
-      console.error('Error counting reputation events:', err);
+      logger.error('Error counting reputation events:', err);
     }
 
     return data;
@@ -802,7 +804,7 @@ export class BrandReputationService {
         });
       }
     } catch (err) {
-      console.error('Error fetching competitor comparison:', err);
+      logger.error('Error fetching competitor comparison:', err);
     }
 
     return comparisons;

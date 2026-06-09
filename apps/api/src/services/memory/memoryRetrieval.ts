@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:memory:memoryRetrieval');
 /**
  * Memory Retrieval Service (Sprint S10)
  * Handles vector similarity search and importance-based ranking
@@ -11,6 +12,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../../lib/logger';
 export interface MemoryRetrievalServiceOptions {
   debugMode?: boolean;
 }
@@ -42,7 +44,7 @@ export class MemoryRetrievalService {
     const { limit = 10, minRelevance = 0.5, memoryType } = options;
 
     if (this.debugMode) {
-      console.log('[MemoryRetrieval] Retrieving semantic memory', {
+      logger.info('[MemoryRetrieval] Retrieving semantic memory', {
         orgId,
         limit,
         minRelevance,
@@ -106,7 +108,7 @@ export class MemoryRetrievalService {
     orgId: string
   ): Promise<EpisodicTrace[]> {
     if (this.debugMode) {
-      console.log('[MemoryRetrieval] Retrieving episodic context', {
+      logger.info('[MemoryRetrieval] Retrieving episodic context', {
         runId,
         orgId,
       });
@@ -152,7 +154,7 @@ export class MemoryRetrievalService {
     const { limit = 10, memoryType } = options;
 
     if (this.debugMode) {
-      console.log('[MemoryRetrieval] Searching memories by text', {
+      logger.info('[MemoryRetrieval] Searching memories by text', {
         orgId,
         query,
         limit,

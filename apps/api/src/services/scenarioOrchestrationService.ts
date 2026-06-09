@@ -51,10 +51,11 @@ import type {
   RiskMapNode,
   RiskMapEdge,
 } from '@pravado/types';
-import { createLogger, routeLLM } from '@pravado/utils';
+import { routeLLM } from '@pravado/utils';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 import * as aiSimulationService from './aiScenarioSimulationService';
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('scenarioOrchestrationService');
 

@@ -6,9 +6,8 @@
  * Rate limited: max 1 API call/second per provider.
  */
 
-import { createLogger } from '@pravado/utils';
-
 import { resolvePublicationDomain } from './publicationResolver';
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('service:journalist-enrichment');
 

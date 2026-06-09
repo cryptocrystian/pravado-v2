@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:outreachService');
 /**
  * Outreach Service (Sprint S44)
  * Automated journalist outreach engine
@@ -34,7 +35,7 @@ import type {
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { OutreachDeliverabilityService } from './outreachDeliverabilityService';
-
+import { createLogger } from '../lib/logger';
 /**
  * Service configuration
  */
@@ -1057,7 +1058,7 @@ export class OutreachService {
       // In production, this would call the LLM router service
       // For now, we just use the templates as-is
       this.debugMode &&
-        console.log('LLM generation requested but not implemented yet');
+        logger.info('LLM generation requested but not implemented yet');
     }
 
     return {
@@ -1171,7 +1172,7 @@ export class OutreachService {
       } catch (err) {
         errors++;
         if (this.debugMode) {
-          console.error(`Failed to advance run ${runData.id}:`, err);
+          logger.error(`Failed to advance run ${runData.id}:`, err);
         }
       }
     }

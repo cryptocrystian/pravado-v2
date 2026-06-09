@@ -62,9 +62,10 @@ import type {
   RiskRadarNotesQuery,
   RiskRadarDashboardQuery,
 } from '@pravado/types';
-import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('risk-radar-service');
 

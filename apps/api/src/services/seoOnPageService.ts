@@ -1,3 +1,4 @@
+const logger = createLogger('api:services:seoOnPageService');
 /**
  * SEO On-Page Optimization Service
  * Sprint S5: On-page audit engine foundation
@@ -11,6 +12,7 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createLogger } from '../lib/logger';
 export interface ListPageAuditsOptions {
   pageId?: string;
   auditType?: string;
@@ -206,7 +208,7 @@ export class SEOOnPageService {
         .select();
 
       if (issuesError) {
-        console.error('Failed to insert issues:', issuesError);
+        logger.error('Failed to insert issues:', issuesError);
       } else if (issuesData) {
         insertedIssues = issuesData.map(this.mapIssueFromDb);
       }

@@ -13,10 +13,11 @@
  * Results saved to citation_monitor_results, summaries to citation_summaries.
  */
 
-import { createLogger, LlmRouter } from '@pravado/utils';
+import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { generateQueriesForOrg } from './citationQueryGenerator';
+import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('citemind:monitor');
 

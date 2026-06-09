@@ -35,8 +35,10 @@ import type {
   InsightSummary,
   PersonaTrend,
 } from '@pravado/types';
-import { createLogger, callLLM } from '@pravado/utils';
+import { callLLM } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('audience-persona-service');
 
