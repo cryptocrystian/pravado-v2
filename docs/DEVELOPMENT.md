@@ -41,6 +41,34 @@
    - Dashboard on http://localhost:3000
    - Mobile (Expo DevTools)
 
+## Pre-commit Hooks
+
+Phase 0.5 Plan 05 installs three pre-commit gates that run after `git commit`. They give you faster feedback than CI without replacing it.
+
+### What runs
+
+1. **`lint-staged`** — eslint `--fix` + prettier `--write` on staged files. Auto-fixable issues are repaired in place; remaining errors abort the commit.
+2. **`scripts/check-monitored-dirs.mjs`** — rejects the commit if any untracked OR unstaged-modified file lives in a monitored directory. This catches the "untracked agency routes" pattern that surfaced during Track 0D (source files sitting on a developer's disk that the workspace typecheck never sees because they're not in the git index).
+
+   Monitored directories:
+   - `apps/api/src/routes/`
+   - `apps/dashboard/src/app/app/`
+   - `packages/feature-flags/src/`
+
+3. **`scripts/check-zone-identifier.mjs`** — rejects staged files matching `Zone.Identifier` (NTFS Alternate Data Streams that attach when Windows downloads or copies content from another zone).
+
+### Installation
+
+The `prepare` script in the root `package.json` runs `husky` automatically the first time you `pnpm install`. No manual setup needed.
+
+### Emergency escape
+
+`git commit --no-verify` skips all three gates. Use it for genuinely urgent fixes; CI is still the authoritative gate.
+
+### Why CI is still the source of truth
+
+Pre-commit hooks help individual developers; they cannot enforce anything across the team. The `CI` workflow on `main` and on every PR runs the full `pnpm typecheck` / `pnpm lint` / `pnpm test` / API startup smoke test / `bash scripts/detect-mock-leaks.sh`. That's the gate that actually decides whether code merges.
+
 ## Project Structure
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation.
