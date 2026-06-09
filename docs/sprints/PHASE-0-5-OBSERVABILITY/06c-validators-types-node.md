@@ -13,11 +13,11 @@ The `deploy-dashboard.yml` Validate stage fails on every main push because `pnpm
 
 Three files. Single PR.
 
-| File | Action |
-|---|---|
-| `packages/validators/tsconfig.json` | add `"types": ["node"]` to compilerOptions |
-| `packages/validators/package.json` | add `"@types/node": "^20"` to devDependencies (matches root pin) |
-| `pnpm-lock.yaml` | regenerated |
+| File                                | Action                                                           |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `packages/validators/tsconfig.json` | add `"types": ["node"]` to compilerOptions                       |
+| `packages/validators/package.json`  | add `"@types/node": "^20"` to devDependencies (matches root pin) |
+| `pnpm-lock.yaml`                    | regenerated                                                      |
 
 ## Verification
 
