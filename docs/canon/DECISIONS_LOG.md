@@ -684,4 +684,6 @@ The decision was made in conversation on 2026-04-21 and never written to canon. 
 
 - **OBSERVATION (CI signal calibration):** Track 0D's "13/13 green" exit-gate satisfaction was an artifact of inadequate runtime signal — green did not mean the code actually ran. Future CI signal must include runtime startup verification at minimum (now in place per the structural fix above). Phase 0.5's `/health` endpoints (Plan 03) extend this to runtime dependency verification (Supabase / Resend / Stripe SDKs initialize). Phase 0.5's scheduled CI cron (Plan 04) extends this further to "if the cron doesn't run, we know within hours."
 
+- **VERIFIED (Plan 06d post-merge):** Render auto-deploys succeeded on `pravado-api` and `pravado-api-staging` after 06d merge. Running SHA on `api.pravado.io` (via `pravado-api.onrender.com`) is now `f76360ed5d` (squash-merge of PR #17 to main at 2026-06-09T15:41:18Z; prod deploy `live` at 2026-06-09T15:45:32Z, staging `live` at 2026-06-09T15:50:21Z), confirmed via Render dashboard / API. The 25-day production gap (2026-05-15 → 2026-06-09) where Track 0D API fixes were not live is closed. `/health` returns 200 with `{"database":"ok","redis":"ok"}`. Beta launch is no longer blocked on the API deploy pipeline.
+
 (End)
