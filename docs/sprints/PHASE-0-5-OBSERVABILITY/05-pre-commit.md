@@ -12,15 +12,15 @@ CI is the authoritative gate but provides feedback minutes-to-hours after a push
 
 ### File changes
 
-| File | Action |
-|---|---|
-| `package.json` (root) | add `husky` (v9+) + `lint-staged` to `devDependencies`; `prepare` script to register husky |
-| `.husky/pre-commit` | NEW — runs `pnpm exec lint-staged`, then `node scripts/check-monitored-dirs.mjs`, then `node scripts/check-zone-identifier.mjs` |
-| `.lintstagedrc.json` | NEW — `{"*.{ts,tsx}": ["eslint --fix", "prettier --write"], "*.{js,jsx,json,md,yml,yaml}": ["prettier --write"]}` |
-| `scripts/check-monitored-dirs.mjs` | NEW — checks `git status --porcelain` for unstaged-but-existing files in `apps/api/src/routes/`, `apps/dashboard/src/app/app/`, `packages/feature-flags/src/`. If found, prints them + exit non-zero. Prevents the "untracked agency routes" pattern from Track 0D. |
-| `scripts/check-zone-identifier.mjs` | NEW — rejects commits containing files matching `*:Zone.Identifier` or similar Windows artifacts |
-| `.gitignore` | append `*:Zone.Identifier` if missing |
-| `docs/DEVELOPMENT.md` | document hooks + `--no-verify` emergency escape |
+| File                                | Action                                                                                                                                                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json` (root)               | add `husky` (v9+) + `lint-staged` to `devDependencies`; `prepare` script to register husky                                                                                                                                                                          |
+| `.husky/pre-commit`                 | NEW — runs `pnpm exec lint-staged`, then `node scripts/check-monitored-dirs.mjs`, then `node scripts/check-zone-identifier.mjs`                                                                                                                                     |
+| `.lintstagedrc.json`                | NEW — `{"*.{ts,tsx}": ["eslint --fix", "prettier --write"], "*.{js,jsx,json,md,yml,yaml}": ["prettier --write"]}`                                                                                                                                                   |
+| `scripts/check-monitored-dirs.mjs`  | NEW — checks `git status --porcelain` for unstaged-but-existing files in `apps/api/src/routes/`, `apps/dashboard/src/app/app/`, `packages/feature-flags/src/`. If found, prints them + exit non-zero. Prevents the "untracked agency routes" pattern from Track 0D. |
+| `scripts/check-zone-identifier.mjs` | NEW — rejects commits containing files matching `*:Zone.Identifier` or similar Windows artifacts                                                                                                                                                                    |
+| `.gitignore`                        | append `*:Zone.Identifier` if missing                                                                                                                                                                                                                               |
+| `docs/DEVELOPMENT.md`               | document hooks + `--no-verify` emergency escape                                                                                                                                                                                                                     |
 
 ### Husky v9 specifics
 
