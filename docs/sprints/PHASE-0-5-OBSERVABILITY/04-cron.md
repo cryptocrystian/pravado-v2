@@ -14,8 +14,8 @@ Plan 04 ships a GitHub Actions cron that runs the full CI suite every 12 hours a
 
 ### File changes
 
-| File | Action |
-|---|---|
+| File                                 | Action                                                                                                                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.github/workflows/ci-scheduled.yml` | NEW — `schedule: cron '0 */12 * * *'` (every 12h, minute 0). Runs the same Lint / Type Check / Test / Build jobs as `ci.yml`. Adds a `notify-on-failure` job that fires when any prior job fails. |
 
 ### Failure notification — email only (architect refinement)
@@ -57,4 +57,4 @@ Per architect spec for Phase 0.5:
 ## DECISIONS_LOG entries
 
 - DECISION (Plan 04 — scheduled CI cron on main, every 12h)
-- DECISION (Plan 04 — email-only failure channel, christian@saipienlabs.com, dawidd6/action-send-mail, reusing existing SMTP_* secret names)
+- DECISION (Plan 04 — email-only failure channel, christian@saipienlabs.com, dawidd6/action-send-mail, reusing existing SMTP\_\* secret names)
