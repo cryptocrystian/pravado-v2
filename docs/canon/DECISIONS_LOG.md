@@ -694,4 +694,14 @@ The decision was made in conversation on 2026-04-21 and never written to canon. 
 
 - **STRUCTURAL FIX (Plan 02 — CI signal):** Plan 06d's API startup smoke test runs unchanged on every commit in this PR. Pino misconfiguration would surface as a startup crash here before Vercel ever rebuilds. The structural fix proves itself in PR #25's CI.
 
+- **PARTIAL VERIFICATION (Plan 02 post-merge — Render auto-deploy did NOT trigger):** Plan 02 squash-merged to main at 2026-06-09T17:27:10Z (commit `249e94ce244e1e6bef0037f4beb22a5e3713c827`). As of 2026-06-09T17:36Z (≈9 minutes later) and confirmed again at the time of this commit, Render has **not** triggered a build for the new SHA on either `pravado-api` or `pravado-api-staging`. Service config verified via Render API: `autoDeploy: yes`, `autoDeployTrigger: commit`, `branch: main`, `suspended: not_suspended`, last config update 2026-06-09T15:56Z. Render previously auto-deployed Plan 06d (`f76360ed`) within 3 minutes of merge on the same day, so the auto-deploy pathway IS functional in general. Current running prod SHA: `17550945e3` (the Plan 06d production-verification commit). `curl -sI https://pravado-api.onrender.com/` returns no `X-Request-Id` header — confirming Plan 02's request-ID wiring is not yet live in production. **Manual deploy trigger is outside Claude's mandate** (auto-mode classifier correctly blocked the `POST /v1/services/{id}/deploys` attempt). Architect action: investigate GitHub → Render webhook delivery in the repo settings, or trigger a manual deploy from the Render dashboard. Surfacing for triage rather than fixing unilaterally.
+
+- **PLANS 01 / 03 / 04 / 05 / 06c OPENED:** Five next-wave Phase 0.5 PRs opened as drafts, each off the post-Plan-02 main HEAD `249e94ce`, each with spec doc as the first commit per the established pattern:
+  - PR #26 — Plan 01 (Sentry wiring; closes #19 Render SENTRY_DSN format) — `phase-0-5/01-sentry`
+  - PR #27 — Plan 03 (/health + UptimeRobot config doc) — `phase-0-5/03-health`
+  - PR #28 — Plan 04 (scheduled CI cron + email to christian@saipienlabs.com via dawidd6/action-send-mail) — `phase-0-5/04-cron`
+  - PR #29 — Plan 05 (husky v9 + lint-staged + monitored-dir clean-check) — `phase-0-5/05-pre-commit`
+  - PR #30 — Plan 06c (validators @types/node; closes #15) — `phase-0-5/06c-validators-types-node`
+  Each PR's implementation begins independently. Each requires 16/16 CI green (including Plan 06d API startup smoke test, now permanent) and architect diff review before merge.
+
 (End)
