@@ -21,6 +21,7 @@ Plan 02 ships the foundation: Pino on the api side with per-request child logger
 ## Scope
 
 ### apps/api
+
 - Add `pino` (+ `pino-pretty` for dev) to `apps/api/package.json`
 - Fastify gets `logger: { level: env.LOG_LEVEL, transport: dev ? 'pino-pretty' : undefined }`
 - Fastify `genReqId` returns UUID v4 per request
@@ -31,18 +32,20 @@ Plan 02 ships the foundation: Pino on the api side with per-request child logger
 - Preserve `console.error` for pre-logger-init boot failures with inline `// pre-logger boot phase` comment
 
 ### apps/dashboard
+
 - New `apps/dashboard/src/lib/clientLogger.ts` — minimal browser-side structured logger (`debug` / `info` / `warn` / `error`). When Sentry is wired (Plan 01), `warn+` calls `Sentry.captureMessage` — conditional, so this PR doesn't depend on Plan 01.
 - New `apps/dashboard/src/lib/serverLogger.ts` — server-component logger emitting JSON (Vercel parses natively); reads `request-id` from `next/headers` if present
 - Sweep `apps/dashboard/src/{lib,server,components}/**` replacing `console.*` with the new loggers. Page-level `.tsx` files left for Phase 1.
 - `apps/dashboard/src/middleware.ts` injects `x-request-id` header if absent, so all downstream API calls from the dashboard carry it through
 
 ### Cross-cutting
+
 - `.env.example` documents `LOG_LEVEL` (default `info`)
 - DECISIONS_LOG entries under today's date
 
 ## Architect-approved refinements (from sprint kickoff)
 
-- Commit console.* → logger sweep **per-directory** (not in one giant commit). Diff-noisy work + easier to review + faster to bisect if a sweep accidentally swallows a useful log.
+- Commit console.\* → logger sweep **per-directory** (not in one giant commit). Diff-noisy work + easier to review + faster to bisect if a sweep accidentally swallows a useful log.
 - Preserve `console.error` for **pre-logger-init boot failures** with an inline `// pre-logger boot phase` comment so future readers know it's intentional.
 
 ## Verification
