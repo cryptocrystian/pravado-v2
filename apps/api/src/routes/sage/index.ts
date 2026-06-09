@@ -15,6 +15,7 @@
 import { FLAGS } from '@pravado/feature-flags';
 import { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
 import {
@@ -28,6 +29,7 @@ import { scoreOpportunities } from '../../services/sage/sageOpportunityScorer';
 import { generateProposals } from '../../services/sage/sageProposalGenerator';
 import { runSignalScan } from '../../services/sage/sageSignalIngestor';
 
+const logger = createLogger('api:routes:sage');
 async function getUserOrgId(userId: string): Promise<string | null> {
   const supabase = getSupabaseClient();
   const { data } = await supabase
@@ -80,7 +82,7 @@ export async function sageRoutes(server: FastifyInstance) {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'SAGE scan failed';
-      console.error('[SAGE /scan] Error:', message);
+      logger.error('[SAGE /scan] Error:', message);
       return reply.code(500).send({
         success: false,
         error: { code: 'SAGE_SCAN_ERROR', message },

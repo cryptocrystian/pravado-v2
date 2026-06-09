@@ -32,10 +32,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { AuditExportService } from '../../services/auditExportService';
 import { AuditService } from '../../services/auditService';
 
+const logger = createLogger('api:routes:audit');
 /**
  * Helper to get user's org ID
  */
@@ -169,7 +171,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to query audit logs', { error });
+      logger.error('[Audit] Failed to query audit logs', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -214,7 +216,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to list event types', { error });
+      logger.error('[Audit] Failed to list event types', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -255,7 +257,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to get audit stats', { error });
+      logger.error('[Audit] Failed to get audit stats', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -319,7 +321,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to get audit entry', { error });
+      logger.error('[Audit] Failed to get audit entry', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -410,7 +412,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       // Trigger async processing (in production, this would go to a queue)
       setImmediate(() => {
         exportService.processExportJob(job.id).catch((err) => {
-          console.error('[Audit] Export job processing failed', {
+          logger.error('[Audit] Export job processing failed', {
             err,
             jobId: job.id,
           });
@@ -426,7 +428,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to create export job', { error });
+      logger.error('[Audit] Failed to create export job', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -491,7 +493,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to get export status', { error });
+      logger.error('[Audit] Failed to get export status', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -578,7 +580,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
           .send(stream);
       } catch (err) {
         const error = err as Error;
-        console.error('[Audit] Failed to download export', { error });
+        logger.error('[Audit] Failed to download export', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -634,7 +636,7 @@ export async function auditRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Audit] Failed to list exports', { error });
+      logger.error('[Audit] Failed to list exports', { error });
       return reply.code(500).send({
         success: false,
         error: {

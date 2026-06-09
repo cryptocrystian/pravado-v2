@@ -44,9 +44,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { GovernanceService } from '../../services/governanceService';
 
+const logger = createLogger('api:routes:governance');
 /**
  * Helper to get user's org ID
  */
@@ -152,7 +154,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to list policies', { error });
+        logger.error('[Governance] Failed to list policies', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -202,7 +204,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(201).send({ success: true, data: policy });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to create policy', { error });
+        logger.error('[Governance] Failed to create policy', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -254,7 +256,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get policy', { error });
+        logger.error('[Governance] Failed to get policy', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -315,7 +317,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: policy });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to update policy', { error });
+        logger.error('[Governance] Failed to update policy', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -357,7 +359,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(204).send();
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to delete policy', { error });
+        logger.error('[Governance] Failed to delete policy', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -402,7 +404,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get policy versions', { error });
+        logger.error('[Governance] Failed to get policy versions', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -447,7 +449,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
       return reply.send({ success: true, data: result });
     } catch (err) {
       const error = err as Error;
-      console.error('[Governance] Failed to list rules', { error });
+      logger.error('[Governance] Failed to list rules', { error });
       return reply.code(500).send({
         success: false,
         error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -493,7 +495,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
       return reply.code(201).send({ success: true, data: rule });
     } catch (err) {
       const error = err as Error;
-      console.error('[Governance] Failed to create rule', { error });
+      logger.error('[Governance] Failed to create rule', { error });
       return reply.code(500).send({
         success: false,
         error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -544,7 +546,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: rule });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get rule', { error });
+        logger.error('[Governance] Failed to get rule', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -605,7 +607,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: rule });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to update rule', { error });
+        logger.error('[Governance] Failed to update rule', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -647,7 +649,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(204).send();
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to delete rule', { error });
+        logger.error('[Governance] Failed to delete rule', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -700,7 +702,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to list findings', { error });
+        logger.error('[Governance] Failed to list findings', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -749,7 +751,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(201).send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to create finding', { error });
+        logger.error('[Governance] Failed to create finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -801,7 +803,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get finding', { error });
+        logger.error('[Governance] Failed to get finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -862,7 +864,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to update finding', { error });
+        logger.error('[Governance] Failed to update finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -911,7 +913,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to acknowledge finding', { error });
+        logger.error('[Governance] Failed to acknowledge finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -969,7 +971,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to resolve finding', { error });
+        logger.error('[Governance] Failed to resolve finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1026,7 +1028,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to dismiss finding', { error });
+        logger.error('[Governance] Failed to dismiss finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1084,7 +1086,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: finding });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to escalate finding', { error });
+        logger.error('[Governance] Failed to escalate finding', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1137,7 +1139,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to list risk scores', { error });
+        logger.error('[Governance] Failed to list risk scores', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1186,7 +1188,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: riskScore });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to upsert risk score', { error });
+        logger.error('[Governance] Failed to upsert risk score', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1261,7 +1263,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: riskScore });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to recalculate risk score', {
+        logger.error('[Governance] Failed to recalculate risk score', {
           error,
         });
         return reply.code(500).send({
@@ -1316,7 +1318,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to list insights', { error });
+        logger.error('[Governance] Failed to list insights', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1392,7 +1394,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.code(201).send({ success: true, data: insight });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to generate insight', { error });
+        logger.error('[Governance] Failed to generate insight', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1444,7 +1446,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: insight });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get insight', { error });
+        logger.error('[Governance] Failed to get insight', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1480,7 +1482,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: summary });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get dashboard', { error });
+        logger.error('[Governance] Failed to get dashboard', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1516,7 +1518,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: metrics });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get compliance metrics', {
+        logger.error('[Governance] Failed to get compliance metrics', {
           error,
         });
         return reply.code(500).send({
@@ -1550,7 +1552,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: heatmap });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to get risk heatmap', { error });
+        logger.error('[Governance] Failed to get risk heatmap', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },
@@ -1604,7 +1606,7 @@ export async function governanceRoutes(server: FastifyInstance): Promise<void> {
         return reply.send({ success: true, data: result });
       } catch (err) {
         const error = err as Error;
-        console.error('[Governance] Failed to evaluate rules', { error });
+        logger.error('[Governance] Failed to evaluate rules', { error });
         return reply.code(500).send({
           success: false,
           error: { code: 'INTERNAL_ERROR', message: error.message },

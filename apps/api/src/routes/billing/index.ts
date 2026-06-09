@@ -22,10 +22,12 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { BillingService } from '../../services/billingService';
 import { StripeService } from '../../services/stripeService';
 
+const logger = createLogger('api:routes:billing');
 /**
  * Helper to get user's org ID
  */
@@ -82,7 +84,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Billing] Failed to list plans', { error });
+      logger.error('[Billing] Failed to list plans', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -130,7 +132,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to get org summary', { error });
+        logger.error('[Billing] Failed to get org summary', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -196,7 +198,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Billing] Failed to set org plan', { error });
+      logger.error('[Billing] Failed to set org plan', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -234,7 +236,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Billing] Failed to check quota', { error });
+      logger.error('[Billing] Failed to check quota', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -337,7 +339,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to create checkout session', { error });
+        logger.error('[Billing] Failed to create checkout session', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -389,7 +391,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       return reply.send({ received: true });
     } catch (err) {
       const error = err as Error;
-      console.error('[Billing] Webhook processing failed', { error });
+      logger.error('[Billing] Webhook processing failed', { error });
       return reply.code(400).send({
         success: false,
         error: {
@@ -444,7 +446,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Billing] Failed to cancel subscription', { error });
+      logger.error('[Billing] Failed to cancel subscription', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -498,7 +500,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to resume subscription', { error });
+        logger.error('[Billing] Failed to resume subscription', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -575,7 +577,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to get overage summary', { error });
+        logger.error('[Billing] Failed to get overage summary', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -637,7 +639,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
 
         const { force = false } = validation.data;
 
-        console.log('[Billing] Recalculating overages', { orgId, force });
+        logger.info('[Billing] Recalculating overages', { orgId, force });
 
         // Calculate overages
         const calculation = await billingService.calculateOveragesForOrg(orgId);
@@ -662,7 +664,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to recalculate overages', { error });
+        logger.error('[Billing] Failed to recalculate overages', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -721,7 +723,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to generate usage alerts', { error });
+        logger.error('[Billing] Failed to generate usage alerts', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -799,7 +801,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (err) {
       const error = err as Error;
-      console.error('[Billing] Failed to list alerts', { error });
+      logger.error('[Billing] Failed to list alerts', { error });
       return reply.code(500).send({
         success: false,
         error: {
@@ -887,7 +889,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to acknowledge alert', { error });
+        logger.error('[Billing] Failed to acknowledge alert', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -946,7 +948,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to get plan', { error });
+        logger.error('[Billing] Failed to get plan', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -1019,7 +1021,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as any;
-        console.error('[Billing] Failed to switch plan', { error });
+        logger.error('[Billing] Failed to switch plan', { error });
 
         // Handle BillingQuotaError (downgrade blocked)
         if (error.name === 'BillingQuotaError') {
@@ -1099,7 +1101,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to create portal session', { error });
+        logger.error('[Billing] Failed to create portal session', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -1172,7 +1174,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to cancel subscription', { error });
+        logger.error('[Billing] Failed to cancel subscription', { error });
         return reply.code(500).send({
           success: false,
           error: {
@@ -1218,7 +1220,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to get invoice history', {
+        logger.error('[Billing] Failed to get invoice history', {
           error,
           orgId: request.user?.id,
         });
@@ -1279,7 +1281,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to get invoice details', {
+        logger.error('[Billing] Failed to get invoice details', {
           error,
           orgId: request.user?.id,
         });
@@ -1351,7 +1353,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         // Check if user is admin (optional - implement based on your auth system)
         // For now, any authenticated user can sync their org's invoices
 
-        console.log('[Billing] Starting manual invoice sync', { orgId });
+        logger.info('[Billing] Starting manual invoice sync', { orgId });
 
         // Sync all invoices for the org
         const syncedCount = await stripeService.syncAllInvoicesForOrg(
@@ -1368,7 +1370,7 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const error = err as Error;
-        console.error('[Billing] Failed to sync invoices', {
+        logger.error('[Billing] Failed to sync invoices', {
           error,
           orgId: request.user?.id,
         });

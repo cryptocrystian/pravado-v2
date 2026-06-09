@@ -12,8 +12,10 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../lib/logger';
 import { requireUser } from '../middleware/requireUser';
 
+const logger = createLogger('api:routes:auth');
 function buildWelcomeEmailHtml(dashboardUrl: string): string {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
@@ -236,10 +238,10 @@ export async function authRoutes(server: FastifyInstance) {
           },
         });
 
-        console.log(`[Auth] Welcome email sent to ${userEmail}`);
+        logger.info(`[Auth] Welcome email sent to ${userEmail}`);
         return reply.send({ success: true, data: { sent: true } });
       } catch (emailErr) {
-        console.error(
+        logger.error(
           `[Auth] Failed to send welcome email to ${userEmail}:`,
           emailErr
         );

@@ -12,9 +12,11 @@
 
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
 
+const logger = createLogger('api:routes:onboarding');
 export async function onboardingRoutes(server: FastifyInstance) {
   const supabase = getSupabaseClient();
 
@@ -518,7 +520,7 @@ export async function onboardingRoutes(server: FastifyInstance) {
         .eq('id', orgId);
 
       if (updateError) {
-        console.error(
+        logger.error(
           '[Onboarding] Failed to mark complete:',
           updateError.message
         );

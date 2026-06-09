@@ -14,11 +14,14 @@ import { apiEnvSchema, validateEnv } from '@pravado/validators';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import {
   PressReleaseService,
   prGenerationEmitter,
 } from '../../services/pressReleaseService';
+
+const logger = createLogger('api:routes:pressReleases');
 
 /**
  * Register press release routes
@@ -60,7 +63,7 @@ export async function pressReleaseRoutes(
     timeoutMs: env.LLM_TIMEOUT_MS,
     maxTokens: env.LLM_MAX_TOKENS,
   });
-  console.log(
+  logger.info(
     `[PressRelease] LLM provider: ${llmProvider}, anthropicKey: ${anthropicApiKey ? anthropicApiKey.slice(0, 7) + '...' : 'MISSING'}, openaiKey: ${openaiApiKey ? openaiApiKey.slice(0, 7) + '...' : 'MISSING'}`
   );
   const prService = new PressReleaseService(supabase, llmRouter);
@@ -127,7 +130,7 @@ export async function pressReleaseRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to generate press release:', error);
+        logger.error('Failed to generate press release:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -190,7 +193,7 @@ export async function pressReleaseRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to list press releases:', error);
+        logger.error('Failed to list press releases:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -253,7 +256,7 @@ export async function pressReleaseRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to get press release:', error);
+        logger.error('Failed to get press release:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -296,7 +299,7 @@ export async function pressReleaseRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to optimize press release:', error);
+        logger.error('Failed to optimize press release:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -346,7 +349,7 @@ export async function pressReleaseRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to find similar press releases:', error);
+        logger.error('Failed to find similar press releases:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -411,7 +414,7 @@ export async function pressReleaseRoutes(
         try {
           reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
         } catch (err) {
-          console.error('Failed to send SSE event:', err);
+          logger.error('Failed to send SSE event:', err);
         }
       };
 

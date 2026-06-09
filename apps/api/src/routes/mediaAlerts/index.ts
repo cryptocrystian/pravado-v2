@@ -21,9 +21,11 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { createMediaAlertService } from '../../services/mediaAlertService';
 
+const logger = createLogger('api:routes:mediaAlerts');
 /**
  * Register media alerts routes
  */
@@ -105,7 +107,7 @@ export async function mediaAlertsRoutes(
           data: { rule },
         });
       } catch (error) {
-        console.error('Failed to create alert rule:', error);
+        logger.error('Failed to create alert rule:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -163,7 +165,7 @@ export async function mediaAlertsRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list alert rules:', error);
+        logger.error('Failed to list alert rules:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -206,7 +208,7 @@ export async function mediaAlertsRoutes(
           data: { rule },
         });
       } catch (error) {
-        console.error('Failed to get alert rule:', error);
+        logger.error('Failed to get alert rule:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -266,7 +268,7 @@ export async function mediaAlertsRoutes(
           data: { rule },
         });
       } catch (error) {
-        console.error('Failed to update alert rule:', error);
+        logger.error('Failed to update alert rule:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -309,7 +311,7 @@ export async function mediaAlertsRoutes(
           data: { message: 'Alert rule deleted successfully' },
         });
       } catch (error) {
-        console.error('Failed to delete alert rule:', error);
+        logger.error('Failed to delete alert rule:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -371,7 +373,7 @@ export async function mediaAlertsRoutes(
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list alert events:', error);
+        logger.error('Failed to list alert events:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -414,7 +416,7 @@ export async function mediaAlertsRoutes(
           data: { event },
         });
       } catch (error) {
-        console.error('Failed to get alert event:', error);
+        logger.error('Failed to get alert event:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -472,7 +474,7 @@ export async function mediaAlertsRoutes(
           data: { updatedCount },
         });
       } catch (error) {
-        console.error('Failed to mark events as read:', error);
+        logger.error('Failed to mark events as read:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -517,7 +519,7 @@ export async function mediaAlertsRoutes(
           data: overview,
         });
       } catch (error) {
-        console.error('Failed to get signals overview:', error);
+        logger.error('Failed to get signals overview:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -561,7 +563,7 @@ export async function mediaAlertsRoutes(
           },
         });
       } catch (error) {
-        console.error('Failed to evaluate rules:', error);
+        logger.error('Failed to evaluate rules:', error);
         return reply.status(500).send({
           success: false,
           error: {

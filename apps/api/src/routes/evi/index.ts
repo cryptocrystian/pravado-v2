@@ -8,12 +8,14 @@
 import { FLAGS } from '@pravado/feature-flags';
 import { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
 import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
 import { getEVIHistory } from '../../services/evi/eviHistoryService';
 
+const logger = createLogger('api:routes:evi');
 /**
  * Helper to get user's org ID
  */
@@ -78,7 +80,7 @@ export async function eviRoutes(server: FastifyInstance) {
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'EVI calculation failed';
-        console.error('[EVI /current] Error:', message);
+        logger.error('[EVI /current] Error:', message);
         return reply.code(500).send({
           success: false,
           error: { code: 'EVI_CALCULATION_ERROR', message },
@@ -131,7 +133,7 @@ export async function eviRoutes(server: FastifyInstance) {
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'EVI history query failed';
-        console.error('[EVI /history] Error:', message);
+        logger.error('[EVI /history] Error:', message);
         return reply.code(500).send({
           success: false,
           error: { code: 'EVI_HISTORY_ERROR', message },

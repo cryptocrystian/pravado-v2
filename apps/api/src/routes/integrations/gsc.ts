@@ -6,9 +6,9 @@
  */
 
 import { FLAGS } from '@pravado/feature-flags';
-import { createLogger } from '@pravado/utils';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 
 const logger = createLogger('routes:gsc');

@@ -22,9 +22,11 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { createPRPitchService } from '../../services/prPitchService';
 
+const logger = createLogger('api:routes:prPitches');
 /**
  * Register PR pitch routes
  */
@@ -103,7 +105,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { sequence },
         });
       } catch (error) {
-        console.error('Failed to create pitch sequence:', error);
+        logger.error('Failed to create pitch sequence:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -162,7 +164,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list sequences:', error);
+        logger.error('Failed to list sequences:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -221,7 +223,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { sequence },
         });
       } catch (error) {
-        console.error('Failed to get sequence:', error);
+        logger.error('Failed to get sequence:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -283,7 +285,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { sequence },
         });
       } catch (error) {
-        console.error('Failed to update sequence:', error);
+        logger.error('Failed to update sequence:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -329,7 +331,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { message: 'Sequence archived successfully' },
         });
       } catch (error) {
-        console.error('Failed to delete sequence:', error);
+        logger.error('Failed to delete sequence:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -393,7 +395,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { contacts, added: contacts.length },
         });
       } catch (error) {
-        console.error('Failed to attach contacts:', error);
+        logger.error('Failed to attach contacts:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -458,7 +460,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: result,
         });
       } catch (error) {
-        console.error('Failed to list contacts:', error);
+        logger.error('Failed to list contacts:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -520,7 +522,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { preview },
         });
       } catch (error) {
-        console.error('Failed to generate pitch preview:', error);
+        logger.error('Failed to generate pitch preview:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -569,7 +571,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { contact },
         });
       } catch (error) {
-        console.error('Failed to queue pitch:', error);
+        logger.error('Failed to queue pitch:', error);
         return reply.status(500).send({
           success: false,
           error: {
@@ -626,7 +628,7 @@ export async function prPitchRoutes(server: FastifyInstance): Promise<void> {
           data: { contact },
         });
       } catch (error) {
-        console.error('Failed to get contact:', error);
+        logger.error('Failed to get contact:', error);
         return reply.status(500).send({
           success: false,
           error: {
