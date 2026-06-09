@@ -6,8 +6,7 @@
  * Payload: { contentItemId: string, orgId: string }
  */
 
-import { createLogger } from '@pravado/utils';
-
+import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
 

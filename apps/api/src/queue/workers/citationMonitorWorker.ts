@@ -7,8 +7,7 @@
  * Schedule: every 6 hours per org
  */
 
-import { createLogger } from '@pravado/utils';
-
+import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { monitorCitations } from '../../services/citeMind/citationMonitor';
 

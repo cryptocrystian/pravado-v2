@@ -5,8 +5,7 @@
  * Scheduled: weekly on Sunday nights.
  */
 
-import { createLogger } from '@pravado/utils';
-
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('queue:journalist-enrichment');
 
 export interface JournalistEnrichPayload {

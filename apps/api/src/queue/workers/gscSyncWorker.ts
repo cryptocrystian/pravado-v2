@@ -5,8 +5,7 @@
  * Also handles scheduled daily syncs for all connected orgs.
  */
 
-import { createLogger } from '@pravado/utils';
-
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('queue:gsc-sync');
 
 export interface GscSyncPayload {

@@ -5,7 +5,9 @@
 
 import type { PlaybookStepJob, QueueConfig } from './jobs';
 import type { JobQueue } from './queue';
+import { createLogger } from '../lib/logger';
 
+const logger = createLogger('api:queue:worker');
 /**
  * Worker status
  */
@@ -81,7 +83,7 @@ export class WorkerPool {
       this.processNextJobs();
     }, this.config.pollIntervalMs);
 
-    console.log(
+    logger.info(
       `[WorkerPool] Started with ${this.config.maxConcurrency} workers`
     );
   }
@@ -103,7 +105,7 @@ export class WorkerPool {
     // Wait for all running jobs to complete
     await Promise.all(Array.from(this.processingPromises.values()));
 
-    console.log('[WorkerPool] Stopped');
+    logger.info('[WorkerPool] Stopped');
   }
 
   /**
@@ -166,11 +168,11 @@ export class WorkerPool {
     if (!worker) return;
 
     try {
-      console.log(`[Worker ${workerId}] Processing job ${job.id}`);
+      logger.info(`[Worker ${workerId}] Processing job ${job.id}`);
 
       const result = await this.queue.executeJob(job, workerId);
 
-      console.log(
+      logger.info(
         `[Worker ${workerId}] Job ${job.id} ${result.status} in ${result.executionTimeMs}ms`
       );
 
@@ -179,7 +181,7 @@ export class WorkerPool {
         const retried = await this.queue.retryJob(job.id);
         if (retried) {
           // retryJob() already incremented job.attempt, so no need to add 1
-          console.log(
+          logger.info(
             `[Worker ${workerId}] Job ${job.id} scheduled for retry (attempt ${job.attempt}/${job.maxAttempts})`
           );
         }
@@ -188,7 +190,7 @@ export class WorkerPool {
       worker.jobsProcessed += 1;
       worker.lastJobCompletedAt = new Date().toISOString();
     } catch (error) {
-      console.error(
+      logger.error(
         `[Worker ${workerId}] Error processing job ${job.id}:`,
         error
       );

@@ -5,8 +5,7 @@
  * Graceful fallback: if REDIS_URL is not set, logs a warning and skips queue operations.
  */
 
-import { createLogger } from '@pravado/utils';
-
+import { createLogger } from '../lib/logger';
 const logger = createLogger('queue:bullmq');
 
 // ============================================================================
