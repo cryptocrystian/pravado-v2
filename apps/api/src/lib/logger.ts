@@ -35,7 +35,7 @@
  */
 
 import { pino } from 'pino';
-import type { Logger, LoggerOptions } from 'pino';
+import type { Logger as PinoLogger, LoggerOptions } from 'pino';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const level = process.env.LOG_LEVEL ?? 'info';
@@ -80,7 +80,7 @@ export const fastifyLoggerOptions: LoggerOptions = {
  * Raw Pino instance — for code that prefers the `(obj, msg)` signature
  * directly. Most callers should prefer `createLogger(context)` below.
  */
-export const serviceLogger: Logger = pino({ ...baseOptions, transport });
+export const serviceLogger: PinoLogger = pino({ ...baseOptions, transport });
 
 // ----------------------------------------------------------------------------
 // Backward-compat shim — drop-in replacement for `@pravado/utils.createLogger`.
@@ -105,6 +105,14 @@ export interface CompatLogger {
   error(message: string, meta?: LogMeta): void;
 }
 
+/**
+ * Backward-compat alias for `@pravado/utils` `Logger`. Some api modules
+ * (e.g. `apps/api/src/lib/observability.ts`) type their parameters as
+ * `Logger`; keeping the export here lets the per-directory sweep swap
+ * the import path without also touching the type annotations.
+ */
+export type Logger = CompatLogger;
+
 function normalizeMeta(meta: unknown): Record<string, unknown> | undefined {
   if (meta === undefined || meta === null) return undefined;
   if (meta instanceof Error) {
@@ -120,7 +128,7 @@ function normalizeMeta(meta: unknown): Record<string, unknown> | undefined {
 }
 
 class CompatLoggerImpl implements CompatLogger {
-  constructor(private readonly child: Logger) {}
+  constructor(private readonly child: PinoLogger) {}
 
   debug(message: string, meta?: LogMeta): void {
     const m = normalizeMeta(meta);
