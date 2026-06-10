@@ -13,13 +13,13 @@ Phase 0.5 Plan 02 (Pino + custom client/server loggers) shipped a conditional Se
 
 ### apps/dashboard (`@sentry/nextjs`)
 
-| File | Action |
-|---|---|
-| `apps/dashboard/package.json` | add `@sentry/nextjs` (Next 14 compatible version pinned) |
-| `apps/dashboard/sentry.client.config.ts` | client init, env-gated on `NEXT_PUBLIC_SENTRY_DSN`, `tracesSampleRate: 0.1` in prod / `1.0` in dev |
-| `apps/dashboard/sentry.server.config.ts` | server init, env-gated on `SENTRY_DSN`, same sampling |
-| `apps/dashboard/sentry.edge.config.ts` | edge runtime init for middleware |
-| `apps/dashboard/next.config.js` | wrap with `withSentryConfig` for source-map upload (gated on `SENTRY_AUTH_TOKEN` presence so dev builds don't try to upload) |
+| File                                     | Action                                                                                                                                  |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/dashboard/package.json`            | add `@sentry/nextjs` (Next 14 compatible version pinned)                                                                                |
+| `apps/dashboard/sentry.client.config.ts` | client init, env-gated on `NEXT_PUBLIC_SENTRY_DSN`, `tracesSampleRate: 0.1` in prod / `1.0` in dev                                      |
+| `apps/dashboard/sentry.server.config.ts` | server init, env-gated on `SENTRY_DSN`, same sampling                                                                                   |
+| `apps/dashboard/sentry.edge.config.ts`   | edge runtime init for middleware                                                                                                        |
+| `apps/dashboard/next.config.js`          | wrap with `withSentryConfig` for source-map upload (gated on `SENTRY_AUTH_TOKEN` presence so dev builds don't try to upload)            |
 | `apps/dashboard/src/lib/clientLogger.ts` | replace the `globalThis.Sentry` lookup with a real `@sentry/nextjs` import so warn/error events route to Sentry without the indirection |
 
 ### PII scrubbing rules (in both `beforeSend` hooks)
@@ -40,8 +40,8 @@ Per architect refinement to the master plan:
 
 ### Verification flow (per architect refinement — keep through CI green + manual verify, delete BEFORE ready-for-review)
 
-| File | Action |
-|---|---|
+| File                                               | Action                                                                                                                                                                                                                                 |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `apps/dashboard/src/app/api/_test/sentry/route.ts` | NEW — throws on GET. Gated to `@saipienlabs.com` emails. Used once to verify the dashboard Sentry wiring catches the event with PII scrubbed. **Deleted in a follow-up commit on the same branch BEFORE marking PR ready-for-review.** |
 
 The same test route on api side is not needed — the existing 500 error handler at `server.ts:489-515` calls `Sentry.captureException` for 5xx errors and verifies wiring once a test 5xx is triggered manually.
@@ -83,6 +83,7 @@ Document `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_OR
 ## DECISIONS_LOG entries
 
 To land in this PR:
+
 - DECISION (Plan 01 — Sentry wired on dashboard + api with PII scrubbing)
-- DECISION (Plan 01 — webhooks/*: drop event.request.data per architect refinement)
+- DECISION (Plan 01 — webhooks/\*: drop event.request.data per architect refinement)
 - DECISION (Plan 01 — test route lifecycle: ship through CI green, delete before review)

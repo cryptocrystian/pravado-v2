@@ -1,10 +1,13 @@
 /**
  * Browser-side structured logger.
  *
- * Phase 0.5 Plan 02. Emits JSON to `console.*` so Vercel + the browser
- * devtools both see structured records, and routes `warn`+ events to
- * Sentry (Plan 01) when its runtime hook is loaded — guarded so this
- * module works whether or not Plan 01 has merged.
+ * Phase 0.5 Plan 02 (logger). Plan 01 (Sentry) replaced the original
+ * `globalThis.Sentry` lookup with a real `@sentry/nextjs` import — the
+ * `beforeSend` hook in `sentry.client.config.ts` applies the architect-
+ * mandated PII scrubbing before anything leaves the browser.
+ *
+ * Emits JSON to `console.*` so Vercel + the browser devtools both see
+ * structured records, and routes `warn`+ events to Sentry directly.
  *
  * Usage:
  *
@@ -14,27 +17,23 @@
  * Spec: docs/sprints/PHASE-0-5-OBSERVABILITY/02-logging.md
  */
 
+import * as Sentry from '@sentry/nextjs';
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 type LogMeta = unknown;
 
-interface SentryLike {
-  captureMessage?: (message: string, level?: string) => void;
-  captureException?: (error: unknown) => void;
-}
+// SeverityLevel string union per @sentry/nextjs. We narrow here so the
+// `captureMessage` call below stays typed without pulling Sentry's
+// internal types into our public API.
+type SentrySeverity = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';
 
-// Best-effort, conditional Sentry hook. Plan 01 sets a global
-// `window.__sentry__` (or `globalThis.Sentry`) that this module reads
-// without a hard import — so the dashboard never errors out if Plan
-// 01 hasn't merged yet. Once Plan 01 lands, replace the body of
-// `getSentry()` with a real `@sentry/nextjs` import.
-function getSentry(): SentryLike | null {
-  if (typeof globalThis === 'undefined') return null;
-  const candidate = (globalThis as Record<string, unknown>).Sentry as
-    | SentryLike
-    | undefined;
-  return candidate ?? null;
-}
+const LEVEL_TO_SEVERITY: Record<LogLevel, SentrySeverity> = {
+  debug: 'debug',
+  info: 'info',
+  warn: 'warning',
+  error: 'error',
+};
 
 function normalize(meta: unknown): Record<string, unknown> | undefined {
   if (meta === undefined || meta === null) return undefined;
@@ -77,13 +76,17 @@ function emit(
   }
 
   if (level === 'warn' || level === 'error') {
-    const sentry = getSentry();
-    if (sentry) {
-      if (meta instanceof Error && sentry.captureException) {
-        sentry.captureException(meta);
-      } else if (sentry.captureMessage) {
-        sentry.captureMessage(`[${context}] ${message}`, level);
-      }
+    // Sentry runs even when its SDK isn't initialized — its public API
+    // is no-op-safe (captureException/captureMessage return immediately
+    // when there is no client). No conditional guard needed; the
+    // `beforeSend` hook in sentry.client.config.ts applies PII scrubbing.
+    if (meta instanceof Error) {
+      Sentry.captureException(meta);
+    } else {
+      Sentry.captureMessage(
+        `[${context}] ${message}`,
+        LEVEL_TO_SEVERITY[level]
+      );
     }
   }
 }
