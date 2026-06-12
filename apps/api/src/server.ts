@@ -129,6 +129,24 @@ export async function createServer() {
     disableRequestLogging: false,
   });
 
+  // Phase 0.5 close-out item 1: bridge Fastify's error chain to Sentry.
+  // `@sentry/node` v10 auto-instruments Fastify via `@fastify/otel`, which
+  // wraps request handlers BEFORE Fastify's normal error chain reaches the
+  // `setErrorHandler` we register below. That wrapper records the request
+  // as a transaction but never calls `Sentry.captureException` on the
+  // thrown error. `setupFastifyErrorHandler` plugs Sentry into Fastify's
+  // error-handling chain explicitly, so the throws our `setErrorHandler`
+  // catches at the bottom of `createServer` ALSO reach Sentry with their
+  // `org_id` + `route` tags.
+  //
+  // Required by @sentry/node v10+. Skipping it means error capture on
+  // api silently drops — verified live during Phase 0.5 close-out (the
+  // deliberate /api/v1/_test/sentry-verify 5xx never landed in Sentry
+  // until this line was added). See issues #41 / #42.
+  if (isValidDsn) {
+    Sentry.setupFastifyErrorHandler(server);
+  }
+
   // Raw-body capture is per-route via a `preParsing` hook — see
   // apps/api/src/lib/captureRawBody.ts. No global plugin registration needed.
 
