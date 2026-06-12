@@ -18,6 +18,8 @@ import { createLogger, fastifyLoggerOptions } from './lib/logger';
 import { authPlugin } from './plugins/auth';
 import { mailerPlugin } from './plugins/mailer';
 import { platformFreezePlugin } from './plugins/platformFreeze';
+// Phase 0.5 close-out item 1 — temporary verification route. Delete after Sentry capture confirmed.
+import { sentryVerifyRoutes } from './routes/_test/sentryVerify';
 import { adminRoutes } from './routes/admin'; // Admin panel
 import { agentsRoutes } from './routes/agents';
 import aiScenarioSimulationRoutes from './routes/aiScenarioSimulations'; // S71
@@ -196,6 +198,8 @@ export async function createServer() {
 
   // Register routes
   await server.register(healthRoutes, { prefix: '/health' });
+  // Phase 0.5 close-out item 1 — temporary Sentry verification route, deleted after capture confirmed.
+  await server.register(sentryVerifyRoutes, { prefix: '/api/v1/_test' });
   await server.register(clientLogsRoutes, { prefix: '/api/v1/logs' }); // S79 - Client logging
   await server.register(authRoutes, { prefix: '/api/v1/auth' });
   await server.register(orgsRoutes, { prefix: '/api/v1/orgs' });
