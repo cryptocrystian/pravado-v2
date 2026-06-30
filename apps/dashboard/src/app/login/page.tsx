@@ -617,89 +617,87 @@ export default function LoginPage() {
                 )}
               </button>
 
-              {/* Magic Link Divider (DS v3) */}
-              {!isSignUp && (
-                <>
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div
-                        className="w-full border-t"
-                        style={{ borderColor: '#1F1F28' }}
-                      />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span
-                        className="px-2"
-                        style={{ backgroundColor: '#13131A', color: '#3D3D4A' }}
-                      >
-                        or sign in with
-                      </span>
-                    </div>
-                  </div>
+              {/* Magic Link Divider (DS v3)
+                  — Visible on BOTH sign-in and sign-up. Magic link doubles
+                  as a passwordless account-creation path when
+                  BETA_INVITE_REQUIRED is false, so hiding it from sign-up
+                  removed the lowest-friction signup path and confused new
+                  users. The {!isSignUp && …} gate that previously wrapped
+                  this block was removed in this change. Phase 1 issue
+                  [P1 Progressive-disclosure login] redesigns the whole
+                  flow; this fix is the minimal stopgap. */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div
+                    className="w-full border-t"
+                    style={{ borderColor: '#1F1F28' }}
+                  />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span
+                    className="px-2"
+                    style={{ backgroundColor: '#13131A', color: '#3D3D4A' }}
+                  >
+                    or sign in with
+                  </span>
+                </div>
+              </div>
 
-                  {/* Magic Link Button */}
+              {/* Magic Link Button */}
+              <button
+                type="button"
+                onClick={handleMagicLink}
+                disabled={
+                  loading || oauthLoading !== null || magicLinkLoading || !email
+                }
+                className="btn-magic-link w-full"
+              >
+                {magicLinkLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <AIPresenceDot status="analyzing" />
+                    <span>Sending magic link...</span>
+                  </span>
+                ) : (
+                  <>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>Send Magic Link</span>
+                  </>
+                )}
+              </button>
+
+              {/* Beta gating note — magic link creates accounts without invite code */}
+              {BETA_INVITE_REQUIRED && (
+                <p className="text-xs text-center" style={{ color: '#5A5A6A' }}>
+                  New to Pravado? Magic link will create your account
+                  automatically.
+                  <br />
+                  Have an invite code?{' '}
                   <button
                     type="button"
-                    onClick={handleMagicLink}
-                    disabled={
-                      loading ||
-                      oauthLoading !== null ||
-                      magicLinkLoading ||
-                      !email
-                    }
-                    className="btn-magic-link w-full"
+                    onClick={() => {
+                      setIsSignUp(true);
+                      setError(null);
+                      setMessage(null);
+                    }}
+                    className="hover:underline"
+                    style={{ color: '#00D9FF' }}
                   >
-                    {magicLinkLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <AIPresenceDot status="analyzing" />
-                        <span>Sending magic link...</span>
-                      </span>
-                    ) : (
-                      <>
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <span>Send Magic Link</span>
-                      </>
-                    )}
+                    Sign up here
                   </button>
-
-                  {/* Beta gating note — magic link creates accounts without invite code */}
-                  {BETA_INVITE_REQUIRED && (
-                    <p
-                      className="text-xs text-center"
-                      style={{ color: '#5A5A6A' }}
-                    >
-                      New to Pravado? Magic link will create your account
-                      automatically.
-                      <br />
-                      Have an invite code?{' '}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsSignUp(true);
-                          setError(null);
-                          setMessage(null);
-                        }}
-                        className="hover:underline"
-                        style={{ color: '#00D9FF' }}
-                      >
-                        Sign up here
-                      </button>
-                    </p>
-                  )}
-                </>
+                </p>
               )}
 
               {/* Toggle Sign Up / Sign In (DS v3) */}
