@@ -173,7 +173,7 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
           from: ${{ secrets.SMTP_FROM }}
-          to: christian@saipienlabs.com
+          to: alerts@saipienlabs.com
           subject: '[Pravado CI Scheduled] FAILURE on main (run #${{ github.run_number }})'
           body: |
             The scheduled CI run on main failed.
