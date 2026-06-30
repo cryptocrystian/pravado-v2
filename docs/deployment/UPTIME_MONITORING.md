@@ -1,8 +1,8 @@
 # Uptime Monitoring — UptimeRobot Configuration
 
-**Owner:** Architect (christian@saipienlabs.com)
+**Owner:** Architect (cdibrell@saipienlabs.com)
 **Status:** Active (Phase 0.5 / Plan 03)
-**Last updated:** 2026-06-09
+**Last updated:** 2026-06-30
 
 This doc is the canonical copy-paste config for the two UptimeRobot
 monitors that watch the Pravado production fleet. UptimeRobot itself is
@@ -33,7 +33,7 @@ leak-assertion tests for the exact shape.
 | Monitor timeout                 | 30 seconds                                                      |
 | HTTP method                     | GET                                                             |
 | HTTP status codes considered up | 200                                                             |
-| Alert contacts                  | `christian@saipienlabs.com` (Email)                             |
+| Alert contacts                  | `alerts@saipienlabs.com` (Email)                                |
 | Alert when down for             | 1 failure (no debounce — the cron heartbeat catches transients) |
 | SSL expiration alerts           | Enabled, 30-day warning                                         |
 | Maintenance windows             | None                                                            |
@@ -73,7 +73,7 @@ curl -sS https://pravado-api.onrender.com/health | jq
 | Monitor timeout                 | 30 seconds                               |
 | HTTP method                     | GET                                      |
 | HTTP status codes considered up | 200                                      |
-| Alert contacts                  | `christian@saipienlabs.com` (Email)      |
+| Alert contacts                  | `alerts@saipienlabs.com` (Email)         |
 | Alert when down for             | 1 failure                                |
 | SSL expiration alerts           | Enabled, 30-day warning                  |
 | Maintenance windows             | None                                     |
@@ -96,7 +96,7 @@ curl -sS https://app.pravado.io/health | jq
 
 ## Alert routing
 
-All alerts go to `christian@saipienlabs.com`. This matches the
+All alerts go to `alerts@saipienlabs.com`. This matches the
 ci-scheduled.yml (Plan 04) failure email recipient and the Sentry alert
 inbox (Plan 01). No SMS, no Slack — single channel by intent during
 Phase 0.5. Add a routing rule via a Phase 1 Work Order.
@@ -105,8 +105,8 @@ Phase 0.5. Add a routing rule via a Phase 1 Work Order.
 
 ## Setup checklist (one-time)
 
-- [ ] Log into UptimeRobot as the architect (christian@saipienlabs.com)
-- [ ] Add Email alert contact for christian@saipienlabs.com (if not present)
+- [ ] Log into UptimeRobot as the architect (cdibrell@saipienlabs.com)
+- [ ] Add Email alert contact for alerts@saipienlabs.com (if not present)
 - [ ] Create Monitor 1 per the table above
 - [ ] Create Monitor 2 per the table above
 - [ ] Trigger a deliberate 503 on staging (`pravado-api-staging.onrender.com`)
