@@ -3,9 +3,9 @@ name: CI Scheduled
 # Phase 0.5 Plan 04 — scheduled CI cron on main.
 #
 # Runs the full CI suite (Lint / Type Check / Test / Build) every 12 hours
-# against main. On failure, emails christian@saipienlabs.com via the
-# existing SMTP_* secrets reused from the apps/api email pipeline (no
-# duplicate secrets — see the spec doc).
+# against main. On failure, emails alerts@saipienlabs.com (a Workspace
+# group routed to the on-call rotation) via Resend SMTP, configured
+# through the SMTP_* repository secrets.
 #
 # This is the permanent heartbeat that replaces the Phase 0 scheduled-task
 # pattern (Run 3 dispatch silently failed; surfaced 22 hours late). If the
@@ -158,7 +158,7 @@ jobs:
     # restricts it to the failure case.
     if: ${{ always() && failure() }}
     steps:
-      - name: Email christian@saipienlabs.com
+      - name: Email alerts@saipienlabs.com
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
