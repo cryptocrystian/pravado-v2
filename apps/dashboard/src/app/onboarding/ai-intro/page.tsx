@@ -432,6 +432,13 @@ export default function AIIntroPage() {
   const [activationLabel, setActivationLabel] = useState('Initializing...');
   const [completionFailed, setCompletionFailed] = useState(false);
   const [eviScore, setEviScore] = useState<number | null>(null);
+  // Adjacent P1 (F13 remediation): if /api/onboarding/activate or
+  // /complete returns { warning }, surface it as a subtle banner rather
+  // than silently claiming success. Server sets this when the BullMQ
+  // enqueue path fails.
+  const [activationWarning, setActivationWarning] = useState<string | null>(
+    null
+  );
 
   // Proposals state
   const [proposals, setProposals] = useState<
@@ -669,7 +676,23 @@ export default function AIIntroPage() {
 
     try {
       // Trigger activation
-      await fetch('/api/onboarding/activate', { method: 'POST' });
+      const activateRes = await fetch('/api/onboarding/activate', {
+        method: 'POST',
+      });
+      // Adjacent P1 (F13 remediation): read the response for a
+      // server-set warning. When BullMQ enqueue fails on the server,
+      // the response body carries { warning: "..." } and the phase-6
+      // UI needs to surface that instead of silent success.
+      try {
+        const activateJson = (await activateRes.clone().json()) as {
+          data?: { warning?: string };
+        };
+        if (activateJson?.data?.warning) {
+          setActivationWarning(activateJson.data.warning);
+        }
+      } catch {
+        // Response wasn't JSON — ignore and continue with the flow.
+      }
 
       // Poll EVI score
       let score: number | null = null;
@@ -700,6 +723,15 @@ export default function AIIntroPage() {
           if (completeRes.ok && completeJson.success) {
             completed = true;
             console.log('[Onboarding] Completion confirmed');
+            // Adjacent P1 (F13 remediation): /complete may return a
+            // warning if the SAGE enqueue path failed even though the
+            // completion write to `orgs` succeeded. Surface it — using
+            // the functional setter form so we don't override an
+            // earlier /activate warning and don't need to add
+            // activationWarning to the useCallback deps array.
+            if (completeJson.data?.warning) {
+              setActivationWarning((prev) => prev ?? completeJson.data.warning);
+            }
           } else {
             console.warn(
               '[Onboarding] Completion attempt failed:',
@@ -1341,6 +1373,19 @@ export default function AIIntroPage() {
                     <PrimaryBtn onClick={goNext}>
                       See Your Proposals <ArrowRight />
                     </PrimaryBtn>
+                    {/* Adjacent P1 (F13 remediation): server-set warning
+                        when BullMQ enqueue failed. Subtle amber banner —
+                        honest but not alarming. User can still proceed. */}
+                    {activationWarning && (
+                      <div
+                        className="mt-4 p-3 bg-brand-amber/10 border border-brand-amber/20 rounded-xl text-center max-w-md mx-auto"
+                        role="status"
+                      >
+                        <p className="text-xs text-white/70">
+                          {activationWarning}
+                        </p>
+                      </div>
+                    )}
                     {completionFailed && (
                       <div className="mt-4 p-4 bg-brand-amber/10 border border-brand-amber/20 rounded-xl text-center">
                         <p className="text-xs text-white/55 mb-2">
@@ -1379,7 +1424,7 @@ export default function AIIntroPage() {
                   <p className="text-[14px] text-white/40">
                     {proposals.length > 0
                       ? `${proposals.length} prioritized actions based on your competitive position.`
-                      : 'Your first proposals are being generated and will appear in your Command Center within a few minutes — no need to wait here.'}
+                      : 'SAGE has activated. Your first proposals will appear in your Command Center shortly. Connect Google Search Console or add existing content in Settings to accelerate the analysis.'}
                   </p>
                 </div>
 

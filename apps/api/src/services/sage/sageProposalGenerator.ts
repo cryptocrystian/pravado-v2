@@ -14,6 +14,7 @@
 import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { checkLLMBudget } from './llmBudget';
 import { createLogger } from '../../lib/logger';
 import {
   buildProposalSystemPrompt,
@@ -21,11 +22,13 @@ import {
   generateStubProposal,
   type ProposalPromptContext,
 } from '../../prompts/sage/proposal';
+// Shared monthly LLM budget check — the same helper is used by
+// sageColdStartProposals so signal-driven and cold-start paths hit
+// the same per-org cap without duplicating logic.
 
 const logger = createLogger('sage:proposal-generator');
 
 const MAX_PROPOSALS_PER_SCAN = 10;
-const MONTHLY_TOKEN_BUDGET = 500_000; // Conservative default
 
 export interface GeneratedProposal {
   id: string;
@@ -283,36 +286,6 @@ async function getUnprocessedSignals(
   return signals
     .filter((s: { id: string }) => !processedSet.has(s.id))
     .slice(0, limit);
-}
-
-async function checkLLMBudget(
-  supabase: SupabaseClient,
-  orgId: string
-): Promise<boolean> {
-  const now = new Date();
-  const monthStart = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
-  ).toISOString();
-
-  const { data } = await supabase
-    .from('llm_usage_ledger')
-    .select('tokens_total')
-    .eq('org_id', orgId)
-    .gte('created_at', monthStart);
-
-  const totalTokens = (data ?? []).reduce(
-    (sum: number, row: { tokens_total: number }) =>
-      sum + (row.tokens_total || 0),
-    0
-  );
-
-  const withinBudget = totalTokens < MONTHLY_TOKEN_BUDGET;
-  if (!withinBudget) {
-    logger.warn(
-      `Org ${orgId} exceeded monthly LLM budget: ${totalTokens}/${MONTHLY_TOKEN_BUDGET}`
-    );
-  }
-  return withinBudget;
 }
 
 function parseProposalResponse(completion: string): {
