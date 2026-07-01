@@ -170,11 +170,18 @@ export function parseArgs(argv: string[]): CliArgs {
   return { orgId, confirm, force };
 }
 
-interface OrgRow {
+export interface OrgRow {
   id: string;
   name: string;
   created_at: string;
 }
+
+// Test seams — the ownership-assertion + runCleanup helpers below
+// take an explicit `client` parameter (default = the module-scoped
+// service-role client) so tests can drive them with a mocked chain
+// without mocking the whole module. Production callers ignore the
+// parameter and get the same behavior as before.
+type SupabaseLike = typeof supabase;
 
 /**
  * Discovery mode: find ghost orgs by name allowlist + date cutoff.
@@ -230,6 +237,112 @@ async function loadOrgById(orgId: string): Promise<OrgRow[]> {
   return [data as OrgRow];
 }
 
+interface OwnerRow {
+  user_id: string;
+  email: string | null;
+}
+
+async function fetchOwnerEmail(
+  userId: string,
+  client: SupabaseLike
+): Promise<string | null> {
+  // supabase.auth.admin.getUserById is the sanctioned way to look up
+  // an auth.users row from a service-role client. PostgREST doesn't
+  // expose the auth schema by default, so a plain .from('users') join
+  // would 404. If the lookup fails for any reason we return null and
+  // fall back to printing just the user_id.
+  try {
+    const { data, error } = await client.auth.admin.getUserById(userId);
+    if (error || !data?.user?.email) return null;
+    return data.user.email;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Ownership assertion (F13 Tier 2 follow-up defense-in-depth).
+ *
+ * Before deleting a specifically-targeted org, verify it actually has
+ * exactly one member with role='owner' and print that owner's email.
+ * A wrong-UUID paste (e.g. copying the id of a live customer org
+ * instead of a test org) would almost always show a surprising
+ * owner email at this step — giving the operator a chance to
+ * cancel before --confirm runs the destructive cascade.
+ *
+ * Behavior:
+ *   * 1 owner   → print the email, proceed.
+ *   * 0 owners  → warn (unowned org — unusual), require --force.
+ *   * ≥2 owners → warn (multi-owner org — unlikely to be a test
+ *                 org), require --force.
+ *
+ * Only applies to the targeted-mode path. Discovery mode already
+ * has its own name+date safety envelope.
+ */
+export async function assertSingleOwner(
+  orgId: string,
+  force: boolean,
+  client: SupabaseLike = supabase
+): Promise<void> {
+  const { data, error } = await client
+    .from('org_members')
+    .select('user_id')
+    .eq('org_id', orgId)
+    .eq('role', 'owner');
+
+  if (error) {
+    console.warn(
+      `  Warning: could not verify org ownership (${error.message}).`
+    );
+    if (!force) {
+      console.error(
+        '  Pass --force to override this safety check and proceed anyway.'
+      );
+      process.exit(3);
+    }
+    return;
+  }
+
+  const memberships = (data ?? []) as Array<{ user_id: string }>;
+
+  const owners: OwnerRow[] = await Promise.all(
+    memberships.map(async (m) => ({
+      user_id: m.user_id,
+      email: await fetchOwnerEmail(m.user_id, client),
+    }))
+  );
+
+  if (owners.length === 1) {
+    const o = owners[0];
+    console.log(`  Owner: ${o.email ?? '(email unavailable)'} [${o.user_id}]`);
+    console.log();
+    return;
+  }
+
+  if (owners.length === 0) {
+    console.warn(
+      `  Warning: org ${orgId} has NO owner record. Unusual for a real org.`
+    );
+  } else {
+    console.warn(
+      `  Warning: org ${orgId} has ${owners.length} owner records — ` +
+        'unlikely to be a test org.'
+    );
+    for (const o of owners) {
+      console.warn(`    - ${o.email ?? '(email unavailable)'} [${o.user_id}]`);
+    }
+  }
+
+  if (!force) {
+    console.error(
+      '\n  Refusing to proceed on multi-owner/unowned target without --force.'
+    );
+    process.exit(3);
+  }
+  console.warn('  Proceeding anyway due to --force.');
+  console.log();
+}
+
 async function runCleanup(orgs: OrgRow[], confirm: boolean) {
   if (orgs.length === 0) {
     console.log('No orgs matched. Nothing to do.');
@@ -242,13 +355,32 @@ async function runCleanup(orgs: OrgRow[], confirm: boolean) {
   }
   console.log();
 
+  const orgIds = orgs.map((o) => o.id);
+
+  // Report per-table row counts BEFORE any deletion. Fires in both
+  // dry-run and confirm modes so the operator sees the exact scope of
+  // what will be affected. In dry-run the report is the ONLY output;
+  // in confirm mode it's followed by the actual DELETEs.
+  console.log('Row counts under target scope:');
+  for (const table of CASCADE_TABLES) {
+    const { count, error: countErr } = await supabase
+      .from(table)
+      .select('*', { count: 'exact', head: true })
+      .in('org_id', orgIds);
+    if (countErr) {
+      console.log(`  ${table}: (${countErr.message})`);
+    } else {
+      console.log(`  ${table}: ${count ?? 0} rows`);
+    }
+  }
+  console.log();
+
   if (!confirm) {
     console.log('Dry run — pass --confirm to actually delete.');
     process.exit(0);
   }
 
-  const orgIds = orgs.map((o) => o.id);
-
+  console.log('Deleting:');
   for (const table of CASCADE_TABLES) {
     const { error: delErr, count } = await supabase
       .from(table)
@@ -286,9 +418,15 @@ async function main() {
     process.exit(1);
   }
 
-  const orgs = args.orgId
-    ? await loadOrgById(args.orgId)
-    : await discoverGhostOrgs();
+  let orgs: OrgRow[];
+  if (args.orgId) {
+    orgs = await loadOrgById(args.orgId);
+    // Ownership assertion applies to targeted mode only. Discovery
+    // mode already has its own name+date safety envelope.
+    await assertSingleOwner(args.orgId, args.force);
+  } else {
+    orgs = await discoverGhostOrgs();
+  }
 
   await runCleanup(orgs, args.confirm);
 }
