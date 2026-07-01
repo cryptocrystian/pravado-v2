@@ -3,6 +3,20 @@ name: Path Guard
 on:
   pull_request:
     branches: [main]
+    # Include `edited` so that PR title/body changes (e.g. adding a
+    # Work Order marker after a first-run failure) retrigger the check
+    # without needing to push an empty commit. Observed friction on
+    # PR #55 where a title-only edit did not re-run this workflow;
+    # the empty-commit dance is small but consistent and adds noise
+    # to git history.
+    types: [opened, synchronize, reopened, edited]
+
+# Cancel in-progress runs for the same PR when a new event fires. Without
+# this, a rapid sequence of edits (e.g. the user iterating on PR body
+# copy) queues N sequential runs, all but the last of which are wasted.
+concurrency:
+  group: path-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   path-guard:
@@ -12,7 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history needed for git diff
+          fetch-depth: 0 # Full history needed for git diff
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
