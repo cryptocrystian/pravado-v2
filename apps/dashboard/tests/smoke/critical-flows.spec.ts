@@ -12,7 +12,18 @@ test.describe('Login page interactions', () => {
   test('sign up toggle works', async ({ page }) => {
     await page.goto(`${BASE}/login`);
     await page.getByText("Don't have an account? Sign up").click();
-    await expect(page.getByText('Create your account')).toBeVisible();
+    // Role-scoped + exact match: the sign-up view's <h1> reads
+    // "Create your account". PR #50 un-gated the magic-link block on
+    // sign-up, which brought along the beta-invite copy "Magic link
+    // will create your account automatically." — that made the prior
+    // substring-based getByText('Create your account') ambiguous and
+    // triggered a Playwright strict-mode violation. Scoping to the
+    // heading role + exact match makes the assertion survive future
+    // copy edits in the magic-link block without hiding real
+    // regressions in the h1 label.
+    await expect(
+      page.getByRole('heading', { name: 'Create your account', exact: true })
+    ).toBeVisible();
   });
 
   test('password field shows for sign in', async ({ page }) => {
