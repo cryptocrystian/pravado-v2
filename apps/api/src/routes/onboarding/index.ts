@@ -10,6 +10,7 @@
  * Prefix: /api/v1/onboarding
  */
 
+import * as Sentry from '@sentry/node';
 import type { FastifyInstance } from 'fastify';
 
 import { createLogger } from '../../lib/logger';
@@ -536,19 +537,43 @@ export async function onboardingRoutes(server: FastifyInstance) {
       // Trigger SAGE activation pipeline:
       // 1. EVI snapshot
       // 2. SAGE signal scan
+      //
+      // Adjacent P1 (F13 remediation): previous version had a silent
+      // `catch { /* comment */ }` that hid F13-class failures for
+      // 14+ hours during pilot prep. On enqueue failure we now log,
+      // send to Sentry, and surface a `warning` field in the response
+      // body so the dashboard can render an honest banner instead of
+      // silent success. Still return HTTP 200 — onboarding completion
+      // itself succeeded; a transient queue issue shouldn't fail the
+      // whole request.
+      let queued = true;
+      let warning: string | null = null;
+
       try {
         const { enqueueEVIRecalculate, enqueueSageSignalScan } = await import(
           '../../queue/bullmqQueue'
         );
         await enqueueEVIRecalculate(orgId);
         await enqueueSageSignalScan(orgId);
-      } catch {
-        // BullMQ not available — skip background jobs
+      } catch (err) {
+        queued = false;
+        const msg = err instanceof Error ? err.message : String(err);
+        logger.error(`[Onboarding] enqueue failed for org ${orgId}: ${msg}`);
+        Sentry.captureException(err, {
+          tags: { org_id: orgId, phase: 'onboarding_complete_enqueue' },
+        });
+        warning =
+          'SAGE activation is delayed while the background job queue recovers. Your Command Center will populate as soon as it does.';
       }
 
       return reply.send({
         success: true,
-        data: { completed: true, org_id: orgId },
+        data: {
+          completed: true,
+          org_id: orgId,
+          queued,
+          ...(warning ? { warning } : {}),
+        },
       });
     }
   );
@@ -571,7 +596,9 @@ export async function onboardingRoutes(server: FastifyInstance) {
         });
       }
 
-      // Trigger EVI calculation and SAGE signal scan
+      // Adjacent P1 (F13 remediation): see /complete's matching block
+      // for the rationale. Same posture — log + Sentry + user-visible
+      // warning, HTTP 200 with structured `queued` + `warning` fields.
       try {
         const { enqueueEVIRecalculate, enqueueSageSignalScan } = await import(
           '../../queue/bullmqQueue'
@@ -579,11 +606,22 @@ export async function onboardingRoutes(server: FastifyInstance) {
         await enqueueEVIRecalculate(orgId);
         await enqueueSageSignalScan(orgId);
         return reply.send({ success: true, data: { queued: true } });
-      } catch {
-        // Direct fallback if BullMQ not available
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        logger.error(
+          `[Onboarding] /activate enqueue failed for org ${orgId}: ${msg}`
+        );
+        Sentry.captureException(err, {
+          tags: { org_id: orgId, phase: 'onboarding_activate_enqueue' },
+        });
         return reply.send({
           success: true,
-          data: { queued: false, reason: 'Background jobs unavailable' },
+          data: {
+            queued: false,
+            reason: 'Background jobs unavailable',
+            warning:
+              'SAGE activation is delayed while the background job queue recovers. Your Command Center will populate as soon as it does.',
+          },
         });
       }
     }
