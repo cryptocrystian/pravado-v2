@@ -53,21 +53,74 @@ const GHOST_NAMES = [
 const CUTOFF_DATE = '2026-01-01T00:00:00Z';
 
 // Cascade tables — order matters (children before parent).
+//
 // Every table listed here has an `org_id` column that FKs to `orgs`.
-// See docs/schema/org-scoped-tables.md for the authoritative list;
-// this array is the operational deletion order, not the full set.
+// Verified against information_schema.columns at 2026-07-01 during
+// the F13 Tier 2 follow-up. Most of these ALSO have
+// ON DELETE CASCADE to orgs, so the final DELETE FROM orgs at the
+// end of runCleanup would clean them up anyway — the explicit
+// per-table pass exists to (1) report row counts for the operator's
+// sanity check and (2) provide a fallback if a table loses its
+// CASCADE constraint in a future migration.
+//
+// Notable additions in this commit (relative to the original list):
+//
+//   * org_competitors — was missing; onboarding /brand writes here
+//   * gsc_connections — was missing; Search Console integration
+//   * media_outlets — was missing; journalist onboarding writes here
+//   * journalists — was missing (was journalist_profiles only); the
+//     onboarding /journalists path writes to `journalists`, other
+//     services write to `journalist_profiles`. Both are org-scoped
+//     and both need cascade coverage. See F13 Tier 2 follow-up PR
+//     body for the codebase audit.
+//   * competitors — distinct from org_competitors; SEO+CI subsystems
+//     write here. Verified org_id FK.
+//   * pr_pitch_contacts + pr_pitch_events + pr_pitch_sequences —
+//     replaces the stale `pr_pitches` entry. That table doesn't
+//     exist; the three listed here are what the pr subsystem writes.
+//   * llm_usage_ledger — F13 Tier 2 added org-scoped LLM ledger
+//     usage. Pilot orgs accumulate rows quickly; cleanup should
+//     reset ledger counts too so multi-run test scenarios aren't
+//     falsely near budget.
+//
+// Order: child-level records (per-signal, per-journalist, per-pitch)
+// before their parents. Then the org's own membership + config
+// records. `orgs` itself is deleted afterward by runCleanup.
 const CASCADE_TABLES = [
+  // sage/citation/observability
   'sage_proposals',
   'sage_signals',
   'evi_snapshots',
   'citation_monitor_results',
   'citemind_scores',
+  'llm_usage_ledger',
+
+  // content
   'content_items',
   'content_topics',
-  'pr_pitches',
+
+  // pr
+  'pr_pitch_contacts',
+  'pr_pitch_events',
+  'pr_pitch_sequences',
+  'journalists',
   'journalist_profiles',
+  'media_outlets',
+
+  // seo
   'seo_keyword_metrics',
   'seo_backlinks',
+
+  // competitors
+  'org_competitors',
+  'competitors',
+
+  // integrations
+  'gsc_connections',
+
+  // membership (last — deleting this before any of the above would
+  // still cascade via FK, but we want any per-membership audit rows
+  // to see the org still exists at time of their own cascade)
   'org_members',
 ];
 
