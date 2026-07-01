@@ -1379,7 +1379,7 @@ export default function AIIntroPage() {
                   <p className="text-[14px] text-white/40">
                     {proposals.length > 0
                       ? `${proposals.length} prioritized actions based on your competitive position.`
-                      : 'Your first proposals are being generated and will appear in your Command Center within a few minutes — no need to wait here.'}
+                      : 'SAGE has activated. Your first proposals will appear in your Command Center shortly. Connect Google Search Console or add existing content in Settings to accelerate the analysis.'}
                   </p>
                 </div>
 
