@@ -608,12 +608,20 @@ function parseRedisUrl(url: string): RedisConnectionOptions {
       connection.username = parsed.username;
     }
 
-    // Upstash and Redis Cloud require TLS
-    if (
-      url.startsWith('rediss://') ||
-      parsed.hostname.includes('upstash') ||
-      parsed.hostname.includes('redislabs')
-    ) {
+    // Do NOT force TLS from hostname substring matching. The prior code
+    // set `connection.tls = {}` when the hostname included 'upstash' or
+    // 'redislabs' — but Redis Cloud Essentials endpoints (which use
+    // *.redislabs.com hostnames) are plain TCP. Forcing a TLS handshake
+    // against a plain-TCP endpoint produced ssl3_get_record:wrong version
+    // number errors at ioredis boot and silently killed BullMQ init for
+    // every queue past `eviWorker` — the F13 Stage 1b root cause.
+    //
+    // URL scheme is the single source of truth. `rediss://` → TLS,
+    // `redis://` → plain. Callers pick the scheme that matches the
+    // provisioned endpoint. If a future managed Redis instance needs
+    // TLS-with-custom-CA, wire that through a dedicated env var + an
+    // explicit `tls: { ca: ... }` here rather than hostname-inference.
+    if (url.startsWith('rediss://')) {
       connection.tls = {};
     }
 
