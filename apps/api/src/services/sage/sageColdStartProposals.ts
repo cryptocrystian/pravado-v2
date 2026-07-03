@@ -26,9 +26,10 @@
  * without a schema change.
  */
 
-import { LlmRouter } from '@pravado/utils';
+import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { checkLLMBudget } from './llmBudget';
 import { createLogger } from '../../lib/logger';
 import {
@@ -186,7 +187,7 @@ export async function generateColdStartProposals(
       provider: 'anthropic',
       anthropicApiKey:
         process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
-      anthropicModel: 'claude-sonnet-4-20250514',
+      anthropicModel: getAnthropicModel(),
       openaiApiKey:
         process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
       openaiModel: 'gpt-4o-mini',
@@ -194,6 +195,7 @@ export async function generateColdStartProposals(
       enableLedger: true,
       maxTokens: 1600, // Cold-start prompt returns 3–5 proposals in one call
       timeoutMs: 20000,
+      errorReporter: reportLlmFallback,
     });
 
     try {
