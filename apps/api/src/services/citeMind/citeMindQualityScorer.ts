@@ -16,9 +16,10 @@
  * - overall <  55: blocked (red)
  */
 
-import { LlmRouter } from '@pravado/utils';
+import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('citemind:scorer');
@@ -249,7 +250,7 @@ export async function generateLLMRecommendations(
       provider: 'anthropic',
       anthropicApiKey:
         process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
-      anthropicModel: 'claude-sonnet-4-20250514',
+      anthropicModel: getAnthropicModel(),
       openaiApiKey:
         process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
       openaiModel: 'gpt-4o-mini',
@@ -257,6 +258,7 @@ export async function generateLLMRecommendations(
       enableLedger: true,
       maxTokens: 300,
       timeoutMs: 10000,
+      errorReporter: reportLlmFallback,
     });
 
     const result = await router.generate({

@@ -19,6 +19,7 @@ import type {
   LlmProvider,
   LlmRequest,
   LlmResponse,
+  LlmFallbackInfo,
   CreateLlmUsageLedgerEntry,
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -26,6 +27,30 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from './logger';
 
 const logger = createLogger('llm-router');
+
+/**
+ * Canonical Anthropic model, read at call time from the environment so an
+ * env update takes effect without a process restart. Falls back to the
+ * current pinned Sonnet model so a deploy with a missing env var still lands
+ * on the intended model instead of a retired one.
+ */
+export function getAnthropicModel(): string {
+  return process.env.LLM_ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929';
+}
+
+/**
+ * Structured context passed to an injected error reporter (e.g. Sentry) when
+ * a real provider call fails and the router falls back to the stub.
+ */
+export interface LlmErrorContext {
+  provider: LlmProvider;
+  model: string;
+  error_code: string;
+  http_status?: number;
+  org_id?: string;
+  phase: string;
+  error_message: string;
+}
 
 /**
  * LLM Router configuration
@@ -42,6 +67,12 @@ export interface LlmRouterConfig {
   enableLedger?: boolean;
   /** Sprint S29: Optional billing quota enforcer callback */
   billingEnforcer?: (orgId: string, tokensToConsume: number) => Promise<void>;
+  /**
+   * Optional error reporter (e.g. Sentry.captureException wrapper) invoked when
+   * a real provider call fails and the router falls back to the stub. Injected
+   * from the app layer so this shared package stays free of a Sentry dependency.
+   */
+  errorReporter?: (err: Error, context: LlmErrorContext) => void;
 }
 
 /**
@@ -221,8 +252,7 @@ export async function callLLM(
  * LLM Router class
  */
 export class LlmRouter {
-  private readonly config: Required<
-    Omit<LlmRouterConfig, 'supabase' | 'enableLedger' | 'billingEnforcer'>
+    Omit<LlmRouterConfig, 'supabase' | 'enableLedger' | 'billingEnforcer' | 'errorReporter'>
   >;
   private readonly supabase?: SupabaseClient<any>;
   private readonly enableLedger: boolean;
@@ -230,6 +260,7 @@ export class LlmRouter {
     orgId: string,
     tokensToConsume: number
   ) => Promise<void>;
+  private readonly errorReporter?: (err: Error, context: LlmErrorContext) => void;
 
   constructor(config: LlmRouterConfig = {}) {
     this.config = {
@@ -237,13 +268,14 @@ export class LlmRouter {
       openaiApiKey: config.openaiApiKey || '',
       openaiModel: config.openaiModel || 'gpt-4o-mini',
       anthropicApiKey: config.anthropicApiKey || '',
-      anthropicModel: config.anthropicModel || 'claude-sonnet-4-20250514',
+      anthropicModel: config.anthropicModel || getAnthropicModel(),
       timeoutMs: config.timeoutMs || 20000,
       maxTokens: config.maxTokens || 2048,
     };
     this.supabase = config.supabase;
     this.enableLedger = config.enableLedger !== false; // Default to true
     this.billingEnforcer = config.billingEnforcer;
+    this.errorReporter = config.errorReporter;
   }
 
   /**
@@ -314,8 +346,12 @@ export class LlmRouter {
       response = this.generateStub(request);
     }
 
-    // Write to ledger (best effort, don't await)
+    // Write to ledger (best effort, don't await).
+    // When a real provider call failed and we served a stub, response.fallback
+    // carries the failure attribution so the row reads 'fallback' (not a healthy
+    // 'success') and preserves WHY the stub fired.
     const latencyMs = Date.now() - startTime;
+    const fallback = response.fallback;
     this.writeLedgerEntry({
       orgId: request.orgId,
       runId: request.runId,
@@ -326,8 +362,11 @@ export class LlmRouter {
       tokensCompletion: response.usage?.completionTokens || 0,
       tokensTotal: response.usage?.totalTokens || 0,
       latencyMs,
-      status: error ? 'error' : 'success',
-      errorCode: error instanceof Error ? error.message : undefined,
+      status: fallback ? 'fallback' : error ? 'error' : 'success',
+      errorCode: fallback ? fallback.errorCode : error instanceof Error ? error.message : undefined,
+      errorMessage: fallback ? fallback.errorMessage : undefined,
+      attemptedModel: fallback ? fallback.attemptedModel : undefined,
+      attemptedProvider: fallback ? fallback.attemptedProvider : undefined,
     }).catch(() => {
       // Swallow errors from ledger writes
     });
@@ -450,8 +489,11 @@ export class LlmRouter {
   ): Promise<LlmResponse> {
     // Check for API key
     if (!this.config.anthropicApiKey) {
-      logger.warn('Anthropic API key not configured, falling back to stub');
-      return this.generateStub(request);
+      return this.anthropicFallback(
+        request,
+        new Error('Anthropic API key not configured'),
+        { errorCode: 'missing_key', errorMessage: 'Anthropic API key not configured' }
+      );
     }
 
     const model = request.model || this.config.anthropicModel;
@@ -501,8 +543,23 @@ export class LlmRouter {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        // Anthropic returns { type, error: { type, message } } on errors.
+        // Parse the error type so the ledger + Sentry record WHY the call failed
+        // (e.g. 'not_found_error' for a retired model, 'authentication_error',
+        // 'rate_limit_error') instead of silently masking it as a healthy stub.
         const errorText = await response.text();
-        throw new Error(`Anthropic API error: ${response.status} ${errorText}`);
+        let errorCode = 'api_error';
+        try {
+          const parsed = JSON.parse(errorText) as { error?: { type?: string; message?: string } };
+          if (parsed.error?.type) errorCode = parsed.error.type;
+        } catch {
+          // Response body was not JSON — keep the generic errorCode.
+        }
+        return this.anthropicFallback(
+          request,
+          new Error(`Anthropic API error: ${response.status} ${errorCode}`),
+          { errorCode, errorMessage: errorText, httpStatus: response.status }
+        );
       }
 
       const data = (await response.json()) as AnthropicMessagesResponse;
@@ -523,16 +580,73 @@ export class LlmRouter {
     } catch (error) {
       clearTimeout(timeoutId);
 
-      if (error instanceof Error && error.name === 'AbortError') {
-        logger.warn('Anthropic request timed out, falling back to stub');
-      } else {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        logger.error(`Anthropic request failed: ${errMsg}`);
-      }
-
-      // Fallback to stub
-      return this.generateStub(request);
+      const isTimeout = error instanceof Error && error.name === 'AbortError';
+      const err = error instanceof Error ? error : new Error(String(error));
+      return this.anthropicFallback(request, err, {
+        errorCode: isTimeout ? 'timeout' : 'api_error',
+        errorMessage: isTimeout ? 'Anthropic request timed out' : err.message,
+      });
     }
+  }
+
+  /**
+   * Truncate + strip secrets from a provider error message before it lands in
+   * the ledger or an error report. Removes anything resembling an API key.
+   */
+  private sanitizeErrorMessage(message: string): string {
+    const stripped = message
+      .replace(/sk-[a-zA-Z0-9_-]{8,}/g, 'sk-***')
+      .replace(/(x-api-key|authorization)(["':\s]+)[^\s"',}]+/gi, '$1$2***');
+    return stripped.length > 500 ? stripped.slice(0, 500) : stripped;
+  }
+
+  /**
+   * Build a stub fallback response for a failed Anthropic call: logs the
+   * failure with structured context, reports it to the injected error reporter
+   * (best-effort — e.g. Sentry), and attaches failure attribution so the ledger
+   * records why the stub fired instead of masking it as a healthy success.
+   */
+  private anthropicFallback(
+    request: LlmRequest,
+    err: Error,
+    info: { errorCode: string; errorMessage: string; httpStatus?: number }
+  ): LlmResponse {
+    const model = request.model || this.config.anthropicModel;
+    const errorMessage = this.sanitizeErrorMessage(info.errorMessage);
+
+    logger.error('LLM call failed', {
+      err: err.message,
+      provider: 'anthropic',
+      model,
+      org_id: request.orgId,
+      error_code: info.errorCode,
+      http_status: info.httpStatus,
+      error_message: errorMessage,
+    });
+
+    try {
+      this.errorReporter?.(err, {
+        provider: 'anthropic',
+        model,
+        error_code: info.errorCode,
+        http_status: info.httpStatus,
+        org_id: request.orgId,
+        phase: 'llm_call_anthropic',
+        error_message: errorMessage,
+      });
+    } catch {
+      // Never let error reporting break the request path
+    }
+
+    const fallback: LlmFallbackInfo = {
+      errorCode: info.errorCode,
+      errorMessage,
+      attemptedModel: model,
+      attemptedProvider: 'anthropic',
+      httpStatus: info.httpStatus,
+    };
+
+    return { ...this.generateStub(request), fallback };
   }
 
   /**
@@ -558,6 +672,9 @@ export class LlmRouter {
         latency_ms: entry.latencyMs,
         status: entry.status,
         error_code: entry.errorCode || null,
+        error_message: entry.errorMessage || null,
+        attempted_model: entry.attemptedModel || null,
+        attempted_provider: entry.attemptedProvider || null,
       });
 
       if (error) {
@@ -758,7 +875,7 @@ export async function routeLLM(
     openaiApiKey: process.env.OPENAI_API_KEY,
     openaiModel: request.model || 'gpt-4o-mini',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
-    anthropicModel: 'claude-sonnet-4-20250514',
+    anthropicModel: getAnthropicModel(),
     timeoutMs: 30000,
     maxTokens: request.maxTokens || 2000,
   });

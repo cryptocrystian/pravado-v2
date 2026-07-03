@@ -11,8 +11,10 @@
  * - Max 10 proposals per org per scan cycle
  */
 
-import { LlmRouter } from '@pravado/utils';
+import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { reportLlmFallback } from '../../lib/llmErrorReporter';
 
 import { checkLLMBudget } from './llmBudget';
 import { createLogger } from '../../lib/logger';
@@ -91,13 +93,14 @@ export async function generateProposals(
     provider: withinBudget ? 'anthropic' : 'stub',
     anthropicApiKey:
       process.env.LLM_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
-    anthropicModel: 'claude-sonnet-4-20250514',
+    anthropicModel: getAnthropicModel(),
     openaiApiKey: process.env.LLM_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
     openaiModel: 'gpt-4o-mini',
     supabase,
     enableLedger: true,
     maxTokens: 500,
     timeoutMs: 15000,
+    errorReporter: reportLlmFallback,
   });
 
   let providerUsed = 'stub';

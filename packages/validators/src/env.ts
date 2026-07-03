@@ -49,7 +49,7 @@ export const apiEnvSchema = baseEnvSchema.extend({
   LLM_OPENAI_API_KEY: z.string().optional(),
   LLM_OPENAI_MODEL: z.string().default('gpt-4o-mini'),
   LLM_ANTHROPIC_API_KEY: z.string().optional(),
-  LLM_ANTHROPIC_MODEL: z.string().default('claude-sonnet-4-20250514'),
+  LLM_ANTHROPIC_MODEL: z.string().default('claude-sonnet-4-5-20250929'),
   LLM_TIMEOUT_MS: z.coerce.number().default(20000),
   LLM_MAX_TOKENS: z.coerce.number().default(2048),
   // Billing configuration (S28 - optional, falls back to internal-dev)
