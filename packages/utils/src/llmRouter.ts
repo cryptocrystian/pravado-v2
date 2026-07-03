@@ -252,6 +252,7 @@ export async function callLLM(
  * LLM Router class
  */
 export class LlmRouter {
+  private readonly config: Required<
     Omit<LlmRouterConfig, 'supabase' | 'enableLedger' | 'billingEnforcer' | 'errorReporter'>
   >;
   private readonly supabase?: SupabaseClient<any>;
