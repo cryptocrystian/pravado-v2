@@ -194,7 +194,10 @@ export async function generateColdStartProposals(
       supabase,
       enableLedger: true,
       maxTokens: 1600, // Cold-start prompt returns 3–5 proposals in one call
-      timeoutMs: 20000,
+      // Cold-start prompt targets 3-5 proposals @ max_tokens 1600 —
+      // measured 35.8s direct against Sonnet 4.5 on 2026-07-03;
+      // 60s gives 24s headroom. Do NOT lower without re-measuring.
+      timeoutMs: 60000,
       errorReporter: reportLlmFallback,
     });
 
