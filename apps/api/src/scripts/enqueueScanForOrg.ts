@@ -57,7 +57,15 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const queue = new Queue(QUEUE_NAME, { connection: parseRedisConnection(redisUrl) });
+  // Match the worker's BullMQ prefix so the job lands on the queue the
+  // deployed worker consumes. Prod leaves BULLMQ_PREFIX unset (default 'bull');
+  // staging sets BULLMQ_PREFIX=pravado-staging for env isolation on the shared
+  // Redis instance.
+  const prefix = process.env.BULLMQ_PREFIX || 'bull';
+  const queue = new Queue(QUEUE_NAME, {
+    connection: parseRedisConnection(redisUrl),
+    prefix,
+  });
 
   const jobId = `sage-scan-${orgId}-${Date.now()}`;
   const enqueuedAt = new Date().toISOString();
@@ -73,7 +81,11 @@ async function main(): Promise<void> {
   );
 
   console.log(
-    JSON.stringify({ enqueued: true, queue: QUEUE_NAME, orgId, jobId, enqueuedAt }, null, 2)
+    JSON.stringify(
+      { enqueued: true, queue: QUEUE_NAME, prefix, orgId, jobId, enqueuedAt },
+      null,
+      2
+    )
   );
 
   await queue.close();
