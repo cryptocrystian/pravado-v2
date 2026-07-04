@@ -10,8 +10,8 @@
  * environment, e.g. LLM_ANTHROPIC_MODEL) rather than locally. This mirrors the
  * queue/job shape of enqueueSageSignalScan() in src/queue/bullmqQueue.ts.
  */
-import { config as loadEnv } from 'dotenv';
 import { Queue } from 'bullmq';
+import { config as loadEnv } from 'dotenv';
 
 // Best-effort env load: prefer apps/api/.env, then repo-root .env.local.
 loadEnv({ path: 'apps/api/.env' });

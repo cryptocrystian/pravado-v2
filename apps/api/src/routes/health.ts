@@ -28,8 +28,8 @@
 
 import { FLAGS } from '@pravado/feature-flags';
 import type { DepStatus, HealthCheckResponse } from '@pravado/types';
-import { createClient } from '@supabase/supabase-js';
 import * as Sentry from '@sentry/node';
+import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
 import { config, APP_VERSION, BUILD_INFO } from '../config';
