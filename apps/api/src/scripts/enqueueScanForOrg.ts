@@ -34,7 +34,8 @@ function parseRedisConnection(url: string) {
     enableOfflineQueue: true,
   };
   if (parsed.password) connection.password = parsed.password;
-  if (parsed.username && parsed.username !== 'default') connection.username = parsed.username;
+  if (parsed.username && parsed.username !== 'default')
+    connection.username = parsed.username;
   // TLS is driven by the rediss:// scheme ONLY. Hostname inference (upstash/
   // redislabs) was deliberately removed in fix(queue) 258e288 because forcing
   // TLS on Redis Cloud hosts broke BullMQ queue init in production.
@@ -47,13 +48,17 @@ function parseRedisConnection(url: string) {
 async function main(): Promise<void> {
   const orgId = process.argv[2];
   if (!orgId) {
-    console.error('Usage: npx tsx apps/api/src/scripts/enqueueScanForOrg.ts <orgId>');
+    console.error(
+      'Usage: npx tsx apps/api/src/scripts/enqueueScanForOrg.ts <orgId>'
+    );
     process.exit(1);
   }
 
   const redisUrl = process.env.REDIS_URL;
   if (!redisUrl) {
-    console.error('REDIS_URL not set — cannot enqueue. Set it in apps/api/.env or the shell.');
+    console.error(
+      'REDIS_URL not set — cannot enqueue. Set it in apps/api/.env or the shell.'
+    );
     process.exit(1);
   }
 

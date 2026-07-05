@@ -253,7 +253,10 @@ export async function callLLM(
  */
 export class LlmRouter {
   private readonly config: Required<
-    Omit<LlmRouterConfig, 'supabase' | 'enableLedger' | 'billingEnforcer' | 'errorReporter'>
+    Omit<
+      LlmRouterConfig,
+      'supabase' | 'enableLedger' | 'billingEnforcer' | 'errorReporter'
+    >
   >;
   private readonly supabase?: SupabaseClient<any>;
   private readonly enableLedger: boolean;
@@ -261,7 +264,10 @@ export class LlmRouter {
     orgId: string,
     tokensToConsume: number
   ) => Promise<void>;
-  private readonly errorReporter?: (err: Error, context: LlmErrorContext) => void;
+  private readonly errorReporter?: (
+    err: Error,
+    context: LlmErrorContext
+  ) => void;
 
   constructor(config: LlmRouterConfig = {}) {
     this.config = {
@@ -364,7 +370,11 @@ export class LlmRouter {
       tokensTotal: response.usage?.totalTokens || 0,
       latencyMs,
       status: fallback ? 'fallback' : error ? 'error' : 'success',
-      errorCode: fallback ? fallback.errorCode : error instanceof Error ? error.message : undefined,
+      errorCode: fallback
+        ? fallback.errorCode
+        : error instanceof Error
+          ? error.message
+          : undefined,
       errorMessage: fallback ? fallback.errorMessage : undefined,
       attemptedModel: fallback ? fallback.attemptedModel : undefined,
       attemptedProvider: fallback ? fallback.attemptedProvider : undefined,
@@ -493,7 +503,10 @@ export class LlmRouter {
       return this.anthropicFallback(
         request,
         new Error('Anthropic API key not configured'),
-        { errorCode: 'missing_key', errorMessage: 'Anthropic API key not configured' }
+        {
+          errorCode: 'missing_key',
+          errorMessage: 'Anthropic API key not configured',
+        }
       );
     }
 
@@ -551,7 +564,9 @@ export class LlmRouter {
         const errorText = await response.text();
         let errorCode = 'api_error';
         try {
-          const parsed = JSON.parse(errorText) as { error?: { type?: string; message?: string } };
+          const parsed = JSON.parse(errorText) as {
+            error?: { type?: string; message?: string };
+          };
           if (parsed.error?.type) errorCode = parsed.error.type;
         } catch {
           // Response body was not JSON — keep the generic errorCode.

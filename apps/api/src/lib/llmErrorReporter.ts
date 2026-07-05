@@ -19,7 +19,8 @@ export function reportLlmFallback(err: Error, context: LlmErrorContext): void {
       provider: context.provider,
       model: context.model,
       error_code: context.error_code,
-      http_status: context.http_status != null ? String(context.http_status) : 'none',
+      http_status:
+        context.http_status != null ? String(context.http_status) : 'none',
       org_id: context.org_id ?? 'unknown',
       phase: context.phase,
     },

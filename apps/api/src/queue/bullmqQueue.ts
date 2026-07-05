@@ -134,6 +134,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       },
       {
         connection,
+        prefix: bullPrefix,
         concurrency: 2,
       }
     );
@@ -145,7 +146,10 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         './workers/sageSignalScanWorker'
       );
 
-      sageQueue = new Queue('sage-signal-scan', { connection, prefix: bullPrefix });
+      sageQueue = new Queue('sage-signal-scan', {
+        connection,
+        prefix: bullPrefix,
+      });
 
       sageWorker = new Worker(
         'sage-signal-scan',
@@ -171,7 +175,10 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         './workers/citeMindScoringWorker'
       );
 
-      citeMindQueue = new Queue('citemind-score', { connection, prefix: bullPrefix });
+      citeMindQueue = new Queue('citemind-score', {
+        connection,
+        prefix: bullPrefix,
+      });
 
       citeMindWorker = new Worker(
         'citemind-score',

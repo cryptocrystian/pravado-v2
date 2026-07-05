@@ -213,7 +213,10 @@ export async function healthRoutes(server: FastifyInstance) {
         checks.redis = pong === 'PONG' ? 'ok' : 'degraded';
         await redisClient.quit().catch(() => {});
         if (checks.redis === 'degraded') {
-          captureRedisDegraded(Date.now() - redisStart, 'unexpected_ping_reply');
+          captureRedisDegraded(
+            Date.now() - redisStart,
+            'unexpected_ping_reply'
+          );
         }
       } catch (err) {
         // Plan 03: log the error structurally but do NOT include it in
