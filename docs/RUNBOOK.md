@@ -5,6 +5,8 @@
 **Audience:** Anyone operating Pravado v2 in production — primarily Christian  
 **Rule:** Update this document whenever infrastructure or deployment processes change.
 
+> **Rollback / incident recovery:** see [`docs/runbooks/rollback.md`](runbooks/rollback.md) — the layer-by-layer production rollback runbook (API, Dashboard, DB schema, Redis, LLM provider, Anthropic model) with a 2am decision tree and staging-tested procedures (Stage 4 C2).
+
 ---
 
 ## Infrastructure Overview

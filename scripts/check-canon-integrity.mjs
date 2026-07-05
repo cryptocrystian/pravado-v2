@@ -48,6 +48,7 @@ const ALLOWED_DOC_PATHS = [
   'docs/evals/',
   'docs/playbooks/',
   'docs/product/',
+  'docs/runbooks/', // operational rollback/incident runbooks (Stage 4 C2)
   'docs/skills/',
   'docs/specs/',
 ];
