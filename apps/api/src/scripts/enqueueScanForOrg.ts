@@ -10,8 +10,8 @@
  * environment, e.g. LLM_ANTHROPIC_MODEL) rather than locally. This mirrors the
  * queue/job shape of enqueueSageSignalScan() in src/queue/bullmqQueue.ts.
  */
-import { config as loadEnv } from 'dotenv';
 import { Queue } from 'bullmq';
+import { config as loadEnv } from 'dotenv';
 
 // Best-effort env load: prefer apps/api/.env, then repo-root .env.local.
 loadEnv({ path: 'apps/api/.env' });
@@ -34,7 +34,8 @@ function parseRedisConnection(url: string) {
     enableOfflineQueue: true,
   };
   if (parsed.password) connection.password = parsed.password;
-  if (parsed.username && parsed.username !== 'default') connection.username = parsed.username;
+  if (parsed.username && parsed.username !== 'default')
+    connection.username = parsed.username;
   // TLS is driven by the rediss:// scheme ONLY. Hostname inference (upstash/
   // redislabs) was deliberately removed in fix(queue) 258e288 because forcing
   // TLS on Redis Cloud hosts broke BullMQ queue init in production.
@@ -47,17 +48,29 @@ function parseRedisConnection(url: string) {
 async function main(): Promise<void> {
   const orgId = process.argv[2];
   if (!orgId) {
-    console.error('Usage: npx tsx apps/api/src/scripts/enqueueScanForOrg.ts <orgId>');
+    console.error(
+      'Usage: npx tsx apps/api/src/scripts/enqueueScanForOrg.ts <orgId>'
+    );
     process.exit(1);
   }
 
   const redisUrl = process.env.REDIS_URL;
   if (!redisUrl) {
-    console.error('REDIS_URL not set — cannot enqueue. Set it in apps/api/.env or the shell.');
+    console.error(
+      'REDIS_URL not set — cannot enqueue. Set it in apps/api/.env or the shell.'
+    );
     process.exit(1);
   }
 
-  const queue = new Queue(QUEUE_NAME, { connection: parseRedisConnection(redisUrl) });
+  // Match the worker's BullMQ prefix so the job lands on the queue the
+  // deployed worker consumes. Prod leaves BULLMQ_PREFIX unset (default 'bull');
+  // staging sets BULLMQ_PREFIX=pravado-staging for env isolation on the shared
+  // Redis instance.
+  const prefix = process.env.BULLMQ_PREFIX || 'bull';
+  const queue = new Queue(QUEUE_NAME, {
+    connection: parseRedisConnection(redisUrl),
+    prefix,
+  });
 
   const jobId = `sage-scan-${orgId}-${Date.now()}`;
   const enqueuedAt = new Date().toISOString();
@@ -73,7 +86,11 @@ async function main(): Promise<void> {
   );
 
   console.log(
-    JSON.stringify({ enqueued: true, queue: QUEUE_NAME, orgId, jobId, enqueuedAt }, null, 2)
+    JSON.stringify(
+      { enqueued: true, queue: QUEUE_NAME, prefix, orgId, jobId, enqueuedAt },
+      null,
+      2
+    )
   );
 
   await queue.close();

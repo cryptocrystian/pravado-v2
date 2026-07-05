@@ -5,6 +5,8 @@
  * Graceful fallback: if REDIS_URL is not set, logs a warning and skips queue operations.
  */
 
+import * as Sentry from '@sentry/node';
+
 import { createLogger } from '../lib/logger';
 const logger = createLogger('queue:bullmq');
 
@@ -79,6 +81,14 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
     // Parse Redis URL for BullMQ connection
     const connection = parseRedisUrl(config.redisUrl);
 
+    // BullMQ key prefix — the isolation boundary between environments that
+    // share a single Redis instance (Redis Cloud Fixed 250MB is single-DB, so
+    // `?db=N` separation is unavailable — `SELECT 1` returns "DB index out of
+    // range"). Production leaves BULLMQ_PREFIX unset → BullMQ default 'bull'
+    // (unchanged, no key orphaning). Staging sets BULLMQ_PREFIX=pravado-staging
+    // so its workers never consume production jobs on the shared instance.
+    const bullPrefix = process.env.BULLMQ_PREFIX || 'bull';
+
     // Pre-flight: verify Redis is reachable before creating queues
     try {
       const { default: Redis } = await import('ioredis');
@@ -97,12 +107,23 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       logger.warn(
         `Redis not reachable (${msg}) — BullMQ queues disabled. Jobs will run on-demand only.`
       );
+      // Mode 2 (Stage 4 C6): queue subsystem degraded to on-demand because
+      // Redis is unreachable. This is the exact silent-degradation F13 exposed
+      // — surface it as an actionable alert instead of a buried warn line.
+      Sentry.captureMessage('BullMQ queue init failure', {
+        level: 'error',
+        tags: {
+          queue_name: 'all',
+          error_type: 'redis_unreachable',
+          redis_reachable: false,
+        },
+      });
       initialized = true;
       return;
     }
 
     // Create the EVI recalculation queue
-    eviQueue = new Queue('evi-recalculate', { connection });
+    eviQueue = new Queue('evi-recalculate', { connection, prefix: bullPrefix });
 
     // Create the worker that processes EVI jobs
     eviWorker = new Worker(
@@ -113,6 +134,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       },
       {
         connection,
+        prefix: bullPrefix,
         concurrency: 2,
       }
     );
@@ -124,7 +146,10 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         './workers/sageSignalScanWorker'
       );
 
-      sageQueue = new Queue('sage-signal-scan', { connection });
+      sageQueue = new Queue('sage-signal-scan', {
+        connection,
+        prefix: bullPrefix,
+      });
 
       sageWorker = new Worker(
         'sage-signal-scan',
@@ -136,6 +161,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         },
         {
           connection,
+          prefix: bullPrefix,
           concurrency: 1,
         }
       );
@@ -149,7 +175,10 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         './workers/citeMindScoringWorker'
       );
 
-      citeMindQueue = new Queue('citemind-score', { connection });
+      citeMindQueue = new Queue('citemind-score', {
+        connection,
+        prefix: bullPrefix,
+      });
 
       citeMindWorker = new Worker(
         'citemind-score',
@@ -161,6 +190,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         },
         {
           connection,
+          prefix: bullPrefix,
           concurrency: 2,
         }
       );
@@ -172,7 +202,10 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         './workers/citationMonitorWorker'
       );
 
-      citationMonitorQueue = new Queue('citemind-monitor', { connection });
+      citationMonitorQueue = new Queue('citemind-monitor', {
+        connection,
+        prefix: bullPrefix,
+      });
 
       citationMonitorWorker = new Worker(
         'citemind-monitor',
@@ -184,6 +217,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         },
         {
           connection,
+          prefix: bullPrefix,
           concurrency: 1,
         }
       );
@@ -207,7 +241,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
     if (FLAGS.ENABLE_GSC_INTEGRATION) {
       const { processGscSync } = await import('./workers/gscSyncWorker');
 
-      gscQueue = new Queue('gsc-sync', { connection });
+      gscQueue = new Queue('gsc-sync', { connection, prefix: bullPrefix });
 
       gscWorker = new Worker(
         'gsc-sync',
@@ -217,6 +251,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         },
         {
           connection,
+          prefix: bullPrefix,
           concurrency: 1,
         }
       );
@@ -242,7 +277,10 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         './workers/journalistEnrichmentWorker'
       );
 
-      journalistQueue = new Queue('journalists-enrich-batch', { connection });
+      journalistQueue = new Queue('journalists-enrich-batch', {
+        connection,
+        prefix: bullPrefix,
+      });
 
       journalistWorker = new Worker(
         'journalists-enrich-batch',
@@ -252,6 +290,7 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
         },
         {
           connection,
+          prefix: bullPrefix,
           concurrency: 1,
         }
       );
@@ -278,6 +317,16 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger.error(`Failed to initialize BullMQ: ${message}`);
+    // Mode 2 (Stage 4 C6): a queue/worker failed to construct (config error,
+    // bullmq/ioredis fault). Same silent-degradation class as the ping path.
+    Sentry.captureMessage('BullMQ queue init failure', {
+      level: 'error',
+      tags: {
+        queue_name: 'unknown',
+        error_type: 'queue_construction_error',
+        redis_reachable: true,
+      },
+    });
     // Don't throw — graceful degradation
     initialized = true;
   }

@@ -28,6 +28,7 @@
 
 import { FLAGS } from '@pravado/feature-flags';
 import type { DepStatus, HealthCheckResponse } from '@pravado/types';
+import * as Sentry from '@sentry/node';
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
@@ -35,6 +36,25 @@ import { config, APP_VERSION, BUILD_INFO } from '../config';
 import { createLogger } from '../lib/logger';
 
 const logger = createLogger('api:health');
+
+// Mode 3 (Stage 4 C6): /health is polled every few seconds (Render health
+// check + uptime monitors). Throttle the redis-degraded Sentry event to at
+// most once per 60s so a sustained degradation doesn't flood Sentry and
+// starve the very alert quota we depend on. The alert rule (3+ in 5min) still
+// fires reliably from the throttled stream.
+const REDIS_DEGRADED_CAPTURE_THROTTLE_MS = 60_000;
+let lastRedisDegradedCaptureAt = 0;
+function captureRedisDegraded(latencyMs: number, errorClass: string): void {
+  const now = Date.now();
+  if (now - lastRedisDegradedCaptureAt < REDIS_DEGRADED_CAPTURE_THROTTLE_MS) {
+    return;
+  }
+  lastRedisDegradedCaptureAt = now;
+  Sentry.captureMessage('/health redis degraded', {
+    level: 'warning',
+    tags: { latency_ms: latencyMs, error_class: errorClass },
+  });
+}
 
 /**
  * Safe subset of feature flags to expose via /info endpoint.
@@ -176,6 +196,7 @@ export async function healthRoutes(server: FastifyInstance) {
 
     // Redis check — real liveness ping
     if (config.REDIS_URL) {
+      const redisStart = Date.now();
       try {
         const { default: Redis } = await import('ioredis');
         const redisClient = new Redis(config.REDIS_URL, {
@@ -191,12 +212,25 @@ export async function healthRoutes(server: FastifyInstance) {
         ]);
         checks.redis = pong === 'PONG' ? 'ok' : 'degraded';
         await redisClient.quit().catch(() => {});
+        if (checks.redis === 'degraded') {
+          captureRedisDegraded(
+            Date.now() - redisStart,
+            'unexpected_ping_reply'
+          );
+        }
       } catch (err) {
         // Plan 03: log the error structurally but do NOT include it in
         // the response body — the `redis_error: msg` line removed in
         // Plan 03 because it broadcast raw exception strings.
         logger.warn('redis ping failed on /health', { err });
         checks.redis = 'degraded';
+        // Mode 3 (Stage 4 C6): reachable-but-failing likely means capacity or
+        // connection-pool exhaustion (the F13 max-clients class).
+        const errorClass =
+          err instanceof Error && /timeout/i.test(err.message)
+            ? 'ping_timeout'
+            : 'connection_error';
+        captureRedisDegraded(Date.now() - redisStart, errorClass);
       }
     } else {
       checks.redis = 'not_configured';

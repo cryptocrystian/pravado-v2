@@ -759,7 +759,8 @@ Closing the F13 Tier 2 cold-start remediation required unwinding **four cascadin
 **Kestrel verification org:** `ef0ecafa-5f6b-420b-9b28-105a93001d6d` — a cold-start org (no signals; brand + competitor data present), so its scan takes the `generateColdStartProposals` branch rather than the signal-driven `generateProposals` branch.
 
 **SHA chain (causal order):**
-- `4f27b00` — F13 Tier 2 remediation bundle (cold-start proposals + onboarding transparency + EVI dedup) — introduced the cold-start path *and*, unknowingly, the 6th retired-model hardcode.
+
+- `4f27b00` — F13 Tier 2 remediation bundle (cold-start proposals + onboarding transparency + EVI dedup) — introduced the cold-start path _and_, unknowingly, the 6th retired-model hardcode.
 - `258e288` — fix(queue): stop forcing TLS on Redis Cloud hostnames.
 - `7259f3f` — fix(llm): env-drive Anthropic model + surface swallowed provider failures (the observability layer).
 - `462b361` — fix(llm): env-drive Anthropic model in the F13 cold-start path (the 6th hardcode).
@@ -769,40 +770,43 @@ Closing the F13 Tier 2 cold-start remediation required unwinding **four cascadin
 
 - **DISCOVERY 1 — Redis TLS forcing broke queue init (fixed `258e288`).** `parseRedisUrl` forced `tls={}` whenever the hostname contained `redislabs`/`upstash`. The Redis Cloud endpoint is plain-TCP (`redis://`), so forcing TLS made every BullMQ queue past `eviWorker` silently fail to initialize — `enqueueSageSignalScan` no-op'd and `processSageSignalScan` never ran, so Fix A/Fix B from the F13 bundle had never executed against a real org. Root cause: hostname-substring inference instead of URL-scheme authority. Fix: the `rediss://` scheme is the single source of truth for TLS.
 
-- **DISCOVERY 2 — Anthropic credit exhaustion, then account funded.** With queues finally running, cold-start LLM calls returned HTTP 400 "credit balance too low." Architect funded the account. A 1-token probe then returned HTTP 200 — but against a *different* error: `not_found_error` for `claude-sonnet-4-20250514`. Which surfaced…
+- **DISCOVERY 2 — Anthropic credit exhaustion, then account funded.** With queues finally running, cold-start LLM calls returned HTTP 400 "credit balance too low." Architect funded the account. A 1-token probe then returned HTTP 200 — but against a _different_ error: `not_found_error` for `claude-sonnet-4-20250514`. Which surfaced…
 
-- **DISCOVERY 3 — the model was retired org-wide (fixed `7259f3f` + `462b361`).** `claude-sonnet-4-20250514` (May 2025) is no longer in this org's model catalog (`GET /v1/models` lists Sonnet 4.5 / Sonnet 5 / Opus 4.x / Haiku 4.5). The ID was hardcoded at **6 callsites**. `7259f3f` converted 5 of them to a `getAnthropicModel()` helper (reads `LLM_ANTHROPIC_MODEL`, falls back to the canonical `claude-sonnet-4-5-20250929`) and added the observability layer. `462b361` caught the 6th — the cold-start path introduced by the F13 bundle *after* the original hotfix's stale base.
+- **DISCOVERY 3 — the model was retired org-wide (fixed `7259f3f` + `462b361`).** `claude-sonnet-4-20250514` (May 2025) is no longer in this org's model catalog (`GET /v1/models` lists Sonnet 4.5 / Sonnet 5 / Opus 4.x / Haiku 4.5). The ID was hardcoded at **6 callsites**. `7259f3f` converted 5 of them to a `getAnthropicModel()` helper (reads `LLM_ANTHROPIC_MODEL`, falls back to the canonical `claude-sonnet-4-5-20250929`) and added the observability layer. `462b361` caught the 6th — the cold-start path introduced by the F13 bundle _after_ the original hotfix's stale base.
 
-- **DISCOVERY 4 — cold-start timeout too tight (fixed `2d159f0`).** With the correct model live, the cold-start call timed out: `error_code: timeout, latency_ms: 20098`. The cold-start path makes one large call (`max_tokens: 1600` → 3-5 proposals); measured **35.8s** direct against Sonnet 4.5, but `timeoutMs` was 20000. Raised to 60000 (24s headroom). A first re-run still timed out at 20003ms — the *draining* old instance grabbed the job during Render's zero-downtime rollover; a clean re-run after the old instance deactivated landed **`status: success`, latency 26528ms**.
+- **DISCOVERY 4 — cold-start timeout too tight (fixed `2d159f0`).** With the correct model live, the cold-start call timed out: `error_code: timeout, latency_ms: 20098`. The cold-start path makes one large call (`max_tokens: 1600` → 3-5 proposals); measured **35.8s** direct against Sonnet 4.5, but `timeoutMs` was 20000. Raised to 60000 (24s headroom). A first re-run still timed out at 20003ms — the _draining_ old instance grabbed the job during Render's zero-downtime rollover; a clean re-run after the old instance deactivated landed **`status: success`, latency 26528ms**.
 
 - **Infra note (Redis capacity + eviction).** Between the model fix and the timeout fix, deploys were briefly blocked: the Redis Cloud Essentials plan (30-connection cap) hit `ERR max number of clients reached`, which 503'd `/health` and gated Render promotion (health-check-gated deploys can't promote while Redis is degraded). Architect upgraded to **Fixed 250MB in place** — same endpoint `redis-14691…:14691`, no new database (contradicting an initial "new endpoint" assumption; the API showed a single database, `lastModified` at upgrade time). The connection headroom alone cleared the block. Eviction policy changed `volatile-lru` → `noeviction` via the Redis Cloud API (BullMQ had warned `volatile-lru` could evict job data; closes a Phase-1 P1 ticket).
 
 ### The observability win — name it explicitly
 
 The structured `llm_usage_ledger` attribution added in `7259f3f` (`status`, `error_code`, `attempted_model`, `attempted_provider`, `error_message`) collapsed hours of forensics into single-look diagnosis **three separate times**:
+
 1. `attempted_model: claude-sonnet-4-20250514, error_code: not_found_error` → pinpointed the 6th hardcode in under a minute (the fix was one line; finding it blind would have meant grepping and reasoning about which of two proposal paths a cold-start org takes).
-2. `error_code: timeout, latency_ms: 20098, attempted_model: claude-sonnet-4-5-20250929` → in a single row, *confirmed the model fix worked* and *identified the next defect* (timeout).
+2. `error_code: timeout, latency_ms: 20098, attempted_model: claude-sonnet-4-5-20250929` → in a single row, _confirmed the model fix worked_ and _identified the next defect_ (timeout).
 3. `latency_ms: 20003` on the re-run → distinguished a deploy-drain race from a genuine bad ceiling, preventing an unnecessary bump to 90s.
 
 Before this layer, all three failures produced an identical-looking `provider: stub, status: success, error_code: null` row — indistinguishable from a healthy stub. **This is the strongest architectural evidence we have for expanding structured attribution to every external-service call** (Redis, Supabase, Resend, Stripe, GSC): the pattern turns "why did it silently degrade" from a log-spelunking exercise into a single `SELECT`.
 
 ### The audit-cycle-not-complete pattern
 
-The retired-model string `claude-sonnet-4-20250514` was rediscovered **three times**: the original 5-site hotfix (`7259f3f`), the 6th cold-start site (`462b361`), and a Step-0 preflight `rg` sweep before the timeout deploy that finally confirmed zero remaining source hits. Lesson: a "fix all N callsites" sweep is only complete relative to the *branch it was authored against*. The F13 bundle added the 6th site on `origin/main` after the hotfix's stale base, so the hotfix could never have covered it. **Preflight grep before every model-touching deploy** is now the standing rule — it caught completeness before a 4th cycle could occur. (Follow-up filed to env-drive the remaining non-retired hardcoded model IDs: `claude-haiku-4-5-20251001` in `citationMonitor.ts`/`siloTaxAudit`, plus UI-dropdown literals in `PersonaGeneratorForm.tsx`.)
+The retired-model string `claude-sonnet-4-20250514` was rediscovered **three times**: the original 5-site hotfix (`7259f3f`), the 6th cold-start site (`462b361`), and a Step-0 preflight `rg` sweep before the timeout deploy that finally confirmed zero remaining source hits. Lesson: a "fix all N callsites" sweep is only complete relative to the _branch it was authored against_. The F13 bundle added the 6th site on `origin/main` after the hotfix's stale base, so the hotfix could never have covered it. **Preflight grep before every model-touching deploy** is now the standing rule — it caught completeness before a 4th cycle could occur. (Follow-up filed to env-drive the remaining non-retired hardcoded model IDs: `claude-haiku-4-5-20251001` in `citationMonitor.ts`/`siloTaxAudit`, plus UI-dropdown literals in `PersonaGeneratorForm.tsx`.)
 
 ### Stub → Anthropic content delta (what "publication specificity" looks like)
 
 Same org, same prompt inputs — the only difference is whether the real LLM call succeeded:
 
 **STUB (deterministic fallback, `generateStubColdStartProposals`, confidence flat 0.55):**
-> *Title:* "Position against {competitor} in top-tier trade press"
-> *Rationale:* "{competitor} is one of the primary voices in FinTech, which means every earned mention they get is a mention we don't. Building a differentiated pitch angle now (before we have a citation footprint) is easier than reclaiming share of voice later."
-> *Action:* "Identify 2–3 target publications in FinTech that have covered {competitor}…" — **no publication named, no competitor beyond the label.**
+
+> _Title:_ "Position against {competitor} in top-tier trade press"
+> _Rationale:_ "{competitor} is one of the primary voices in FinTech, which means every earned mention they get is a mention we don't. Building a differentiated pitch angle now (before we have a citation footprint) is easier than reclaiming share of voice later."
+> _Action:_ "Identify 2–3 target publications in FinTech that have covered {competitor}…" — **no publication named, no competitor beyond the label.**
 
 **ANTHROPIC (`claude-sonnet-4-5-20250929`, confidence 0.68):**
-> *Title:* "Pitch TechCrunch on Kestrel's differentiated approach to financial data analytics vs. Plaid's infrastructure play"
-> *Rationale:* "Plaid dominates coverage in TechCrunch and The Information as the infrastructure layer for fintech apps, but their narrative centers on connectivity, not intelligence. If we don't establish our analytics-first positioning now, we risk being perceived as a Plaid alternative rather than a distinct category player…"
-> *Action:* pitch TechCrunch's fintech desk positioning Kestrel as the "intelligence layer" above connectivity platforms — **names TechCrunch + The Information, grounds in Plaid's actual positioning, articulates a category thesis.** Sibling proposals name American Banker and ground simultaneously across Plaid + Stripe + Alloy.
+
+> _Title:_ "Pitch TechCrunch on Kestrel's differentiated approach to financial data analytics vs. Plaid's infrastructure play"
+> _Rationale:_ "Plaid dominates coverage in TechCrunch and The Information as the infrastructure layer for fintech apps, but their narrative centers on connectivity, not intelligence. If we don't establish our analytics-first positioning now, we risk being perceived as a Plaid alternative rather than a distinct category player…"
+> _Action:_ pitch TechCrunch's fintech desk positioning Kestrel as the "intelligence layer" above connectivity platforms — **names TechCrunch + The Information, grounds in Plaid's actual positioning, articulates a category thesis.** Sibling proposals name American Banker and ground simultaneously across Plaid + Stripe + Alloy.
 
 The delta is the whole point of CiteMind-governed generation: the stub keeps the surface non-empty; the Anthropic output is a citable, competitor-grounded artifact a human would actually act on.
 

@@ -10,8 +10,8 @@
  * (provider, error_code, org_id) so a storm of the same failure is one issue,
  * not thousands — first occurrence per group in the alerting window fires.
  */
-import * as Sentry from '@sentry/node';
 import type { LlmErrorContext } from '@pravado/utils';
+import * as Sentry from '@sentry/node';
 
 export function reportLlmFallback(err: Error, context: LlmErrorContext): void {
   Sentry.captureException(err, {
@@ -19,7 +19,8 @@ export function reportLlmFallback(err: Error, context: LlmErrorContext): void {
       provider: context.provider,
       model: context.model,
       error_code: context.error_code,
-      http_status: context.http_status != null ? String(context.http_status) : 'none',
+      http_status:
+        context.http_status != null ? String(context.http_status) : 'none',
       org_id: context.org_id ?? 'unknown',
       phase: context.phase,
     },
