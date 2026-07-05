@@ -14,9 +14,8 @@
 import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { reportLlmFallback } from '../../lib/llmErrorReporter';
-
 import { checkLLMBudget } from './llmBudget';
+import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
 import {
   buildProposalSystemPrompt,
