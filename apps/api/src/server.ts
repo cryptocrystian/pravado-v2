@@ -15,6 +15,7 @@ import Fastify from 'fastify';
 
 import { config } from './config';
 import { createLogger, fastifyLoggerOptions } from './lib/logger';
+import { getSupabaseClient } from './lib/supabase';
 import { authPlugin } from './plugins/auth';
 import { mailerPlugin } from './plugins/mailer';
 import { platformFreezePlugin } from './plugins/platformFreeze';
@@ -547,7 +548,11 @@ export async function createServer() {
       './services/schedulerService'
     );
 
-    const supabase = (server as any).supabase;
+    // F41 fix: `server` is never decorated with `.supabase`, so the previous
+    // `(server as any).supabase` was always `undefined` — every scheduler tick
+    // threw `Cannot read properties of undefined (reading 'from')` and no due
+    // task ever ran. Use the canonical service-role client accessor instead.
+    const supabase = getSupabaseClient();
     const openaiApiKey = config.LLM_OPENAI_API_KEY;
 
     const monitoringService = createMediaMonitoringService({
