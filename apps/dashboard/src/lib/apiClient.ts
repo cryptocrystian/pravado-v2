@@ -4,7 +4,10 @@
  * S99 Fix: Use centralized config, no localhost fallback in production
  */
 
-import { cookies } from 'next/headers';
+import {
+  getServerAccessToken,
+  ServerAuthError,
+} from '@/server/supabaseServerAuth';
 
 // In production, NEXT_PUBLIC_API_URL must be set
 const API_URL =
@@ -26,17 +29,32 @@ export async function apiRequest<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
+  // F37 fix: resolve the token via the canonical server-side extractor and
+  // forward it as `Authorization: Bearer`, matching backendFetch. The prior
+  // implementation forwarded `Cookie: access_token=<jwt>`, but the auth token
+  // lives in Supabase SSR `sb-*` cookies (never a plain `access_token`), and the
+  // backend auth plugin only reads the Authorization header or an
+  // `sb-access-token` cookie — so the backend saw no token and returned 401.
+  let token: string;
+  try {
+    token = await getServerAccessToken();
+  } catch (err) {
+    // Preserve the non-throwing contract: callers check `success`.
+    const code = err instanceof ServerAuthError ? err.code : 'AUTH_MISSING';
+    return {
+      success: false,
+      error: { code, message: 'Authentication required' },
+    };
+  }
 
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: `access_token=${accessToken}`,
+      Authorization: `Bearer ${token}`,
       ...options.headers,
     },
-    credentials: 'include',
+    cache: 'no-store',
   });
 
   return response.json();
