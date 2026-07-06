@@ -582,6 +582,35 @@ Commit `c8fcaf7` (2026-04-28) shipped the audit funnel restructure (mechanics: e
 
 The decision was made in conversation on 2026-04-21 and never written to canon. As a result, the strategic context drifted out of the lead architect's working memory. Commit `c8fcaf7` was generated against the wrong assumption ("Silo Tax framing stays") and pushed to main before the drift was caught. This is the precise failure mode that motivated the 2026-04-28 CLAUDE.md Required Boot Sequence amendment (commit `4cb9fdc`). Going forward, every load-bearing strategic decision lands in `DECISIONS_LOG.md` at the moment it's made, not at some imagined "end of session." The boot sequence reads `DECISIONS_LOG.md` so future sessions inherit the decision automatically.
 
+## 2026-07-01 — SAGE cold-start F13 diagnosis
+
+- **DIAGNOSIS (F13 — SAGE cold-start silence):** Root cause is compound (World D — not the three worlds the diagnostic prompt anticipated). Fresh test org FlowMetric (`4672f68e-5b2b-40f9-935c-c34a342ad1c2`, user `65d7a131-a2e4-466b-b384-eea5aa97e878`) completed onboarding 2026-07-01T00:59:37Z with steps 2/4/5 skipped (journalists, content, GSC). 14+ hours later, 0 sage_signals, 0 sage_proposals for the org. Two compounding failures:
+  1. **Wiring gap:** the `/onboarding/complete` and `/onboarding/activate` endpoints enqueue `enqueueEVIRecalculate` + `enqueueSageSignalScan` but not proposal generation. `generateProposals()` in `apps/api/src/services/sage/sageProposalGenerator.ts` is called ONLY from the manual `POST /api/v1/sage/generate-proposals` endpoint (rate-limited, 5/hr). Zero dashboard code references that endpoint. No cron, no worker chain, no hook triggers it automatically after signal scan. The proposal generator has never run for FlowMetric — and would never run for any org via the normal user flow.
+
+  2. **Empty-inputs no-op:** even if the wiring existed, the 3 SAGE pillar ingestors (`sagePRSignalIngestor`, `sageContentSignalIngestor`, `sageSEOSignalIngestor`) query source tables specific to the org (`pr_pitch_contacts`, `content_items`, `seo_keywords`). All 0 rows for FlowMetric (matched skips). `runSignalScan` returns 0 signals. `sageProposalGenerator.ts:68-77` early-returns with `proposals_generated: 0` on empty signals. This is the exact "silent no-op guard" the Track 6 kill condition warned about — for a skip-everything user, SAGE has nothing to work with.
+
+  Onboarding UI at `apps/dashboard/src/app/onboarding/ai-intro/page.tsx:941` says "Save & Activate SAGE" and promises "proposals will appear within a few minutes." Both promises are broken at this code path.
+
+- **DECISION (F13 — recommended Tier 2 fix bundle):** Three-part fix, ~4.5-6 engineering hours total:
+  - **Fix A** (~1h): In `sageSignalScanWorker.ts::processSageSignalScan`, call `generateProposals(supabase, orgId)` after `runSignalScan` when `signals_written > 0`. Wires the signal→proposal chain.
+  - **Fix B** (~3-4h): New `sageColdStartProposals` service that generates 3-5 baseline proposals from `orgs.name` + `orgs.industry` + `org_competitors` alone (no signals required), using the existing LLM router. Called from the signal-scan worker when `signals_written == 0 AND sage_proposals.count == 0`. Fills the cold-start gap so SAGE demonstrates value from day one.
+  - **Fix C** (~0.5h): Onboarding UI copy change — replace "proposals will appear within a few minutes" with a promise that survives the skip-everything path.
+
+  Ship-order guidance: **Do NOT ship Fix A alone** — leaves the skip-everything user in the same state. If pilot is imminent and Fix B feels speculative, ship Fix C alone (30 min) to make the broken promise not visible to pilot users. Then bundle A+B as a follow-up.
+
+- **DECISION (F30 — resolved to display bug, NOT persistence):** `org_competitors` table has all 3 FlowMetric competitor rows correctly written 2026-07-01T00:54:58Z (project44, fourkites, shippeo). Whatever the Competitors surface is doing to show empty is downstream in the dashboard read path — different fix owner from F13. F30 comes off the "critical" list and moves to "dashboard display" bucket.
+
+- **ADJACENT FINDINGS (surfaced during F13 diagnosis):**
+  - **[P1] `/onboarding/complete` and `/onboarding/activate` swallow all enqueue errors silently.** `catch { /* comment only */ }` at `apps/api/src/routes/onboarding/index.ts:519` and `:554`. Even the "queue not available" fallback returns HTTP 200 `success: true`. This is exactly the pattern that hid F13 from architects during pilot prep. Fix: log the exception at `logger.error` level, propagate `success: false` with `error.code: 'QUEUE_UNAVAILABLE'`. File as a separate ticket alongside the F13 fix bundle.
+  - **[P2] `evi_snapshots` write-spam:** 34 rows in 14h for one org. `GET /api/v1/evi/current` at `apps/api/src/routes/evi/index.ts:66` calls `calculateEVI` on every request, which inserts a new snapshot every time. Dedup via per-hour cache OR return the last snapshot if scored_at < 1h ago.
+  - **[P2] Scheduler `SchedulerService.listTasks` TypeError every 60s in production.** Stack: `apps/api/src/services/schedulerService.ts:143:8`. Log-only, doesn't crash the process, but consuming Render log budget (~900 lines/day) and drowning out signal in observability. Pre-existing, not new.
+  - **[P2] `onboarding_step` overwrite race:** DB shows `step=6` despite `/complete` setting `step=7`. A later `POST /step` from the client wizard rolled it back. Client-side wizard state tracker doesn't stop advancing after Save & Activate. Adjacent, breaks any "did user complete?" heuristic.
+  - **[P3] Prompt schema divergence:** the diagnostic prompt referenced `organizations`, `owner_user_id`, `brand_profiles`, `content_urls`, `sage_activation_state` — none exist. Real schema uses `orgs`, `org_members.role`, brand-profile-columns-on-orgs. Cosmetic; update the F13 runbook.
+
+- **DECISION (F13 — do NOT re-hit the same broken flow with the FlowMetric test org to re-verify Tier 2 fixes):** Data is stale (34 evi_snapshots + partial state). Clean up FlowMetric via the existing `apps/api/src/scripts/cleanupTestOrgs.ts` and re-onboard from scratch with the new fix. Otherwise leftover data skews observations. Establish the "clean test-org per verification" pattern in the pilot runbook.
+
+- **PRIVACY POSTURE (F13 diagnosis):** All Supabase queries were narrowly scoped by exact email / specific org_id / specific user_id. No bulk PII enumeration. Render logs API queried with server-side text filters (`text=` param) — no bulk log dumps. Diagnostic scripts written to `/tmp` with `chmod 700` and `shred -u`-deleted after use. Neither the Supabase service-role key nor the Render API token bytes appear in any log, commit, PR body, issue comment, or this DECISIONS_LOG entry. Internal identifiers (org_id, user_id) are UUIDs — not credentials — and appear in this entry for architect follow-up.
+
 (End)
 
 ## 2026-05-14
