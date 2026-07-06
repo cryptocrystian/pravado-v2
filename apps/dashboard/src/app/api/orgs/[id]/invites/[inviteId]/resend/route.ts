@@ -2,8 +2,12 @@
  * Resend org invite API route
  */
 
-import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+
+import {
+  getServerAccessToken,
+  ServerAuthError,
+} from '@/server/supabaseServerAuth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -12,14 +16,15 @@ export async function POST(
   { params }: { params: Promise<{ id: string; inviteId: string }> }
 ) {
   const { id, inviteId } = await params;
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
-
-  if (!accessToken) {
+  let authToken: string;
+  try {
+    authToken = await getServerAccessToken();
+  } catch (err) {
+    const code = err instanceof ServerAuthError ? err.code : 'AUTH_MISSING';
     return NextResponse.json(
       {
         success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
+        error: { code, message: 'Authentication required' },
       },
       { status: 401 }
     );
@@ -31,9 +36,8 @@ export async function POST(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `access_token=${accessToken}`,
+        Authorization: `Bearer ${authToken}`,
       },
-      credentials: 'include',
     }
   );
 
