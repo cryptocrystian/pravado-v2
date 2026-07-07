@@ -860,3 +860,21 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
   - Env changes applied via Render API to `pravado-api` (`NEXT_PUBLIC_APP_URL`) and `pravado-api-staging` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXT_PUBLIC_APP_URL`), both redeployed.
   - **Google Cloud action still required (architect):** register `https://app.pravado.io/api/integrations/gsc/callback` (production) — and optionally `https://pravado-dashboard.vercel.app/api/integrations/gsc/callback` (staging) — as Authorized redirect URIs on the OAuth client in `GOOGLE_CLIENT_ID`; verify Search Console API enabled, consent screen published, and scopes `webmasters.readonly` + `userinfo.email` present.
   - **Env-schema debt (bundled in this PR):** `apiEnvSchema` declared unused `GSC_CLIENT_ID` / `GSC_CLIENT_SECRET` while the code reads `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`. Replaced the dead entries with the real names (kept `optional` — GSC is flag-gated, so an unconditional boot-required check would break flag-off / CI / non-GSC environments). A **flag-conditional** hard fail-fast (require the pair only when `ENABLE_GSC_INTEGRATION`) is the recommended follow-up to fully close the "runtime 500 instead of boot failure" gap.
+
+---
+
+- **Date:** 2026-07-06
+- **Decision ID:** D026
+- **Area:** UX / Plans
+- **Decision:** **SMB and Starter tier users default to Copilot mode, not Autopilot.** All plan tiers default to **Copilot except Enterprise = Manual** (Starter = Copilot, Pro = Copilot, Trial = Copilot, Enterprise = Manual). Users self-select into Autopilot **per-pillar** as they build trust — Autopilot is a graduation state, not a plan-tier default.
+- **Rationale:**
+  1. Autopilot for brand-new users produces "AI did what?!" trust bombs. Copilot lets users see the reasoning + approve before granting autonomy.
+  2. Kestrel cold-start proposals demonstrate the pattern — 4 of 5 shipped as Copilot, matching the mode-of-most-proposals default.
+  3. Autopilot is a graduation state, not a starting state; trust is earned per-pillar.
+  4. Canon-adjacent engineering config (`PLANS_LIMITS_ENTITLEMENTS.md`) is more authoritative for implementation than marketing-strategy framing (Overview canvas).
+- **Canon Files Impacted:** `pravado_overview_canvas.md` — "SMBs=Autopilot" framing **superseded** and updated in this same PR (User Modes line + Execution Modes / tier tables reconciled). Aligned with `PLANS_LIMITS_ENTITLEMENTS.md` ("Starter: Manual + Copilot only") and `AUTOMATION_MODE_CONTRACTS_CANON.md` mode-contract semantics (neither touched).
+- **Contracts Impacted:** None (no contract change; this fixes a doc-vs-doc conflict surfaced by the UX Mode Gap Audit, PR #69).
+- **Implementation Notes:**
+  - **PR-1 Keystone** (unified `ModeContext` with plan hydration) will read this default. No `SMB=Autopilot` code exists today — the code currently hardcodes `manual` (global) / `copilot` (PR, Content) with no plan read, so it is already divergent from BOTH prior canonical sources. This canon change introduces no bug; it fixes the target the keystone will hydrate to.
+  - **ID note:** the originating brief proposed "D019", but D019 was already taken (layout-law decision); allocated the next free ID **D026** (D025 was the prior last entry).
+  - **Filed with:** UX Mode Gap Audit (PR #69), Mode Completion Sprint plan.

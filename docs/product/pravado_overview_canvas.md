@@ -12,7 +12,7 @@ Our goal: create a best-in-class platform that delivers immediate value from onb
 - **Cross-Pillar Orchestration**: via SAGE (strategy logic) and AUTOMATE (execution logic).
 - **Agent Ecosystem**: Tiered, modular, LLM-driven agents working across disciplines.
 - **CiteMind**: Proprietary AI indexing and podcast syndication engine.
-- **User Modes**: Autopilot (SMBs), Copilot (MMs), Manual (Enterprises).
+- **User Modes**: Copilot default for SMB / Starter / Pro; Manual default for Enterprise. Autopilot is a per-pillar graduation state, not a plan-tier default. (Per DECISIONS_LOG D026.)
 
 ## Platform Pillars (Expanded)
 
@@ -125,7 +125,7 @@ AUTOMATE is the muscle behind Pravado. It:
 
 | Mode       | Description                                                     |
 | ---------- | --------------------------------------------------------------- |
-| Autopilot  | Full automation, ideal for freelancers/SMBs                     |
+| Autopilot  | Full automation; a per-pillar graduation state, not a default   |
 | Copilot    | AI suggests, user approves; ideal for midmarket or teams        |
 | Manual     | AI assists only when invoked; used by enterprise clients        |
 | Escalation | Triggered when LLM confidence is low or after failed validation |
@@ -178,7 +178,7 @@ CiteMind is a proprietary AI indexing engine that:
 | ---------- | -------------- | ------------------- | ------------------------------ |
 | Free Trial | Limited Core   | Copilot             | Curious individuals            |
 | Freelancer | Full Core      | Autopilot/Copilot   | Solopreneurs, boutique brands  |
-| SMB        | All Core + SEO | Autopilot + Manual  | Lean marketing teams           |
+| SMB        | All Core + SEO | Manual + Copilot    | Lean marketing teams           |
 | Enterprise | All + Custom   | All Modes + Control | Full-scale teams w/ governance |
 
 ## Orchestration Layer in Action
