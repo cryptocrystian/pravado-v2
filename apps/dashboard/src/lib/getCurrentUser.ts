@@ -7,6 +7,7 @@
  */
 
 import type { UserSessionData } from '@pravado/types';
+import * as Sentry from '@sentry/nextjs';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
@@ -65,6 +66,15 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
         '[getCurrentUser] Org membership error:',
         membershipError.message
       );
+      // F37' hardening: surface admin-query failures (e.g. a missing/invalid
+      // SUPABASE_SERVICE_ROLE_KEY) to Sentry instead of silently degrading to
+      // an empty org list → indefinite "Loading team data..." UX.
+      Sentry.captureException(membershipError, {
+        tags: {
+          phase: 'getCurrentUser_admin_query',
+          error_class: membershipError.code || 'PostgrestError',
+        },
+      });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,6 +117,19 @@ export async function getCurrentUser(): Promise<UserSessionData | null> {
     };
   } catch (error) {
     logger.error('[getCurrentUser] Error:', error);
+    // F37' hardening: this catch previously swallowed admin-query throws
+    // (e.g. a missing SUPABASE_SERVICE_ROLE_KEY on the Vercel project) into a
+    // silent `null`, which rendered as an indefinite "Loading team data..."
+    // with no observability signal. Capture to Sentry, then preserve the
+    // existing non-throwing contract (callers rely on `null` for graceful
+    // degradation).
+    Sentry.captureException(error, {
+      tags: {
+        phase: 'getCurrentUser_admin_query',
+        error_class:
+          error instanceof Error ? error.constructor.name : 'unknown',
+      },
+    });
     return null;
   }
 }
