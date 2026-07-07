@@ -73,9 +73,18 @@ export const apiEnvSchema = baseEnvSchema.extend({
   SENTRY_DSN: z.string().optional(),
   // Hunter.io (S-INT-06)
   HUNTER_API_KEY: z.string().optional(),
-  // GSC (S-INT-06)
-  GSC_CLIENT_ID: z.string().optional(),
-  GSC_CLIENT_SECRET: z.string().optional(),
+  // Google OAuth — GSC integration (S-INT-06 / F38).
+  // The code reads process.env.GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET directly
+  // (routes/integrations/gsc.ts, services/gsc/*). These are declared here so the
+  // real vars are schema-known and type-validated — replacing the never-referenced
+  // GSC_CLIENT_ID / GSC_CLIENT_SECRET entries, whose name mismatch let a missing
+  // credential surface as a runtime 500 (CONFIG_ERROR) instead of a boot failure.
+  // Kept OPTIONAL rather than required-at-boot on purpose: GSC is flag-gated
+  // (ENABLE_GSC_INTEGRATION), so an unconditional hard requirement would break
+  // flag-off / CI / non-GSC environments. A flag-conditional fail-fast is the
+  // proper follow-up (see DECISIONS_LOG D025).
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
 });
 
 export const dashboardEnvSchema = baseEnvSchema.extend({

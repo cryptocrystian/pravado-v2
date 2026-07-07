@@ -842,3 +842,21 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
 **Verification result (Stage 3 evidence):** `sage_proposals` = 5 rows, all `provider: anthropic`, `origin: cold_start`, confidence 0.59–0.71. `llm_usage_ledger` = 1 row: `provider: anthropic`, `model: claude-sonnet-4-5-20250929`, `status: success`, `tokens_prompt: 901`, `tokens_completion: 1194`, `latency_ms: 26528`, `cost_usd: null` (pricing wiring is a separate deferred ticket). Kestrel state preserved for Stage 3 rubric scoring.
 
 (End)
+
+---
+
+- **Date:** 2026-07-06
+- **Decision ID:** D025
+- **Area:** Infra
+- **Decision:** **`app.pravado.io` is the canonical production application domain.** Production topology is fixed as:
+  - `app.pravado.io` → Vercel project **`dashboard`** → backend **`pravado-api`** (production Render service). This is the real product app.
+  - `pravado.io` / `www.pravado.io` → Vercel project **`pravado-dashboard`** → backend **`pravado-api-staging`**. This project is now designated **staging**; the `pravado.io` root is a **marketing / redirect placeholder** (the marketing-site decision is deferred as a separate product decision — routing intentionally left unchanged for now).
+  - Backend `pravado-api` `NEXT_PUBLIC_APP_URL` set to `https://app.pravado.io` so the GSC OAuth `redirect_uri` builds as `https://app.pravado.io/api/integrations/gsc/callback`, aligned with the app domain.
+  - `pravado-api-staging` given the same Google OAuth client credentials (shared for now; separate staging credentials are a Phase 2 concern) and `NEXT_PUBLIC_APP_URL=https://pravado-dashboard.vercel.app`, so staging is a functional test environment rather than permanently broken.
+- **Rationale:** Emails, magic links, and Stripe/billing return URLs already use `app.pravado.io` (via `DASHBOARD_URL` / hardcoded fallbacks — see F38 remediation). Aligning production on `app.pravado.io` is a cheap env change; re-plumbing the `dashboard`/`pravado-api` production pair onto `pravado.io` would be a larger, riskier change for no benefit. The previous ambiguity (which Vercel project was production) caused F38: `NEXT_PUBLIC_APP_URL` had pointed at the internal `pravado-dashboard.vercel.app` preview URL, and `pravado.io` routed to an unconfigured staging backend.
+- **Canon Files Impacted:** None (infra/topology decision; recorded here for auditability).
+- **Contracts Impacted:** None.
+- **Implementation Notes:**
+  - Env changes applied via Render API to `pravado-api` (`NEXT_PUBLIC_APP_URL`) and `pravado-api-staging` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXT_PUBLIC_APP_URL`), both redeployed.
+  - **Google Cloud action still required (architect):** register `https://app.pravado.io/api/integrations/gsc/callback` (production) — and optionally `https://pravado-dashboard.vercel.app/api/integrations/gsc/callback` (staging) — as Authorized redirect URIs on the OAuth client in `GOOGLE_CLIENT_ID`; verify Search Console API enabled, consent screen published, and scopes `webmasters.readonly` + `userinfo.email` present.
+  - **Env-schema debt (bundled in this PR):** `apiEnvSchema` declared unused `GSC_CLIENT_ID` / `GSC_CLIENT_SECRET` while the code reads `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`. Replaced the dead entries with the real names (kept `optional` — GSC is flag-gated, so an unconditional boot-required check would break flag-off / CI / non-GSC environments). A **flag-conditional** hard fail-fast (require the pair only when `ENABLE_GSC_INTEGRATION`) is the recommended follow-up to fully close the "runtime 500 instead of boot failure" gap.
