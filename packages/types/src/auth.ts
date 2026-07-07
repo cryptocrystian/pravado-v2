@@ -119,8 +119,10 @@ export interface ListMembersData {
       user: {
         id: UUID;
         fullName: string | null;
+        // F46: email is resolved from auth.users via the admin API and may be
+        // null when a user id can't be resolved (admin error / missing user).
+        email: string | null;
         avatarUrl: string | null;
-        email: string;
       };
     }
   >;

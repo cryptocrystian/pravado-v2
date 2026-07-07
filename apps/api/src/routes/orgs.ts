@@ -22,6 +22,7 @@ import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { createLogger } from '../lib/logger';
+import { resolveUserEmails } from '../lib/resolveUserEmails';
 import { requireOrg } from '../middleware/requireOrg';
 import { requireRole } from '../middleware/requireRole';
 import { requireUser } from '../middleware/requireUser';
@@ -168,7 +169,9 @@ export async function orgsRoutes(server: FastifyInstance) {
       const [membersResult, invitesResult] = await Promise.all([
         supabase
           .from('org_members')
-          .select('*, users!inner(id, full_name, avatar_url, email)')
+          // F46: email is on auth.users, not public.users — resolve it via the
+          // admin API below instead of embedding a non-existent column.
+          .select('*, users!inner(id, full_name, avatar_url)')
           .eq('org_id', orgId),
         supabase
           .from('org_invites')
@@ -197,7 +200,16 @@ export async function orgsRoutes(server: FastifyInstance) {
         });
       }
 
-      const members = (membersResult.data || []).map((m: any) => ({
+      const memberRows = membersResult.data || [];
+
+      // F46: emails live on auth.users — batch-resolve them (one admin call per
+      // unique member; failures degrade to null rather than 500-ing).
+      const emailMap = await resolveUserEmails(
+        supabase,
+        memberRows.map((m: any) => m.users.id)
+      );
+
+      const members = memberRows.map((m: any) => ({
         id: m.id,
         orgId: m.org_id,
         userId: m.user_id,
@@ -208,7 +220,7 @@ export async function orgsRoutes(server: FastifyInstance) {
           id: m.users.id,
           fullName: m.users.full_name,
           avatarUrl: m.users.avatar_url,
-          email: m.users.email,
+          email: emailMap.get(m.users.id) ?? null,
         },
       }));
 
@@ -381,7 +393,10 @@ export async function orgsRoutes(server: FastifyInstance) {
 
       const { data: invite, error: inviteError } = await supabase
         .from('org_invites')
-        .select('*, users!inner(email)')
+        // F46: the `users!inner(email)` embed referenced a non-existent column
+        // (email is on auth.users) and 500'd invite acceptance. The joined
+        // email was never read here, so it is simply dropped.
+        .select('*')
         .eq('org_id', orgId)
         .eq('token', token)
         .is('accepted_at', null)
