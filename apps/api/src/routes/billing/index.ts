@@ -22,6 +22,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance } from 'fastify';
 
+import { captureRawBody } from '../../lib/captureRawBody';
 import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
 import { BillingService } from '../../services/billingService';
@@ -356,51 +357,73 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
    * Handle Stripe webhook events (S30)
    * No authentication required - uses Stripe signature verification
    */
-  server.post('/stripe/webhook', async (request, reply) => {
-    try {
-      // Check if Stripe is enabled
-      if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
-        return reply.code(503).send({
-          success: false,
-          error: {
-            code: 'STRIPE_DISABLED',
-            message: 'Stripe billing is not enabled',
-          },
-        });
-      }
+  server.post(
+    '/stripe/webhook',
+    // F36 fix: capture the byte-exact raw body BEFORE Fastify's JSON parser
+    // runs, so Stripe signature verification sees the exact bytes it signed.
+    { preParsing: captureRawBody },
+    async (request, reply) => {
+      try {
+        // Check if Stripe is enabled
+        if (!FLAGS.ENABLE_STRIPE_BILLING || !stripeService) {
+          return reply.code(503).send({
+            success: false,
+            error: {
+              code: 'STRIPE_DISABLED',
+              message: 'Stripe billing is not enabled',
+            },
+          });
+        }
 
-      // Get raw body and signature
-      const signature = request.headers['stripe-signature'];
-      if (!signature || typeof signature !== 'string') {
+        // Get raw body and signature
+        const signature = request.headers['stripe-signature'];
+        if (!signature || typeof signature !== 'string') {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'MISSING_SIGNATURE',
+              message: 'Missing stripe-signature header',
+            },
+          });
+        }
+
+        // Verify webhook signature against the byte-exact raw body. Stripe signs
+        // the exact bytes on the wire; JSON.stringify(request.body) re-serializes
+        // the parsed object and never matches (Track 0D: never fall back to it).
+        const rawBody = request.rawBody;
+        if (rawBody === undefined) {
+          logger.error(
+            '[Billing] Stripe webhook: raw body unavailable (captureRawBody hook did not run)',
+            { requestId: request.id }
+          );
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'RAW_BODY_UNAVAILABLE',
+              message:
+                'Raw request body unavailable for signature verification',
+            },
+          });
+        }
+        const event = stripeService.verifyWebhookSignature(rawBody, signature);
+
+        // Process webhook event
+        await stripeService.processWebhookEvent(event);
+
+        return reply.send({ received: true });
+      } catch (err) {
+        const error = err as Error;
+        logger.error('[Billing] Webhook processing failed', { error });
         return reply.code(400).send({
           success: false,
           error: {
-            code: 'MISSING_SIGNATURE',
-            message: 'Missing stripe-signature header',
+            code: 'WEBHOOK_ERROR',
+            message: error.message || 'Webhook processing failed',
           },
         });
       }
-
-      // Verify webhook signature and construct event
-      const rawBody = JSON.stringify(request.body);
-      const event = stripeService.verifyWebhookSignature(rawBody, signature);
-
-      // Process webhook event
-      await stripeService.processWebhookEvent(event);
-
-      return reply.send({ received: true });
-    } catch (err) {
-      const error = err as Error;
-      logger.error('[Billing] Webhook processing failed', { error });
-      return reply.code(400).send({
-        success: false,
-        error: {
-          code: 'WEBHOOK_ERROR',
-          message: error.message || 'Webhook processing failed',
-        },
-      });
     }
-  });
+  );
 
   /**
    * POST /api/v1/billing/org/cancel

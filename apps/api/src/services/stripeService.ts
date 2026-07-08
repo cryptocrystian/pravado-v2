@@ -566,7 +566,10 @@ export class StripeService {
   /**
    * Verify webhook signature
    */
-  verifyWebhookSignature(payload: string, signature: string): Stripe.Event {
+  verifyWebhookSignature(
+    payload: string | Buffer,
+    signature: string
+  ): Stripe.Event {
     this.ensureStripeEnabled();
 
     if (!this.webhookSecret) {
