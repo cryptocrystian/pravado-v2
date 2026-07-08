@@ -878,3 +878,22 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
   - **PR-1 Keystone** (unified `ModeContext` with plan hydration) will read this default. No `SMB=Autopilot` code exists today — the code currently hardcodes `manual` (global) / `copilot` (PR, Content) with no plan read, so it is already divergent from BOTH prior canonical sources. This canon change introduces no bug; it fixes the target the keystone will hydrate to.
   - **ID note:** the originating brief proposed "D019", but D019 was already taken (layout-law decision); allocated the next free ID **D026** (D025 was the prior last entry).
   - **Filed with:** UX Mode Gap Audit (PR #69), Mode Completion Sprint plan.
+
+## D028 — Money-code merge policy: architect-approved, not self-merged
+
+- **Date:** 2026-07-08
+- **Decision ID:** D028
+- **Area:** Governance / process
+- **Decision:** **Claude Code does not self-merge PRs to `main` that touch money-code paths.** Merging such a PR requires explicit **architect approval**; the agent opens the PR, drives CI green, and then hands off the merge. This is an intentional architectural boundary, not friction to be optimized away.
+- **Money-code paths (scope):**
+  - `apps/api/src/routes/billing/**`
+  - `apps/api/src/services/billing/**`
+  - `apps/api/src/services/stripeService.ts`
+  - `apps/dashboard/src/app/app/settings/billing/**`
+  - future entitlement / plan-tier enforcement code (e.g. Mode Completion Sprint **PR-4**, server-side ceiling enforcement — money-code equivalent because it gates entitlements)
+- **Rationale:**
+  1. Money-code changes have direct billing/entitlement blast radius; a human must own the decision to ship them to `main`.
+  2. Established empirically in Session 1B: the auto-mode classifier blocked the agent from self-merging its own PR #87 (billing upsert + backfill) and the agent surfaced the block and waited for architect authority — the intended behavior.
+  3. Passive/ambiguous instructions ("after PR merges", "please proceed") do **not** constitute merge authorization for money-code; explicit approval does.
+- **How it lands:** agent prepares the PR + green CI; architect merges. Applies equally to docs PRs that the agent authors (this D028 entry itself is shipped via a non-self-merged docs PR).
+- **Cross-refs:** governance ticket #88; PR #87 (trigger); Findings A/B/C #85/#86; follows the DECISIONS_LOG discipline established in D027's recovery note (bad push to `main`).
