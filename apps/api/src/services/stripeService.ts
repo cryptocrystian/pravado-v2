@@ -9,10 +9,12 @@ import type {
   StripeCheckoutSessionResponse,
   StripeSubscriptionStatus,
 } from '@pravado/types';
+import * as Sentry from '@sentry/node';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
 import { createLogger } from '../lib/logger';
+import { applyCheckoutCompletion } from './billing/applyCheckoutCompletion';
 
 const logger = createLogger('stripe-service');
 
@@ -590,12 +592,21 @@ export class StripeService {
     this.ensureStripeEnabled();
 
     logger.info('Processing Stripe webhook', {
+      phase: 'stripe_webhook_received',
       eventType: event.type,
       eventId: event.id,
     });
 
     try {
       switch (event.type) {
+        // F36: a paid checkout completing is what actually upgrades the org's
+        // plan — this event was subscribed but never handled.
+        case 'checkout.session.completed':
+          await this.handleCheckoutSessionCompleted(
+            event.data.object as Stripe.Checkout.Session
+          );
+          break;
+
         case 'customer.subscription.created':
         case 'customer.subscription.updated':
           await this.handleSubscriptionChange(
@@ -638,6 +649,51 @@ export class StripeService {
         eventId: event.id,
       });
       // Note: We don't throw here - webhook failures shouldn't break API flow
+    }
+  }
+
+  /**
+   * F36 — handle checkout.session.completed: set the org's plan_id +
+   * customer/subscription ids on org_billing_state (idempotently).
+   */
+  private async handleCheckoutSessionCompleted(
+    session: Stripe.Checkout.Session
+  ): Promise<void> {
+    const result = await applyCheckoutCompletion(this.supabase, session);
+
+    if (result.updated) {
+      logger.info('checkout.session.completed applied', {
+        phase: 'billing_checkout_completed',
+        orgId: result.orgId,
+        planSlug: result.planSlug,
+        sessionId: session.id,
+      });
+      return;
+    }
+
+    const meta = {
+      phase: 'billing_checkout_completed',
+      reason: result.reason,
+      orgId: result.orgId,
+      planSlug: result.planSlug,
+      sessionId: session.id,
+    };
+    // Escalate actionable failures to Sentry; benign no-ops (idempotent
+    // redelivery, missing metadata) are logged only.
+    if (
+      result.reason === 'plan_not_found' ||
+      result.reason === 'update_failed'
+    ) {
+      logger.error('checkout.session.completed failed to apply', meta);
+      Sentry.captureMessage('checkout.session.completed failed to apply', {
+        level: 'error',
+        tags: {
+          phase: 'billing_checkout_completed',
+          reason: result.reason ?? 'unknown',
+        },
+      });
+    } else {
+      logger.info('checkout.session.completed no-op', meta);
     }
   }
 

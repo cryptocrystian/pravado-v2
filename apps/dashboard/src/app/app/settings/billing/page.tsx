@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
+import { startCheckout } from '@/lib/billingCheckout';
+
 export const dynamic = 'force-dynamic';
 
 const PLANS = [
@@ -43,6 +45,9 @@ export default function BillingSettingsPage() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
   const [loading, setLoading] = useState(true);
+  // planId currently creating a checkout session (drives per-button loading UI)
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -60,16 +65,19 @@ export default function BillingSettingsPage() {
   }, []);
 
   async function handleUpgrade(planId: string) {
+    setCheckoutError(null);
+    setCheckoutLoading(planId);
     try {
-      const res = await fetch('/api/billing/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planId }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch {
-      // Checkout failed
+      const url = await startCheckout(planId);
+      window.location.href = url;
+    } catch (err) {
+      // startCheckout already captured to Sentry; surface an actionable state.
+      setCheckoutError(
+        err instanceof Error
+          ? err.message
+          : 'Could not start checkout. Please try again.'
+      );
+      setCheckoutLoading(null);
     }
   }
 
@@ -164,6 +172,11 @@ export default function BillingSettingsPage() {
           <p className="text-sm text-white/50 mb-4">
             Choose a plan to get started
           </p>
+          {checkoutError && (
+            <div className="mb-4 bg-semantic-danger/10 border border-semantic-danger/20 rounded-lg p-3">
+              <p className="text-sm text-semantic-danger">{checkoutError}</p>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {PLANS.map((plan) => (
               <div
@@ -190,10 +203,14 @@ export default function BillingSettingsPage() {
                   ))}
                 </ul>
                 <button
+                  type="button"
                   onClick={() => handleUpgrade(plan.id)}
-                  className="w-full py-2 text-sm font-semibold text-white bg-brand-iris rounded-lg hover:bg-brand-iris/90 transition-colors"
+                  disabled={checkoutLoading !== null}
+                  className="w-full py-2 text-sm font-semibold text-white bg-brand-iris rounded-lg hover:bg-brand-iris/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Upgrade
+                  {checkoutLoading === plan.id
+                    ? 'Redirecting to Stripe…'
+                    : 'Upgrade'}
                 </button>
               </div>
             ))}
