@@ -646,10 +646,21 @@ export class StripeService {
         eventId: event.id,
       });
     } catch (error) {
+      // A thrown Error serializes to `{}` under the logger, which masked
+      // Finding B for a full release. Extract name/message explicitly; include
+      // the stack only outside production.
       logger.error('Failed to process webhook event', {
-        error,
+        phase: 'stripe_webhook_processing_error',
         eventType: event.type,
         eventId: event.id,
+        errorName: error instanceof Error ? error.name : 'Unknown',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack:
+          process.env.NODE_ENV === 'production'
+            ? undefined
+            : error instanceof Error
+              ? error.stack
+              : undefined,
       });
       // Note: We don't throw here - webhook failures shouldn't break API flow
     }
@@ -727,28 +738,51 @@ export class StripeService {
     // Type assertion for Stripe subscription fields (types may be incomplete in SDK)
     const sub = subscription as Stripe.Subscription & {
       trial_end?: number | null;
-      current_period_start: number;
-      current_period_end: number;
       cancel_at_period_end: boolean;
     };
+
+    // Stripe API version 2025-11-17.clover REMOVED current_period_start/end
+    // from the Subscription root and moved them onto each subscription item.
+    // Reading them off the root yields `undefined` → new Date(undefined*1000)
+    // = Invalid Date → .toISOString() throws RangeError (Finding B). Read from
+    // the first item, falling back to the legacy root fields for older API
+    // versions, and fail loudly if neither is present.
+    const firstItem = subscription.items?.data?.[0] as
+      | (Stripe.SubscriptionItem & {
+          current_period_start?: number;
+          current_period_end?: number;
+        })
+      | undefined;
+    const legacyPeriods = subscription as unknown as {
+      current_period_start?: number;
+      current_period_end?: number;
+    };
+    const periodStart =
+      firstItem?.current_period_start ?? legacyPeriods.current_period_start;
+    const periodEnd =
+      firstItem?.current_period_end ?? legacyPeriods.current_period_end;
+
+    if (!periodStart || !periodEnd) {
+      throw new Error(
+        `Subscription ${subscription.id} missing current_period_start/end ` +
+          `(checked items.data[0] and subscription root)`
+      );
+    }
 
     // Calculate trial end if applicable
     const trialEndsAt = sub.trial_end
       ? new Date(sub.trial_end * 1000).toISOString()
       : null;
 
-    // Calculate current period
-    const currentPeriodStart = new Date(
-      sub.current_period_start * 1000
-    ).toISOString();
-    const currentPeriodEnd = new Date(
-      sub.current_period_end * 1000
-    ).toISOString();
+    const currentPeriodStart = new Date(periodStart * 1000).toISOString();
+    const currentPeriodEnd = new Date(periodEnd * 1000).toISOString();
 
-    // Update org_billing_state
-    const { error } = await this.supabase
-      .from('org_billing_state')
-      .update({
+    // UPSERT (not UPDATE) keyed on the org_id PK — a bare update() silently
+    // no-ops for an org without a billing row (Finding A). org_id is added to
+    // the payload because it is the conflict target.
+    const { error } = await this.supabase.from('org_billing_state').upsert(
+      {
+        org_id: orgId,
         stripe_subscription_id: subscription.id,
         subscription_status: subscriptionStatus,
         trial_ends_at: trialEndsAt,
@@ -757,8 +791,9 @@ export class StripeService {
         current_period_end: currentPeriodEnd,
         billing_status: this.mapStripeStatusToBillingStatus(subscriptionStatus),
         updated_at: new Date().toISOString(),
-      })
-      .eq('org_id', orgId);
+      },
+      { onConflict: 'org_id' }
+    );
 
     if (error) {
       logger.error('Failed to update org billing state from webhook', {
@@ -788,16 +823,17 @@ export class StripeService {
       subscriptionId: subscription.id,
     });
 
-    // Update org_billing_state
-    const { error } = await this.supabase
-      .from('org_billing_state')
-      .update({
+    // Upsert (not update) keyed on org_id PK — see Finding A note above.
+    const { error } = await this.supabase.from('org_billing_state').upsert(
+      {
+        org_id: orgId,
         subscription_status: 'canceled',
         billing_status: 'canceled',
         cancel_at_period_end: false,
         updated_at: new Date().toISOString(),
-      })
-      .eq('org_id', orgId);
+      },
+      { onConflict: 'org_id' }
+    );
 
     if (error) {
       logger.error(
@@ -834,15 +870,16 @@ export class StripeService {
       const orgId = subscription.metadata.orgId;
 
       if (orgId) {
-        // Update billing status to active
-        await this.supabase
-          .from('org_billing_state')
-          .update({
+        // Upsert (not update) keyed on org_id PK — see Finding A note above.
+        await this.supabase.from('org_billing_state').upsert(
+          {
+            org_id: orgId,
             billing_status: 'active',
             subscription_status: 'active',
             updated_at: new Date().toISOString(),
-          })
-          .eq('org_id', orgId);
+          },
+          { onConflict: 'org_id' }
+        );
 
         logger.info('Updated billing status after payment success', { orgId });
       }
@@ -876,15 +913,16 @@ export class StripeService {
       const orgId = subscription.metadata.orgId;
 
       if (orgId) {
-        // Update billing status to past_due
-        await this.supabase
-          .from('org_billing_state')
-          .update({
+        // Upsert (not update) keyed on org_id PK — see Finding A note above.
+        await this.supabase.from('org_billing_state').upsert(
+          {
+            org_id: orgId,
             billing_status: 'past_due',
             subscription_status: 'past_due',
             updated_at: new Date().toISOString(),
-          })
-          .eq('org_id', orgId);
+          },
+          { onConflict: 'org_id' }
+        );
 
         logger.info('Updated billing status after payment failure', { orgId });
       }
