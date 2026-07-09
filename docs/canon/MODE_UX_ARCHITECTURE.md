@@ -84,11 +84,13 @@ These ceilings apply regardless of pillar-level mode setting. A user on Autopilo
 
 | Plan             | Default Mode | Min Mode     | Max Mode     |
 | ---------------- | ------------ | ------------ | ------------ |
-| SMB / Starter    | Autopilot    | Manual       | Autopilot    |
+| SMB / Starter    | Copilot      | Manual       | Autopilot    |
 | Mid-Market / Pro | Copilot      | Manual       | Autopilot    |
 | Enterprise       | Manual       | Configurable | Configurable |
 
 Enterprise plan enables admin policy controls. Other plans have full mode freedom but different defaults.
+
+> **Superseded — D026 (DECISIONS_LOG, 2026-07-06):** SMB/Starter default is **Copilot**, not Autopilot. All tiers default to Copilot except Enterprise = Manual. Autopilot is a **per-pillar graduation state**, not a plan-tier default, and is further gated by the plan's `autopilotMode` capability (`PLAN_LIMITS`). D026 is the authoritative current default; the "SMB = Autopilot" value above was the pre-D026 assumption and is retained only for history.
 
 ---
 
