@@ -1,41 +1,32 @@
 'use client';
 
 /**
- * CalendarModeContext — Global state for Calendar surface
+ * CalendarViewContext — Day/Week/Month view state for the Calendar surface.
  *
- * Manages:
- * - AutomationMode (manual | copilot | autopilot)
- * - CalendarViewMode (day | week | month)
- *
- * Both are colocated here so CalendarChromeBar and
- * OrchestrationCalendarShell share state without prop drilling.
+ * Calendar is MODE-AGNOSTIC per ORCHESTRATION_CALENDAR_CONTRACT (it shows a
+ * per-item mode badge for each action, but has no pillar mode switcher). The
+ * former colocated automation-mode was drift and has been removed; this context
+ * now carries only the view toggle. Export names are unchanged to avoid churn.
  */
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
 import type { CalendarViewMode } from './types';
 
-export type AutomationMode = 'manual' | 'copilot' | 'autopilot';
-
-interface CalendarModeContextValue {
-  mode: AutomationMode;
-  setMode: (mode: AutomationMode) => void;
+interface CalendarViewContextValue {
   viewMode: CalendarViewMode;
   setViewMode: (view: CalendarViewMode) => void;
 }
 
-const CalendarModeContext = createContext<CalendarModeContextValue | null>(
+const CalendarModeContext = createContext<CalendarViewContextValue | null>(
   null
 );
 
 export function CalendarModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<AutomationMode>('copilot');
   const [viewMode, setViewMode] = useState<CalendarViewMode>('week');
 
   return (
-    <CalendarModeContext.Provider
-      value={{ mode, setMode, viewMode, setViewMode }}
-    >
+    <CalendarModeContext.Provider value={{ viewMode, setViewMode }}>
       {children}
     </CalendarModeContext.Provider>
   );

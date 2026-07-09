@@ -29,8 +29,8 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
-import { usePRMode } from '@/components/pr/PRModeContext';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import { useMode } from '@/lib/ModeContext';
 
 // ============================================
 // URGENCY BADGE
@@ -307,7 +307,7 @@ function AutopilotView() {
 // ============================================
 
 export default function PRActionQueuePage() {
-  const { mode } = usePRMode();
+  const { effectiveMode: mode } = useMode('pr');
   const manualWired = useFeatureFlag('PR_ACTION_QUEUE_MANUAL_WIRED');
 
   if (mode === 'manual' && !manualWired) {
