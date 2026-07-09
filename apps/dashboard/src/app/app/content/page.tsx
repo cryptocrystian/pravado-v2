@@ -20,6 +20,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useCallback, useRef } from 'react';
 
+import { ContentLoadingSkeleton } from '@/components/content/components/ContentLoadingSkeleton';
 import { CONTENT_OVERVIEW_MOCK } from '@/components/content/content-mock-data';
 import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
 import type {
@@ -34,6 +35,8 @@ import { ContentInsightsView } from '@/components/content/views/ContentInsightsV
 import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
 import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
 import { useMode } from '@/lib/ModeContext';
+
+import { resolveContentViewState } from './contentViewState';
 
 // ============================================
 // MODULE-SCOPE CONSTANTS
@@ -51,7 +54,15 @@ const PROPOSAL_TYPE_MAP: Record<string, CreationContentType> = {
 export default function ContentSurfacePage() {
   const [activeView, setActiveView] = useState<ContentView>('work-queue');
   // Canonical per-pillar mode (server-hydrated via PR-1 ModeContext).
-  const { effectiveMode: mode, setMode } = useMode('content');
+  const {
+    effectiveMode: mode,
+    setMode,
+    isLoading: isModeLoading,
+  } = useMode('content');
+  // First-paint hydration gate — avoid flashing the wrong mode's view before
+  // the server mode resolves (MODE_UX_ARCHITECTURE §4D). On-change transitions
+  // are PR-3 scope, not handled here.
+  const viewState = resolveContentViewState(isModeLoading, mode);
   const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(
     null
   );
@@ -232,7 +243,13 @@ export default function ContentSurfacePage() {
       onEditorLaunch={handleEditorLaunch}
       registerOpenCreation={handleRegisterOpenCreation}
     >
-      {renderView()}
+      {viewState.kind === 'loading' ? (
+        <div className="px-8 pt-6">
+          <ContentLoadingSkeleton type="dashboard" />
+        </div>
+      ) : (
+        renderView()
+      )}
     </ContentWorkSurfaceShell>
   );
 }
