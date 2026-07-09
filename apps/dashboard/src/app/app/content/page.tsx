@@ -25,7 +25,6 @@ import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurface
 import type {
   ContentView,
   ContentType,
-  AutomationMode,
   EditorInitData,
   CreationContentType,
 } from '@/components/content/types';
@@ -34,6 +33,7 @@ import { ContentEditorView } from '@/components/content/views/ContentEditorView'
 import { ContentInsightsView } from '@/components/content/views/ContentInsightsView';
 import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
 import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
+import { useMode } from '@/lib/ModeContext';
 
 // ============================================
 // MODULE-SCOPE CONSTANTS
@@ -50,7 +50,8 @@ const PROPOSAL_TYPE_MAP: Record<string, CreationContentType> = {
 
 export default function ContentSurfacePage() {
   const [activeView, setActiveView] = useState<ContentView>('work-queue');
-  const [mode, setMode] = useState<AutomationMode>('copilot');
+  // Canonical per-pillar mode (server-hydrated via PR-1 ModeContext).
+  const { effectiveMode: mode, setMode } = useMode('content');
   const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(
     null
   );

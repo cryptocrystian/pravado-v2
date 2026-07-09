@@ -35,14 +35,24 @@ import {
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useRef, useEffect, type ReactNode } from 'react';
+import {
+  createContext,
+  useState,
+  useRef,
+  useEffect,
+  type ReactNode,
+} from 'react';
 
 import { modeTokens } from '@/components/content/tokens';
 
-import {
-  PRModeContext,
-  type AutomationMode as PRAutomationMode,
-} from './PRModeContext';
+// Legacy PR work-surface shell (not mounted on any live route). It keeps a
+// self-contained mode context purely for its own subtree; the canonical
+// per-pillar mode lives in @/lib/ModeContext (useMode('pr')).
+type PRAutomationMode = 'manual' | 'copilot' | 'autopilot';
+const PRModeContext = createContext<{
+  mode: PRAutomationMode;
+  setMode: (mode: PRAutomationMode) => void;
+}>({ mode: 'copilot', setMode: () => {} });
 
 // ============================================
 // TAB CONFIG

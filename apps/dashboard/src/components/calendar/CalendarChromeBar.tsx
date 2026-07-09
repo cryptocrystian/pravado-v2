@@ -13,141 +13,21 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import {
-  Lightning,
-  Lock,
-  Robot,
-  Cpu,
-  CaretDown,
-  TrendUp,
-  Info,
-} from '@phosphor-icons/react';
-import { useRef, useState, useEffect } from 'react';
+import { Lightning, TrendUp, Info } from '@phosphor-icons/react';
+import { useState, useEffect } from 'react';
 
-import { useCalendarMode, type AutomationMode } from './CalendarModeContext';
+import { useCalendarMode } from './CalendarModeContext';
 import type { CalendarViewMode } from './types';
 
-// ============================================
-// MODE CONFIG
-// ============================================
-
-const MODE_CONFIG: Record<
-  AutomationMode,
-  {
-    label: string;
-    description: string;
-    icon: React.ReactNode;
-    pill: string;
-    dot: string;
-  }
-> = {
-  manual: {
-    label: 'Manual',
-    description: 'You control every action',
-    icon: <Lock className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-slate-4 border-slate-5 text-white/70',
-    dot: 'bg-white/40',
-  },
-  copilot: {
-    label: 'Copilot',
-    description: 'AI suggests, you approve',
-    icon: <Robot className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-brand-cyan/10 border-brand-cyan/30 text-brand-cyan',
-    dot: 'bg-brand-cyan',
-  },
-  autopilot: {
-    label: 'Autopilot',
-    description: 'AI executes, you review exceptions',
-    icon: <Cpu className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-brand-iris/10 border-brand-iris/30 text-brand-iris',
-    dot: 'bg-brand-iris',
-  },
-};
+// Calendar is MODE-AGNOSTIC (per-item mode badges only, no pillar mode switcher)
+// per ORCHESTRATION_CALENDAR_CONTRACT — the former mode switcher was drift and
+// has been removed. Only the Day/Week/Month view toggle remains.
 
 const VIEW_MODES: { key: CalendarViewMode; label: string }[] = [
   { key: 'day', label: 'Day' },
   { key: 'week', label: 'Week' },
   { key: 'month', label: 'Month' },
 ];
-
-// ============================================
-// MODE SWITCHER
-// ============================================
-
-function ModeSwitcher() {
-  const { mode, setMode } = useCalendarMode();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const cfg = MODE_CONFIG[mode];
-
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[13px] font-medium transition-all duration-150 ${cfg.pill}`}
-      >
-        {cfg.icon}
-        <span>{cfg.label}</span>
-        <CaretDown className="w-3 h-3 opacity-60" weight="bold" />
-      </button>
-
-      {open && (
-        <div
-          className="absolute right-0 top-full mt-1.5 bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden"
-          style={{ width: 260, maxWidth: 'calc(100vw - 2rem)' }}
-        >
-          {(
-            Object.entries(MODE_CONFIG) as [
-              AutomationMode,
-              (typeof MODE_CONFIG)[AutomationMode],
-            ][]
-          ).map(([key, c]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => {
-                setMode(key);
-                setOpen(false);
-              }}
-              className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
-                mode === key ? 'bg-slate-3' : ''
-              }`}
-            >
-              <div
-                className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${c.pill}`}
-              >
-                {c.icon}
-              </div>
-              <div>
-                <div className="text-[13px] font-semibold text-white/90">
-                  {c.label}
-                </div>
-                <div className="text-[12px] text-white/50 mt-0.5">
-                  {c.description}
-                </div>
-              </div>
-              {mode === key && (
-                <div
-                  className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ============================================
 // VIEW MODE TOGGLE
@@ -242,10 +122,9 @@ export function CalendarChromeBar() {
           </button>
         </div>
 
-        {/* Right: View toggle + Mode switcher */}
+        {/* Right: View toggle (Calendar is mode-agnostic — no ModeSwitcher) */}
         <div className="flex items-center gap-3">
           <ViewToggle />
-          <ModeSwitcher />
         </div>
       </div>
     </div>

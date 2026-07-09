@@ -14,6 +14,12 @@ import type { Pillar, AutomationMode } from '@/lib/mode-preferences';
 
 import { ModeSwitcher } from './ModeSwitcher';
 
+// The three product pillars that carry a per-pillar mode. Cross-pillar contexts
+// (e.g. commandCenter) get NO mode representation — canon forbids a global mode
+// badge/switcher (MODE_UX_ARCHITECTURE; COMMAND_CENTER_CONTRACT uses per-action
+// mode badges, not a surface switcher).
+const MODE_PILLARS: readonly string[] = ['pr', 'content', 'seo'];
+
 interface ImpactStripProps {
   sageTag: string;
   eviScore: number | null;
@@ -67,10 +73,13 @@ export function ImpactStrip({
         )}
       </div>
 
-      {/* Mode Switcher — right-aligned */}
-      <div className="ml-auto">
-        <ModeSwitcher pillar={pillar} ceiling={ceiling} compact />
-      </div>
+      {/* Mode badge/switcher — right-aligned. Rendered only for the three
+          product pillars; cross-pillar strips show no global mode. */}
+      {MODE_PILLARS.includes(pillar) && (
+        <div className="ml-auto">
+          <ModeSwitcher pillar={pillar} ceiling={ceiling} compact />
+        </div>
+      )}
     </div>
   );
 }

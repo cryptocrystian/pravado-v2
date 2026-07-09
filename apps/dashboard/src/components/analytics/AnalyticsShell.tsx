@@ -12,7 +12,6 @@ import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTo
 
 import { AnalyticsChromeBar } from './AnalyticsChromeBar';
 import { AnalyticsDateProvider } from './AnalyticsDateContext';
-import { AnalyticsModeProvider } from './AnalyticsModeContext';
 
 interface AnalyticsShellProps {
   orgName: string;
@@ -30,19 +29,17 @@ export function AnalyticsShell({
   children,
 }: AnalyticsShellProps) {
   return (
-    <AnalyticsModeProvider>
-      <AnalyticsDateProvider>
-        <div className="min-h-screen bg-slate-0 flex flex-col">
-          <CommandCenterTopbar
-            orgName={orgName}
-            userName={userName}
-            userEmail={userEmail}
-            userAvatarUrl={userAvatarUrl}
-          />
-          <AnalyticsChromeBar />
-          <main className="flex-1 overflow-hidden">{children}</main>
-        </div>
-      </AnalyticsDateProvider>
-    </AnalyticsModeProvider>
+    <AnalyticsDateProvider>
+      <div className="min-h-screen bg-slate-0 flex flex-col">
+        <CommandCenterTopbar
+          orgName={orgName}
+          userName={userName}
+          userEmail={userEmail}
+          userAvatarUrl={userAvatarUrl}
+        />
+        <AnalyticsChromeBar />
+        <main className="flex-1 overflow-hidden">{children}</main>
+      </div>
+    </AnalyticsDateProvider>
   );
 }

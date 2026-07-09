@@ -12,20 +12,12 @@
  * @see /docs/canon/ANALYTICS_CONTRACT.md
  */
 
-import {
-  Lightning,
-  TrendUp,
-  Info,
-  Lock,
-  User,
-  CaretDown,
-} from '@phosphor-icons/react';
+import { Lightning, TrendUp, Info } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useAnalyticsDate, DATE_RANGES } from './AnalyticsDateContext';
-import { useAnalyticsMode, type AnalyticsMode } from './AnalyticsModeContext';
 
 // ============================================
 // TAB CONFIG
@@ -43,119 +35,9 @@ const TABS = [
   // threshold. See docs/sprints/PHASE-0-FIRE-BREAK/TRACK-0B-MOCK-CONTAINMENT.md
 ];
 
-// ============================================
-// MODE CONFIG
-// ============================================
-
-const MODE_CONFIG: Record<
-  AnalyticsMode,
-  {
-    label: string;
-    description: string;
-    icon: React.ReactNode;
-    pill: string;
-    dot: string;
-  }
-> = {
-  manual: {
-    label: 'Manual',
-    description: 'Pull reports yourself',
-    icon: <Lock className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-slate-4 border-slate-5 text-white/70',
-    dot: 'bg-white/40',
-  },
-  copilot: {
-    label: 'Copilot',
-    description: 'SAGE surfaces insights',
-    icon: <User className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-brand-cyan/10 border-brand-cyan/30 text-brand-cyan',
-    dot: 'bg-brand-cyan',
-  },
-  autopilot: {
-    label: 'Autopilot',
-    description: 'Auto-generated reports',
-    icon: <Lightning className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-brand-iris/10 border-brand-iris/30 text-brand-iris',
-    dot: 'bg-brand-iris',
-  },
-};
-
-// ============================================
-// MODE SWITCHER
-// ============================================
-
-function ModeSwitcher() {
-  const { mode, setMode } = useAnalyticsMode();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const cfg = MODE_CONFIG[mode];
-
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[13px] font-medium transition-all duration-150 ${cfg.pill}`}
-      >
-        {cfg.icon}
-        <span>{cfg.label}</span>
-        <CaretDown className="w-3 h-3 opacity-60" weight="bold" />
-      </button>
-
-      {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-[240px] bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden">
-          {(
-            Object.entries(MODE_CONFIG) as [
-              AnalyticsMode,
-              (typeof MODE_CONFIG)[AnalyticsMode],
-            ][]
-          ).map(([key, cfg]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => {
-                setMode(key);
-                setOpen(false);
-              }}
-              className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
-                mode === key ? 'bg-slate-3' : ''
-              }`}
-            >
-              <div
-                className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${cfg.pill}`}
-              >
-                {cfg.icon}
-              </div>
-              <div>
-                <div className="text-[13px] font-semibold text-white/90">
-                  {cfg.label}
-                </div>
-                <div className="text-[12px] text-white/50 mt-0.5">
-                  {cfg.description}
-                </div>
-              </div>
-              {mode === key && (
-                <div
-                  className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+// Analytics is MODE-AGNOSTIC per ANALYTICS_CONTRACT.md §3.2 ("no ModeSwitcher,
+// no ImpactStrip — purely observational"). The prior local ModeSwitcher was
+// drift and has been removed.
 
 // ============================================
 // MAIN CHROME BAR
@@ -236,10 +118,8 @@ export function AnalyticsChromeBar() {
           </button>
         </div>
 
-        {/* Right: Mode switcher + Date range */}
+        {/* Right: Date range (mode-agnostic surface — no ModeSwitcher) */}
         <div className="flex items-center gap-3">
-          <ModeSwitcher />
-          <div className="w-px h-5 bg-white/10" />
           <div className="flex items-center gap-1.5 bg-slate-3 rounded-lg border border-slate-4 p-0.5">
             {DATE_RANGES.map((r) => (
               <button

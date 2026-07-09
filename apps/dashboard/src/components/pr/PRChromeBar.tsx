@@ -13,20 +13,13 @@
  * @see /docs/canon/UX_CONTINUITY_CANON.md
  */
 
-import {
-  Lightning,
-  Lock,
-  User,
-  CaretDown,
-  TrendUp,
-} from '@phosphor-icons/react';
+import { Lightning, TrendUp } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { InfoTooltip } from '@/components/shared/InfoTooltip';
-
-import { usePRMode, type AutomationMode } from './PRModeContext';
+import { ModeSwitcher } from '@/components/shared/ModeSwitcher';
 
 // ============================================
 // TAB CONFIG
@@ -39,121 +32,6 @@ const TABS = [
   { label: 'Coverage', href: '/app/pr/coverage' },
   { label: 'Intelligence', href: '/app/pr/intelligence' },
 ];
-
-// ============================================
-// MODE CONFIG
-// ============================================
-
-const MODE_CONFIG: Record<
-  AutomationMode,
-  {
-    label: string;
-    description: string;
-    icon: React.ReactNode;
-    pill: string;
-    dot: string;
-  }
-> = {
-  manual: {
-    label: 'Manual',
-    description: 'You pitch, track, and manage',
-    icon: <Lock className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-slate-4 border-slate-5 text-white/70',
-    dot: 'bg-white/40',
-  },
-  copilot: {
-    label: 'Copilot',
-    description: 'SAGE recommends, you decide',
-    icon: <User className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-brand-magenta/10 border-brand-magenta/30 text-brand-magenta',
-    dot: 'bg-brand-magenta',
-  },
-  autopilot: {
-    label: 'Autopilot',
-    description: 'SAGE executes within constraints',
-    icon: <Lightning className="w-3.5 h-3.5" weight="regular" />,
-    pill: 'bg-brand-iris/10 border-brand-iris/30 text-brand-iris',
-    dot: 'bg-brand-iris',
-  },
-};
-
-// ============================================
-// MODE SWITCHER
-// ============================================
-
-function ModeSwitcher() {
-  const { mode, setMode } = usePRMode();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const cfg = MODE_CONFIG[mode];
-
-  // Close on outside click
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[13px] font-medium transition-all duration-150 ${cfg.pill}`}
-      >
-        {cfg.icon}
-        <span>{cfg.label}</span>
-        <CaretDown className="w-3 h-3 opacity-60" weight="bold" />
-      </button>
-
-      {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-[260px] bg-slate-2 border border-slate-4 rounded-xl shadow-elev-3 z-50 overflow-hidden">
-          {(
-            Object.entries(MODE_CONFIG) as [
-              AutomationMode,
-              (typeof MODE_CONFIG)[AutomationMode],
-            ][]
-          ).map(([key, cfg]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => {
-                setMode(key);
-                setOpen(false);
-              }}
-              className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-3 transition-colors ${
-                mode === key ? 'bg-slate-3' : ''
-              }`}
-            >
-              <div
-                className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border ${cfg.pill}`}
-              >
-                {cfg.icon}
-              </div>
-              <div>
-                <div className="text-[13px] font-semibold text-white/90">
-                  {cfg.label}
-                </div>
-                <div className="text-[12px] text-white/50 mt-0.5">
-                  {cfg.description}
-                </div>
-              </div>
-              {mode === key && (
-                <div
-                  className={`ml-auto mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ============================================
 // MAIN CHROME BAR
@@ -232,8 +110,8 @@ export function PRChromeBar() {
           />
         </div>
 
-        {/* Right: Mode switcher */}
-        <ModeSwitcher />
+        {/* Right: Mode switcher (canonical, pillar-scoped) */}
+        <ModeSwitcher pillar="pr" compact />
       </div>
 
       {/* ── Row 2: Tab navigation ───────────────────── */}

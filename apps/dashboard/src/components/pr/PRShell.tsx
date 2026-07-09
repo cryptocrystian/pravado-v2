@@ -15,7 +15,6 @@ import type { ReactNode } from 'react';
 import { CommandCenterTopbar } from '@/components/command-center/CommandCenterTopbar';
 
 import { PRChromeBar } from './PRChromeBar';
-import { PRModeProvider } from './PRModeContext';
 
 interface PRShellProps {
   children: ReactNode;
@@ -33,17 +32,15 @@ export function PRShell({
   userAvatarUrl,
 }: PRShellProps) {
   return (
-    <PRModeProvider>
-      <div className="min-h-screen bg-slate-0 flex flex-col">
-        <CommandCenterTopbar
-          orgName={orgName}
-          userName={userName}
-          userEmail={userEmail}
-          userAvatarUrl={userAvatarUrl}
-        />
-        <PRChromeBar />
-        <main className="flex-1 overflow-auto">{children}</main>
-      </div>
-    </PRModeProvider>
+    <div className="min-h-screen bg-slate-0 flex flex-col">
+      <CommandCenterTopbar
+        orgName={orgName}
+        userName={userName}
+        userEmail={userEmail}
+        userAvatarUrl={userAvatarUrl}
+      />
+      <PRChromeBar />
+      <main className="flex-1 overflow-auto">{children}</main>
+    </div>
   );
 }

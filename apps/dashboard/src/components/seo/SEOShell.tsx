@@ -10,7 +10,6 @@
 import { CommandCenterTopbar } from '@/components/command-center';
 
 import { SEOChromeBar } from './SEOChromeBar';
-import { SEOModeProvider } from './SEOModeContext';
 
 interface SEOShellProps {
   children: React.ReactNode;
@@ -28,17 +27,15 @@ export function SEOShell({
   userAvatarUrl,
 }: SEOShellProps) {
   return (
-    <SEOModeProvider>
-      <div className="min-h-screen bg-slate-0 flex flex-col">
-        <CommandCenterTopbar
-          orgName={orgName}
-          userName={userName}
-          userEmail={userEmail}
-          userAvatarUrl={userAvatarUrl}
-        />
-        <SEOChromeBar />
-        <main className="flex-1 overflow-auto">{children}</main>
-      </div>
-    </SEOModeProvider>
+    <div className="min-h-screen bg-slate-0 flex flex-col">
+      <CommandCenterTopbar
+        orgName={orgName}
+        userName={userName}
+        userEmail={userEmail}
+        userAvatarUrl={userAvatarUrl}
+      />
+      <SEOChromeBar />
+      <main className="flex-1 overflow-auto">{children}</main>
+    </div>
   );
 }
