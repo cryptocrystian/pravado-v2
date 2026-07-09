@@ -34,6 +34,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
   type ReactNode,
 } from 'react';
 
@@ -54,6 +55,11 @@ const _modeTypesAligned: CanonicalMode = 'manual' as AutomationMode;
 void _modeTypesAligned;
 
 const SERVER_PILLARS: ModePillar[] = ['pr', 'content', 'seo'];
+
+// Canon-mandated cosmetic mode-transition duration (CONTENT_OVERVIEW_THREE_MODE_SPEC
+// §373: "~800ms evaluating transition"). Fixed + UX-only — NOT tied to the PATCH
+// network resolution and NOT a backend re-evaluation (PR-3 / interpretation #4).
+const MODE_EVALUATING_MS = 800;
 
 function isServerPillar(pillar: Pillar): pillar is ModePillar {
   return (SERVER_PILLARS as string[]).includes(pillar);
@@ -90,6 +96,8 @@ interface ModeContextValue {
   serverPillar: (pillar: Pillar) => PillarModeState | undefined;
   /** True while the initial server hydration is in flight. */
   isLoading: boolean;
+  /** True during the ~800ms cosmetic evaluating transition after a mode change. */
+  isEvaluating: (pillar: Pillar) => boolean;
 }
 
 const ModeContext = createContext<ModeContextValue | null>(null);
@@ -118,6 +126,21 @@ export function ModeProvider({ children, orgId }: ModeProviderProps) {
     Partial<Record<ModePillar, PillarModeState>>
   >({});
   const [isLoading, setIsLoading] = useState<boolean>(!!orgId);
+  // Per-pillar cosmetic "evaluating" transition flags + their timers.
+  const [evaluating, setEvaluating] = useState<
+    Partial<Record<ModePillar, boolean>>
+  >({});
+  const evalTimers = useRef<
+    Partial<Record<ModePillar, ReturnType<typeof setTimeout>>>
+  >({});
+
+  // Clear any in-flight evaluating timers on unmount.
+  useEffect(() => {
+    const timers = evalTimers;
+    return () => {
+      Object.values(timers.current).forEach((t) => t && clearTimeout(t));
+    };
+  }, []);
 
   // Sync from localStorage AFTER hydration (client-only, offline fallback).
   useEffect(() => {
@@ -172,6 +195,20 @@ export function ModeProvider({ children, orgId }: ModeProviderProps) {
 
   const handleSetPillarMode = useCallback(
     (pillar: Pillar, mode: AutomationMode) => {
+      // Cosmetic ~800ms evaluating transition on mode change (interpretation #4 —
+      // CONTENT_OVERVIEW_THREE_MODE_SPEC §373). Fixed duration; the timer is
+      // authoritative (NOT the PATCH resolution) and there is NO backend
+      // re-evaluation. Rapid-toggle safe: reset this pillar's timer each change.
+      if (isServerPillar(pillar)) {
+        const existing = evalTimers.current[pillar];
+        if (existing) clearTimeout(existing);
+        setEvaluating((prev) => ({ ...prev, [pillar]: true }));
+        evalTimers.current[pillar] = setTimeout(() => {
+          setEvaluating((prev) => ({ ...prev, [pillar]: false }));
+          delete evalTimers.current[pillar];
+        }, MODE_EVALUATING_MS);
+      }
+
       // Optimistic: update localStorage fallback immediately.
       setPillarMode(pillar, mode);
       setPreferences(getModePreferences());
@@ -296,6 +333,11 @@ export function ModeProvider({ children, orgId }: ModeProviderProps) {
     [serverPillars]
   );
 
+  const handleIsEvaluating = useCallback(
+    (pillar: Pillar): boolean => !!evaluating[pillar as ModePillar],
+    [evaluating]
+  );
+
   const value: ModeContextValue = {
     preferences,
     setGlobalMode: handleSetGlobalMode,
@@ -305,6 +347,7 @@ export function ModeProvider({ children, orgId }: ModeProviderProps) {
     resolveMode: handleResolveMode,
     serverPillar: handleServerPillar,
     isLoading,
+    isEvaluating: handleIsEvaluating,
   };
 
   return <ModeContext.Provider value={value}>{children}</ModeContext.Provider>;
@@ -349,6 +392,7 @@ export function useMode(pillar: Pillar, ceiling?: AutomationMode) {
       ceiling: 'autopilot' as AutomationMode,
       lockedByAdmin: false,
       isLoading: false,
+      isEvaluating: false,
     };
   }
 
@@ -372,6 +416,8 @@ export function useMode(pillar: Pillar, ceiling?: AutomationMode) {
     ceiling: (server?.ceiling ?? 'autopilot') as AutomationMode,
     lockedByAdmin: server?.lockedByAdmin ?? false,
     isLoading: context.isLoading,
+    /** True during the ~800ms cosmetic evaluating transition after a mode change. */
+    isEvaluating: context.isEvaluating(pillar),
   };
 }
 

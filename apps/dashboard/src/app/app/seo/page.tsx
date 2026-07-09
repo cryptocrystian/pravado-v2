@@ -14,17 +14,26 @@ export const dynamic = 'force-dynamic';
 import { SEOAutopilotView } from '@/components/seo/SEOAutopilotView';
 import { SEOCopilotView } from '@/components/seo/SEOCopilotView';
 import { SEOManualView } from '@/components/seo/SEOManualView';
+import { ModeEvaluatingState } from '@/components/shared/ModeEvaluatingState';
 import { useMode } from '@/lib/ModeContext';
 
 export default function SEOOverviewPage() {
-  const { effectiveMode } = useMode('seo');
+  const { effectiveMode, isEvaluating } = useMode('seo');
 
   return (
     <div className="pt-6 pb-16 px-8 max-w-[1600px] mx-auto">
-      {effectiveMode === 'manual' && <SEOManualView activeTab="overview" />}
-      {effectiveMode === 'copilot' && <SEOCopilotView activeTab="overview" />}
-      {effectiveMode === 'autopilot' && (
-        <SEOAutopilotView activeTab="overview" />
+      {isEvaluating ? (
+        <ModeEvaluatingState />
+      ) : (
+        <>
+          {effectiveMode === 'manual' && <SEOManualView activeTab="overview" />}
+          {effectiveMode === 'copilot' && (
+            <SEOCopilotView activeTab="overview" />
+          )}
+          {effectiveMode === 'autopilot' && (
+            <SEOAutopilotView activeTab="overview" />
+          )}
+        </>
       )}
     </div>
   );

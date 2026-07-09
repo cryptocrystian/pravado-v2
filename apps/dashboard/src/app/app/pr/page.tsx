@@ -29,6 +29,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
+import { ModeEvaluatingState } from '@/components/shared/ModeEvaluatingState';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import { useMode } from '@/lib/ModeContext';
 
@@ -307,8 +308,17 @@ function AutopilotView() {
 // ============================================
 
 export default function PRActionQueuePage() {
-  const { effectiveMode: mode } = useMode('pr');
+  const { effectiveMode: mode, isEvaluating } = useMode('pr');
   const manualWired = useFeatureFlag('PR_ACTION_QUEUE_MANUAL_WIRED');
+
+  // Cosmetic ~800ms mode-transition (PR-3) — shown before the new mode layout.
+  if (isEvaluating) {
+    return (
+      <div className="pt-6 pb-16 px-8">
+        <ModeEvaluatingState />
+      </div>
+    );
+  }
 
   if (mode === 'manual' && !manualWired) {
     return <ComingSoonGate pillar="PR" subsurface="Manual mode" />;

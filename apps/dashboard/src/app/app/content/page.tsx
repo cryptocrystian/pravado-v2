@@ -34,6 +34,7 @@ import { ContentEditorView } from '@/components/content/views/ContentEditorView'
 import { ContentInsightsView } from '@/components/content/views/ContentInsightsView';
 import { ContentLibraryView } from '@/components/content/views/ContentLibraryView';
 import { ContentOverviewView } from '@/components/content/views/ContentOverviewView';
+import { ModeEvaluatingState } from '@/components/shared/ModeEvaluatingState';
 import { useMode } from '@/lib/ModeContext';
 
 import { resolveContentViewState } from './contentViewState';
@@ -58,10 +59,10 @@ export default function ContentSurfacePage() {
     effectiveMode: mode,
     setMode,
     isLoading: isModeLoading,
+    isEvaluating,
   } = useMode('content');
   // First-paint hydration gate — avoid flashing the wrong mode's view before
-  // the server mode resolves (MODE_UX_ARCHITECTURE §4D). On-change transitions
-  // are PR-3 scope, not handled here.
+  // the server mode resolves (MODE_UX_ARCHITECTURE §4D).
   const viewState = resolveContentViewState(isModeLoading, mode);
   const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(
     null
@@ -247,6 +248,8 @@ export default function ContentSurfacePage() {
         <div className="px-8 pt-6">
           <ContentLoadingSkeleton type="dashboard" />
         </div>
+      ) : isEvaluating ? (
+        <ModeEvaluatingState />
       ) : (
         renderView()
       )}
