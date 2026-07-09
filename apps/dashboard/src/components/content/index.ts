@@ -42,9 +42,10 @@ export {
 // VIEWS
 // ============================================
 export { ContentWorkQueueView } from './views/ContentWorkQueueView';
-export { ManualModeView } from './views/ManualModeView';
-export { CopilotModeView } from './views/CopilotModeView';
-export { AutopilotModeView } from './views/AutopilotModeView';
+// PR-2: ManualModeView / CopilotModeView / AutopilotModeView removed — the
+// canonical three-mode Content surface is ContentOverviewView (mode-gated
+// internally per CONTENT_OVERVIEW_THREE_MODE_SPEC). Those separate view trees
+// were the superseded pre-rebuild architecture with no live importers.
 export {
   ContentLibraryView,
   AssetDetailPreview,
