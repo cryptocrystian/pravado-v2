@@ -62,6 +62,7 @@ import { notificationRoutes } from './routes/notifications';
 import { onboardingRoutes } from './routes/onboarding'; // S-INT-07
 import { opsRoutes } from './routes/ops'; // S27
 import { orgsRoutes } from './routes/orgs';
+import { orgsModeRoutes } from './routes/orgsMode'; // PR-1: per-pillar mode API
 import { personalitiesRoutes } from './routes/personalities'; // S11
 import { playbookRunsRoutes } from './routes/playbookRuns'; // S19
 import { playbooksRoutes } from './routes/playbooks';
@@ -218,6 +219,7 @@ export async function createServer() {
   await server.register(clientLogsRoutes, { prefix: '/api/v1/logs' }); // S79 - Client logging
   await server.register(authRoutes, { prefix: '/api/v1/auth' });
   await server.register(orgsRoutes, { prefix: '/api/v1/orgs' });
+  await server.register(orgsModeRoutes, { prefix: '/api/v1/orgs' }); // PR-1: /:id/mode
   await server.register(invitesRoutes, { prefix: '/api/v1/invites' });
 
   // Pillar routes (S3)

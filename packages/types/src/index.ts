@@ -45,3 +45,4 @@ export * from './aiScenarioSimulation'; // S71: AI scenario simulation engine ty
 export * from './scenarioOrchestration'; // S72: Scenario orchestration engine types
 export * from './scenarioRealityMap'; // S73: AI-driven multi-outcome reality maps types
 export * from './insightConflict'; // S74: Insight conflict resolution engine types
+export * from './mode'; // PR-1: Per-pillar automation mode types (canonical AutomationMode)

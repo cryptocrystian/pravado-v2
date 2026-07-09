@@ -96,7 +96,7 @@ export function AppShellWrapper({
     // Route handles its own layout (topbar shell) - render children directly
     // MSWProvider is handled by the route's own layout
     return (
-      <ModeProvider>
+      <ModeProvider orgId={currentOrg.id}>
         <OmniTrayProvider>{children}</OmniTrayProvider>
       </ModeProvider>
     );
@@ -104,7 +104,7 @@ export function AppShellWrapper({
 
   // Default: render with sidebar + header + orchestration bar
   return (
-    <ModeProvider>
+    <ModeProvider orgId={currentOrg.id}>
       <OmniTrayProvider>
         <div className="min-h-screen bg-page flex">
           <AppSidebar currentOrg={currentOrg} allOrgs={allOrgs} user={user} />
