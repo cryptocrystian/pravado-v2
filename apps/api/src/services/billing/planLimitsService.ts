@@ -80,11 +80,37 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     competitors: 20,
     advancedAnalytics: true,
     apiIntegrations: true,
-    autopilotMode: false,
+    // H1 (PR-4a): Pro's ceiling is Autopilot. PLANS_LIMITS_ENTITLEMENTS canon —
+    // "Pro: limited Autopilot for low-risk workflows"; "limited" is an
+    // action-level restriction (§2C), not a plan-tier ceiling of Copilot.
+    autopilotMode: true,
     citeMindEngineLimit: 5,
   },
   /** Growth — $1,199/mo: 50 seats, everything in Pro, full journalist DB, 50M tokens, CRAFT autopilot */
   growth: {
+    seats: 50,
+    contentDocumentsPerMonth: 500,
+    sageProposalsPerMonth: 999_999,
+    citemindScoresPerMonth: 999_999,
+    llmTokensPerMonth: 50_000_000,
+    journalistContacts: 283_000,
+    competitors: 50,
+    advancedAnalytics: true,
+    apiIntegrations: true,
+    autopilotMode: true,
+    citeMindEngineLimit: 5,
+  },
+  /**
+   * Enterprise — custom contract: per-pillar mode control incl. Autopilot
+   * (PLANS_LIMITS_ENTITLEMENTS canon), RBAC/SSO, approval chains, custom limits.
+   * H2 (PR-4a): ceiling = Autopilot (`autopilotMode: true`). Default mode is
+   * Manual per D026 — default ≠ ceiling, so Enterprise users graduate pillars
+   * up to Autopilot. Quotas mirror Growth as the baseline until per-contract
+   * limits are wired (admin governance surface, §7, not yet built). Previously
+   * absent → `getPlanLimits('enterprise')` fell back to Starter, capping the
+   * ceiling at Copilot; this entry removes that latent denial.
+   */
+  enterprise: {
     seats: 50,
     contentDocumentsPerMonth: 500,
     sageProposalsPerMonth: 999_999,

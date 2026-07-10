@@ -144,9 +144,17 @@ const VALID_MODES: readonly AutomationMode[] = [
 
 /**
  * Persist a user's explicit mode for one pillar (upsert on the composite PK),
- * then return the freshly-resolved PillarModeState (mode clamped to the plan
- * ceiling, source now `user`). Enum-validates pillar + mode; ceiling ENFORCEMENT
- * is deferred to PR-4 (the stored value is clamped only on read).
+ * enforcing the plan ceiling on the WRITE path (PR-4a — money-code).
+ *
+ * Ceiling enforcement is clamp-not-reject (architect H3): a request above the
+ * plan ceiling is persisted AT the ceiling (never above it) and the response
+ * carries `source: 'clamped'` + `requestedMode` so the client can surface a
+ * subtle upgrade hint without a popup (canon: no dark patterns / no 403). A
+ * request at or below the ceiling persists as-is with `source: 'user'`.
+ *
+ * Because the stored value is now always clamped, the read-path clamp
+ * (`resolveOrgModeState`) is belt-and-suspenders rather than the sole guard.
+ * Enum-validates pillar + mode first.
  */
 export async function setPillarMode(
   supabase: SupabaseClient,
@@ -162,12 +170,23 @@ export async function setPillarMode(
     return { ok: false, reason: 'invalid_mode' };
   }
 
+  const requested = mode as AutomationMode;
+  const planSlug = await resolveOrgPlanSlug(supabase, orgId);
+  const floor: AutomationMode = 'manual';
+  const ceiling: AutomationMode = planSlug
+    ? getPlanCeiling(planSlug)
+    : 'copilot';
+  // Fail-closed: clamp the requested mode into [floor, ceiling] and persist the
+  // clamped value — the DB never holds an above-ceiling mode.
+  const persisted = clampMode(requested, floor, ceiling);
+  const wasClamped = persisted !== requested;
+
   const { error } = await supabase.from('user_mode_preferences').upsert(
     {
       user_id: userId,
       org_id: orgId,
       pillar,
-      mode,
+      mode: persisted,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id,org_id,pillar' }
@@ -177,9 +196,15 @@ export async function setPillarMode(
     return { ok: false, reason: 'write_failed' };
   }
 
-  const planSlug = await resolveOrgPlanSlug(supabase, orgId);
   return {
     ok: true,
-    state: buildPillarState(mode as AutomationMode, planSlug),
+    state: {
+      mode: persisted,
+      source: wasClamped ? 'clamped' : 'user',
+      floor,
+      ceiling,
+      lockedByAdmin: floor === ceiling,
+      ...(wasClamped ? { requestedMode: requested } : {}),
+    },
   };
 }
