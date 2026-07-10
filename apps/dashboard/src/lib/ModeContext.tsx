@@ -393,6 +393,7 @@ export function useMode(pillar: Pillar, ceiling?: AutomationMode) {
       lockedByAdmin: false,
       isLoading: false,
       isEvaluating: false,
+      requestedMode: undefined as AutomationMode | undefined,
     };
   }
 
@@ -418,6 +419,13 @@ export function useMode(pillar: Pillar, ceiling?: AutomationMode) {
     isLoading: context.isLoading,
     /** True during the ~800ms cosmetic evaluating transition after a mode change. */
     isEvaluating: context.isEvaluating(pillar),
+    /**
+     * Set (to the above-ceiling mode) only on the render after a write was
+     * clamped down to the plan ceiling (PR-4a — `source === 'clamped'`). Lets a
+     * consumer show a subtle "requires <tier>" hint; there is deliberately no
+     * toast/modal (canon: no popups/dark patterns). Undefined otherwise.
+     */
+    requestedMode: server?.requestedMode,
   };
 }
 

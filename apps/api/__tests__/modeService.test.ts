@@ -87,11 +87,14 @@ describe('getPlanDefaultMode — D026 compliance', () => {
 });
 
 describe('getPlanCeiling — autopilot gated on plan capability', () => {
-  it('growth (autopilotMode=true) → autopilot ceiling', () => {
-    expect(getPlanCeiling('growth')).toBe('autopilot');
+  // PR-4a: pro (H1) and enterprise (H2) now carry autopilotMode=true.
+  it('growth / pro / enterprise (autopilotMode=true) → autopilot ceiling', () => {
+    for (const slug of ['growth', 'pro', 'enterprise']) {
+      expect(getPlanCeiling(slug)).toBe('autopilot');
+    }
   });
-  it('starter / pro / trial (autopilotMode=false) → copilot ceiling', () => {
-    for (const slug of ['starter', 'pro', 'trial']) {
+  it('starter / trial (autopilotMode=false) → copilot ceiling', () => {
+    for (const slug of ['starter', 'trial']) {
       expect(getPlanCeiling(slug)).toBe('copilot');
     }
   });
@@ -120,7 +123,11 @@ describe('resolveOrgModeState — resolution hierarchy', () => {
   });
 
   it('falls back to the plan default (D026) when no user pref', async () => {
-    const { client } = makeSupabase({ planId: 'plan-pro', planSlug: 'pro' });
+    // starter: copilot default (D026) + copilot ceiling (no autopilot capability).
+    const { client } = makeSupabase({
+      planId: 'plan-starter',
+      planSlug: 'starter',
+    });
     const state = await resolveOrgModeState(client, 'user-1', 'org-1');
     expect(state.pillars.seo).toMatchObject({
       mode: 'copilot',
@@ -201,5 +208,101 @@ describe('setPillarMode', () => {
     const { client } = makeSupabase({ upsertError: { message: 'db down' } });
     const result = await setPillarMode(client, 'u', 'o', 'pr', 'copilot');
     expect(result).toEqual({ ok: false, reason: 'write_failed' });
+  });
+});
+
+describe('setPillarMode — plan-tier ceiling enforcement (PR-4a, money-code)', () => {
+  const PILLARS = ['pr', 'content', 'seo'] as const;
+
+  // Tier → whether Autopilot is within the plan ceiling (PLAN_LIMITS.autopilotMode).
+  // starter/trial: false (ceiling Copilot). pro (H1) / growth / enterprise (H2): true.
+  const AUTOPILOT_ALLOWED: Record<string, boolean> = {
+    starter: false,
+    trial: false,
+    pro: true,
+    growth: true,
+    enterprise: true,
+  };
+
+  for (const slug of Object.keys(AUTOPILOT_ALLOWED)) {
+    for (const pillar of PILLARS) {
+      it(`${slug} requesting autopilot on ${pillar} → ${
+        AUTOPILOT_ALLOWED[slug] ? 'allowed' : 'clamped to copilot'
+      }`, async () => {
+        const { client, upsertSpy } = makeSupabase({
+          planId: `plan-${slug}`,
+          planSlug: slug,
+        });
+        const result = await setPillarMode(
+          client,
+          'u',
+          'o',
+          pillar,
+          'autopilot'
+        );
+        expect(result.ok).toBe(true);
+        if (!result.ok) return;
+
+        if (AUTOPILOT_ALLOWED[slug]) {
+          // Within ceiling: persisted + returned as requested, source `user`.
+          expect(result.state).toMatchObject({
+            mode: 'autopilot',
+            source: 'user',
+            ceiling: 'autopilot',
+          });
+          expect(result.state.requestedMode).toBeUndefined();
+          expect(upsertSpy).toHaveBeenCalledWith(
+            expect.objectContaining({ pillar, mode: 'autopilot' }),
+            { onConflict: 'user_id,org_id,pillar' }
+          );
+        } else {
+          // Above ceiling: clamped down, source `clamped`, requestedMode echoed.
+          expect(result.state).toMatchObject({
+            mode: 'copilot',
+            source: 'clamped',
+            ceiling: 'copilot',
+            requestedMode: 'autopilot',
+          });
+          // Fail-closed: DB is written with the CLAMPED value, never `autopilot`.
+          expect(upsertSpy).toHaveBeenCalledWith(
+            expect.objectContaining({ pillar, mode: 'copilot' }),
+            { onConflict: 'user_id,org_id,pillar' }
+          );
+        }
+      });
+    }
+  }
+
+  it('a request at/below the ceiling is NOT flagged clamped (copilot on starter)', async () => {
+    const { client, upsertSpy } = makeSupabase({
+      planId: 'plan-starter',
+      planSlug: 'starter',
+    });
+    const result = await setPillarMode(client, 'u', 'o', 'pr', 'copilot');
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.state).toMatchObject({ mode: 'copilot', source: 'user' });
+    expect(result.state.requestedMode).toBeUndefined();
+    expect(upsertSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'copilot' }),
+      { onConflict: 'user_id,org_id,pillar' }
+    );
+  });
+
+  it('no plan (null plan_id) → copilot ceiling clamps an autopilot request', async () => {
+    const { client, upsertSpy } = makeSupabase({ planId: null });
+    const result = await setPillarMode(client, 'u', 'o', 'seo', 'autopilot');
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.state).toMatchObject({
+      mode: 'copilot',
+      source: 'clamped',
+      ceiling: 'copilot',
+      requestedMode: 'autopilot',
+    });
+    expect(upsertSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'copilot' }),
+      { onConflict: 'user_id,org_id,pillar' }
+    );
   });
 });

@@ -21,8 +21,12 @@ export type ModePillar = 'pr' | 'content' | 'seo';
  * - `user`         — an explicit user_mode_preferences row
  * - `plan_default` — derived from the org's plan tier (D026)
  * - `fallback`     — safe default (`copilot`) when no plan/preference resolves
+ * - `clamped`      — a write request exceeded the plan ceiling and was persisted
+ *                    at the ceiling (PR-4a). Transient: appears only on the PATCH
+ *                    response for the clamped request; a later read resolves the
+ *                    stored (already-clamped) value as `user`. See `requestedMode`.
  */
-export type ModeSource = 'user' | 'plan_default' | 'fallback';
+export type ModeSource = 'user' | 'plan_default' | 'fallback' | 'clamped';
 
 /** Effective mode + governance envelope for a single pillar. */
 export interface PillarModeState {
@@ -30,10 +34,17 @@ export interface PillarModeState {
   source: ModeSource;
   /** Minimum allowed mode (admin policy). Default `manual`. Enforced in PR-4. */
   floor: AutomationMode;
-  /** Maximum allowed mode (admin/plan policy). Enforced in PR-4. */
+  /** Maximum allowed mode (plan ceiling — enforced on write in PR-4a). */
   ceiling: AutomationMode;
   /** True when floor === ceiling (pillar locked to a single mode). */
   lockedByAdmin: boolean;
+  /**
+   * The mode originally requested when `source === 'clamped'` — i.e. a mode above
+   * the plan ceiling that was clamped down on write (PR-4a). Lets the client
+   * surface a subtle "requires <tier>" hint without a popup (canon: no dark
+   * patterns). Undefined on the read path and whenever no clamp occurred.
+   */
+  requestedMode?: AutomationMode;
 }
 
 /** Full per-org mode state: one PillarModeState per product pillar. */
