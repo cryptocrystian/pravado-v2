@@ -23,6 +23,7 @@ import {
   generateStubProposal,
   type ProposalPromptContext,
 } from '../../prompts/sage/proposal';
+import { resolveOrgProposalMode } from '../mode/modeService';
 // Shared monthly LLM budget check — the same helper is used by
 // sageColdStartProposals so signal-driven and cold-start paths hit
 // the same per-org cap without duplicating logic.
@@ -65,6 +66,11 @@ export async function generateProposals(
 
   // Get org context for LLM prompt
   const orgContext = await getOrgContext(supabase, orgId);
+
+  // Org-scoped proposal mode LABEL (#101): plan-default (D026) clamped to the
+  // plan ceiling. Resolved once per batch, applied to every proposal — replaces
+  // the old hardcoded per-pillar ternary. Label only; does not filter proposals.
+  const proposalMode = await resolveOrgProposalMode(supabase, orgId);
 
   // Get top signals that don't already have proposals
   const signals = await getUnprocessedSignals(
@@ -188,7 +194,7 @@ export async function generateProposals(
           rationale: `${rationale}\n\nRecommended: ${suggestedAction}`,
           evi_impact_estimate: signal.evi_impact_estimate,
           confidence: signal.confidence,
-          mode: signal.pillar === 'SEO' ? 'autopilot' : 'copilot',
+          mode: proposalMode,
           deep_link: deepLink,
           status: 'active',
           expires_at: signal.expires_at,

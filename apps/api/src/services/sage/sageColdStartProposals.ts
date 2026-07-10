@@ -41,6 +41,7 @@ import {
   type ColdStartProposalDraft,
   type ColdStartPromptContext,
 } from '../../prompts/sage/coldStart';
+import { resolveOrgProposalMode } from '../mode/modeService';
 
 const logger = createLogger('sage:cold-start');
 
@@ -251,6 +252,11 @@ export async function generateColdStartProposals(
   let inserted = 0;
   const insertedAt = new Date().toISOString();
 
+  // Org-scoped proposal mode LABEL (#101): plan-default (D026) clamped to the
+  // plan ceiling — same resolution as the signal-driven generator. Resolved once
+  // for the batch; replaces the old hardcoded per-pillar ternary.
+  const proposalMode = await resolveOrgProposalMode(supabase, orgId);
+
   for (const draft of topDrafts) {
     const { error: insertErr } = await supabase.from('sage_proposals').insert({
       org_id: orgId,
@@ -265,10 +271,7 @@ export async function generateColdStartProposals(
       rationale: `${draft.rationale}\n\nRecommended: ${draft.suggested_action}`,
       evi_impact_estimate: draft.evi_impact_estimate,
       confidence: draft.confidence,
-      // Same mode convention as signal-driven proposals: SEO → autopilot,
-      // everything else → copilot. Keeps downstream mode-routing logic
-      // unchanged.
-      mode: draft.pillar === 'SEO' ? 'autopilot' : 'copilot',
+      mode: proposalMode,
       deep_link: null,
       status: 'active',
       expires_at: null,
