@@ -26,6 +26,7 @@ import {
   getPlanDefaultMode,
   getPlanCeiling,
   resolveOrgModeState,
+  resolveOrgProposalMode,
   setPillarMode,
 } from '../src/services/mode/modeService';
 
@@ -304,5 +305,54 @@ describe('setPillarMode — plan-tier ceiling enforcement (PR-4a, money-code)', 
       expect.objectContaining({ mode: 'copilot' }),
       { onConflict: 'user_id,org_id,pillar' }
     );
+  });
+});
+
+describe('resolveOrgProposalMode — SAGE proposal mode label (PR-4b, #101)', () => {
+  // H4: proposal mode = org plan-DEFAULT (D026) clamped to the plan ceiling.
+  // A LABEL only; org-scoped; identical for every pillar (no hardcoded ternary).
+  const CASES: Array<{ slug: string; expected: string; note: string }> = [
+    { slug: 'starter', expected: 'copilot', note: 'D026 default' },
+    { slug: 'trial', expected: 'copilot', note: 'D026 default' },
+    // Ceiling permits autopilot (pro via H1, growth), but the DEFAULT is copilot.
+    {
+      slug: 'pro',
+      expected: 'copilot',
+      note: 'default copilot despite autopilot ceiling',
+    },
+    {
+      slug: 'growth',
+      expected: 'copilot',
+      note: 'default copilot despite autopilot ceiling',
+    },
+    { slug: 'enterprise', expected: 'manual', note: 'D026 enterprise=manual' },
+  ];
+
+  for (const { slug, expected, note } of CASES) {
+    it(`${slug} org → proposal mode '${expected}' (${note})`, async () => {
+      const { client } = makeSupabase({
+        planId: `plan-${slug}`,
+        planSlug: slug,
+      });
+      expect(await resolveOrgProposalMode(client, 'org-1')).toBe(expected);
+    });
+  }
+
+  it('org with null plan_id → falls back to starter → copilot', async () => {
+    const { client } = makeSupabase({ planId: null });
+    expect(await resolveOrgProposalMode(client, 'org-1')).toBe('copilot');
+  });
+
+  it('is org-scoped + pillar-independent (one value per org, reused for all pillars)', async () => {
+    // The resolver takes no pillar arg — the same org yields one mode for every
+    // proposal, replacing the old `pillar === 'SEO' ? 'autopilot' : 'copilot'`.
+    const { client } = makeSupabase({
+      planId: 'plan-growth',
+      planSlug: 'growth',
+    });
+    const a = await resolveOrgProposalMode(client, 'org-1');
+    const b = await resolveOrgProposalMode(client, 'org-1');
+    expect(a).toBe('copilot');
+    expect(b).toBe(a);
   });
 });

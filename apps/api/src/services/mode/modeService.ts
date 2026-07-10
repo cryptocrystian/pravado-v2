@@ -73,6 +73,26 @@ export async function resolveOrgPlanSlug(
   return plan?.slug ?? null;
 }
 
+/**
+ * Org-scoped proposal mode label (PR-4b / #101). SAGE proposals are org-scoped,
+ * so their `mode` label is the org's plan-tier DEFAULT (D026) clamped to the
+ * plan ceiling — NOT a per-user preference and NOT a per-pillar value. This is
+ * a LABEL only ("mode eligibility", SAGE_v2 §Outputs); it does not gate or
+ * filter which proposals are generated. Null-safe: a plan-less org falls back to
+ * `starter` (→ copilot). Compute once per generation batch and reuse.
+ */
+export async function resolveOrgProposalMode(
+  supabase: SupabaseClient,
+  orgId: string
+): Promise<AutomationMode> {
+  const planSlug = (await resolveOrgPlanSlug(supabase, orgId)) ?? 'starter';
+  const planDefault = getPlanDefaultMode(planSlug);
+  const ceiling = getPlanCeiling(planSlug);
+  // Defensive clamp: D026 defaults (copilot/manual) never exceed the ceiling,
+  // but clamp anyway so the invariant holds if a default is ever raised.
+  return clampMode(planDefault, 'manual', ceiling);
+}
+
 function buildPillarState(
   userMode: AutomationMode | undefined,
   planSlug: string | null

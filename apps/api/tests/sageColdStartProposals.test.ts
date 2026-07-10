@@ -439,11 +439,14 @@ describe('generateColdStartProposals — guards + LLM path + stubs', () => {
       expect(row.signal_id).toBeNull();
       expect(row.signal_type).toMatch(/^cold_start_(pr|content|seo)$/);
     }
-    // Mode-routing spec: SEO → autopilot, others → copilot
+    // #101 (PR-4b): proposal mode is the org's plan-default clamped to ceiling —
+    // org-scoped + pillar-INDEPENDENT (no more `SEO → autopilot` hardcode). This
+    // mock org has no billing row → resolves to starter → copilot for EVERY pillar.
     const seoRow = inserts.find((r) => r.pillar === 'SEO');
     const prRow = inserts.find((r) => r.pillar === 'PR');
-    expect(seoRow?.mode).toBe('autopilot');
+    expect(seoRow?.mode).toBe('copilot');
     expect(prRow?.mode).toBe('copilot');
+    expect(inserts.every((r) => r.mode === 'copilot')).toBe(true);
   });
 
   it('falls back to stub proposals when the LLM output is unparseable', async () => {
