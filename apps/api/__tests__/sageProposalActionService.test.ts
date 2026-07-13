@@ -1,0 +1,230 @@
+/**
+ * PR-5a — sageProposalActionService unit tests.
+ *
+ * Canon-mapped action model: execute→executed, dismiss→dismissed. Covers the
+ * transition, acted_by/acted_at stamping, active-only idempotency (terminal
+ * states are no-ops), org-scoped not_found (non-existent AND cross-org are
+ * indistinguishable → 404 at the route), invalid action, and write failures.
+ */
+
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { describe, it, expect, vi } from 'vitest';
+
+import { applyProposalAction } from '../src/services/sage/sageProposalActionService';
+
+const ORG = 'org-1';
+const USER = 'user-1';
+
+function activeProposal(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'prop-1',
+    org_id: ORG,
+    status: 'active',
+    title: 'Pitch FreightWaves',
+    acted_by: null,
+    acted_at: null,
+    ...overrides,
+  };
+}
+
+/**
+ * Mock Supabase supporting:
+ *   from(t).select('*').eq().eq().maybeSingle()                → the proposal
+ *   from(t).update(payload).eq().eq().select('*').maybeSingle() → merged row
+ */
+function makeSupabase(opts: {
+  proposal?: Record<string, unknown> | null;
+  fetchError?: unknown;
+  updateError?: unknown;
+}) {
+  const updateSpy = vi.fn();
+  const client = {
+    from(_table: string) {
+      return {
+        select: () => ({
+          eq: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({
+                data: opts.proposal ?? null,
+                error: opts.fetchError ?? null,
+              }),
+            }),
+          }),
+        }),
+        update: (payload: Record<string, unknown>) => {
+          updateSpy(payload);
+          return {
+            eq: () => ({
+              eq: () => ({
+                select: () => ({
+                  maybeSingle: async () => ({
+                    data: opts.updateError
+                      ? null
+                      : { ...(opts.proposal ?? {}), ...payload },
+                    error: opts.updateError ?? null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        },
+      };
+    },
+  } as unknown as SupabaseClient;
+  return { client, updateSpy };
+}
+
+describe('applyProposalAction — canon action model (PR-5a)', () => {
+  it('execute on an active proposal → status executed + acted_by/acted_at', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute'
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.previous_status).toBe('active');
+    expect(result.proposal.status).toBe('executed');
+    expect(result.proposal.acted_by).toBe(USER);
+    expect(result.proposal.acted_at).toEqual(expect.any(String));
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'executed',
+        acted_by: USER,
+        acted_at: expect.any(String),
+        updated_at: expect.any(String),
+      })
+    );
+  });
+
+  it('dismiss on an active proposal → status dismissed + acted_by/acted_at', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'dismiss'
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.previous_status).toBe('active');
+    expect(result.proposal.status).toBe('dismissed');
+    expect(result.proposal.acted_by).toBe(USER);
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'dismissed', acted_by: USER })
+    );
+  });
+
+  it('execute on an already-executed proposal → idempotent no-op', async () => {
+    const { client, updateSpy } = makeSupabase({
+      proposal: activeProposal({ status: 'executed', acted_by: 'someone' }),
+    });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute'
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    // previous_status === current status; no re-write.
+    expect(result.previous_status).toBe('executed');
+    expect(result.proposal.status).toBe('executed');
+    expect(result.proposal.acted_by).toBe('someone'); // untouched
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('dismiss on an already-dismissed proposal → idempotent no-op', async () => {
+    const { client, updateSpy } = makeSupabase({
+      proposal: activeProposal({ status: 'dismissed' }),
+    });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'dismiss'
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.previous_status).toBe('dismissed');
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('execute on a dismissed proposal → cannot transition, returns current state', async () => {
+    const { client, updateSpy } = makeSupabase({
+      proposal: activeProposal({ status: 'dismissed' }),
+    });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute'
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    // Terminal states never transition, regardless of the requested action.
+    expect(result.previous_status).toBe('dismissed');
+    expect(result.proposal.status).toBe('dismissed');
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects a malformed action value (no DB read)', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'turbo'
+    );
+    expect(result).toEqual({ ok: false, reason: 'invalid_action' });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns not_found for a non-existent / cross-org proposal (no existence leak)', async () => {
+    // Org-scoped fetch → null for both a missing id and another org's proposal.
+    const { client } = makeSupabase({ proposal: null });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-x',
+      'execute'
+    );
+    expect(result).toEqual({ ok: false, reason: 'not_found' });
+  });
+
+  it('returns write_failed on a fetch error', async () => {
+    const { client } = makeSupabase({ fetchError: { message: 'db down' } });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute'
+    );
+    expect(result).toEqual({ ok: false, reason: 'write_failed' });
+  });
+
+  it('returns write_failed when the update errors', async () => {
+    const { client } = makeSupabase({
+      proposal: activeProposal(),
+      updateError: { message: 'update failed' },
+    });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute'
+    );
+    expect(result).toEqual({ ok: false, reason: 'write_failed' });
+  });
+});
