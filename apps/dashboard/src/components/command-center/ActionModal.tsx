@@ -119,6 +119,12 @@ interface ActionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onPrimaryAction?: (action: ActionItem) => void;
+  /**
+   * PR-5b: optional Dismiss action (→ PATCH dismiss). Additive; when omitted the
+   * Dismiss button does not render (backward-compatible). Canon action model is
+   * execute + dismiss — this gives dismiss its decision-surface home.
+   */
+  onDismiss?: () => void;
   /** v3: Full execution state for inline success/error display */
   executionState?: ExecutionState;
   /** @deprecated Use executionState instead */
@@ -218,6 +224,7 @@ export function ActionModal({
   isOpen,
   onClose,
   onPrimaryAction,
+  onDismiss,
   executionState = 'idle',
   isExecuting: isExecutingDeprecated,
   isLocked = false,
@@ -345,6 +352,14 @@ export function ActionModal({
       onUpgrade();
     }
   }, [onUpgrade]);
+
+  // PR-5b: Dismiss (→ PATCH dismiss). Disabled while an execute is in flight so
+  // the two canon actions can't race (also mitigates double-submit).
+  const handleDismissClick = useCallback(() => {
+    if (onDismiss && !isExecuting && !isCompleted) {
+      onDismiss();
+    }
+  }, [onDismiss, isExecuting, isCompleted]);
 
   if (!isOpen || !action) return null;
 
@@ -870,8 +885,19 @@ export function ActionModal({
             </div>
           )}
 
-          {/* CTA buttons - Primary Execute/Unlock + Close */}
+          {/* CTA buttons - Dismiss + Primary Execute/Unlock + Close */}
           <div className="flex items-center gap-3">
+            {/* PR-5b: Dismiss (→ PATCH dismiss). Additive — only renders when
+                onDismiss is provided; hidden for locked/completed states. */}
+            {onDismiss && !isLocked && !isCompleted && (
+              <button
+                onClick={handleDismissClick}
+                disabled={isExecuting}
+                className={`modal-dismiss-cta px-4 py-2.5 text-sm font-medium text-white/60 hover:text-white bg-slate-4 hover:bg-slate-5 rounded-lg transition-colors ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                Dismiss
+              </button>
+            )}
             {/* LOCKED ACTIONS: Show "Unlock Pro" instead of Execute */}
             {isLocked ? (
               <button

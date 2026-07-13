@@ -57,7 +57,12 @@ import {
 
 import { RedirectToOnboarding } from '@/components/auth/RedirectToOnboarding';
 
-import { ActionCard, type DensityLevel } from './ActionCard';
+import {
+  ActionCard,
+  type DensityLevel,
+  type ExecutionState,
+} from './ActionCard';
+import { ActionModal } from './ActionModal';
 import type {
   ActionItem,
   ActionStreamResponse,
@@ -367,6 +372,12 @@ export function ActionStreamPane({
   // Tracks which action ID has its HoverCard open (null = none open)
   const [hoveredActionId, setHoveredActionId] = useState<string | null>(null);
 
+  // PR-5b: ActionModal state. The pane owns the modal (Review → open); the modal
+  // overlays the viewport via fixed positioning. `modalExec` drives the modal's
+  // in-flight/error UI while a PATCH is running.
+  const [modalAction, setModalAction] = useState<ActionItem | null>(null);
+  const [modalExec, setModalExec] = useState<ExecutionState>('idle');
+
   // LOCKED ACTIONS POLICY: Upgrade Opportunities section (collapsed by default)
   const [isLockedSectionOpen, setIsLockedSectionOpen] = useState(false);
 
@@ -538,9 +549,54 @@ export function ActionStreamPane({
   // - handlePrimaryAction executes the action (Primary CTA only)
   const handleReview = useCallback(
     (action: ActionItem) => {
-      onReview?.(action);
+      onReview?.(action); // preserve any external listener
+      setModalAction(action); // PR-5b: open the internal modal
+      setModalExec('idle');
     },
     [onReview]
+  );
+
+  const handleModalClose = useCallback(() => {
+    setModalAction(null);
+    setModalExec('idle');
+  }, []);
+
+  // PR-5b: apply a canon action (execute/dismiss) to a proposal via the Next
+  // proxy → backend PATCH. On success (incl. the idempotent no-op PR-5a returns
+  // for an already-terminal proposal — { success:true, previous_status===status })
+  // the proposal is removed from the local list (the action-stream endpoint only
+  // returns `active` proposals, so it won't reappear) and the modal closes. On
+  // failure the modal stays open in the `error` state (Retry re-fires the action).
+  const patchProposal = useCallback(
+    async (proposalId: string, action: 'execute' | 'dismiss') => {
+      setModalExec('executing');
+      try {
+        const res = await fetch(`/api/command-center/proposals/${proposalId}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action }),
+        });
+        const json = (await res.json().catch(() => null)) as {
+          success?: boolean;
+          error?: { message?: string };
+        } | null;
+        if (!res.ok || !json?.success) {
+          throw new Error(
+            json?.error?.message ?? `Action failed (${res.status})`
+          );
+        }
+        setFetchedData((prev) =>
+          prev
+            ? { ...prev, items: prev.items.filter((i) => i.id !== proposalId) }
+            : prev
+        );
+        handleModalClose();
+      } catch {
+        setModalExec('error');
+      }
+    },
+    [handleModalClose]
   );
 
   const handlePrimaryActionClick = useCallback(
@@ -950,6 +1006,21 @@ export function ActionStreamPane({
           </div>
         )}
       </div>
+
+      {/* PR-5b: Investigation + decision modal (centered overlay). Review opens
+          it; Execute/Dismiss fire the PATCH; Edit navigates via deep_link. */}
+      <ActionModal
+        action={modalAction}
+        isOpen={modalAction !== null}
+        onClose={handleModalClose}
+        executionState={modalExec}
+        onPrimaryAction={(a) => patchProposal(a.id, 'execute')}
+        onDismiss={
+          modalAction
+            ? () => patchProposal(modalAction.id, 'dismiss')
+            : undefined
+        }
+      />
     </div>
   );
 }
