@@ -26,6 +26,7 @@ import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
 import { getActionStreamForOrg } from '../../services/sage/sageActionStreamService';
 import { scoreOpportunities } from '../../services/sage/sageOpportunityScorer';
+import { applyProposalAction } from '../../services/sage/sageProposalActionService';
 import { generateProposals } from '../../services/sage/sageProposalGenerator';
 import { runSignalScan } from '../../services/sage/sageSignalIngestor';
 
@@ -308,6 +309,80 @@ export async function sageRoutes(server: FastifyInstance) {
           error: { code: 'ACTION_STREAM_ERROR', message },
         });
       }
+    }
+  );
+
+  /**
+   * PATCH /proposals/:id
+   * Apply a user action to a SAGE proposal (PR-5a). Canon-mapped:
+   *   body { action: 'execute' } → status 'executed'
+   *   body { action: 'dismiss' } → status 'dismissed'
+   * Only `active` proposals transition; terminal states are idempotent no-ops.
+   * Org-scoped: a proposal outside the caller's org returns 404 (no existence
+   * leak). Records acted_by/acted_at.
+   */
+  server.patch<{ Params: { id: string }; Body: { action?: string } }>(
+    '/proposals/:id',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: { code: 'NO_ORG', message: 'User has no organization' },
+        });
+      }
+
+      const action = request.body?.action ?? '';
+      const result = await applyProposalAction(
+        supabase,
+        orgId,
+        request.user.id,
+        request.params.id,
+        action
+      );
+
+      if (!result.ok) {
+        if (result.reason === 'invalid_action') {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: "action must be 'execute' or 'dismiss'",
+            },
+          });
+        }
+        if (result.reason === 'not_found') {
+          return reply.code(404).send({
+            success: false,
+            error: { code: 'NOT_FOUND', message: 'Proposal not found' },
+          });
+        }
+        return reply.code(500).send({
+          success: false,
+          error: { code: 'PROPOSAL_ACTION_ERROR', message: 'Action failed' },
+        });
+      }
+
+      logger.info('Proposal action applied', {
+        orgId,
+        proposalId: request.params.id,
+        action,
+        previousStatus: result.previous_status,
+        newStatus: (result.proposal as { status?: string }).status,
+      });
+      return reply.send({
+        success: true,
+        proposal: result.proposal,
+        previous_status: result.previous_status,
+      });
     }
   );
 
