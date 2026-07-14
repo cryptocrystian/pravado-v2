@@ -15,6 +15,11 @@ import Stripe from 'stripe';
 
 import { createLogger } from '../lib/logger';
 import { applyCheckoutCompletion } from './billing/applyCheckoutCompletion';
+import {
+  priceIdEnvFromProcess,
+  priceIdForSlug,
+  slugForPriceId,
+} from './billing/priceIdMap';
 
 const logger = createLogger('stripe-service');
 
@@ -388,10 +393,10 @@ export class StripeService {
         throw new Error('No active subscription found for org');
       }
 
-      // Get target plan from billing_plans to get the price ID
+      // Get target plan from billing_plans (for plan_id + entitlement limits).
       const { data: targetPlanData } = await this.supabase
         .from('billing_plans')
-        .select('id, slug, name, monthly_price_cents, stripe_price_id')
+        .select('id, slug, name, monthly_price_cents')
         .eq('slug', targetPlanSlug)
         .eq('is_active', true)
         .single();
@@ -400,10 +405,14 @@ export class StripeService {
         throw new Error(`Target plan '${targetPlanSlug}' not found`);
       }
 
-      const stripePriceId = (targetPlanData as any).stripe_price_id;
+      // Resolve the Stripe price ID from the env-backed priceIdMap (PR-A) — the
+      // former `billing_plans.stripe_price_id` read was dead (column never
+      // existed). Env-specific price IDs must not live in the shared DB (#77/D025).
+      const stripePriceId = priceIdForSlug(
+        priceIdEnvFromProcess(),
+        targetPlanSlug
+      );
       if (!stripePriceId) {
-        // If no stripe_price_id in database, construct from convention
-        // This assumes Stripe price IDs follow pattern like: price_starter_monthly
         throw new Error(
           `No Stripe price ID configured for plan '${targetPlanSlug}'`
         );
@@ -777,9 +786,63 @@ export class StripeService {
     const currentPeriodStart = new Date(periodStart * 1000).toISOString();
     const currentPeriodEnd = new Date(periodEnd * 1000).toISOString();
 
+    // PR-A (#75): reconcile plan_id from the subscription's LIVE price on every
+    // created/updated/renewal event — not just at checkout. Prior payload omitted
+    // plan_id, so Stripe-portal upgrades/downgrades/renewals never re-synced the
+    // tier. Map priceId → slug → billing_plans.id via the env-backed priceIdMap.
+    const subPriceId = (
+      firstItem as
+        | (Stripe.SubscriptionItem & { price?: { id?: string } })
+        | undefined
+    )?.price?.id;
+    const mappedSlug = slugForPriceId(priceIdEnvFromProcess(), subPriceId);
+    let resolvedPlanId: string | undefined;
+    if (mappedSlug) {
+      const { data: planRow } = await this.supabase
+        .from('billing_plans')
+        .select('id')
+        .eq('slug', mappedSlug)
+        .eq('is_active', true)
+        .maybeSingle();
+      resolvedPlanId = (planRow as { id?: string } | null)?.id;
+    }
+
+    // Fail LOUD — do NOT silently under-entitle. An active/trialing subscription
+    // whose price can't be mapped to a plan means priceIdMap ↔ billing_plans have
+    // drifted; alert instead of leaving plan_id null (which fail-closes the org to
+    // starter across ceiling enforcement + entitlements).
+    // Alert on the actionable drift case: a price WAS present but couldn't map to
+    // a plan (priceIdMap/billing_plans out of sync, or env price IDs unset). A
+    // price-less event is a malformed webhook (separate concern) — plan_id is
+    // still safely omitted below either way.
+    const isLiveSub =
+      subscriptionStatus === 'active' || subscriptionStatus === 'trialing';
+    if (isLiveSub && subPriceId && !resolvedPlanId) {
+      const reason = mappedSlug ? 'plan_row_missing' : 'price_unmapped';
+      logger.error('Subscription plan_id unresolved from price', {
+        orgId,
+        subscriptionId: subscription.id,
+        priceId: subPriceId,
+        mappedSlug,
+        reason,
+      });
+      Sentry.captureMessage('subscription plan_id unresolved from price', {
+        level: 'error',
+        tags: { phase: 'subscription_change', reason },
+        extra: {
+          orgId,
+          subscriptionId: subscription.id,
+          priceId: subPriceId,
+          mappedSlug,
+        },
+      });
+    }
+
     // UPSERT (not UPDATE) keyed on the org_id PK — a bare update() silently
     // no-ops for an org without a billing row (Finding A). org_id is added to
-    // the payload because it is the conflict target.
+    // the payload because it is the conflict target. plan_id is included only
+    // when resolved — omitting it preserves the existing value (upsert only SETs
+    // provided columns), so a transient unmapped event never nulls a good plan_id.
     const { error } = await this.supabase.from('org_billing_state').upsert(
       {
         org_id: orgId,
@@ -790,6 +853,7 @@ export class StripeService {
         current_period_start: currentPeriodStart,
         current_period_end: currentPeriodEnd,
         billing_status: this.mapStripeStatusToBillingStatus(subscriptionStatus),
+        ...(resolvedPlanId ? { plan_id: resolvedPlanId } : {}),
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'org_id' }
