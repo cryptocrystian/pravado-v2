@@ -5,6 +5,7 @@
  * Works alongside existing BillingService for quota checking.
  */
 
+import * as Sentry from '@sentry/node';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { createLogger } from '../../lib/logger';
@@ -215,11 +216,35 @@ async function getOrgPlanSlug(
 ): Promise<string> {
   const { data } = await supabase
     .from('org_billing_state')
-    .select('plan_id')
+    .select('plan_id, subscription_status')
     .eq('org_id', orgId)
     .single();
 
-  if (!data?.plan_id) return 'starter';
+  if (!data?.plan_id) {
+    // Fail LOUD (PR-A / #75): a live subscription resolving to the starter
+    // fallback means plan_id never reconciled — the org is being silently
+    // under-entitled. Alert; the fallback still returns so nothing crashes.
+    const status = (data as { subscription_status?: string } | null)
+      ?.subscription_status;
+    if (status === 'active' || status === 'trialing') {
+      logger.error('Entitlement fell back to starter for a subscribed org', {
+        orgId,
+        subscription_status: status,
+      });
+      Sentry.captureMessage(
+        'entitlement resolved to starter fallback for a subscribed org',
+        {
+          level: 'error',
+          tags: {
+            phase: 'entitlement_resolve',
+            reason: 'null_plan_id_with_live_sub',
+          },
+          extra: { orgId, subscription_status: status },
+        }
+      );
+    }
+    return 'starter';
+  }
 
   const { data: plan } = await supabase
     .from('billing_plans')

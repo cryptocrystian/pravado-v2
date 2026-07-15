@@ -897,3 +897,25 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
   3. Passive/ambiguous instructions ("after PR merges", "please proceed") do **not** constitute merge authorization for money-code; explicit approval does.
 - **How it lands:** agent prepares the PR + green CI; architect merges. Applies equally to docs PRs that the agent authors (this D028 entry itself is shipped via a non-self-merged docs PR).
 - **Cross-refs:** governance ticket #88; PR #87 (trigger); Findings A/B/C #85/#86; follows the DECISIONS_LOG discipline established in D027's recovery note (bad push to `main`).
+
+## D029 — Plan-tier pricing table is source-of-truth; `billing_plans` reconciled
+
+- **Date:** 2026-07-14
+- **Decision ID:** D029
+- **Area:** Billing / pricing
+- **Decision:** The canonical plan-tier monthly pricing (undiscounted) is codified as **source-of-truth**:
+
+  | Tier       | Monthly    | Annual (merchandising) | Self-serve     |
+  | ---------- | ---------- | ---------------------- | -------------- |
+  | Starter    | **$199**   | $159                   | yes            |
+  | Pro        | **$599**   | $479                   | yes            |
+  | Growth     | **$1,199** | $959                   | yes            |
+  | Enterprise | **Custom** | Custom                 | no (sales-led) |
+
+  This does not _set new_ prices — it records the already-decided values and reconciles the drifted database to them.
+
+- **Origin / citation:** first recorded as source-of-truth at **`DECISIONS_LOG.md:334`** (the annual figures are a merchandising display, not a price change); mirrored in `apps/api/src/scripts/bootstrapStripeBilling.ts` (`19900 / 59900 / 119900`) and the marketing pricing page. The **`billing_plans`** table had drifted since its RC1 seed (migration 35, `5698a96`, 2025-12-04) at placeholder values ($29/$99/$299, no `pro`).
+- **What was executed (PR-A):** the **"Plans Reconciliation work order" queued in `e929dc2` (2026-04-25) but never run** is now executed — migration `100_reconcile_billing_plans_pricing.sql` sets Starter `19900`, Growth `119900`, **adds `pro` `59900`**, and clears Enterprise to `0` (custom, not a self-serve $299). Done in a zero-customer / zero-subscription window, so no live subscriber was repriced.
+- **Related fixes shipped with it:** `pro` added to the env-backed `priceIdMap` + env schema (`STRIPE_PRICE_PRO`) — Pro checkout previously 400'd `NO_PRICE_ID` (#76); the subscription webhook now reconciles `plan_id` from the live price on every created/updated/renewal event (#75); the dead `billing_plans.stripe_price_id` read (a column that never existed) is removed in favor of the env priceIdMap (env-specific price IDs must not live in the shared Supabase — #77 / D025).
+- **Open follow-up:** the **non-price entitlement dimensions** for `pro` (playbook-run quota, overage rates) were _interpolated_ in the migration and flagged inline — the quota half of the reconciliation `e929dc2` also called for still needs an architect pass. The Enterprise custom-vs-$299 list-price question is likewise deferred to that pass.
+- **Cross-refs:** #76, #75, #74; `e929dc2`; `DECISIONS_LOG:334`; migration 35 (`5698a96`) / migration 100; D025 (shared Supabase); PR-A.

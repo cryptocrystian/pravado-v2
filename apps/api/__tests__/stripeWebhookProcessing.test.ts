@@ -13,7 +13,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type Stripe from 'stripe';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // stripeService.ts loads the pino logger at import time (transport crashes
 // under vitest). Stub it with spyable methods so we can assert on error logs.
@@ -147,6 +147,103 @@ describe('handleSubscriptionChange — clover period fields (Finding B)', () => 
           'missing current_period_start/end'
         ),
       })
+    );
+  });
+});
+
+describe('handleSubscriptionChange — plan_id reconciliation (PR-A / #75)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks(); // h.l is shared/hoisted — reset before asserting on it
+    process.env.STRIPE_PRICE_STARTER = 'price_starter';
+    process.env.STRIPE_PRICE_PRO = 'price_pro';
+    process.env.STRIPE_PRICE_GROWTH = 'price_growth';
+  });
+  afterEach(() => {
+    delete process.env.STRIPE_PRICE_STARTER;
+    delete process.env.STRIPE_PRICE_PRO;
+    delete process.env.STRIPE_PRICE_GROWTH;
+    vi.clearAllMocks();
+  });
+
+  // Mock that serves billing_plans (slug → id) AND captures the upsert.
+  function makeSupabaseWithPlans(planIdBySlug: Record<string, string>) {
+    const upsertSpy = vi.fn();
+    const client = {
+      from: (table: string) => {
+        if (table === 'billing_plans') {
+          return {
+            select: () => ({
+              eq: (_col: string, slug: string) => ({
+                eq: () => ({
+                  maybeSingle: async () => ({
+                    data: planIdBySlug[slug]
+                      ? { id: planIdBySlug[slug] }
+                      : null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+        return {
+          upsert: (payload: unknown, options: unknown) => {
+            upsertSpy(payload, options);
+            return Promise.resolve({ error: null });
+          },
+        };
+      },
+    } as unknown as SupabaseClient;
+    return { client, upsertSpy };
+  }
+
+  const liveSub = (priceId: string) =>
+    subscriptionEvent({
+      ...baseSub,
+      items: {
+        data: [
+          {
+            id: 'si_1',
+            current_period_start: PERIOD_START,
+            current_period_end: PERIOD_END,
+            price: { id: priceId },
+          },
+        ],
+      },
+    });
+
+  it.each([
+    ['price_starter', 'plan-starter'],
+    ['price_pro', 'plan-pro'],
+    ['price_growth', 'plan-growth'],
+  ])(
+    'writes plan_id resolved from the live price (%s) — starter/pro/growth',
+    async (priceId, planId) => {
+      const { client, upsertSpy } = makeSupabaseWithPlans({
+        starter: 'plan-starter',
+        pro: 'plan-pro',
+        growth: 'plan-growth',
+      });
+      const svc = new StripeService(client, 'sk_test_fake', 'whsec_x');
+      await svc.processWebhookEvent(liveSub(priceId));
+
+      expect(upsertSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ org_id: 'org-1', plan_id: planId }),
+        { onConflict: 'org_id' }
+      );
+      expect(h.l.error).not.toHaveBeenCalled();
+    }
+  );
+
+  it('fails loud + OMITS plan_id when a live sub price is unmapped (no silent under-entitle)', async () => {
+    const { client, upsertSpy } = makeSupabaseWithPlans({});
+    const svc = new StripeService(client, 'sk_test_fake', 'whsec_x');
+    await svc.processWebhookEvent(liveSub('price_unknown'));
+
+    const payload = upsertSpy.mock.calls[0][0] as Record<string, unknown>;
+    expect(payload).not.toHaveProperty('plan_id'); // preserves existing value
+    expect(h.l.error).toHaveBeenCalledWith(
+      'Subscription plan_id unresolved from price',
+      expect.objectContaining({ reason: 'price_unmapped' })
     );
   });
 });

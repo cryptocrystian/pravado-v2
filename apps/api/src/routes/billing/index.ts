@@ -25,6 +25,7 @@ import type { FastifyInstance } from 'fastify';
 import { captureRawBody } from '../../lib/captureRawBody';
 import { createLogger } from '../../lib/logger';
 import { requireUser } from '../../middleware/requireUser';
+import { buildPriceIdMap } from '../../services/billing/priceIdMap';
 import { BillingService } from '../../services/billingService';
 import { StripeService } from '../../services/stripeService';
 
@@ -305,14 +306,9 @@ export async function billingRoutes(server: FastifyInstance): Promise<void> {
           });
         }
 
-        // Get Stripe price ID from environment
-        const priceIdMap: Record<string, string | undefined> = {
-          starter: env.STRIPE_PRICE_STARTER,
-          growth: env.STRIPE_PRICE_GROWTH,
-          enterprise: env.STRIPE_PRICE_ENTERPRISE,
-        };
-
-        const priceId = priceIdMap[planSlug];
+        // Get Stripe price ID from the single env-backed source (PR-A). Now
+        // includes `pro` (was omitted → Pro checkout 400'd NO_PRICE_ID, #76).
+        const priceId = buildPriceIdMap(env)[planSlug];
         if (!priceId) {
           return reply.code(400).send({
             success: false,
