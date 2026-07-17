@@ -918,4 +918,23 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
 - **What was executed (PR-A):** the **"Plans Reconciliation work order" queued in `e929dc2` (2026-04-25) but never run** is now executed — migration `100_reconcile_billing_plans_pricing.sql` sets Starter `19900`, Growth `119900`, **adds `pro` `59900`**, and clears Enterprise to `0` (custom, not a self-serve $299). Done in a zero-customer / zero-subscription window, so no live subscriber was repriced.
 - **Related fixes shipped with it:** `pro` added to the env-backed `priceIdMap` + env schema (`STRIPE_PRICE_PRO`) — Pro checkout previously 400'd `NO_PRICE_ID` (#76); the subscription webhook now reconciles `plan_id` from the live price on every created/updated/renewal event (#75); the dead `billing_plans.stripe_price_id` read (a column that never existed) is removed in favor of the env priceIdMap (env-specific price IDs must not live in the shared Supabase — #77 / D025).
 - **Open follow-up:** the **non-price entitlement dimensions** for `pro` (playbook-run quota, overage rates) were _interpolated_ in the migration and flagged inline — the quota half of the reconciliation `e929dc2` also called for still needs an architect pass. The Enterprise custom-vs-$299 list-price question is likewise deferred to that pass.
-- **Cross-refs:** #76, #75, #74; `e929dc2`; `DECISIONS_LOG:334`; migration 35 (`5698a96`) / migration 100; D025 (shared Supabase); PR-A.
+- **⚠️ SUPERSEDED IN PART BY D030 (PR-C):** migration `100`'s interpolated Pro values (seats 15, overage 13/450, runs 999999) were wrong per the ratified contract and are replaced by migration `101`. The value reconciliation below is authoritative; migration 100's price reconciliation stands but its Pro-row values do not.
+- **Cross-refs:** #76, #75, #74; `e929dc2`; `DECISIONS_LOG:334`; migration 35 (`5698a96`) / migration 100 / migration 101; D025-b (topology); PR-A; **D030**.
+
+## D030 — Tier order ratified + name-bound entitlement values reconciled
+
+- **Date:** 2026-07-14
+- **Decision ID:** D030
+- **Area:** Billing / entitlements
+- **Decision:** The plan-tier order is ratified as canonical: **Starter < Pro < Growth < Enterprise.** All name-bound entitlement values are **monotonic by tier rank**. The name-bound values (prices, seats, token allowances, CRAFT/mo) are reconciled to the live pricing page + code canon, atomically across `billing_plans` (DB) and `PLAN_LIMITS` (code) so enforcement and billing never disagree.
+
+  | Dimension       | Starter | Pro  | Growth    | Enterprise | Source                          |
+  | --------------- | ------- | ---- | --------- | ---------- | ------------------------------- |
+  | Price (monthly) | $199    | $599 | $1,199    | Custom     | D029 / bootstrap                |
+  | Seats           | 1       | 5    | 15        | Custom     | live pricing page               |
+  | LLM tokens/mo   | 2.5M    | 5M   | 50M       | Custom     | `PLAN_LIMITS.llmTokensPerMonth` |
+  | CRAFT docs/mo   | 10      | 50   | Unlimited | Custom     | live pricing page               |
+
+- **In scope (PR-C):** the four dimensions above, in both surfaces (migration `101` supersedes `100`; `PLAN_LIMITS` seats/`contentDocumentsPerMonth`). **Overage is DORMANT** — `billing_plans` overage columns set to `0` **and `ENABLE_OVERAGE_BILLING` flipped to `false`** (it was `true`; with the flag on, `usage × 0` would grant free overage on a live engine). `pro.included_playbook_runs_monthly = 250` is **provisional monotonic** (100 < 250 < 500), no canon — ticketed.
+- **Out of scope (guardrail-enforcement workstream):** the **rate-limit** dimensions (SAGE actions/day, CiteMind/day, journalist daily unlock/view/pitch caps) and the **value re-mapping** of the stale-ordered canon tables — **CRAFT §6.2 / §6.3, CiteMind §6.3, and migration 35's seed order** are written `Starter < Growth < Pro` and must be value-re-mapped + confirmed there, not here. Also parked: `journalistContacts` (wrong model — dynamic full-DB access, not a count), `sageProposalsPerMonth`/`citemindScoresPerMonth` (rate-limits), `autopilotMode` (to-spec per D029/§6.2-as-reordered; Option C graduated scope is a separate design decision, not a correction).
+- **Cross-refs:** D029; migration 101; live pricing page; #76/#75/#74; overage-rates canon ticket; guardrail-enforcement workstream.

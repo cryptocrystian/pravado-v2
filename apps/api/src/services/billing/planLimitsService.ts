@@ -70,10 +70,10 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     autopilotMode: false,
     citeMindEngineLimit: 5,
   },
-  /** Pro — $599/mo: 15 seats, unlimited SAGE, real-time CiteMind, unlimited CRAFT, 5M tokens */
+  /** Pro — $599/mo: 5 seats, 50 CRAFT/mo, 5M tokens (live pricing page; PR-C) */
   pro: {
-    seats: 15,
-    contentDocumentsPerMonth: 100,
+    seats: 5, // live page (was 15 — over-delivered vs contract)
+    contentDocumentsPerMonth: 50, // live page CRAFT/mo (was 100)
     sageProposalsPerMonth: 999_999,
     citemindScoresPerMonth: 999_999,
     llmTokensPerMonth: 5_000_000,
@@ -87,10 +87,10 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     autopilotMode: true,
     citeMindEngineLimit: 5,
   },
-  /** Growth — $1,199/mo: 50 seats, everything in Pro, full journalist DB, 50M tokens, CRAFT autopilot */
+  /** Growth — $1,199/mo: 15 seats, unlimited CRAFT, 50M tokens, autopilot (live page; PR-C) */
   growth: {
-    seats: 50,
-    contentDocumentsPerMonth: 500,
+    seats: 15, // live page (was 50 — over-delivered vs contract)
+    contentDocumentsPerMonth: 999_999, // live page: CRAFT Unlimited (was 500)
     sageProposalsPerMonth: 999_999,
     citemindScoresPerMonth: 999_999,
     llmTokensPerMonth: 50_000_000,
