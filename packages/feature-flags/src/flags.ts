@@ -27,7 +27,12 @@ export const FLAGS = {
   // Billing flags (S28+)
   ENABLE_BILLING_HARD_LIMITS: true, // S29: Hard quota enforcement (throws errors when limits exceeded)
   ENABLE_STRIPE_BILLING: true, // S30: Stripe subscription management and payment processing
-  ENABLE_OVERAGE_BILLING: true, // S31: Overage-based billing calculations and tracking
+  // PR-C: DORMANT at beta. Overage rates have no canon source and the live
+  // pricing page advertises no overage; billing_plans overage columns are 0.
+  // With this flag TRUE, `usage × 0` would silently grant FREE overage on a live
+  // engine (billingService.ts:921). Kept OFF until overage rates are canonized.
+  ENABLE_OVERAGE_BILLING: false, // S31 (was true) — see PR-C
+
   ENABLE_USAGE_ALERTS: true, // S32: Billing usage alerts and notifications
   ENABLE_ADMIN_INVOICE_SYNC: true, // S34: Manual invoice sync from Stripe (admin feature)
 
