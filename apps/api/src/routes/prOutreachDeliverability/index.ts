@@ -19,7 +19,10 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { captureRawBody } from '../../lib/captureRawBody';
 import { requireUser } from '../../middleware/requireUser';
-import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
+import {
+  createOutreachDeliverabilityService,
+  resolveWebhookOrgId,
+} from '../../services/outreachDeliverabilityService';
 
 /**
  * Get provider configuration from environment (S98)
@@ -527,21 +530,35 @@ export default async function prOutreachDeliverabilityRoutes(
         });
       }
 
-      // For webhook processing, we need to determine the org ID from the payload
-      // This is typically embedded in metadata or we can look it up by message ID
-      const payload = request.body as any;
+      // Resolve the owning org from the event (#7): custom_args `orgId` (set at
+      // send), else a provider_message_id lookup. The former hardcoded
+      // 'placeholder-org-id' scoped the message lookup to a non-existent org, so
+      // every deliverability event was silently dropped.
+      const payload = request.body as Record<string, unknown>;
+
+      const orgId = await resolveWebhookOrgId(supabase, payload);
+      if (!orgId) {
+        // Ack (200) so the provider does not retry a permanently-unresolvable
+        // event, but record that we could not attribute it.
+        fastify.log.warn(
+          { provider, requestId: request.id },
+          'Webhook org unresolved (no custom_args orgId + provider_message_id lookup miss) — skipping event.'
+        );
+        return reply.send({
+          success: false,
+          data: { processed: false, reason: 'org_unresolved' },
+        });
+      }
 
       try {
-        // Create service without specific org (we'll determine it from the message)
         const service = createOutreachDeliverabilityService({
           supabase,
           providerConfig,
         });
 
         // Process the webhook with raw body for signature validation
-        // Note: The service will look up the org from the message
         const result = await service.processWebhookEvent(
-          'placeholder-org-id', // TODO: Extract from payload or lookup
+          orgId,
           parseResult.data,
           payload,
           signature,

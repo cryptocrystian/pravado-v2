@@ -196,14 +196,15 @@ class SendGridEmailProvider extends EmailProviderBase {
           click_tracking: { enable: true, enable_text: false },
           open_tracking: { enable: true },
         },
-        // Add custom metadata for webhook correlation
-        custom_args: request.metadata
-          ? {
-              runId: request.metadata.runId || '',
-              sequenceId: request.metadata.sequenceId || '',
-              journalistId: request.metadata.journalistId || '',
-            }
-          : {},
+        // Add custom metadata for webhook correlation. SendGrid flattens these
+        // onto every event it posts back — orgId is how the webhook resolves the
+        // owning org (#7) without a fragile message-id lookup.
+        custom_args: {
+          orgId: String(request.metadata?.orgId ?? ''),
+          runId: String(request.metadata?.runId ?? ''),
+          sequenceId: String(request.metadata?.sequenceId ?? ''),
+          journalistId: String(request.metadata?.journalistId ?? ''),
+        },
       };
 
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
@@ -1064,4 +1065,48 @@ export function createOutreachDeliverabilityService(deps: {
   providerConfig?: ProviderConfig;
 }): OutreachDeliverabilityService {
   return new OutreachDeliverabilityService(deps.supabase, deps.providerConfig);
+}
+
+/**
+ * Resolve the owning org for an inbound SendGrid webhook event (#7). Replaces the
+ * hardcoded `'placeholder-org-id'`, which scoped the message lookup
+ * (`getEmailMessageByProviderMessageId(messageId, orgId)`) to a non-existent org
+ * and therefore SILENTLY DROPPED every deliverability event.
+ *
+ *   1. Primary — the `orgId` custom_arg SendGrid flattens onto each event object
+ *      (set at send in the `custom_args` above). Reliable for all sends after #7.
+ *   2. Fallback — look up `pr_outreach_email_messages.org_id` by
+ *      `provider_message_id`, matching on the id PREFIX because SendGrid appends a
+ *      `.recvd-<...>` suffix to `sg_message_id` on events (the stored id is the
+ *      bare `X-Message-Id`). Covers messages sent before #7.
+ *
+ * Returns null when neither resolves — the caller MUST skip, never fall back to a
+ * placeholder.
+ */
+export async function resolveWebhookOrgId(
+  supabase: SupabaseClient,
+  payload: Record<string, unknown> | null | undefined
+): Promise<string | null> {
+  if (!payload) return null;
+
+  // 1. custom_args orgId (SendGrid flattens custom_args onto the event; some
+  //    integrations also nest them under `custom_args`).
+  const nested = payload.custom_args as Record<string, unknown> | undefined;
+  const fromArgs = payload.orgId ?? nested?.orgId;
+  if (typeof fromArgs === 'string' && fromArgs.length > 0) return fromArgs;
+
+  // 2. provider_message_id prefix lookup.
+  const rawId = payload.sg_message_id ?? payload['smtp-id'];
+  if (typeof rawId === 'string' && rawId.length > 0) {
+    const prefix = rawId.split('.')[0];
+    const { data } = await supabase
+      .from('pr_outreach_email_messages')
+      .select('org_id')
+      .eq('provider_message_id', prefix)
+      .maybeSingle();
+    const orgId = (data as { org_id?: string } | null)?.org_id;
+    if (orgId) return orgId;
+  }
+
+  return null;
 }
