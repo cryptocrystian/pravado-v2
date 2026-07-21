@@ -26,6 +26,14 @@ import { resolveUserEmails } from '../lib/resolveUserEmails';
 import { requireOrg } from '../middleware/requireOrg';
 import { requireRole } from '../middleware/requireRole';
 import { requireUser } from '../middleware/requireUser';
+import {
+  planLimitError,
+  PLAN_LIMIT_STATUS,
+} from '../services/billing/planLimitReply';
+import {
+  enforcePlanLimit,
+  PlanLimitExceededError,
+} from '../services/billing/planLimitsService';
 
 const logger = createLogger('api:orgs');
 
@@ -273,6 +281,20 @@ export async function orgsRoutes(server: FastifyInstance) {
       const { email, role } = validation.data;
       const userId = request.user!.id;
 
+      // Seat guard (courtesy check): refuse before an invite email goes out.
+      // Counts current members + 1; the authoritative block is at accept time
+      // below, which also covers invites issued before this shipped.
+      try {
+        await enforcePlanLimit(supabase, orgId, 'seats');
+      } catch (e) {
+        if (e instanceof PlanLimitExceededError) {
+          return reply
+            .code(PLAN_LIMIT_STATUS)
+            .send({ success: false, error: planLimitError(e) });
+        }
+        throw e;
+      }
+
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -436,6 +458,21 @@ export async function orgsRoutes(server: FastifyInstance) {
             message: 'Organization not found',
           },
         });
+      }
+
+      // Seat guard (authoritative): the seat is consumed by this insert, so
+      // this is the block that matters. Also catches invites created before
+      // the guard existed, and invites that were valid when issued but are no
+      // longer affordable (plan downgrade, other invites accepted first).
+      try {
+        await enforcePlanLimit(supabase, orgId, 'seats');
+      } catch (e) {
+        if (e instanceof PlanLimitExceededError) {
+          return reply
+            .code(PLAN_LIMIT_STATUS)
+            .send({ success: false, error: planLimitError(e) });
+        }
+        throw e;
       }
 
       const { data: membership, error: memberError } = await supabase

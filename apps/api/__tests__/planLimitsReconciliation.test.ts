@@ -4,8 +4,8 @@
  * Re-runs the crosswalk on the dimensions in scope (seats / tokens / CRAFT docs)
  * and asserts ZERO violations vs the live pricing page + canon, plus monotonicity
  * by the ratified tier order Starter < Pro < Growth. Rate-limit dimensions
- * (sageProposalsPerMonth, citemindScoresPerMonth, journalistContacts) are OUT of
- * scope here and intentionally NOT asserted.
+ * (sageProposalsPerMonth, citemindScoresPerMonth) are OUT of scope here and
+ * intentionally NOT asserted.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -66,7 +66,9 @@ describe('PR-C — reconciled name-bound values (D030)', () => {
     expect(getPlanCeiling('pro')).toBe('autopilot');
     expect(getPlanCeiling('growth')).toBe('autopilot');
     expect(getPlanCeiling('starter')).toBe('copilot');
-    // journalistContacts (retired/wrong-model) left as-is, not asserted to a page value.
-    expect(PLAN_LIMITS.pro.journalistContacts).toBe(1000);
+    // journalistContacts was parked here at PR-C time and has since been
+    // RETIRED (guardrail build #1): the stored-contact count model is replaced
+    // by §10.3 daily caps, and its counter read a table that does not exist.
+    expect('journalistContacts' in PLAN_LIMITS.pro).toBe(false);
   });
 });

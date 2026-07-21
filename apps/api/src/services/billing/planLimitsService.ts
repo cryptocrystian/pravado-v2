@@ -27,8 +27,6 @@ export interface PlanLimits {
   citemindScoresPerMonth: number;
   /** Maximum LLM tokens consumed per month */
   llmTokensPerMonth: number;
-  /** Maximum journalist contacts stored */
-  journalistContacts: number;
   /** Maximum competitors tracked */
   competitors: number;
   /** Access to advanced analytics */
@@ -49,7 +47,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     sageProposalsPerMonth: 10,
     citemindScoresPerMonth: 10,
     llmTokensPerMonth: 500_000,
-    journalistContacts: 0,
     competitors: 2,
     advancedAnalytics: false,
     apiIntegrations: false,
@@ -63,7 +60,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     sageProposalsPerMonth: 90, // ~3/day
     citemindScoresPerMonth: 50,
     llmTokensPerMonth: 2_500_000,
-    journalistContacts: 200,
     competitors: 5,
     advancedAnalytics: false,
     apiIntegrations: false,
@@ -77,7 +73,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     sageProposalsPerMonth: 999_999,
     citemindScoresPerMonth: 999_999,
     llmTokensPerMonth: 5_000_000,
-    journalistContacts: 1000,
     competitors: 20,
     advancedAnalytics: true,
     apiIntegrations: true,
@@ -94,7 +89,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     sageProposalsPerMonth: 999_999,
     citemindScoresPerMonth: 999_999,
     llmTokensPerMonth: 50_000_000,
-    journalistContacts: 283_000,
     competitors: 50,
     advancedAnalytics: true,
     apiIntegrations: true,
@@ -117,7 +111,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     sageProposalsPerMonth: 999_999,
     citemindScoresPerMonth: 999_999,
     llmTokensPerMonth: 50_000_000,
-    journalistContacts: 283_000,
     competitors: 50,
     advancedAnalytics: true,
     apiIntegrations: true,
@@ -131,7 +124,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     sageProposalsPerMonth: 999999,
     citemindScoresPerMonth: 999999,
     llmTokensPerMonth: 999_999_999,
-    journalistContacts: 999999,
     competitors: 999,
     advancedAnalytics: true,
     apiIntegrations: true,
@@ -150,7 +142,6 @@ export type CountableResource =
   | 'sageProposalsPerMonth'
   | 'citemindScoresPerMonth'
   | 'llmTokensPerMonth'
-  | 'journalistContacts'
   | 'competitors';
 
 export type BooleanResource =
@@ -322,13 +313,10 @@ async function getCurrentUsage(
       return data?.tokens_consumed ?? 0;
     }
 
-    case 'journalistContacts': {
-      const { count } = await supabase
-        .from('journalist_contacts')
-        .select('*', { count: 'exact', head: true })
-        .eq('org_id', orgId);
-      return count ?? 0;
-    }
+    // `journalistContacts` retired here: the stored-contact count model is
+    // replaced by §10.3 daily caps (unlocks/pitches), and the counter read a
+    // `journalist_contacts` table that does not exist in the schema — so it
+    // always returned 0 and could never have blocked anything.
 
     case 'competitors': {
       const { count } = await supabase

@@ -33,6 +33,14 @@ import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { enqueueCiteMindScore } from '../../queue/bullmqQueue';
+import {
+  planLimitError,
+  PLAN_LIMIT_STATUS,
+} from '../../services/billing/planLimitReply';
+import {
+  enforcePlanLimit,
+  PlanLimitExceededError,
+} from '../../services/billing/planLimitsService';
 import { ContentService } from '../../services/contentService';
 
 /**
@@ -236,6 +244,21 @@ export async function contentRoutes(server: FastifyInstance) {
             message: 'Invalid content item data',
           },
         });
+      }
+
+      // CRAFT/mo entitlement. `contentDocumentsPerMonth` was defined for every
+      // plan but had zero readers — this is the only content-item create path
+      // (contentService.createContentItem has exactly one caller), so the limit
+      // becomes load-bearing here.
+      try {
+        await enforcePlanLimit(supabase, orgId, 'contentDocumentsPerMonth');
+      } catch (e) {
+        if (e instanceof PlanLimitExceededError) {
+          return reply
+            .code(PLAN_LIMIT_STATUS)
+            .send({ success: false, error: planLimitError(e) });
+        }
+        throw e;
       }
 
       const data = validation.data;
