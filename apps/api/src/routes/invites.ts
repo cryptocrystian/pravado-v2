@@ -8,6 +8,14 @@ import { createClient } from '@supabase/supabase-js';
 import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../middleware/requireUser';
+import {
+  planLimitError,
+  PLAN_LIMIT_STATUS,
+} from '../services/billing/planLimitReply';
+import {
+  enforcePlanLimit,
+  PlanLimitExceededError,
+} from '../services/billing/planLimitsService';
 
 export async function invitesRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
@@ -127,6 +135,19 @@ export async function invitesRoutes(server: FastifyInstance) {
             message: 'You are already a member of this organization',
           },
         });
+      }
+
+      // Seat guard (authoritative): mirrors POST /orgs/:id/join — this is the
+      // second route that consumes a seat, and both must block.
+      try {
+        await enforcePlanLimit(supabase, invite.org_id, 'seats');
+      } catch (e) {
+        if (e instanceof PlanLimitExceededError) {
+          return reply
+            .code(PLAN_LIMIT_STATUS)
+            .send({ success: false, error: planLimitError(e) });
+        }
+        throw e;
       }
 
       const { data: membership, error: memberError } = await supabase

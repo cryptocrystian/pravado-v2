@@ -16,6 +16,14 @@ import type { FastifyInstance } from 'fastify';
 import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
+import {
+  planLimitError,
+  PLAN_LIMIT_STATUS,
+} from '../../services/billing/planLimitReply';
+import {
+  enforcePlanLimit,
+  PlanLimitExceededError,
+} from '../../services/billing/planLimitsService';
 
 const logger = createLogger('api:routes:onboarding');
 export async function onboardingRoutes(server: FastifyInstance) {
@@ -295,6 +303,33 @@ export async function onboardingRoutes(server: FastifyInstance) {
 
     if (rows.length === 0) {
       return reply.send({ success: true, data: { saved: 0 } });
+    }
+
+    // Tracked-competitor entitlement. The write is an idempotent upsert, so
+    // enforce on the *new* domains only — otherwise re-saving an unchanged
+    // list would count every row again and falsely trip the limit.
+    const { data: existing } = await supabase
+      .from('org_competitors')
+      .select('domain')
+      .eq('org_id', orgId);
+    const existingDomains = new Set(
+      (existing ?? []).map((r: { domain: string }) => r.domain)
+    );
+    const newDomains = new Set(
+      rows.map((r) => r.domain).filter((d) => !existingDomains.has(d))
+    );
+
+    if (newDomains.size > 0) {
+      try {
+        await enforcePlanLimit(supabase, orgId, 'competitors', newDomains.size);
+      } catch (e) {
+        if (e instanceof PlanLimitExceededError) {
+          return reply
+            .code(PLAN_LIMIT_STATUS)
+            .send({ success: false, error: planLimitError(e) });
+        }
+        throw e;
+      }
     }
 
     const { error } = await supabase

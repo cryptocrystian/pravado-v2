@@ -16,6 +16,10 @@ import type { FastifyInstance } from 'fastify';
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
 import {
+  planLimitError,
+  PLAN_LIMIT_STATUS,
+} from '../../services/billing/planLimitReply';
+import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
@@ -105,16 +109,9 @@ export async function citeMindRoutes(server: FastifyInstance) {
         return reply.send({ success: true, data: result });
       } catch (error) {
         if (error instanceof PlanLimitExceededError) {
-          return reply.code(403).send({
-            success: false,
-            error: {
-              code: 'PLAN_LIMIT_EXCEEDED',
-              message: error.message,
-              resource: error.resource,
-              current: error.current,
-              limit: error.limit,
-            },
-          });
+          return reply
+            .code(PLAN_LIMIT_STATUS)
+            .send({ success: false, error: planLimitError(error) });
         }
         const msg = error instanceof Error ? error.message : 'Scoring failed';
         return reply
