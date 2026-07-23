@@ -267,11 +267,19 @@ async function getCurrentUsage(
       const monthStart = new Date();
       monthStart.setDate(1);
       monthStart.setHours(0, 0, 0, 0);
+      // Exempt onboarding URL imports (onboarding/index.ts POST /content tags
+      // rows metadata.source='onboarding'). Those are existing published URLs
+      // pulled in for context, not CRAFT-authored documents, so they must not
+      // consume the CRAFT/mo allowance. The `.or` keeps rows whose source is
+      // null OR anything other than 'onboarding' — a bare `.neq` on the jsonb
+      // path would also drop every row where source is null (i.e. all normal
+      // content), which is exactly wrong.
       const { count } = await supabase
         .from('content_items')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId)
-        .gte('created_at', monthStart.toISOString());
+        .gte('created_at', monthStart.toISOString())
+        .or('metadata->>source.is.null,metadata->>source.neq.onboarding');
       return count ?? 0;
     }
 
