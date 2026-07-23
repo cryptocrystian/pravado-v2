@@ -49,13 +49,17 @@ function makeSupabase(opts: { planSlug: string | null; count: number }) {
     select: () => ({ eq: () => ({ single: async () => ({ data }) }) }),
   });
 
-  // Count queries are awaited directly (`const { count } = await …eq(…)`), and
-  // the month-scoped ones chain `.gte()` first — so eq() returns a thenable
-  // that also exposes gte().
+  // Count queries take three shapes off eq():
+  //   seats / competitors        → awaited directly            (thenable)
+  //   contentDocumentsPerMonth   → .gte().or()  → { count }
+  //   llmTokensPerMonth          → .gte().single() → { tokens_consumed }
+  // so eq() returns a thenable that also exposes gte()/or()/single().
   const countQuery = () => {
-    const settled: any = Promise.resolve({ count: opts.count });
-    settled.gte = () => Promise.resolve({ count: opts.count });
-    return settled;
+    const q: any = Promise.resolve({ count: opts.count });
+    q.gte = () => q;
+    q.or = () => Promise.resolve({ count: opts.count });
+    q.single = async () => ({ data: { tokens_consumed: opts.count } });
+    return q;
   };
 
   return {

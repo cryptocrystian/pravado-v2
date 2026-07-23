@@ -11,16 +11,17 @@
  * they are migrated onto this helper here. No client reads PLAN_LIMIT_EXCEEDED
  * yet (grep: zero dashboard consumers), so this is not a breaking change.
  *
- * Status is **403**, matching those first two. 402 Payment Required is arguably
- * the better code for a paywall — deliberately NOT changed here, since that is
- * a contract decision for the architect, not a side effect of this PR.
+ * Status is **402 Payment Required** — the semantically correct code for a
+ * paywall / entitlement wall. Architect-ratified (follow-up to #121, which
+ * shipped these at 403 to match the pre-existing sites; this unifies all plan
+ * denials on 402 in one pass while there are still zero clients to break).
  */
 
 import type { ApiError } from '@pravado/types';
 
 import type { PlanLimitExceededError } from './planLimitsService';
 
-export const PLAN_LIMIT_STATUS = 403;
+export const PLAN_LIMIT_STATUS = 402;
 
 const UPGRADE_URL = '/app/billing';
 
