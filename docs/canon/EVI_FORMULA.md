@@ -131,13 +131,14 @@ The `signal_breakdown` field is non-negotiable — it stores every input signal,
 
 ## Interpretation Guide
 
-| EVI Range | Interpretation                                          |
-| --------- | ------------------------------------------------------- |
-| 0–25      | Early stage — limited signals, low visibility           |
-| 26–45     | Building — some activity, inconsistent presence         |
-| 46–65     | Established — consistent visibility, room to grow       |
-| 66–80     | Strong — high authority and active engagement           |
-| 81–100    | Market leader — top-tier visibility across all channels |
+> **Layer:** Implementation-Status · **Subordinate-to:** EVI model (`EARNED_VISIBILITY_INDEX.md`, `EVI_MATHEMATICS.md`). Bands reconciled to the canonical 4-band set per **D035** (was a 5-band set — superseded).
+
+| EVI Range | Band        | Interpretation                                                  |
+| --------- | ----------- | --------------------------------------------------------------- |
+| 0–40      | At Risk     | Brand is invisible or losing ground. Immediate action required. |
+| 41–60     | Emerging    | Foundational presence but lacks competitive advantage.          |
+| 61–80     | Competitive | Meaningful visibility; can defend position.                     |
+| 81–100    | Dominant    | Top-tier visibility across all discovery surfaces.              |
 
 ---
 

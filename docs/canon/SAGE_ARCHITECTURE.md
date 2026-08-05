@@ -1,14 +1,17 @@
-# SAGE Protocol — Architecture Reference
+# SAGE — Phase-1 Implementation Reference
 
 **Version:** 1.0  
-**Status:** CANONICAL — reflects production implementation as of Sprints S-INT-02 and S-INT-03  
+**Status:** Implementation-Status — Phase-1 of the SAGE model (as of Sprints S-INT-02/03). Not a definition of SAGE; see `SAGE_v2.md` + `MODEL_INTEGRITY_CHARTER.md`.  
 **Implementation:** `apps/api/src/services/sage/`
 
 ---
 
-## What SAGE Is
+> **Layer:** Implementation-Status · **Subordinate-to:** SAGE model (`SAGE_v2.md`, `SAGE_OPERATING_MODEL.md`) · **Supersedes:** none
+> This document describes SAGE's **Phase-1 implementation** and does **not** define SAGE. The canonical model is the Signal·Authority·Growth·Exposure **feedback mesh** in `SAGE_v2.md`. Per the Model Integrity Charter (D033), an implementation-status doc reports gap-to-vision but may never redefine the model.
 
-SAGE (Strategy and Action Generation Engine) is Pravado's intelligence core. It observes signals across all three pillars — PR, Content, and SEO — scores each signal by its potential to improve EVI, and generates prioritized, human-readable proposals that tell the user exactly what to do next.
+## What This Phase Implements
+
+SAGE's Phase-1 implementation is Pravado's cross-pillar intelligence surface today: it observes signals across all three pillars — PR, Content, and SEO — scores each signal by its potential to improve EVI, and generates prioritized, human-readable proposals that tell the user their highest-leverage next action. This is the **first phase** of the SAGE mesh (`SAGE_v2.md`); the feedback loop, cross-pillar causal weighting, and CRAFT/autopilot execution described in the model are later phases (see "Known Limitations").
 
 SAGE is what makes Pravado a Visibility Operating System rather than three separate tools. Without SAGE, there is no cross-pillar strategy. With it, a user opens the Command Center and knows their highest-leverage action within seconds.
 
