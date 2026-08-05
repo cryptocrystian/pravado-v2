@@ -73,16 +73,17 @@ A single canonical UI app ensures:
 
 These files exist to prevent drift and ensure development discipline:
 
-| File                                | Purpose                                                     |
-| ----------------------------------- | ----------------------------------------------------------- |
-| `BOOT_PROMPT.md`                    | Initial session context for Claude                          |
-| `CLAUDE_CODE_PROMPT.md`             | Claude Code specific instructions                           |
-| `CHANGE_CONTROL.md`                 | Process for modifying canon                                 |
-| `DECISIONS_LOG.md`                  | Record of architectural decisions                           |
-| `CI_GATES_CHECKLIST.md`             | Quality gates for CI/CD                                     |
-| `SPRINT_ZERO_DEMO_SCRIPT.md`        | Demo script for sprint reviews                              |
-| `JOURNALIST_DATABASE_GOVERNANCE.md` | Journalist database compliance, consent, retention policies |
-| `SPRINT_PLAN.md`                    | Sprint planning and tracking conventions                    |
+| File                                | Purpose                                                                          |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| `MODEL_INTEGRITY_CHARTER.md`        | **Tier-1: two-layer canon, Foundational Models, supersession discipline (D033)** |
+| `BOOT_PROMPT.md`                    | Initial session context for Claude                                               |
+| `CLAUDE_CODE_PROMPT.md`             | Claude Code specific instructions                                                |
+| `CHANGE_CONTROL.md`                 | Process for modifying canon                                                      |
+| `DECISIONS_LOG.md`                  | Record of architectural decisions                                                |
+| `CI_GATES_CHECKLIST.md`             | Quality gates for CI/CD                                                          |
+| `SPRINT_ZERO_DEMO_SCRIPT.md`        | Demo script for sprint reviews                                                   |
+| `JOURNALIST_DATABASE_GOVERNANCE.md` | Journalist database compliance, consent, retention policies                      |
+| `SPRINT_PLAN.md`                    | Sprint planning and tracking conventions                                         |
 
 ---
 

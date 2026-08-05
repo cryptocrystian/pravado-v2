@@ -938,3 +938,33 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
 - **In scope (PR-C):** the four dimensions above, in both surfaces (migration `101` supersedes `100`; `PLAN_LIMITS` seats/`contentDocumentsPerMonth`). **Overage is DORMANT** — `billing_plans` overage columns set to `0` **and `ENABLE_OVERAGE_BILLING` flipped to `false`** (it was `true`; with the flag on, `usage × 0` would grant free overage on a live engine). `pro.included_playbook_runs_monthly = 250` is **provisional monotonic** (100 < 250 < 500), no canon — ticketed.
 - **Out of scope (guardrail-enforcement workstream):** the **rate-limit** dimensions (SAGE actions/day, CiteMind/day, journalist daily unlock/view/pitch caps) and the **value re-mapping** of the stale-ordered canon tables — **CRAFT §6.2 / §6.3, CiteMind §6.3, and migration 35's seed order** are written `Starter < Growth < Pro` and must be value-re-mapped + confirmed there, not here. Also parked: `journalistContacts` (wrong model — dynamic full-DB access, not a count), `sageProposalsPerMonth`/`citemindScoresPerMonth` (rate-limits), `autopilotMode` (to-spec per D029/§6.2-as-reordered; Option C graduated scope is a separate design decision, not a correction).
 - **Cross-refs:** D029; migration 101; live pricing page; #76/#75/#74; overage-rates canon ticket; guardrail-enforcement workstream.
+
+## D033 — Model Integrity Charter ratified (two-layer canon; Foundational Models defined)
+
+- **Date:** 2026-08-05
+- **Decision ID:** D033
+- **Area:** Governance / Canon
+- **Decision:** Ratify `MODEL_INTEGRITY_CHARTER.md` as **tier-1 canon** (companion to `PRODUCT_CONSTITUTION.md`). It (1) defines **"Foundational Model"** via three tests — Mechanism, Cross-cutting, Redefinition-catastrophe; (2) names the Foundational Models: **SAGE, CRAFT, CiteMind, EVI, Entity Map**; (3) establishes **two canon layers** — Model Canon vs Implementation-Status docs — where an Implementation-Status doc may report gap-to-vision but **may never redefine a Model**, and **Model outranks Implementation-Status within a tier** (making the authority order total); (4) requires a supersession header on every doc (Art III); (5) defines conformance as **"Phase N of M," not pass/fail** (Art IV).
+- **Rationale:** The canon conflicts (SAGE×2, EVI bands×3, duplicate IDs) all came from _implementation notes entering canon and redefining a model to match what shipped_. The Charter makes that structurally impossible. Root cause per `pravado-workflow-postmortem.md`.
+- **Explicitly NOT Foundational Models (protected elsewhere):** 3-Pillar thesis (Constitution truth), Modes (Mode Contract) — they fail the Mechanism test.
+- **Authority basis:** Article I ratified by founder 2026-08-05; Definition + Articles II–V and the C1/C2 applications (D034/D035) decided under delegated PM authority ("make the best product-management decision for now"), reversible at the merge gate.
+- **Cross-refs:** D034 (SAGE), D035 (EVI bands); D031/D032 ID-dedup (follow-up PR); `_grounding/CONFORMANCE_MAP.md`.
+
+## D034 — SAGE identity: the mesh is canonical; Architecture doc demoted to Phase-1
+
+- **Date:** 2026-08-05
+- **Decision ID:** D034
+- **Area:** Product model / SAGE
+- **Decision:** SAGE's canonical identity is the **Signal·Authority·Growth·Exposure feedback mesh** (`SAGE_v2.md` + `SAGE_OPERATING_MODEL.md`). `SAGE_ARCHITECTURE.md` is reclassified **Implementation-Status** and retitled "**SAGE — Phase-1 Implementation Reference**"; its competing "Strategy and Action Generation Engine" acronym and its "CANONICAL definition" claim are removed; its body is preserved as honest Phase-1 status. Resolves the two-definitions conflict (C1).
+- **Rationale:** The mesh is the higher-authority scoped model **and** the product's core differentiation (a Visibility OS, not three tools). The Architecture doc was an as-built artifact that, per Charter Art I, may not redefine the model. Shipped code today is an honest Phase-1 scorer; the mesh is the roadmap. The gap is now visible (Charter Art IV), not hidden.
+- **Cross-refs:** D033; `SAGE_v2.md:7,18`; `SAGE_ARCHITECTURE.md` (demoted).
+
+## D035 — EVI scoring bands: adopt the 4-band North-Star set
+
+- **Date:** 2026-08-05
+- **Decision ID:** D035
+- **Area:** EVI / measurement
+- **Decision:** Canonical EVI bands are the **4-band North-Star set**: **At Risk (0–40) / Emerging (41–60) / Competitive (61–80) / Dominant (81–100)** per `EARNED_VISIBILITY_INDEX.md` + `EVI_MATHEMATICS.md`. The `EVI_FORMULA.md` 5-band set and the homepage 3-band set (At Risk/Building/Strong/Elite) are reconciled to this. Fulfills the never-made "D026 (future)" EVI-band follow-up promised in the AUTOMATE→CRAFT decision.
+- **Scope note:** This ratifies **band nomenclature only.** The deeper gaps — EVI's shipped **proxy** math vs the canonical formula, and **Share-of-Model not existing in code** — remain open **scope item B5** (a separate product/scope decision), not resolved here.
+- **Follow-up:** reconcile homepage EVI band copy to this set (code change, tracked separately).
+- **Cross-refs:** D033; `EARNED_VISIBILITY_INDEX.md:112`; `EVI_FORMULA.md` (reconciled).
