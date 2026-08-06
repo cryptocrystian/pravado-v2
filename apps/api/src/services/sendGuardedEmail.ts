@@ -111,6 +111,12 @@ export interface ContactGovernanceState {
   contactId: string | null;
   state: ContactState | null;
   orgDoNotContact: boolean;
+  /**
+   * True when the governance state could NOT be read (DB error / missing
+   * suppression tables). The chokepoint treats this as a hard block —
+   * FAIL CLOSED — so an uncertain read can never grant eligibility (CAN-SPAM).
+   */
+  readError?: boolean;
 }
 
 /**
@@ -204,6 +210,14 @@ export async function sendGuardedEmail(args: {
 
   // ---- Governor 1: CAN-SPAM suppression hard block ----
   const gov = await gateways.getContactGovernanceState(context);
+  // FAIL CLOSED: an errored/uncertain governance read must never send.
+  if (gov.readError) {
+    return refuse({
+      governor: 'suppression',
+      reason: 'Governance/suppression state could not be verified — failing closed (CAN-SPAM safety).',
+      details: { readError: true },
+    });
+  }
   if (gov.state === 'suppressed' || gov.state === 'bounced') {
     // The contact is already in a terminal suppression state. We still write
     // an audit trail of the *attempt* being blocked so provenance is complete.
@@ -264,7 +278,7 @@ export async function sendGuardedEmail(args: {
   // ---- Governor 4: active-sequence cap ----
   if (context.purpose === 'sequence' && Number.isFinite(caps.activeSequences)) {
     const active = await gateways.countActiveSequences(context.orgId);
-    if (active > caps.activeSequences) {
+    if (active >= caps.activeSequences) {
       return refuse({
         governor: 'active_sequence_cap',
         reason: `Active-sequence cap reached for ${tier} tier (${caps.activeSequences}).`,

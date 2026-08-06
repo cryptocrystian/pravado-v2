@@ -18,6 +18,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { hashEmail } from './emailSuppression';
 import type {
   ContactGovernanceState,
   ContactState,
@@ -40,26 +41,55 @@ export function createSupabaseGovernanceGateways(supabase: SupabaseClient): Gove
   return {
     async getContactGovernanceState(ctx: GuardedSendContext): Promise<ContactGovernanceState> {
       let contactId = ctx.contactId ?? null;
+
+      // FAIL CLOSED (CAN-SPAM): on ANY read error we must NOT grant
+      // eligibility. We return a blocking snapshot with readError=true so the
+      // chokepoint refuses the send rather than defaulting to pitch_eligible.
+      const failClosed = (): ContactGovernanceState => ({
+        contactId,
+        state: null,
+        orgDoNotContact: false,
+        readError: true,
+      });
+
+      // 0. Durable, backfill-INDEPENDENT suppression: check the opt-out/bounce
+      //    hash store first. This blocks even when no contact row exists yet
+      //    (opt-outs received before the 784K backfill). Canon §12.3.
+      if (ctx.recipientEmail) {
+        const { data: hashRow, error: hashErr } = await supabase
+          .from('suppressed_email_hashes')
+          .select('email_hash, reason')
+          .eq('email_hash', hashEmail(ctx.recipientEmail))
+          .maybeSingle();
+        if (hashErr) return failClosed();
+        if (hashRow) {
+          const state: ContactState = hashRow.reason === 'bounce' ? 'bounced' : 'suppressed';
+          return { contactId, state, orgDoNotContact: false };
+        }
+      }
+
       let state: ContactState | null = null;
 
       // 1. Resolve contactId from the email firewall when not supplied.
       if (!contactId && ctx.recipientEmail) {
-        const { data: emailRow } = await supabase
+        const { data: emailRow, error } = await supabase
           .from('contact_emails')
           .select('contact_id')
           .ilike('email', ctx.recipientEmail)
           .limit(1)
           .maybeSingle();
+        if (error) return failClosed();
         if (emailRow?.contact_id) contactId = emailRow.contact_id;
       }
 
       // 2. Authoritative read from media_contacts.
       if (contactId) {
-        const { data: mc } = await supabase
+        const { data: mc, error } = await supabase
           .from('media_contacts')
           .select('id, contact_state')
           .eq('id', contactId)
           .maybeSingle();
+        if (error) return failClosed();
         if (mc) {
           state = mc.contact_state as ContactState;
         }
@@ -69,11 +99,12 @@ export function createSupabaseGovernanceGateways(supabase: SupabaseClient): Gove
       if (state === null) {
         let legacyEmail: string | null = null;
         if (ctx.journalistId) {
-          const { data: j } = await supabase
+          const { data: j, error } = await supabase
             .from('journalists')
             .select('email')
             .eq('id', ctx.journalistId)
             .maybeSingle();
+          if (error) return failClosed();
           legacyEmail = j?.email ?? null;
         }
         if (!legacyEmail && ctx.recipientEmail) legacyEmail = ctx.recipientEmail;

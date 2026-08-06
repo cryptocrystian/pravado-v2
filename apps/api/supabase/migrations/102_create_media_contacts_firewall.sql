@@ -160,14 +160,13 @@ CREATE POLICY media_contacts_read_all
   TO authenticated
   USING (true);
 
--- contact_emails read platform-wide (revealed on unlock at the app layer;
--- §9.1 lists contact_emails visibility as "All orgs (on unlock)"). The
--- unlock gating is enforced in the application/service layer, not RLS.
+-- contact_emails: NO authenticated read policy. Raw journalist emails are the
+-- ephemeral Contact Layer behind the firewall (§2.3, §3.4) and must NOT be
+-- exposed platform-wide by a blanket read. RLS is enabled with no SELECT
+-- policy for `authenticated`, so only the service role (server-side unlock /
+-- send path, which bypasses RLS) can read emails — the unlock/firewall gate is
+-- enforced in the application layer, never leaked to client-side reads.
 DROP POLICY IF EXISTS contact_emails_read_all ON public.contact_emails;
-CREATE POLICY contact_emails_read_all
-  ON public.contact_emails FOR SELECT
-  TO authenticated
-  USING (true);
 
 DROP POLICY IF EXISTS outlet_affiliations_read_all ON public.outlet_affiliations;
 CREATE POLICY outlet_affiliations_read_all
@@ -175,13 +174,12 @@ CREATE POLICY outlet_affiliations_read_all
   TO authenticated
   USING (true);
 
--- media_outlets already exists; ensure RLS + platform-wide read policy.
-ALTER TABLE public.media_outlets ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS media_outlets_read_all ON public.media_outlets;
-CREATE POLICY media_outlets_read_all
-  ON public.media_outlets FOR SELECT
-  TO authenticated
-  USING (true);
+-- media_outlets: intentionally NOT given a platform-wide read policy here.
+-- The legacy table (migration 08) is ORG-SCOPED and already has its own RLS.
+-- Adding a permissive USING(true) policy would OR-combine with the existing
+-- org policy and leak every org's private outlet rows cross-tenant. The
+-- platform-wide reshape (drop org_id, add UNIQUE(domain), platform read) is
+-- DEFERRED to the reshape PR. See CANON DRIFT note at the top of this file.
 
 -- updated_at maintenance triggers (reuse existing set_updated_at if present)
 DO $$

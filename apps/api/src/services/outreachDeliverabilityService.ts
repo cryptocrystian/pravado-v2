@@ -26,6 +26,8 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { hashEmail } from './emailSuppression';
+
 import { createLogger } from '../lib/logger';
 // =============================================
 // Database Mappers
@@ -994,8 +996,21 @@ export class OutreachDeliverabilityService {
     try {
       if (!recipientEmail) return;
       const toState = eventType === 'bounced' ? 'bounced' : 'suppressed';
+      const reason = eventType === 'bounced' ? 'bounce' : 'opt_out';
 
-      // Resolve the platform contact via the email firewall.
+      // 1. DURABLE, backfill-INDEPENDENT: record the suppression hash FIRST so
+      //    an opt-out/bounce is never lost, even if no contact row exists yet
+      //    (opt-out received before the 784K backfill). Canon §12.3. First
+      //    reason wins (ignoreDuplicates) — a later bounce won't overwrite an
+      //    earlier permanent opt-out.
+      await this.supabase
+        .from('suppressed_email_hashes')
+        .upsert(
+          { email_hash: hashEmail(recipientEmail), reason },
+          { onConflict: 'email_hash', ignoreDuplicates: true }
+        );
+
+      // 2. If a contact row exists, also advance the state machine + audit.
       const { data: emailRow, error: emailErr } = await this.supabase
         .from('contact_emails')
         .select('contact_id')
@@ -1021,7 +1036,7 @@ export class OutreachDeliverabilityService {
         contact_id: contactId,
         from_state: fromState,
         to_state: toState,
-        trigger: eventType === 'bounced' ? 'bounce' : 'opt_out',
+        trigger: reason,
         actor_type: eventType === 'bounced' ? 'system' : 'journalist',
       });
 

@@ -125,6 +125,28 @@ describe('sendGuardedEmail — governor 1: suppression (CAN-SPAM)', () => {
     expect(res.refusal?.governor).toBe('suppression');
     expect(rawSend).not.toHaveBeenCalled();
   });
+
+  it('FAILS CLOSED: an errored/uncertain governance read blocks the send', async () => {
+    // Simulates governanceGateways returning readError (any DB read error).
+    const gateways = makeGateways({}, { state: null, readError: true } as any);
+    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    expect(res.sent).toBe(false);
+    expect(res.refusal?.governor).toBe('suppression');
+    expect(res.refusal?.details).toMatchObject({ readError: true });
+    expect(rawSend).not.toHaveBeenCalled();
+  });
+
+  it('FAILS CLOSED even on a test-purpose send', async () => {
+    const gateways = makeGateways({}, { state: null, readError: true } as any);
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext({ purpose: 'test' }),
+      gateways,
+      rawSend,
+    });
+    expect(res.refusal?.governor).toBe('suppression');
+    expect(rawSend).not.toHaveBeenCalled();
+  });
 });
 
 describe('sendGuardedEmail — governor 2: pitch-eligibility', () => {
@@ -166,6 +188,18 @@ describe('sendGuardedEmail — governor 3: daily pitch cap', () => {
 describe('sendGuardedEmail — governor 4: active-sequence cap', () => {
   it('blocks a sequence send over the tier active-sequence cap', async () => {
     const gateways = makeGateways({ countActiveSequences: vi.fn(async () => 3) }); // starter cap = 2
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext({ purpose: 'sequence' }),
+      gateways,
+      rawSend,
+    });
+    expect(res.refusal?.governor).toBe('active_sequence_cap');
+    expect(rawSend).not.toHaveBeenCalled();
+  });
+
+  it('blocks AT the cap (>= semantics, off-by-one fixed)', async () => {
+    const gateways = makeGateways({ countActiveSequences: vi.fn(async () => 2) }); // starter cap = 2
     const res = await sendGuardedEmail({
       request: baseRequest(),
       context: baseContext({ purpose: 'sequence' }),

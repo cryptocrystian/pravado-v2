@@ -90,6 +90,30 @@ CREATE POLICY contact_state_transitions_read_all
   TO authenticated
   USING (true);
 
+-- 12.3 — suppressed_email_hashes: DURABLE, backfill-INDEPENDENT suppression.
+-- An opt-out/bounce is hashed and stored here regardless of whether a
+-- media_contacts row exists yet, so an opt-out received BEFORE the 784K
+-- backfill is never lost. The send chokepoint checks this store first and the
+-- enrichment waterfall checks it before persisting any email (prevents
+-- re-ingestion of an opted-out address).
+CREATE TABLE IF NOT EXISTS public.suppressed_email_hashes (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email_hash    TEXT NOT NULL UNIQUE,   -- sha256(lower(trim(email)))
+  reason        TEXT,                    -- 'opt_out' | 'bounce' | 'complaint'
+  suppressed_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.suppressed_email_hashes IS
+  'Canon §12.3 — durable opt-out/bounce suppression by hashed email. Backfill-independent; checked before every send and every enrichment result.';
+
+CREATE INDEX IF NOT EXISTS idx_suppressed_email_hashes_hash
+  ON public.suppressed_email_hashes (email_hash);
+
+-- Compliance store: RLS enabled, NO authenticated policy — service-role only
+-- (the send/enrichment paths run server-side and bypass RLS). Hashes are never
+-- exposed to client-side reads.
+ALTER TABLE public.suppressed_email_hashes ENABLE ROW LEVEL SECURITY;
+
 
 -- =====================================================================
 -- SECTION B — STAGED BACKFILL (INERT unless pravado.run_backfill = 'on')
