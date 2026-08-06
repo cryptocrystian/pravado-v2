@@ -26,7 +26,9 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { hashEmail } from './emailSuppression';
 import { createLogger } from '../lib/logger';
+
 // =============================================
 // Database Mappers
 // =============================================
@@ -960,10 +962,94 @@ export class OutreachDeliverabilityService {
     // Update the message
     await this.updateEmailMessage(message.id, orgId, updateData);
 
+    // Lane B — opt-out / bounce intake. Previously bounce & unsubscribe were
+    // silently remapped onto the message send_status only; the contact was
+    // NEVER suppressed. Now a bounce drives [any]->bounced and an
+    // unsubscribe/complaint drives [any]->suppressed (permanent, global,
+    // irreversible), each with a contact_state_transitions audit row.
+    if (
+      normalized.eventType === 'bounced' ||
+      normalized.eventType === 'complained'
+    ) {
+      await this.applySuppressionFromWebhook(
+        normalized.recipientEmail,
+        normalized.eventType
+      );
+    }
+
     // Update engagement metrics for the journalist
     await this.updateEngagementMetrics(message.journalistId, orgId);
 
     return { success: true, messageId: message.id };
+  }
+
+  /**
+   * Drive the contact state machine from a provider webhook (Lane B).
+   * bounced   -> [any] -> 'bounced'    (trigger 'bounce')
+   * complained-> [any] -> 'suppressed' (trigger 'opt_out'; covers unsubscribe
+   *                                     + spam complaint — both suppress)
+   * Writes a contact_state_transitions audit row and advances
+   * media_contacts.contact_state. Resilient: never throws into the webhook
+   * pipeline; if the firewall tables are absent (pre-migration) it no-ops.
+   */
+  private async applySuppressionFromWebhook(
+    recipientEmail: string,
+    eventType: 'bounced' | 'complained'
+  ): Promise<void> {
+    try {
+      if (!recipientEmail) return;
+      const toState = eventType === 'bounced' ? 'bounced' : 'suppressed';
+      const reason = eventType === 'bounced' ? 'bounce' : 'opt_out';
+
+      // 1. DURABLE, backfill-INDEPENDENT: record the suppression hash FIRST so
+      //    an opt-out/bounce is never lost, even if no contact row exists yet
+      //    (opt-out received before the 784K backfill). Canon §12.3. First
+      //    reason wins (ignoreDuplicates) — a later bounce won't overwrite an
+      //    earlier permanent opt-out.
+      await this.supabase
+        .from('suppressed_email_hashes')
+        .upsert(
+          { email_hash: hashEmail(recipientEmail), reason },
+          { onConflict: 'email_hash', ignoreDuplicates: true }
+        );
+
+      // 2. If a contact row exists, also advance the state machine + audit.
+      const { data: emailRow, error: emailErr } = await this.supabase
+        .from('contact_emails')
+        .select('contact_id')
+        .ilike('email', recipientEmail)
+        .limit(1)
+        .maybeSingle();
+      if (emailErr || !emailRow?.contact_id) return;
+
+      const contactId = emailRow.contact_id as string;
+
+      const { data: mc } = await this.supabase
+        .from('media_contacts')
+        .select('contact_state')
+        .eq('id', contactId)
+        .maybeSingle();
+      const fromState = (mc?.contact_state as string | undefined) ?? null;
+
+      // suppressed is terminal & irreversible — don't downgrade to bounced.
+      if (fromState === 'suppressed') return;
+      if (fromState === toState) return;
+
+      await this.supabase.from('contact_state_transitions').insert({
+        contact_id: contactId,
+        from_state: fromState,
+        to_state: toState,
+        trigger: reason,
+        actor_type: eventType === 'bounced' ? 'system' : 'journalist',
+      });
+
+      await this.supabase
+        .from('media_contacts')
+        .update({ contact_state: toState })
+        .eq('id', contactId);
+    } catch {
+      // Never break the webhook pipeline on suppression bookkeeping failure.
+    }
   }
 
   // =============================================
