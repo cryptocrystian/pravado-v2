@@ -150,7 +150,7 @@ export function detectDirectMention(
 
 const CLASSIFIER_SYSTEM_PROMPT =
   'You are a precise brand-mention classifier for a citation-monitoring system. ' +
-  'You decide whether an AI assistant\'s answer references a specific brand, ' +
+  "You decide whether an AI assistant's answer references a specific brand, " +
   'either by name, by paraphrase/description without naming it, or whether it ' +
   'instead references a competitor. You reply with STRICT JSON only — no prose, ' +
   'no markdown fences.';
