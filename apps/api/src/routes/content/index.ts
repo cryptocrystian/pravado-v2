@@ -33,6 +33,9 @@ import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { enqueueCiteMindScore } from '../../queue/bullmqQueue';
+import { FLAGS } from '@pravado/feature-flags';
+import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
+import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
 import {
   planLimitError,
   PLAN_LIMIT_STATUS,
@@ -322,6 +325,45 @@ export async function contentRoutes(server: FastifyInstance) {
       }
 
       const updates = validation.data;
+
+      // Pre-Publish AEO ingestion-readiness gate (canon SEO_AEO_PILLAR_CANON
+      // §3E). Standalone Engine-1 service; the publish path calls it. Advisory:
+      // bypass is always permitted, but the score + explanation must be shown.
+      const rawBody = request.body as Record<string, unknown> | undefined;
+      const aeoBypass = rawBody?.aeo_bypass === true;
+      const isPublishing = updates.status === 'published';
+
+      if (isPublishing && FLAGS.ENABLE_CITEMIND && FLAGS.ENABLE_AEO_GATE) {
+        // Persist any content edits first so the gate scores the final asset,
+        // but withhold the status flip until the gate passes or is bypassed.
+        const { status: _statusHeld, ...contentUpdates } = updates;
+        if (Object.keys(contentUpdates).length > 0) {
+          await contentService.updateContentItem(orgId, id, contentUpdates);
+        }
+
+        let gate = null;
+        try {
+          gate = await runAeoGate(supabase, id, orgId);
+        } catch {
+          gate = null; // never let gate evaluation errors hard-block publish
+        }
+
+        if (gate && gate.blocked && !aeoBypass) {
+          return reply.code(422).send({
+            success: false,
+            error: {
+              code: 'AEO_GATE_BLOCKED',
+              message: gate.explanation,
+              aeo_score: gate.aeo_score,
+              band: gate.band,
+              components: gate.components,
+              gaps: gate.gaps,
+              bypass_allowed: true,
+            },
+          });
+        }
+      }
+
       const item = await contentService.updateContentItem(orgId, id, updates);
 
       if (!item) {
@@ -337,6 +379,18 @@ export async function contentRoutes(server: FastifyInstance) {
       // Fire-and-forget: enqueue CiteMind scoring if body was updated
       if (updates.body) {
         enqueueCiteMindScore(id, orgId).catch(() => {
+          /* non-critical */
+        });
+      }
+
+      // Indexation ping on publish (Autopilot; canon §3D / CITEMIND_SYSTEM §2.5).
+      // Fire-and-forget IndexNow submit (+ Google Indexing for high-priority).
+      if (isPublishing && FLAGS.ENABLE_INDEXNOW && item?.url) {
+        pingIndexationOnPublish(supabase, {
+          orgId,
+          contentItemId: id,
+          url: item.url,
+        }).catch(() => {
           /* non-critical */
         });
       }
