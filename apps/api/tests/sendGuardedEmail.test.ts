@@ -9,9 +9,8 @@
  *        §10.3 (tier caps / follow-up cap), §16 (CAN-SPAM).
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
 import type { SendEmailRequest, SendEmailResponse } from '@pravado/types';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import {
   sendGuardedEmail,
@@ -26,7 +25,9 @@ const PERSONALIZED_BODY =
   'exclusive look at how mid-market teams measure model citations. Happy to share data and a ' +
   'customer intro this week if useful — thanks for the consistently sharp coverage as always.';
 
-function baseRequest(overrides: Partial<SendEmailRequest> = {}): SendEmailRequest {
+function baseRequest(
+  overrides: Partial<SendEmailRequest> = {}
+): SendEmailRequest {
   return {
     to: 'sarah@techcrunch.com',
     subject: 'Exclusive for Sarah on enterprise AI',
@@ -36,7 +37,9 @@ function baseRequest(overrides: Partial<SendEmailRequest> = {}): SendEmailReques
   };
 }
 
-function baseContext(overrides: Partial<GuardedSendContext> = {}): GuardedSendContext {
+function baseContext(
+  overrides: Partial<GuardedSendContext> = {}
+): GuardedSendContext {
   return {
     orgId: 'org-1',
     contactId: 'contact-1',
@@ -49,7 +52,8 @@ function baseContext(overrides: Partial<GuardedSendContext> = {}): GuardedSendCo
       name: 'Sarah Chen',
       outlet: 'TechCrunch',
       beats: ['enterprise ai', 'startups'],
-      recentWorkHook: 'recent piece on generative AI adoption in the enterprise',
+      recentWorkHook:
+        'recent piece on generative AI adoption in the enterprise',
     },
     ...overrides,
   };
@@ -76,7 +80,11 @@ function makeGateways(
 }
 
 let rawSend: ReturnType<typeof vi.fn>;
-const okResponse: SendEmailResponse = { success: true, messageId: 'msg-1', provider: 'stub' };
+const okResponse: SendEmailResponse = {
+  success: true,
+  messageId: 'msg-1',
+  provider: 'stub',
+};
 
 beforeEach(() => {
   rawSend = vi.fn(async () => okResponse);
@@ -96,20 +104,36 @@ describe('sendGuardedEmail — governor 1: suppression (CAN-SPAM)', () => {
     expect(rawSend).not.toHaveBeenCalled();
     // audit row for the blocked attempt
     expect(gateways.recordStateTransition).toHaveBeenCalledWith(
-      expect.objectContaining({ toState: 'suppressed', trigger: 'send_blocked_suppressed' })
+      expect.objectContaining({
+        toState: 'suppressed',
+        trigger: 'send_blocked_suppressed',
+      })
     );
   });
 
   it('hard-blocks a bounced contact', async () => {
     const gateways = makeGateways({}, { state: 'bounced' });
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.refusal?.governor).toBe('suppression');
     expect(rawSend).not.toHaveBeenCalled();
   });
 
   it('blocks an org do_not_contact even when state is pitch_eligible', async () => {
-    const gateways = makeGateways({}, { state: 'pitch_eligible', orgDoNotContact: true });
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const gateways = makeGateways(
+      {},
+      { state: 'pitch_eligible', orgDoNotContact: true }
+    );
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.refusal?.governor).toBe('suppression');
     expect(rawSend).not.toHaveBeenCalled();
   });
@@ -129,7 +153,12 @@ describe('sendGuardedEmail — governor 1: suppression (CAN-SPAM)', () => {
   it('FAILS CLOSED: an errored/uncertain governance read blocks the send', async () => {
     // Simulates governanceGateways returning readError (any DB read error).
     const gateways = makeGateways({}, { state: null, readError: true } as any);
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.sent).toBe(false);
     expect(res.refusal?.governor).toBe('suppression');
     expect(res.refusal?.details).toMatchObject({ readError: true });
@@ -152,7 +181,12 @@ describe('sendGuardedEmail — governor 1: suppression (CAN-SPAM)', () => {
 describe('sendGuardedEmail — governor 2: pitch-eligibility', () => {
   it('blocks a non-pitch_eligible contact (enriched)', async () => {
     const gateways = makeGateways({}, { state: 'enriched' });
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.refusal?.governor).toBe('pitch_eligibility');
     expect(rawSend).not.toHaveBeenCalled();
   });
@@ -172,22 +206,38 @@ describe('sendGuardedEmail — governor 2: pitch-eligibility', () => {
 
 describe('sendGuardedEmail — governor 3: daily pitch cap', () => {
   it('blocks when the org has hit the tier daily cap', async () => {
-    const gateways = makeGateways({ countPitchesSentToday: vi.fn(async () => 5) }); // starter cap = 5
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const gateways = makeGateways({
+      countPitchesSentToday: vi.fn(async () => 5),
+    }); // starter cap = 5
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.refusal?.governor).toBe('daily_pitch_cap');
     expect(rawSend).not.toHaveBeenCalled();
   });
 
   it('allows under the cap', async () => {
-    const gateways = makeGateways({ countPitchesSentToday: vi.fn(async () => 4) });
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const gateways = makeGateways({
+      countPitchesSentToday: vi.fn(async () => 4),
+    });
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.sent).toBe(true);
   });
 });
 
 describe('sendGuardedEmail — governor 4: active-sequence cap', () => {
   it('blocks a sequence send over the tier active-sequence cap', async () => {
-    const gateways = makeGateways({ countActiveSequences: vi.fn(async () => 3) }); // starter cap = 2
+    const gateways = makeGateways({
+      countActiveSequences: vi.fn(async () => 3),
+    }); // starter cap = 2
     const res = await sendGuardedEmail({
       request: baseRequest(),
       context: baseContext({ purpose: 'sequence' }),
@@ -199,7 +249,9 @@ describe('sendGuardedEmail — governor 4: active-sequence cap', () => {
   });
 
   it('blocks AT the cap (>= semantics, off-by-one fixed)', async () => {
-    const gateways = makeGateways({ countActiveSequences: vi.fn(async () => 2) }); // starter cap = 2
+    const gateways = makeGateways({
+      countActiveSequences: vi.fn(async () => 2),
+    }); // starter cap = 2
     const res = await sendGuardedEmail({
       request: baseRequest(),
       context: baseContext({ purpose: 'sequence' }),
@@ -213,7 +265,9 @@ describe('sendGuardedEmail — governor 4: active-sequence cap', () => {
 
 describe('sendGuardedEmail — governor 5: follow-up cap (2 / 7d)', () => {
   it('blocks a 3rd follow-up within 7 days', async () => {
-    const gateways = makeGateways({ countFollowUpsLast7Days: vi.fn(async () => 2) });
+    const gateways = makeGateways({
+      countFollowUpsLast7Days: vi.fn(async () => 2),
+    });
     const res = await sendGuardedEmail({
       request: baseRequest(),
       context: baseContext({ isFollowUp: true }),
@@ -225,7 +279,9 @@ describe('sendGuardedEmail — governor 5: follow-up cap (2 / 7d)', () => {
   });
 
   it('does not apply the follow-up cap to an initial pitch', async () => {
-    const gateways = makeGateways({ countFollowUpsLast7Days: vi.fn(async () => 99) });
+    const gateways = makeGateways({
+      countFollowUpsLast7Days: vi.fn(async () => 99),
+    });
     const res = await sendGuardedEmail({
       request: baseRequest(),
       context: baseContext({ isFollowUp: false }),
@@ -241,7 +297,11 @@ describe('sendGuardedEmail — governor 6: personalization gate', () => {
   it('blocks a pitch scoring below 40', async () => {
     const gateways = makeGateways();
     const res = await sendGuardedEmail({
-      request: baseRequest({ subject: 'Story idea', bodyHtml: '<p>Dear Journalist, please cover us.</p>', bodyText: 'Dear Journalist, please cover us.' }),
+      request: baseRequest({
+        subject: 'Story idea',
+        bodyHtml: '<p>Dear Journalist, please cover us.</p>',
+        bodyText: 'Dear Journalist, please cover us.',
+      }),
       context: baseContext(),
       gateways,
       rawSend,
@@ -254,7 +314,13 @@ describe('sendGuardedEmail — governor 6: personalization gate', () => {
   it('warns (but sends) in the 40-60 band', async () => {
     const gateways = makeGateways();
     const res = await sendGuardedEmail({
-      request: baseRequest({ subject: 'Quick note for Sarah', bodyHtml: '<p>Hi Sarah, I wanted to quickly reach out about TechCrunch and share a quick idea today.</p>', bodyText: 'Hi Sarah, I wanted to quickly reach out about TechCrunch and share a quick idea today.' }),
+      request: baseRequest({
+        subject: 'Quick note for Sarah',
+        bodyHtml:
+          '<p>Hi Sarah, I wanted to quickly reach out about TechCrunch and share a quick idea today.</p>',
+        bodyText:
+          'Hi Sarah, I wanted to quickly reach out about TechCrunch and share a quick idea today.',
+      }),
       context: baseContext(),
       gateways,
       rawSend,
@@ -269,7 +335,12 @@ describe('sendGuardedEmail — governor 6: personalization gate', () => {
 describe('sendGuardedEmail — happy path', () => {
   it('sends cleanly when every governor passes', async () => {
     const gateways = makeGateways();
-    const res = await sendGuardedEmail({ request: baseRequest(), context: baseContext(), gateways, rawSend });
+    const res = await sendGuardedEmail({
+      request: baseRequest(),
+      context: baseContext(),
+      gateways,
+      rawSend,
+    });
     expect(res.sent).toBe(true);
     expect(res.refusal).toBeUndefined();
     expect(res.warnings).toHaveLength(0);
@@ -283,7 +354,10 @@ describe('sendGuardedEmail — happy path', () => {
       { state: 'suppressed' }
     );
     const res = await sendGuardedEmail({
-      request: baseRequest({ bodyText: 'Dear Journalist', bodyHtml: '<p>Dear Journalist</p>' }),
+      request: baseRequest({
+        bodyText: 'Dear Journalist',
+        bodyHtml: '<p>Dear Journalist</p>',
+      }),
       context: baseContext(),
       gateways,
       rawSend,

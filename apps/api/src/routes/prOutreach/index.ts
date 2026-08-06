@@ -30,7 +30,10 @@ import { createAIDraftService } from '../../services/aiDraftService';
 import { createSupabaseGovernanceGateways } from '../../services/governanceGateways';
 import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
 import { createOutreachService } from '../../services/outreachService';
-import { deliverabilityRawSend, sendGuardedEmail } from '../../services/sendGuardedEmail';
+import {
+  deliverabilityRawSend,
+  sendGuardedEmail,
+} from '../../services/sendGuardedEmail';
 
 /**
  * Get provider configuration from environment (S98)

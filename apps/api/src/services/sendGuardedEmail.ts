@@ -51,7 +51,10 @@ export type ContactState =
 export type PlanTier = 'starter' | 'pro' | 'enterprise';
 
 /** Per-tier sending caps (canon §10.3). */
-export const TIER_CAPS: Record<PlanTier, { dailyPitches: number; activeSequences: number }> = {
+export const TIER_CAPS: Record<
+  PlanTier,
+  { dailyPitches: number; activeSequences: number }
+> = {
   starter: { dailyPitches: 5, activeSequences: 2 },
   pro: { dailyPitches: 25, activeSequences: 10 },
   enterprise: { dailyPitches: 100, activeSequences: Number.POSITIVE_INFINITY },
@@ -125,7 +128,9 @@ export interface ContactGovernanceState {
  */
 export interface GovernanceGateways {
   /** Resolve the platform contact_state + org-scoped do_not_contact. */
-  getContactGovernanceState(ctx: GuardedSendContext): Promise<ContactGovernanceState>;
+  getContactGovernanceState(
+    ctx: GuardedSendContext
+  ): Promise<ContactGovernanceState>;
   /** Org plan tier (drives caps). */
   getOrgTier(orgId: string): Promise<PlanTier>;
   /** Pitches this org has sent since 00:00 today. */
@@ -135,7 +140,11 @@ export interface GovernanceGateways {
   /** Follow-ups this org has sent to this contact in the last 7 days. */
   countFollowUpsLast7Days(
     orgId: string,
-    keys: { contactId: string | null; journalistId?: string | null; email: string }
+    keys: {
+      contactId: string | null;
+      journalistId?: string | null;
+      email: string;
+    }
   ): Promise<number>;
   /** Append a contact_state_transitions audit row + move the state. */
   recordStateTransition(input: {
@@ -171,9 +180,9 @@ export type RawSend = (request: SendEmailRequest) => Promise<SendEmailResponse>;
  * called outside the deliverability service itself. Every send site obtains
  * its RawSend from here, guaranteeing it cannot bypass the governors.
  */
-export function deliverabilityRawSend(
-  svc: { sendEmail: (request: SendEmailRequest) => Promise<SendEmailResponse> }
-): RawSend {
+export function deliverabilityRawSend(svc: {
+  sendEmail: (request: SendEmailRequest) => Promise<SendEmailResponse>;
+}): RawSend {
   return (request) => svc.sendEmail(request); // chokepoint-rawsend
 }
 
@@ -214,7 +223,8 @@ export async function sendGuardedEmail(args: {
   if (gov.readError) {
     return refuse({
       governor: 'suppression',
-      reason: 'Governance/suppression state could not be verified — failing closed (CAN-SPAM safety).',
+      reason:
+        'Governance/suppression state could not be verified — failing closed (CAN-SPAM safety).',
       details: { readError: true },
     });
   }
@@ -349,7 +359,10 @@ export async function sendGuardedEmail(args: {
 // ---------------------------------------------------------------------------
 
 function stripHtml(html: string | undefined | null): string {
-  return (html ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return (html ?? '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function redact(email: string): string {

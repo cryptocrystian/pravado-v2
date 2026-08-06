@@ -80,15 +80,12 @@ CREATE INDEX IF NOT EXISTS idx_contact_state_transitions_contact
 CREATE INDEX IF NOT EXISTS idx_contact_state_transitions_to_state
   ON public.contact_state_transitions (to_state);
 
+-- The audit log is the GDPR/CAN-SPAM provenance record (§4.3). It is NOT
+-- world-readable: RLS is enabled with NO authenticated SELECT policy, so only
+-- the service role (server-side compliance/provenance reads, which bypass RLS)
+-- can read it — mirroring suppressed_email_hashes / contact_emails.
 ALTER TABLE public.contact_state_transitions ENABLE ROW LEVEL SECURITY;
-
--- Audit log is platform-wide read for authenticated users (compliance
--- provenance is not org-private). Writes are service-role only.
 DROP POLICY IF EXISTS contact_state_transitions_read_all ON public.contact_state_transitions;
-CREATE POLICY contact_state_transitions_read_all
-  ON public.contact_state_transitions FOR SELECT
-  TO authenticated
-  USING (true);
 
 -- 12.3 — suppressed_email_hashes: DURABLE, backfill-INDEPENDENT suppression.
 -- An opt-out/bounce is hashed and stored here regardless of whether a

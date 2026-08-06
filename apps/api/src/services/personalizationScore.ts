@@ -48,7 +48,8 @@ export const PERSONALIZATION_BLOCK_THRESHOLD = 40;
 export const PERSONALIZATION_WARN_THRESHOLD = 60;
 
 /** Merge-token / generic-greeting patterns that indicate an unpersonalized template. */
-const UNFILLED_TOKEN_RE = /\{\{?\s*[a-z0-9_.]+\s*\}?\}|\[\s*[A-Z_ ]+\s*\]|%[A-Z_]+%/g;
+const UNFILLED_TOKEN_RE =
+  /\{\{?\s*[a-z0-9_.]+\s*\}?\}|\[\s*[A-Z_ ]+\s*\]|%[A-Z_]+%/g;
 const GENERIC_GREETING_RE =
   /\b(dear (journalist|editor|reporter|sir\/madam|sir or madam)|to whom it may concern|hi there|hello there)\b/i;
 
@@ -76,7 +77,9 @@ function firstName(name?: string | null): string {
  *   - generic greeting and no name match       -> score capped at 30
  *   - body < 8 words (stub)                     -> score capped at 20
  */
-export function scorePersonalization(input: PersonalizationInput): PersonalizationResult {
+export function scorePersonalization(
+  input: PersonalizationInput
+): PersonalizationResult {
   const subject = normalize(input.subject);
   const body = normalize(input.bodyText);
   const combined = `${subject}\n${body}`;
@@ -90,7 +93,8 @@ export function scorePersonalization(input: PersonalizationInput): Personalizati
 
   // +25 recipient first name
   const fn = firstName(input.recipient.name);
-  const nameMatched = fn.length >= 2 && new RegExp(`\\b${escapeRe(fn)}\\b`).test(combined);
+  const nameMatched =
+    fn.length >= 2 && new RegExp(`\\b${escapeRe(fn)}\\b`).test(combined);
   if (nameMatched) {
     score += 25;
     signals.push('recipient_name');
@@ -105,7 +109,9 @@ export function scorePersonalization(input: PersonalizationInput): Personalizati
   }
 
   // +20 beat referenced
-  const beats = (input.recipient.beats ?? []).map(normalize).filter((b) => b.length >= 3);
+  const beats = (input.recipient.beats ?? [])
+    .map(normalize)
+    .filter((b) => b.length >= 3);
   const beatMatched = beats.some((b) => combined.includes(b));
   if (beatMatched) {
     score += 20;
@@ -153,7 +159,9 @@ export function scorePersonalization(input: PersonalizationInput): Personalizati
   return {
     score,
     blocked: score < PERSONALIZATION_BLOCK_THRESHOLD,
-    warned: score >= PERSONALIZATION_BLOCK_THRESHOLD && score < PERSONALIZATION_WARN_THRESHOLD,
+    warned:
+      score >= PERSONALIZATION_BLOCK_THRESHOLD &&
+      score < PERSONALIZATION_WARN_THRESHOLD,
     signals,
     penalties,
   };

@@ -15,14 +15,16 @@ const recipient = {
   name: 'Sarah Chen',
   outlet: 'TechCrunch',
   beats: ['enterprise ai', 'startups'],
-  recentWorkHook: 'Your recent piece on generative AI adoption in the enterprise',
+  recentWorkHook:
+    'Your recent piece on generative AI adoption in the enterprise',
 };
 
 describe('scorePersonalization', () => {
   it('blocks a generic template with no personalization (score < 40)', () => {
     const r = scorePersonalization({
       subject: 'Story idea',
-      bodyText: 'Dear Journalist, we have a great product you should cover. Thanks.',
+      bodyText:
+        'Dear Journalist, we have a great product you should cover. Thanks.',
       recipient,
     });
     expect(r.score).toBeLessThan(PERSONALIZATION_BLOCK_THRESHOLD);
@@ -48,7 +50,8 @@ describe('scorePersonalization', () => {
     // Name + outlet only -> 25 + 20 = 45 (warn band), no beat/hook/substance.
     const r = scorePersonalization({
       subject: 'Quick note for Sarah',
-      bodyText: 'Hi Sarah, I wanted to quickly reach out about TechCrunch and share a quick idea today.',
+      bodyText:
+        'Hi Sarah, I wanted to quickly reach out about TechCrunch and share a quick idea today.',
       recipient,
     });
     expect(r.score).toBeGreaterThanOrEqual(PERSONALIZATION_BLOCK_THRESHOLD);
@@ -64,17 +67,30 @@ describe('scorePersonalization', () => {
       'thought you might want an exclusive look at how mid-market teams are actually ' +
       'measuring model citations. Happy to share data and a customer intro this week ' +
       'if useful — no pressure at all, and thanks for the consistently sharp coverage.';
-    const r = scorePersonalization({ subject: 'Exclusive for Sarah on enterprise AI', bodyText: body, recipient });
+    const r = scorePersonalization({
+      subject: 'Exclusive for Sarah on enterprise AI',
+      bodyText: body,
+      recipient,
+    });
     expect(r.score).toBeGreaterThanOrEqual(PERSONALIZATION_WARN_THRESHOLD);
     expect(r.blocked).toBe(false);
     expect(r.warned).toBe(false);
     expect(r.signals).toEqual(
-      expect.arrayContaining(['recipient_name', 'outlet_reference', 'beat_reference', 'recent_work_hook'])
+      expect.arrayContaining([
+        'recipient_name',
+        'outlet_reference',
+        'beat_reference',
+        'recent_work_hook',
+      ])
     );
   });
 
   it('caps a stub body regardless of context', () => {
-    const r = scorePersonalization({ subject: 'hey', bodyText: 'Sarah TechCrunch', recipient });
+    const r = scorePersonalization({
+      subject: 'hey',
+      bodyText: 'Sarah TechCrunch',
+      recipient,
+    });
     expect(r.penalties).toContain('stub_body');
     expect(r.score).toBeLessThanOrEqual(20);
     expect(r.blocked).toBe(true);

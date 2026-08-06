@@ -37,9 +37,13 @@ function sevenDaysAgoIso(): string {
   return new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 }
 
-export function createSupabaseGovernanceGateways(supabase: SupabaseClient): GovernanceGateways {
+export function createSupabaseGovernanceGateways(
+  supabase: SupabaseClient
+): GovernanceGateways {
   return {
-    async getContactGovernanceState(ctx: GuardedSendContext): Promise<ContactGovernanceState> {
+    async getContactGovernanceState(
+      ctx: GuardedSendContext
+    ): Promise<ContactGovernanceState> {
       let contactId = ctx.contactId ?? null;
 
       // FAIL CLOSED (CAN-SPAM): on ANY read error we must NOT grant
@@ -63,7 +67,8 @@ export function createSupabaseGovernanceGateways(supabase: SupabaseClient): Gove
           .maybeSingle();
         if (hashErr) return failClosed();
         if (hashRow) {
-          const state: ContactState = hashRow.reason === 'bounce' ? 'bounced' : 'suppressed';
+          const state: ContactState =
+            hashRow.reason === 'bounce' ? 'bounced' : 'suppressed';
           return { contactId, state, orgDoNotContact: false };
         }
       }
@@ -107,12 +112,17 @@ export function createSupabaseGovernanceGateways(supabase: SupabaseClient): Gove
           if (error) return failClosed();
           legacyEmail = j?.email ?? null;
         }
-        if (!legacyEmail && ctx.recipientEmail) legacyEmail = ctx.recipientEmail;
+        if (!legacyEmail && ctx.recipientEmail)
+          legacyEmail = ctx.recipientEmail;
         // Provisional legacy eligibility: a resolvable email => pitch_eligible.
         state = legacyEmail ? 'pitch_eligible' : null;
       }
 
-      const orgDoNotContact = await isOrgDoNotContact(supabase, ctx.orgId, contactId);
+      const orgDoNotContact = await isOrgDoNotContact(
+        supabase,
+        ctx.orgId,
+        contactId
+      );
 
       return { contactId, state, orgDoNotContact };
     },
@@ -158,7 +168,11 @@ export function createSupabaseGovernanceGateways(supabase: SupabaseClient): Gove
 
     async countFollowUpsLast7Days(
       orgId: string,
-      keys: { contactId: string | null; journalistId?: string | null; email: string }
+      keys: {
+        contactId: string | null;
+        journalistId?: string | null;
+        email: string;
+      }
     ): Promise<number> {
       // pr_outreach_email_messages is keyed on legacy journalist_id.
       if (!keys.journalistId) return 0;

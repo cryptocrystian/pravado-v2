@@ -11,9 +11,9 @@
  * contact was never suppressed — this test locks in the fix.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ProviderConfig } from '@pravado/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { describe, it, expect, vi } from 'vitest';
 
 import { createOutreachDeliverabilityService } from '../src/services/outreachDeliverabilityService';
 
@@ -55,16 +55,39 @@ function createMock(currentContactState = 'pitch_eligible', hasContact = true) {
   const upserts: Record<string, any[]> = {};
 
   const responders: Record<string, () => { data: any; error: any }> = {
-    'pr_outreach_email_messages:select': () => ({ data: messageRow(), error: null }),
-    'contact_emails:select': () => ({ data: hasContact ? { contact_id: CONTACT } : null, error: null }),
-    'media_contacts:select': () => ({ data: { contact_state: currentContactState }, error: null }),
-    'pr_outreach_engagement_metrics:select': () => ({ data: null, error: null }),
+    'pr_outreach_email_messages:select': () => ({
+      data: messageRow(),
+      error: null,
+    }),
+    'contact_emails:select': () => ({
+      data: hasContact ? { contact_id: CONTACT } : null,
+      error: null,
+    }),
+    'media_contacts:select': () => ({
+      data: { contact_state: currentContactState },
+      error: null,
+    }),
+    'pr_outreach_engagement_metrics:select': () => ({
+      data: null,
+      error: null,
+    }),
   };
 
   function builder(table: string) {
     let op = 'select';
     const b: any = {};
-    for (const m of ['select', 'eq', 'ilike', 'limit', 'order', 'gte', 'lte', 'neq', 'in', 'is']) {
+    for (const m of [
+      'select',
+      'eq',
+      'ilike',
+      'limit',
+      'order',
+      'gte',
+      'lte',
+      'neq',
+      'in',
+      'is',
+    ]) {
       b[m] = vi.fn(() => {
         if (m === 'select') op = 'select';
         return b;
@@ -89,7 +112,10 @@ function createMock(currentContactState = 'pitch_eligible', hasContact = true) {
       op = 'delete';
       return b;
     });
-    const term = () => Promise.resolve(responders[`${table}:${op}`]?.() ?? { data: null, error: null });
+    const term = () =>
+      Promise.resolve(
+        responders[`${table}:${op}`]?.() ?? { data: null, error: null }
+      );
     b.single = vi.fn(term);
     b.maybeSingle = vi.fn(term);
     b.then = (resolve: any, reject: any) => term().then(resolve, reject);
@@ -104,12 +130,20 @@ function createMock(currentContactState = 'pitch_eligible', hasContact = true) {
   return { supabase, inserts, updates, upserts };
 }
 
-const stubConfig: ProviderConfig = { provider: 'stub', fromEmail: 'no@pravado.com', fromName: 'Pravado' };
+const stubConfig: ProviderConfig = {
+  provider: 'stub',
+  fromEmail: 'no@pravado.com',
+  fromName: 'Pravado',
+};
 
 describe('webhook suppression intake', () => {
   it('drives a complaint/unsubscribe to suppressed with an audit row', async () => {
-    const { supabase, inserts, updates, upserts } = createMock('pitch_eligible');
-    const service = createOutreachDeliverabilityService({ supabase, providerConfig: stubConfig });
+    const { supabase, inserts, updates, upserts } =
+      createMock('pitch_eligible');
+    const service = createOutreachDeliverabilityService({
+      supabase,
+      providerConfig: stubConfig,
+    });
 
     const result = await service.processWebhookEvent(ORG, 'stub', {
       messageId: 'pm-1',
@@ -119,7 +153,9 @@ describe('webhook suppression intake', () => {
 
     expect(result.success).toBe(true);
     // durable hash recorded first (backfill-independent)
-    expect(upserts['suppressed_email_hashes']?.[0]).toMatchObject({ reason: 'opt_out' });
+    expect(upserts['suppressed_email_hashes']?.[0]).toMatchObject({
+      reason: 'opt_out',
+    });
     const transitions = inserts['contact_state_transitions'] ?? [];
     expect(transitions).toHaveLength(1);
     expect(transitions[0]).toMatchObject({
@@ -128,12 +164,17 @@ describe('webhook suppression intake', () => {
       trigger: 'opt_out',
       actor_type: 'journalist',
     });
-    expect(updates['media_contacts']).toEqual([{ contact_state: 'suppressed' }]);
+    expect(updates['media_contacts']).toEqual([
+      { contact_state: 'suppressed' },
+    ]);
   });
 
   it('drives a hard bounce to bounced with an audit row', async () => {
     const { supabase, inserts, updates } = createMock('pitch_eligible');
-    const service = createOutreachDeliverabilityService({ supabase, providerConfig: stubConfig });
+    const service = createOutreachDeliverabilityService({
+      supabase,
+      providerConfig: stubConfig,
+    });
 
     const result = await service.processWebhookEvent(ORG, 'stub', {
       messageId: 'pm-1',
@@ -155,7 +196,10 @@ describe('webhook suppression intake', () => {
 
   it('does not downgrade an already-suppressed contact on later bounce', async () => {
     const { supabase, inserts, updates } = createMock('suppressed');
-    const service = createOutreachDeliverabilityService({ supabase, providerConfig: stubConfig });
+    const service = createOutreachDeliverabilityService({
+      supabase,
+      providerConfig: stubConfig,
+    });
 
     await service.processWebhookEvent(ORG, 'stub', {
       messageId: 'pm-1',
@@ -169,8 +213,14 @@ describe('webhook suppression intake', () => {
   });
 
   it('persists an opt-out durably even when no contact row exists yet (pre-backfill)', async () => {
-    const { supabase, inserts, updates, upserts } = createMock('pitch_eligible', false);
-    const service = createOutreachDeliverabilityService({ supabase, providerConfig: stubConfig });
+    const { supabase, inserts, updates, upserts } = createMock(
+      'pitch_eligible',
+      false
+    );
+    const service = createOutreachDeliverabilityService({
+      supabase,
+      providerConfig: stubConfig,
+    });
 
     const result = await service.processWebhookEvent(ORG, 'stub', {
       messageId: 'pm-1',
@@ -180,7 +230,9 @@ describe('webhook suppression intake', () => {
 
     expect(result.success).toBe(true);
     // The opt-out is NEVER lost: the hash is recorded even with no contact.
-    expect(upserts['suppressed_email_hashes']?.[0]).toMatchObject({ reason: 'opt_out' });
+    expect(upserts['suppressed_email_hashes']?.[0]).toMatchObject({
+      reason: 'opt_out',
+    });
     // No contact row -> no state transition (nothing to advance yet).
     expect(inserts['contact_state_transitions']).toBeUndefined();
     expect(updates['media_contacts']).toBeUndefined();

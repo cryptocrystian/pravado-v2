@@ -24,7 +24,10 @@ import {
   createOutreachDeliverabilityService,
   resolveWebhookOrgId,
 } from '../../services/outreachDeliverabilityService';
-import { deliverabilityRawSend, sendGuardedEmail } from '../../services/sendGuardedEmail';
+import {
+  deliverabilityRawSend,
+  sendGuardedEmail,
+} from '../../services/sendGuardedEmail';
 
 /**
  * Get provider configuration from environment (S98)

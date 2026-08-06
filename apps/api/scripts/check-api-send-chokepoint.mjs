@@ -50,7 +50,12 @@ function walk(dir) {
     const full = join(dir, entry);
     const st = statSync(full);
     if (st.isDirectory()) {
-      if (entry === 'node_modules' || entry === '__tests__' || entry === 'tests') continue;
+      if (
+        entry === 'node_modules' ||
+        entry === '__tests__' ||
+        entry === 'tests'
+      )
+        continue;
       out.push(...walk(full));
     } else if (/\.(ts|tsx|mjs|js)$/.test(entry) && !/\.test\.ts$/.test(entry)) {
       out.push(full);
@@ -80,7 +85,8 @@ for (const file of files) {
           line: i + 1,
           rule: 'provider-send-outside-service',
           found: line.trim(),
-          message: 'provider.send() may only be called inside the deliverability service.',
+          message:
+            'provider.send() may only be called inside the deliverability service.',
         });
       }
     }
@@ -124,7 +130,8 @@ for (const req of REQUIRED_CHOKEPOINT_IMPORTERS) {
       line: 0,
       rule: 'send-site-missing-chokepoint',
       found: '',
-      message: 'Send-site file no longer imports/uses sendGuardedEmail — chokepoint bypass risk.',
+      message:
+        'Send-site file no longer imports/uses sendGuardedEmail — chokepoint bypass risk.',
     });
   }
 }
@@ -133,7 +140,9 @@ console.log('API Send-Chokepoint CI Guard');
 console.log('============================\n');
 
 if (violations.length === 0) {
-  console.log('PASS: every provider send path routes through sendGuardedEmail().');
+  console.log(
+    'PASS: every provider send path routes through sendGuardedEmail().'
+  );
   process.exit(0);
 }
 
@@ -148,5 +157,7 @@ if (WARN_ONLY) {
   console.log('WARN mode: not failing.');
   process.exit(0);
 }
-console.log('FAIL: send-chokepoint invariant violated. Route all sends through sendGuardedEmail().');
+console.log(
+  'FAIL: send-chokepoint invariant violated. Route all sends through sendGuardedEmail().'
+);
 process.exit(1);

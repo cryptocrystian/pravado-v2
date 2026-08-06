@@ -27,8 +27,8 @@ import type {
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { hashEmail } from './emailSuppression';
-
 import { createLogger } from '../lib/logger';
+
 // =============================================
 // Database Mappers
 // =============================================
@@ -967,7 +967,10 @@ export class OutreachDeliverabilityService {
     // NEVER suppressed. Now a bounce drives [any]->bounced and an
     // unsubscribe/complaint drives [any]->suppressed (permanent, global,
     // irreversible), each with a contact_state_transitions audit row.
-    if (normalized.eventType === 'bounced' || normalized.eventType === 'complained') {
+    if (
+      normalized.eventType === 'bounced' ||
+      normalized.eventType === 'complained'
+    ) {
       await this.applySuppressionFromWebhook(
         normalized.recipientEmail,
         normalized.eventType
