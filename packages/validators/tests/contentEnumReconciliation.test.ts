@@ -91,9 +91,9 @@ describe('content enum reconciliation → canon', () => {
   });
 
   it('listContentItemsSchema filters on canon statuses and rejects legacy', () => {
-    expect(listContentItemsSchema.safeParse({ status: 'approved' }).success).toBe(
-      true
-    );
+    expect(
+      listContentItemsSchema.safeParse({ status: 'approved' }).success
+    ).toBe(true);
     expect(listContentItemsSchema.safeParse({ status: 'ready' }).success).toBe(
       false
     );

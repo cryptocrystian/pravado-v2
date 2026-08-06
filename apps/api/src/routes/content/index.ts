@@ -41,8 +41,8 @@ import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
-import { ContentService } from '../../services/contentService';
 import { enforcePublishGovernance } from '../../services/content/publishGovernance';
+import { ContentService } from '../../services/contentService';
 
 /**
  * Helper to get user's org ID
