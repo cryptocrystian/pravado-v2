@@ -4,9 +4,16 @@
  * Polls LLM engines to detect whether AI models cite the customer's content.
  * Supported engines: Perplexity (search-enabled), OpenAI, Anthropic.
  *
+ * Brand-mention detection (Lane E):
+ * - Direct/domain matches resolve deterministically (no LLM cost).
+ * - Ambiguous responses go to a semantic classifier (brandMentionDetector) that
+ *   detects paraphrased/indirect brand mentions and competitor mentions.
+ *
  * Cost guardrails:
  * - Max 20 queries per org per cycle
  * - Uses cheapest models (haiku, sonar-small, gpt-4o-mini)
+ * - Semantic classification only fires on responses without a direct match,
+ *   at the cheapest tier (temperature 0, <=256 tokens)
  * - Checks budget before each engine
  * - Dedup: skip if same org+query+engine ran in last 6 hours
  *
@@ -16,6 +23,12 @@
 import { LlmRouter } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import {
+  createRouterClassifier,
+  detectBrandMention,
+  type BrandMentionContext,
+  type SemanticClassifier,
+} from './brandMentionDetector';
 import { generateQueriesForOrg } from './citationQueryGenerator';
 import { createLogger } from '../../lib/logger';
 
@@ -164,61 +177,6 @@ async function callEngine(
   }
 
   return { text, engine };
-}
-
-// ============================================================================
-// Brand Mention Detection
-// ============================================================================
-
-interface MentionAnalysis {
-  brand_mentioned: boolean;
-  mention_type: 'direct' | 'indirect' | 'competitor' | null;
-  citation_url: string | null;
-}
-
-function analyzeMentions(
-  responseText: string,
-  orgName: string,
-  orgDomain?: string
-): MentionAnalysis {
-  const lower = responseText.toLowerCase();
-  const orgLower = orgName.toLowerCase();
-
-  // Direct mention: org name appears in response
-  if (lower.includes(orgLower)) {
-    // Check for URL citation
-    let citationUrl: string | null = null;
-    if (orgDomain) {
-      const urlMatch = responseText.match(
-        new RegExp(
-          `https?://[^\\s]*${orgDomain.replace('.', '\\.')}[^\\s]*`,
-          'i'
-        )
-      );
-      citationUrl = urlMatch?.[0] || null;
-    }
-    return {
-      brand_mentioned: true,
-      mention_type: 'direct',
-      citation_url: citationUrl,
-    };
-  }
-
-  // URL citation: org domain appears
-  if (orgDomain && lower.includes(orgDomain.toLowerCase())) {
-    const urlMatch = responseText.match(
-      new RegExp(`https?://[^\\s]*${orgDomain.replace('.', '\\.')}[^\\s]*`, 'i')
-    );
-    return {
-      brand_mentioned: true,
-      mention_type: 'direct',
-      citation_url: urlMatch?.[0] || null,
-    };
-  }
-
-  // Indirect: check if the response vaguely references the brand's concepts
-  // (simplified heuristic — would need NLP for production)
-  return { brand_mentioned: false, mention_type: null, citation_url: null };
 }
 
 // ============================================================================
@@ -479,6 +437,35 @@ export async function monitorCitations(
     (org as { name: string; domain?: string } | null)?.name || 'Brand';
   const orgDomain = (org as { name: string; domain?: string } | null)?.domain;
 
+  // Load active competitor names so the semantic classifier can attribute
+  // competitor mentions (best effort — absence just disables competitor naming).
+  const { data: competitorRows } = await supabase
+    .from('competitors')
+    .select('name')
+    .eq('org_id', orgId)
+    .eq('is_active', true)
+    .limit(50);
+  const competitorNames = (
+    (competitorRows as Array<{ name?: string }> | null) ?? []
+  )
+    .map((c) => c.name)
+    .filter((n): n is string => typeof n === 'string' && n.trim().length > 0);
+
+  const mentionContext: BrandMentionContext = {
+    orgName,
+    orgDomain,
+    competitorNames,
+  };
+
+  // Semantic mention classifier (Lane E). Only consulted for responses without
+  // a deterministic direct match; falls back to no-match when no LLM key exists.
+  const classifier: SemanticClassifier = createRouterClassifier({
+    anthropicApiKey: config.anthropicApiKey,
+    openaiApiKey: config.openaiApiKey,
+    supabase,
+    orgId,
+  });
+
   // Generate queries
   const queries = await generateQueriesForOrg(supabase, orgId);
 
@@ -532,7 +519,11 @@ export async function monitorCitations(
           orgId
         );
         const excerpt = response.text.substring(0, 500);
-        const mention = analyzeMentions(response.text, orgName, orgDomain);
+        const mention = await detectBrandMention(
+          response.text,
+          mentionContext,
+          classifier
+        );
 
         // Save result
         await supabase.from('citation_monitor_results').insert({
