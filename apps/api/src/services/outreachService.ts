@@ -34,7 +34,9 @@ import type {
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { createSupabaseGovernanceGateways } from './governanceGateways';
 import type { OutreachDeliverabilityService } from './outreachDeliverabilityService';
+import { deliverabilityRawSend, sendGuardedEmail } from './sendGuardedEmail';
 import { createLogger } from '../lib/logger';
 /**
  * Service configuration
@@ -741,14 +743,49 @@ export class OutreachService {
             metadata: email.variables,
           });
 
-        // Send the email
-        const sendResult = await this.deliverabilityService.sendEmail({
-          to: run.journalist.email,
-          subject: email.subject,
-          bodyHtml: email.body,
-          bodyText: email.body,
-          metadata: email.variables,
+        // Route the sequence send through the governed chokepoint (Lane B).
+        // step 1 is the initial pitch; steps > 1 are follow-ups (governed by
+        // the 2-per-7-days follow-up cap).
+        const gateways = createSupabaseGovernanceGateways(this.supabase);
+        const guarded = await sendGuardedEmail({
+          request: {
+            to: run.journalist.email,
+            subject: email.subject,
+            bodyHtml: email.body,
+            bodyText: email.body,
+            metadata: email.variables,
+          },
+          context: {
+            orgId,
+            journalistId: run.journalist.id,
+            recipientEmail: run.journalist.email,
+            isFollowUp: step.stepNumber > 1,
+            purpose: 'sequence',
+            personalization: {
+              name: run.journalist.name,
+              outlet: run.journalist.outlet,
+              beats: [],
+            },
+          },
+          gateways,
+          rawSend: deliverabilityRawSend(this.deliverabilityService),
+          logger: { warn: () => {}, info: () => {} },
         });
+
+        // A governor refused: mark the message failed and surface the reason
+        // through the existing failure path (records a failed event + lastError).
+        if (guarded.refusal) {
+          await this.deliverabilityService.updateEmailMessage(
+            emailMessage.id,
+            orgId,
+            { sendStatus: 'failed' }
+          );
+          throw new Error(
+            `Send blocked by governor ${guarded.refusal.governor}: ${guarded.refusal.reason}`
+          );
+        }
+
+        const sendResult = guarded.providerResponse!;
 
         if (sendResult.success && sendResult.messageId) {
           providerMessageId = sendResult.messageId;

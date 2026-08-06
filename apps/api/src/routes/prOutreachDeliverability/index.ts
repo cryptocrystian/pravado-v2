@@ -19,10 +19,12 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { captureRawBody } from '../../lib/captureRawBody';
 import { requireUser } from '../../middleware/requireUser';
+import { createSupabaseGovernanceGateways } from '../../services/governanceGateways';
 import {
   createOutreachDeliverabilityService,
   resolveWebhookOrgId,
 } from '../../services/outreachDeliverabilityService';
+import { deliverabilityRawSend, sendGuardedEmail } from '../../services/sendGuardedEmail';
 
 /**
  * Get provider configuration from environment (S98)
@@ -613,11 +615,40 @@ export default async function prOutreachDeliverabilityRoutes(
         supabase,
         providerConfig,
       });
-      const result = await service.sendEmail(emailRequest);
+
+      // Even the test-send path routes through the governed chokepoint so it
+      // can NEVER egress to a suppressed/bounced recipient. purpose:'test'
+      // bypasses eligibility/caps/personalization but NOT suppression.
+      const gateways = createSupabaseGovernanceGateways(supabase);
+      const guarded = await sendGuardedEmail({
+        request: emailRequest,
+        context: {
+          orgId,
+          recipientEmail: emailRequest.to,
+          actorId: user.id,
+          isFollowUp: false,
+          purpose: 'test',
+          personalization: { name: null, outlet: null, beats: [] },
+        },
+        gateways,
+        rawSend: deliverabilityRawSend(service),
+        logger: fastify.log,
+      });
+
+      if (guarded.refusal) {
+        return reply.status(422).send({
+          success: false,
+          error: {
+            code: `SEND_BLOCKED_${guarded.refusal.governor.toUpperCase()}`,
+            message: guarded.refusal.reason,
+            details: guarded.refusal.details,
+          },
+        });
+      }
 
       return reply.send({
         success: true,
-        data: result,
+        data: guarded.providerResponse,
       });
     }
   );

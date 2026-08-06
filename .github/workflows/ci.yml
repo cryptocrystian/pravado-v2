@@ -86,6 +86,11 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      # Lane B — enforce the send chokepoint: no provider send path may
+      # bypass sendGuardedEmail() (suppression/CAN-SPAM + the 6 governors).
+      - name: PR send-chokepoint guardrail (apps/api)
+        run: node apps/api/scripts/check-api-send-chokepoint.mjs
+
       # Phase 0.5 Plan 06d: catch the failure mode that bit Track 0D —
       # typecheck + test pass while runtime plugin chain crashes at startup.
       # Boots apps/api for 5 seconds and fails the build if the process

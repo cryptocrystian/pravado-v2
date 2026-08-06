@@ -27,8 +27,10 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { createAIDraftService } from '../../services/aiDraftService';
+import { createSupabaseGovernanceGateways } from '../../services/governanceGateways';
 import { createOutreachDeliverabilityService } from '../../services/outreachDeliverabilityService';
 import { createOutreachService } from '../../services/outreachService';
+import { deliverabilityRawSend, sendGuardedEmail } from '../../services/sendGuardedEmail';
 
 /**
  * Get provider configuration from environment (S98)
@@ -770,7 +772,7 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       // Look up the journalist's email
       const { data: journalist, error: journalistError } = await supabase
         .from('journalists')
-        .select('id, name, email, outlet')
+        .select('id, name, email, outlet, beat')
         .eq('id', input.journalistId)
         .single();
 
@@ -801,20 +803,61 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
         providerConfig,
       });
 
-      // Send the email
-      const sendResult = await deliverabilityService.sendEmail({
-        to: journalist.email,
-        subject: input.subject,
-        bodyHtml: input.bodyHtml,
-        bodyText: input.bodyText || '',
-        metadata: {
+      // Route through the governed send chokepoint (Lane B). Every governor
+      // (suppression, pitch-eligibility, daily cap, sequence cap, follow-up
+      // cap, server-side personalization) runs before the provider is ever
+      // invoked. This is the ONLY sanctioned path to the provider.
+      const gateways = createSupabaseGovernanceGateways(supabase);
+      const guarded = await sendGuardedEmail({
+        request: {
+          to: journalist.email,
+          subject: input.subject,
+          bodyHtml: input.bodyHtml,
+          bodyText: input.bodyText || '',
+          metadata: {
+            orgId,
+            journalistId: input.journalistId,
+            pitchId: input.pitchId,
+            articleId: input.articleId,
+            ...input.metadata,
+          },
+        },
+        context: {
           orgId,
           journalistId: input.journalistId,
-          pitchId: input.pitchId,
-          articleId: input.articleId,
-          ...input.metadata,
+          recipientEmail: journalist.email,
+          actorId: user.id,
+          isFollowUp: false,
+          purpose: 'pitch',
+          personalization: {
+            name: journalist.name,
+            outlet: journalist.outlet,
+            beats: journalist.beat ? [journalist.beat] : [],
+          },
         },
+        gateways,
+        rawSend: deliverabilityRawSend(deliverabilityService),
+        logger: fastify.log,
       });
+
+      // A governor refused the send — surface it; the provider was NOT called.
+      if (guarded.refusal) {
+        return reply.status(422).send({
+          success: false,
+          error: {
+            code: `SEND_BLOCKED_${guarded.refusal.governor.toUpperCase()}`,
+            message: guarded.refusal.reason,
+            details: guarded.refusal.details,
+          },
+          personalization: {
+            score: guarded.personalization.score,
+            signals: guarded.personalization.signals,
+            penalties: guarded.personalization.penalties,
+          },
+        });
+      }
+
+      const sendResult = guarded.providerResponse!;
 
       // Record the email message for tracking
       if (sendResult.success && sendResult.messageId) {
@@ -852,6 +895,8 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
             email: journalist.email,
             outlet: journalist.outlet,
           },
+          warnings: guarded.warnings,
+          personalizationScore: guarded.personalization.score,
         },
       });
     }
