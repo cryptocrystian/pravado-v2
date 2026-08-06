@@ -17,6 +17,7 @@ import type {
   ListContentGapsResponse,
   ContentItem,
   ContentBrief,
+  AeoGateInfo,
 } from '@pravado/types';
 import {
   listContentItemsSchema,
@@ -325,46 +326,7 @@ export async function contentRoutes(server: FastifyInstance) {
       }
 
       const updates = validation.data;
-
-      // Pre-Publish AEO ingestion-readiness gate (canon SEO_AEO_PILLAR_CANON
-      // §3E). Standalone Engine-1 service; the publish path calls it. Advisory:
-      // bypass is always permitted, but the score + explanation must be shown.
-      const rawBody = request.body as Record<string, unknown> | undefined;
-      const aeoBypass = rawBody?.aeo_bypass === true;
       const isPublishing = updates.status === 'published';
-
-      if (isPublishing && FLAGS.ENABLE_CITEMIND && FLAGS.ENABLE_AEO_GATE) {
-        // Persist any content edits first so the gate scores the final asset,
-        // but withhold the status flip until the gate passes or is bypassed.
-        const { status: _statusHeld, ...contentUpdates } = updates;
-        if (Object.keys(contentUpdates).length > 0) {
-          await contentService.updateContentItem(orgId, id, contentUpdates);
-        }
-
-        let gate = null;
-        try {
-          gate = await runAeoGate(supabase, id, orgId);
-        } catch {
-          gate = null; // never let gate evaluation errors hard-block publish
-        }
-
-        if (gate && gate.blocked && !aeoBypass) {
-          return reply.code(422).send({
-            success: false,
-            error: {
-              code: 'AEO_GATE_BLOCKED',
-              message: gate.explanation,
-              details: {
-                aeo_score: gate.aeo_score,
-                band: gate.band,
-                components: gate.components,
-                gaps: gate.gaps,
-                bypass_allowed: true,
-              },
-            },
-          });
-        }
-      }
 
       const item = await contentService.updateContentItem(orgId, id, updates);
 
@@ -385,6 +347,26 @@ export async function contentRoutes(server: FastifyInstance) {
         });
       }
 
+      // Pre-Publish AEO ingestion-readiness gate (canon SEO_AEO_PILLAR_CANON §3E).
+      // ADVISORY, never blocking: on publish it always runs and persists the
+      // score/band/gaps to aeo_gate_results, and the result is surfaced as
+      // non-blocking info on the response. Publish proceeds regardless of score.
+      let aeo: AeoGateInfo | undefined;
+      if (isPublishing && FLAGS.ENABLE_CITEMIND && FLAGS.ENABLE_AEO_GATE) {
+        try {
+          const gate = await runAeoGate(supabase, id, orgId);
+          aeo = {
+            aeo_score: gate.aeo_score,
+            band: gate.band,
+            passed: gate.passed,
+            gaps: gate.gaps,
+            explanation: gate.explanation,
+          };
+        } catch {
+          aeo = undefined; // advisory: gate failure must never affect publish
+        }
+      }
+
       // Indexation ping on publish (Autopilot; canon §3D / CITEMIND_SYSTEM §2.5).
       // Fire-and-forget IndexNow submit (+ Google Indexing for high-priority).
       if (isPublishing && FLAGS.ENABLE_INDEXNOW && item?.url) {
@@ -399,7 +381,7 @@ export async function contentRoutes(server: FastifyInstance) {
 
       return reply.send({
         success: true,
-        data: { item },
+        data: { item, ...(aeo ? { aeo } : {}) },
       });
     }
   );

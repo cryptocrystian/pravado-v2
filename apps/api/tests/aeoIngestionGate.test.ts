@@ -106,8 +106,8 @@ function gateMock(
   });
 }
 
-describe('runAeoGate — end to end', () => {
-  it('BLOCKS below-threshold content with a bypass-permitting explanation', async () => {
+describe('runAeoGate — end to end (advisory, never blocks publish)', () => {
+  it('flags below-threshold content as advisory (bypass always permitted) and persists the score', async () => {
     const supabase = gateMock(
       {
         id: 'c1',
@@ -129,11 +129,16 @@ describe('runAeoGate — end to end', () => {
     expect(res.bypass_allowed).toBe(true);
     expect(res.explanation.toLowerCase()).toContain('unlikely');
     expect(res.gaps.length).toBeGreaterThan(0);
-    // persisted an audit row
+    // `blocked` here is an advisory below-threshold indicator only — it is
+    // surfaced as info and never prevents publish. `bypass_allowed` is always
+    // true; the publish route (content/index.ts) does NOT 422 on this.
+    expect(res.bypass_allowed).toBe(true);
+    // score is computed + persisted (audit row written)
+    expect(res.aeo_score).toBeGreaterThanOrEqual(0);
     expect(spy).toHaveBeenCalledWith('aeo_gate_results');
   });
 
-  it('PASSES eligible content and does not block', async () => {
+  it('scores eligible content above threshold and persists it', async () => {
     const supabase = gateMock(
       {
         id: 'c2',

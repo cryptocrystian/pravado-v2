@@ -482,7 +482,26 @@ export type UpdatePRListMembersResponse = ApiResponse<{
 export type ListContentItemsResponse = ApiResponse<ContentItemListDTO>; // S12: Enhanced with pagination
 export type GetContentItemResponse = ApiResponse<{ item: ContentItem }>;
 export type CreateContentItemResponse = ApiResponse<{ item: ContentItem }>; // S12: Added
-export type UpdateContentItemResponse = ApiResponse<{ item: ContentItem }>; // S12: Added
+/**
+ * Advisory AEO ingestion-readiness summary (CiteMind Engine 1, canon
+ * SEO_AEO_PILLAR_CANON 3E). Attached to a publish response as non-blocking info;
+ * the gate never blocks publish.
+ */
+export interface AeoGateInfo {
+  aeo_score: number;
+  band:
+    | 'not_eligible'
+    | 'partially_eligible'
+    | 'citation_ready'
+    | 'citation_dominant';
+  passed: boolean;
+  gaps: string[];
+  explanation: string;
+}
+export type UpdateContentItemResponse = ApiResponse<{
+  item: ContentItem;
+  aeo?: AeoGateInfo;
+}>; // S12: Added; aeo (advisory) added Lane D
 export type ListContentBriefsResponse = ApiResponse<{ items: ContentBrief[] }>;
 export type GetContentBriefResponse = ApiResponse<{ item: ContentBrief }>;
 export type GetContentBriefWithContextResponse =
