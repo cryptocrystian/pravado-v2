@@ -114,19 +114,15 @@ export type UpdatePRListMembersParams = z.infer<
 
 // S12: Enhanced content item listing with filters
 export const listContentItemsSchema = z.object({
-  status: z.enum(['draft', 'published', 'archived']).optional(),
+  status: z
+    .enum(['draft', 'review', 'approved', 'published', 'archived'])
+    .optional(),
   q: z.string().optional(), // Search query for title/body
   topicId: z.string().uuid().optional(),
   page: z.number().int().positive().optional().default(1),
   pageSize: z.number().int().positive().max(100).optional().default(20),
   contentType: z
-    .enum([
-      'blog_post',
-      'social_post',
-      'long_form',
-      'video_script',
-      'newsletter',
-    ])
+    .enum(['blog_post', 'long_form', 'landing_page', 'guide', 'case_study'])
     .optional(),
 });
 
@@ -138,13 +134,13 @@ export const createContentItemSchema = z.object({
   slug: z.string().min(1).max(200).optional(),
   contentType: z.enum([
     'blog_post',
-    'social_post',
     'long_form',
-    'video_script',
-    'newsletter',
+    'landing_page',
+    'guide',
+    'case_study',
   ]),
   status: z
-    .enum(['draft', 'published', 'archived'])
+    .enum(['draft', 'review', 'approved', 'published', 'archived'])
     .optional()
     .default('draft'),
   body: z.string().optional(),
@@ -160,15 +156,11 @@ export const updateContentItemSchema = z.object({
   title: z.string().min(1).max(500).optional(),
   slug: z.string().min(1).max(200).optional(),
   contentType: z
-    .enum([
-      'blog_post',
-      'social_post',
-      'long_form',
-      'video_script',
-      'newsletter',
-    ])
+    .enum(['blog_post', 'long_form', 'landing_page', 'guide', 'case_study'])
     .optional(),
-  status: z.enum(['draft', 'published', 'archived']).optional(),
+  status: z
+    .enum(['draft', 'review', 'approved', 'published', 'archived'])
+    .optional(),
   body: z.string().optional(),
   url: z.string().url().optional(),
   primaryTopicId: z.string().uuid().optional(),

@@ -6,6 +6,18 @@
  * SWR-based hooks for fetching Content pillar data.
  * Follows Gate 1A network invariant (client → Next.js route handler → backend).
  *
+ * Wiring contract (Lane H): the Next.js route handlers return the standard
+ * `{ success, data }` envelope (backendProxy already unwrapped the API's own
+ * envelope). So the client fetcher unwraps exactly ONE `{ success, data }` layer
+ * and each hook reads the backend payload shape:
+ *   - /items      → { items, total, page, pageSize }
+ *   - /items/:id  → { item }
+ *   - /briefs     → { items }
+ *   - /clusters   → { items }
+ *   - /gaps       → { items }
+ * Previously the hooks read `data.items`/`data.gaps` off the OUTER envelope and
+ * were never wired to any component — that mismatch is the bug this fixes.
+ *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
 
@@ -19,19 +31,71 @@ import type {
   AuthoritySignals,
   ContentStatus,
   ContentType,
+  CiteMindStatus,
 } from '../types';
 
 // ============================================
-// FETCHER
+// FETCHER — unwraps one { success, data } envelope
 // ============================================
+
+interface ApiEnvelope<T> {
+  success: boolean;
+  data?: T;
+  error?: { message?: string; code?: string };
+}
 
 async function fetcher<T>(url: string): Promise<T> {
   const res = await fetch(url);
-  if (!res.ok) {
-    const error = new Error('Failed to fetch content data');
-    throw error;
+  const json = (await res.json().catch(() => null)) as ApiEnvelope<T> | null;
+  if (!res.ok || !json || json.success === false) {
+    throw new Error(json?.error?.message ?? 'Failed to fetch content data');
   }
-  return res.json();
+  return (json.data ?? (json as unknown as T)) as T;
+}
+
+// ============================================
+// API → FE SHAPE ADAPTER
+// ============================================
+
+/**
+ * The backend `content_items` payload (DB-shaped) is narrower than the FE
+ * `ContentAsset`. Map the real fields and default the presentation-only fields
+ * (citeMindStatus is derived from a separate CiteMind score fetch; until wired
+ * it is honestly 'pending', never faked as 'passed').
+ */
+interface ApiContentItem {
+  id: string;
+  orgId?: string;
+  title: string;
+  contentType: ContentType;
+  status: ContentStatus;
+  body?: string | null;
+  slug?: string | null;
+  url?: string | null;
+  wordCount?: number | null;
+  readingTimeMinutes?: number | null;
+  publishedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function mapApiItemToAsset(item: ApiContentItem): ContentAsset {
+  return {
+    id: item.id,
+    organizationId: item.orgId,
+    title: item.title,
+    contentType: item.contentType,
+    status: item.status,
+    citeMindStatus: 'pending' as CiteMindStatus,
+    body: item.body ?? undefined,
+    slug: item.slug ?? undefined,
+    url: item.url ?? undefined,
+    wordCount: item.wordCount ?? undefined,
+    readingTimeMinutes: item.readingTimeMinutes ?? undefined,
+    publishedAt: item.publishedAt ?? undefined,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
 }
 
 // ============================================
@@ -47,8 +111,8 @@ interface UseContentItemsParams {
   limit?: number;
 }
 
-interface ContentItemsResponse {
-  items: ContentAsset[];
+interface ContentItemsPayload {
+  items: ApiContentItem[];
   total: number;
   page: number;
   pageSize: number;
@@ -58,31 +122,27 @@ export function useContentItems(params?: UseContentItemsParams) {
   const searchParams = new URLSearchParams();
 
   if (params?.status) searchParams.set('status', params.status);
-  if (params?.type) searchParams.set('type', params.type);
-  if (params?.entity) searchParams.set('entity', params.entity);
-  if (params?.search) searchParams.set('search', params.search);
+  if (params?.type) searchParams.set('contentType', params.type);
+  if (params?.search) searchParams.set('q', params.search);
   if (params?.page) searchParams.set('page', String(params.page));
-  if (params?.limit) searchParams.set('limit', String(params.limit));
+  if (params?.limit) searchParams.set('pageSize', String(params.limit));
 
   const queryString = searchParams.toString();
   const url = `/api/content/items${queryString ? `?${queryString}` : ''}`;
 
-  const { data, error, isLoading, mutate } = useSWR<ContentItemsResponse>(
+  const { data, error, isLoading, mutate } = useSWR<ContentItemsPayload>(
     url,
     fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 5000,
-    }
+    { revalidateOnFocus: false, dedupingInterval: 5000 }
   );
 
   return {
-    items: data?.items ?? [],
+    assets: (data?.items ?? []).map(mapApiItemToAsset),
     total: data?.total ?? 0,
     page: data?.page ?? 1,
     pageSize: data?.pageSize ?? 24,
     isLoading,
-    error,
+    error: error as Error | undefined,
     mutate,
   };
 }
@@ -92,13 +152,8 @@ export function useContentItems(params?: UseContentItemsParams) {
 // ============================================
 
 interface UseContentBriefsParams {
-  status?: 'draft' | 'review' | 'approved' | 'completed';
+  status?: 'draft' | 'in_progress' | 'completed';
   limit?: number;
-}
-
-interface ContentBriefsResponse {
-  briefs: ContentBrief[];
-  total: number;
 }
 
 export function useContentBriefs(params?: UseContentBriefsParams) {
@@ -110,20 +165,17 @@ export function useContentBriefs(params?: UseContentBriefsParams) {
   const queryString = searchParams.toString();
   const url = `/api/content/briefs${queryString ? `?${queryString}` : ''}`;
 
-  const { data, error, isLoading, mutate } = useSWR<ContentBriefsResponse>(
+  const { data, error, isLoading, mutate } = useSWR<{ items: ContentBrief[] }>(
     url,
     fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 5000,
-    }
+    { revalidateOnFocus: false, dedupingInterval: 5000 }
   );
 
   return {
-    briefs: data?.briefs ?? [],
-    total: data?.total ?? 0,
+    briefs: data?.items ?? [],
+    total: data?.items?.length ?? 0,
     isLoading,
-    error,
+    error: error as Error | undefined,
     mutate,
   };
 }
@@ -137,11 +189,6 @@ interface UseContentGapsParams {
   limit?: number;
 }
 
-interface ContentGapsResponse {
-  gaps: ContentGap[];
-  total: number;
-}
-
 export function useContentGaps(params?: UseContentGapsParams) {
   const searchParams = new URLSearchParams();
 
@@ -151,20 +198,17 @@ export function useContentGaps(params?: UseContentGapsParams) {
   const queryString = searchParams.toString();
   const url = `/api/content/gaps${queryString ? `?${queryString}` : ''}`;
 
-  const { data, error, isLoading, mutate } = useSWR<ContentGapsResponse>(
+  const { data, error, isLoading, mutate } = useSWR<{ items: ContentGap[] }>(
     url,
     fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 30000, // Less frequent for gaps
-    }
+    { revalidateOnFocus: false, dedupingInterval: 30000 }
   );
 
   return {
-    gaps: data?.gaps ?? [],
-    total: data?.total ?? 0,
+    gaps: data?.items ?? [],
+    total: data?.items?.length ?? 0,
     isLoading,
-    error,
+    error: error as Error | undefined,
     mutate,
   };
 }
@@ -173,26 +217,19 @@ export function useContentGaps(params?: UseContentGapsParams) {
 // CONTENT CLUSTERS HOOK
 // ============================================
 
-interface ContentClustersResponse {
-  clusters: ContentClusterDTO[];
-  total: number;
-}
-
 export function useContentClusters() {
-  const { data, error, isLoading, mutate } = useSWR<ContentClustersResponse>(
-    '/api/content/clusters',
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 30000,
-    }
-  );
+  const { data, error, isLoading, mutate } = useSWR<{
+    items: ContentClusterDTO[];
+  }>('/api/content/clusters', fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 30000,
+  });
 
   return {
-    clusters: data?.clusters ?? [],
-    total: data?.total ?? 0,
+    clusters: data?.items ?? [],
+    total: data?.items?.length ?? 0,
     isLoading,
-    error,
+    error: error as Error | undefined,
     mutate,
   };
 }
@@ -200,25 +237,23 @@ export function useContentClusters() {
 // ============================================
 // AUTHORITY SIGNALS HOOK
 // ============================================
-
-interface AuthoritySignalsResponse {
-  signals: AuthoritySignals;
-}
+// NOTE: /api/content/signals has no backend endpoint yet (content_authority_signals
+// table is staged in migration 105 but no route is built). Until then this hook
+// surfaces an honest null/error rather than fabricated metrics.
 
 export function useContentSignals() {
-  const { data, error, isLoading, mutate } = useSWR<AuthoritySignalsResponse>(
-    '/api/content/signals',
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 60000, // Less frequent for aggregate metrics
-    }
-  );
+  const { data, error, isLoading, mutate } = useSWR<{
+    signals: AuthoritySignals;
+  }>('/api/content/signals', fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 60000,
+    shouldRetryOnError: false,
+  });
 
   return {
     signals: data?.signals ?? null,
     isLoading,
-    error,
+    error: error as Error | undefined,
     mutate,
   };
 }
@@ -227,87 +262,17 @@ export function useContentSignals() {
 // SINGLE ASSET HOOK
 // ============================================
 
-interface AssetDetailResponse {
-  asset: ContentAsset;
-}
-
 export function useContentAsset(assetId: string | null) {
-  const { data, error, isLoading, mutate } = useSWR<AssetDetailResponse>(
+  const { data, error, isLoading, mutate } = useSWR<{ item: ApiContentItem }>(
     assetId ? `/api/content/items/${assetId}` : null,
     fetcher,
-    {
-      revalidateOnFocus: false,
-    }
+    { revalidateOnFocus: false }
   );
 
   return {
-    asset: data?.asset ?? null,
+    asset: data?.item ? mapApiItemToAsset(data.item) : null,
     isLoading,
-    error,
-    mutate,
-  };
-}
-
-// ============================================
-// SINGLE BRIEF HOOK
-// ============================================
-
-interface BriefDetailResponse {
-  brief: ContentBrief;
-}
-
-export function useContentBrief(briefId: string | null) {
-  const { data, error, isLoading, mutate } = useSWR<BriefDetailResponse>(
-    briefId ? `/api/content/briefs/${briefId}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
-
-  return {
-    brief: data?.brief ?? null,
-    isLoading,
-    error,
-    mutate,
-  };
-}
-
-// ============================================
-// QUALITY ANALYSIS HOOK
-// ============================================
-
-interface QualityAnalysisResponse {
-  analysis: {
-    assetId: string;
-    authorityScore: number;
-    citationEligibility: number;
-    aiReadiness: number;
-    issues: Array<{
-      type: string;
-      severity: 'warning' | 'error';
-      message: string;
-      section?: string;
-    }>;
-    suggestions: string[];
-    analyzedAt: string;
-  };
-}
-
-export function useContentQualityAnalysis(assetId: string | null) {
-  const { data, error, isLoading, mutate } = useSWR<QualityAnalysisResponse>(
-    assetId ? `/api/content/items/${assetId}/quality` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 60000,
-    }
-  );
-
-  return {
-    analysis: data?.analysis ?? null,
-    isLoading,
-    error,
+    error: error as Error | undefined,
     mutate,
   };
 }

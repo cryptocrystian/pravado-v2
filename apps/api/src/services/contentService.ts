@@ -40,7 +40,7 @@ export class ContentService {
   async listContentItems(
     orgId: string,
     filters: {
-      status?: 'draft' | 'published' | 'archived';
+      status?: 'draft' | 'review' | 'approved' | 'published' | 'archived';
       q?: string;
       topicId?: string;
       page?: number;
@@ -125,11 +125,11 @@ export class ContentService {
       slug?: string;
       contentType:
         | 'blog_post'
-        | 'social_post'
         | 'long_form'
-        | 'video_script'
-        | 'newsletter';
-      status?: 'draft' | 'published' | 'archived';
+        | 'landing_page'
+        | 'guide'
+        | 'case_study';
+      status?: 'draft' | 'review' | 'approved' | 'published' | 'archived';
       body?: string;
       url?: string;
       primaryTopicId?: string;
@@ -183,11 +183,11 @@ export class ContentService {
       slug?: string;
       contentType?:
         | 'blog_post'
-        | 'social_post'
         | 'long_form'
-        | 'video_script'
-        | 'newsletter';
-      status?: 'draft' | 'published' | 'archived';
+        | 'landing_page'
+        | 'guide'
+        | 'case_study';
+      status?: 'draft' | 'review' | 'approved' | 'published' | 'archived';
       body?: string;
       url?: string;
       primaryTopicId?: string;

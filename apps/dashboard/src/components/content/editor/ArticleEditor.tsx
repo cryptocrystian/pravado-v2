@@ -22,7 +22,7 @@ import {
   type HeadingNode,
   type SaveState,
 } from './TiptapEditor';
-import type { ContentStatus } from '../types';
+import type { ContentStatus, ContentType } from '../types';
 import { CONTENT_STATUS_CONFIG, CONTENT_TYPE_CONFIG } from '../types';
 
 // ============================================
@@ -39,12 +39,7 @@ export interface ArticleEditorProps {
   /** Current status */
   status?: ContentStatus;
   /** Content type label */
-  contentType?:
-    | 'article'
-    | 'email'
-    | 'social_post'
-    | 'landing_page'
-    | 'campaign';
+  contentType?: ContentType;
   /** Called when content is auto-saved */
   onSave?: (data: { title: string; content: string }) => void;
   /** Called when status changes */
@@ -62,7 +57,7 @@ export function ArticleEditor({
   initialTitle = '',
   initialContent = '',
   status = 'draft',
-  contentType = 'article',
+  contentType = 'blog_post',
   onSave,
   onStatusChange,
   onBack,
@@ -445,22 +440,22 @@ export function ArticleEditor({
               {status === 'draft' && (
                 <button
                   type="button"
-                  onClick={() => onStatusChange?.('needs_review')}
+                  onClick={() => onStatusChange?.('review')}
                   className="px-2 py-0.5 text-xs font-medium text-white/40 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded transition-colors"
                 >
                   Submit for Review
                 </button>
               )}
-              {status === 'needs_review' && (
+              {status === 'review' && (
                 <button
                   type="button"
-                  onClick={() => onStatusChange?.('ready')}
+                  onClick={() => onStatusChange?.('approved')}
                   className="px-2 py-0.5 text-xs font-medium text-white bg-brand-iris hover:bg-brand-iris/90 rounded transition-colors"
                 >
                   Mark Ready
                 </button>
               )}
-              {status === 'ready' && (
+              {status === 'approved' && (
                 <button
                   type="button"
                   onClick={() => onStatusChange?.('published')}

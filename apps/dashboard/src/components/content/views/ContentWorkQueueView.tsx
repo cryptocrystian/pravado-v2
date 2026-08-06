@@ -2643,8 +2643,8 @@ export function ContentWorkQueueView({
   // Calculate pipeline counts
   const pipelineCounts = {
     draft: assets.filter((a) => a.status === 'draft').length,
-    review: assets.filter((a) => a.status === 'needs_review').length,
-    approved: assets.filter((a) => a.status === 'ready').length,
+    review: assets.filter((a) => a.status === 'review').length,
+    approved: assets.filter((a) => a.status === 'approved').length,
     published: assets.filter((a) => a.status === 'published').length,
   };
 
@@ -2652,7 +2652,7 @@ export function ContentWorkQueueView({
   const actions: ContentAction[] = [
     // Execution-ready content (Phase 6A.7: Entry point to Orchestration Editor)
     ...briefs
-      .filter((b) => b.status === 'ready' || b.status === 'needs_review')
+      .filter((b) => b.status === 'approved' || b.status === 'review')
       .slice(0, 2)
       .map(
         (item, i): ContentAction => ({
@@ -2923,7 +2923,7 @@ export function ContentWorkQueueView({
             selectedId={selectedActionId}
             onSelect={handleSelect}
             onCreateNew={
-              onCreateContent ? () => onCreateContent('article') : () => {}
+              onCreateContent ? () => onCreateContent('blog_post') : () => {}
             }
             onSave={(data) => {
               void data; /* TODO: wire to API */
