@@ -68,7 +68,7 @@ const MOCK_BRIEF: ContentBrief & {
   organizationId: 'org-1',
   title: 'AI-Powered Content Creation Guide',
   status: 'draft',
-  contentType: 'article',
+  contentType: 'blog_post',
   targetKeyword: 'AI content creation',
   targetIntent: 'informational',
   strategicObjective:
@@ -580,9 +580,9 @@ export default function BriefWorkSurfacePage({ params }: BriefPageProps) {
                 />
                 <span
                   className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
-                    brief.status === 'ready'
+                    brief.status === 'approved'
                       ? 'bg-semantic-success/10 text-semantic-success border border-semantic-success/20'
-                      : brief.status === 'needs_review'
+                      : brief.status === 'review'
                         ? 'bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20'
                         : 'bg-slate-4 text-white/60 border border-slate-5'
                   }`}

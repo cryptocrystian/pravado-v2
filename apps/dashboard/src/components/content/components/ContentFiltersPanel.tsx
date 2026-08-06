@@ -31,19 +31,19 @@ interface ContentFiltersPanelProps {
 const STATUS_OPTIONS: { value: ContentStatus | ''; label: string }[] = [
   { value: '', label: 'All Status' },
   { value: 'draft', label: 'Draft' },
-  { value: 'needs_review', label: 'Needs Review' },
-  { value: 'ready', label: 'Ready' },
+  { value: 'review', label: 'In Review' },
+  { value: 'approved', label: 'Approved' },
   { value: 'published', label: 'Published' },
   { value: 'archived', label: 'Archived' },
 ];
 
 const TYPE_OPTIONS: { value: ContentType | ''; label: string }[] = [
   { value: '', label: 'All Types' },
-  { value: 'article', label: 'Article' },
-  { value: 'email', label: 'Email' },
-  { value: 'social_post', label: 'Social Post' },
+  { value: 'blog_post', label: 'Blog Post' },
+  { value: 'long_form', label: 'Long-Form' },
   { value: 'landing_page', label: 'Landing Page' },
-  { value: 'campaign', label: 'Campaign' },
+  { value: 'guide', label: 'Guide' },
+  { value: 'case_study', label: 'Case Study' },
 ];
 
 export function ContentFiltersPanel({

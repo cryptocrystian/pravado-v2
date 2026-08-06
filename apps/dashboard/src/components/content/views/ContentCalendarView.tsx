@@ -452,7 +452,7 @@ function CalendarEntryCard({
   crossPillarDeps = [],
   onClick,
 }: CalendarEntryCardProps) {
-  const format: ContentType = asset.contentType || 'article';
+  const format: ContentType = asset.contentType || 'blog_post';
   const formatConfig = FORMAT_CONFIG[format] || FORMAT_CONFIG.article;
   const modeConfig = modeTokens[automationMode];
 
@@ -713,7 +713,7 @@ export function ContentAgendaView({
             {items.map((item, index) => {
               const format: ContentType | null =
                 item.type === 'asset'
-                  ? (item.item as ContentAsset).contentType || 'article'
+                  ? (item.item as ContentAsset).contentType || 'blog_post'
                   : null;
               const formatConfig = format ? FORMAT_CONFIG[format] : null;
 
