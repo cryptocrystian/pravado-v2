@@ -297,7 +297,9 @@ Per CHANGE_CONTROL.md: if it is not in canon, it is not a requirement.
 
 ---
 
-## D025 — Canon terminology alignment: AUTOMATE → CRAFT
+## D031 — Canon terminology alignment: AUTOMATE → CRAFT
+
+> _Renumbered from D025 → D031 by the 2026-08-05 canon-hygiene dedupe (D036). "D025" now refers solely to the `app.pravado.io` topology decision below._
 
 **Date:** 2026-04-22
 **Decision owner:** Christian Dibrell (Founder/Architect)
@@ -327,7 +329,7 @@ CRAFT was chosen over AUTOMATE in an earlier product decision (the decision itse
 
 Three additional drift items discovered during the same visual inspection are addressed in this commit:
 
-1. **EVI band nomenclature.** Canon specifies bands as At Risk / Emerging / Competitive / Dominant. Shipped homepage shows At Risk / Building / Strong / Elite. This decision DOES NOT reconcile that drift — it is noted here for explicit follow-up. A separate decision (D026 or later) will determine which nomenclature wins.
+1. **EVI band nomenclature.** Canon specifies bands as At Risk / Emerging / Competitive / Dominant. Shipped homepage shows At Risk / Building / Strong / Elite. This decision DOES NOT reconcile that drift — it is noted here for explicit follow-up. Reconciled by **D035** (2026-08-05, 4-band North-Star set).
 
 2. **EVI description scope.** Canon defines EVI as 40% Visibility + 35% Authority + 25% Momentum across all discovery surfaces. Shipped homepage copy narrows EVI to "how prominently your brand appears in AI-generated responses." This decision DOES NOT reconcile that drift — noted for explicit follow-up.
 
@@ -341,13 +343,13 @@ Three additional drift items discovered during the same visual inspection are ad
 
 ### Follow-up required
 
-- D026 (future): EVI band nomenclature reconciliation decision
-- D027 (future): EVI description scope reconciliation decision
+- EVI band nomenclature — reconciled by **D035** (2026-08-05)
+- EVI description scope — still open (tracked as scope item B5)
 - Silo Tax sunset completion (navigation badge removal, audit page replacement) — tracked in visual inspection report action items
 
 ### Canon hygiene — relocation of misfiled Sapient Digital documents
 
-During the D025 drift audit execution, two files in Pravado's canon directory were identified
+During the D031 (formerly D025) drift audit execution, two files in Pravado's canon directory were identified
 as belonging to Sapient Digital rather than Pravado:
 
 - `AGENCY_OS_SPEC.md` — spec for Sapient Digital's multi-tenant agency platform
@@ -385,7 +387,9 @@ add scope exclusion rule; `DECISIONS_LOG.md` modified (this extension).
 
 ---
 
-## D026 — AgencyOS Extraction and Sapient Digital Architectural Principles
+## D032 — AgencyOS Extraction and Sapient Digital Architectural Principles
+
+> _Renumbered from D026 → D032 by the 2026-08-05 canon-hygiene dedupe (D036). Sub-decisions D026.1–.5 are now D032.1–.5. "D026" now refers solely to the SMB-default-Copilot decision below._
 
 **Date:** 2026-04-22
 **Status:** Executed
@@ -405,23 +409,23 @@ Discovery (executed as read-only work order) confirmed:
 
 ### Decisions
 
-**D026.1 — Architecture principle: Ventures share capabilities through public APIs, not infrastructure.**
+**D032.1 — Architecture principle: Ventures share capabilities through public APIs, not infrastructure.**
 
 Saipien Labs ventures do not share Supabase projects, codebases, monorepo workspaces, or authentication instances. They may share capabilities through well-defined public APIs. This principle governs all current and future cross-venture integrations.
 
-**D026.2 — Sapient Digital operates on fully air-gapped infrastructure.**
+**D032.2 — Sapient Digital operates on fully air-gapped infrastructure.**
 
 Sapient Digital runs on its own Supabase project, its own deployment infrastructure, its own repo, its own domain. Complete infrastructure independence is a business model requirement for Saipien Labs (exit flexibility, security boundaries, operational independence) and not negotiable.
 
-**D026.3 — Sapient consumes Pravado's intelligence via public API.**
+**D032.3 — Sapient consumes Pravado's intelligence via public API.**
 
 AgencyOS accesses Pravado's intelligence layer (SAGE, CRAFT, CiteMind, EVI, journalist database) through Pravado's public API as a first-party API consumer. No database access, no code imports, no shared auth. API consumption is bidirectionally compatible with Pravado's planned public API for external developers and white-label partners.
 
-**D026.4 — Extraction executed as file-level relocation to parked state in Sapient repo.**
+**D032.4 — Extraction executed as file-level relocation to parked state in Sapient repo.**
 
 AgencyOS code, supporting config, Supabase migrations, session notes, and audit reports relocated to `sapient-digital/parked/agency-os/` and `sapient-digital/docs/extraction-archive/`. Activation (creating Sapient's Supabase project, migrating schema, wiring AgencyOS to Pravado's API) is sequenced to begin immediately after Pravado beta launches.
 
-**D026.5 — Pravado's `apps/api/src/routes/agency/` stays in Pravado as the future Agency API surface.**
+**D032.5 — Pravado's `apps/api/src/routes/agency/` stays in Pravado as the future Agency API surface.**
 
 These routes are Pravado's platform-level API surface for agency consumers, not AgencyOS-specific code. They remain uncommitted and not wired to server.ts pending a dedicated API development effort post-beta. A README in the directory explains context.
 
@@ -464,7 +468,7 @@ Discovery conducted as a read-only inventory identified AgencyOS as "uncommitted
 
 ### Files affected in Pravado repo (this commit)
 
-- `docs/canon/DECISIONS_LOG.md` — this D026 entry added
+- `docs/canon/DECISIONS_LOG.md` — this D032 entry added
 - `apps/api/src/server.ts` — two agencyRoutes references removed
 - `apps/api/src/routes/agency/README.md` — new file explaining parked status
 - Tracked-file deletions (5 files in `apps/agency-os/` that had been committed in prior Pravado history; content preserved in Sapient's `parked/agency-os/`):
@@ -968,3 +972,15 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
 - **Scope note:** This ratifies **band nomenclature only.** The deeper gaps — EVI's shipped **proxy** math vs the canonical formula, and **Share-of-Model not existing in code** — remain open **scope item B5** (a separate product/scope decision), not resolved here.
 - **Follow-up:** reconcile homepage EVI band copy to this set (code change, tracked separately).
 - **Cross-refs:** D033; `EARNED_VISIBILITY_INDEX.md:112`; `EVI_FORMULA.md` (reconciled).
+
+## D036 — Canon hygiene: decision-ID dedupe + Charter Entity-Map correction
+
+- **Date:** 2026-08-05
+- **Decision ID:** D036
+- **Area:** Governance / Canon hygiene
+- **Decision:** Resolve the duplicate decision IDs and a factual error in D033, per the Model Integrity Charter's supersession discipline (Art III/V).
+  1. **ID dedupe (least-churn, code-free):** the two 2026-04-22 originals are renumbered so the later 2026-07-06 entries keep the IDs the code already references. `D025 (AUTOMATE→CRAFT)` → **D031**; `D026 (AgencyOS)` → **D032** (sub-decisions `D026.1–.5` → `D032.1–.5`). `D025` now = the `app.pravado.io` topology decision; `D026` now = SMB-default-Copilot. No code references the renumbered originals by ID (verified); only doc + `apps/api/src/routes/agency/README.md` refs updated.
+  2. **Charter correction:** `MODEL_INTEGRITY_CHARTER.md` (D033) stated the Entity Map invariant as "zone model per D012." **This was backwards** — `ENTITY_MAP_SPEC.md:43` establishes the **concentric ring model (Ring 0–3)** and D012 **retired** the zone model. Corrected. (The Entity Map _code_ still emits the retired zone model — logged as a build item, not fixed here.)
+- **Rationale:** The duplicate IDs and the mislabel are exactly the drift the Charter exists to prevent; fixing them makes canon usable as a measuring stick. The dedupe uses Option B (renumber originals) to touch zero money-code.
+- **Deferred:** full Article-III header sweep across all 57 docs; wiring `canon-gates` to enforce unique IDs + headers; reconciling the stale frozen `ANALYTICS_CONTRACT` / `COMMAND_CENTER_CONTRACT` against the full-launch scope.
+- **Cross-refs:** D033 (corrected), D031/D032 (renumbered), D035; `_grounding/REMEDIATION_PLAN.md` Lane A.
