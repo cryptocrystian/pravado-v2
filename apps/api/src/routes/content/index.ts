@@ -3,6 +3,7 @@
  * Full implementation of Content Intelligence Engine V1
  */
 
+import { FLAGS } from '@pravado/feature-flags';
 import type {
   ListContentItemsResponse,
   GetContentItemResponse,
@@ -33,9 +34,6 @@ import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { enqueueCiteMindScore } from '../../queue/bullmqQueue';
-import { FLAGS } from '@pravado/feature-flags';
-import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
-import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
 import {
   planLimitError,
   PLAN_LIMIT_STATUS,
@@ -44,6 +42,8 @@ import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
+import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
+import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
 import { ContentService } from '../../services/contentService';
 
 /**
@@ -354,11 +354,13 @@ export async function contentRoutes(server: FastifyInstance) {
             error: {
               code: 'AEO_GATE_BLOCKED',
               message: gate.explanation,
-              aeo_score: gate.aeo_score,
-              band: gate.band,
-              components: gate.components,
-              gaps: gate.gaps,
-              bypass_allowed: true,
+              details: {
+                aeo_score: gate.aeo_score,
+                band: gate.band,
+                components: gate.components,
+                gaps: gate.gaps,
+                bypass_allowed: true,
+              },
             },
           });
         }

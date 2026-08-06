@@ -16,8 +16,9 @@
  */
 
 import crypto from 'node:crypto';
-import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('citemind:indexation');
 
@@ -76,21 +77,41 @@ export async function submitIndexNow(
   const cleanUrls = urls.filter((u) => /^https?:\/\//i.test(u));
 
   if (!key) {
-    return { submitted: false, status: null, urls: cleanUrls, endpoint: INDEXNOW_ENDPOINT, skippedReason: 'INDEXNOW_KEY not configured' };
+    return {
+      submitted: false,
+      status: null,
+      urls: cleanUrls,
+      endpoint: INDEXNOW_ENDPOINT,
+      skippedReason: 'INDEXNOW_KEY not configured',
+    };
   }
   if (cleanUrls.length === 0) {
-    return { submitted: false, status: null, urls: [], endpoint: INDEXNOW_ENDPOINT, skippedReason: 'no valid URLs' };
+    return {
+      submitted: false,
+      status: null,
+      urls: [],
+      endpoint: INDEXNOW_ENDPOINT,
+      skippedReason: 'no valid URLs',
+    };
   }
 
   let host: string;
   try {
     host = new URL(cleanUrls[0]).host;
   } catch {
-    return { submitted: false, status: null, urls: cleanUrls, endpoint: INDEXNOW_ENDPOINT, skippedReason: 'invalid URL host' };
+    return {
+      submitted: false,
+      status: null,
+      urls: cleanUrls,
+      endpoint: INDEXNOW_ENDPOINT,
+      skippedReason: 'invalid URL host',
+    };
   }
 
   const keyLocation =
-    opts.keyLocation ?? process.env.INDEXNOW_KEY_LOCATION ?? `https://${host}/${key}.txt`;
+    opts.keyLocation ??
+    process.env.INDEXNOW_KEY_LOCATION ??
+    `https://${host}/${key}.txt`;
 
   const body = { host, key, keyLocation, urlList: cleanUrls };
 
@@ -103,10 +124,23 @@ export async function submitIndexNow(
     // IndexNow returns 200 (OK) or 202 (Accepted) on success.
     const ok = res.status === 200 || res.status === 202;
     if (!ok) logger.warn(`IndexNow returned ${res.status} for host ${host}`);
-    return { submitted: ok, status: res.status, urls: cleanUrls, endpoint: INDEXNOW_ENDPOINT };
+    return {
+      submitted: ok,
+      status: res.status,
+      urls: cleanUrls,
+      endpoint: INDEXNOW_ENDPOINT,
+    };
   } catch (err) {
-    logger.warn(`IndexNow submit failed: ${err instanceof Error ? err.message : String(err)}`);
-    return { submitted: false, status: null, urls: cleanUrls, endpoint: INDEXNOW_ENDPOINT, skippedReason: 'request failed' };
+    logger.warn(
+      `IndexNow submit failed: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return {
+      submitted: false,
+      status: null,
+      urls: cleanUrls,
+      endpoint: INDEXNOW_ENDPOINT,
+      skippedReason: 'request failed',
+    };
   }
 }
 
@@ -132,10 +166,9 @@ export async function getGoogleIndexingAccessToken(
 ): Promise<string | null> {
   const email = sa?.email ?? process.env.GOOGLE_INDEXING_SA_EMAIL;
   // Private keys arrive with literal "\n"; normalize to real newlines.
-  const privateKey = (sa?.privateKey ?? process.env.GOOGLE_INDEXING_SA_PRIVATE_KEY)?.replace(
-    /\\n/g,
-    '\n'
-  );
+  const privateKey = (
+    sa?.privateKey ?? process.env.GOOGLE_INDEXING_SA_PRIVATE_KEY
+  )?.replace(/\\n/g, '\n');
 
   if (!email || !privateKey) return null;
 
@@ -152,10 +185,16 @@ export async function getGoogleIndexingAccessToken(
 
   let assertion: string;
   try {
-    const signature = crypto.sign('RSA-SHA256', Buffer.from(signingInput), privateKey);
+    const signature = crypto.sign(
+      'RSA-SHA256',
+      Buffer.from(signingInput),
+      privateKey
+    );
     assertion = `${signingInput}.${base64url(signature)}`;
   } catch (err) {
-    logger.warn(`Failed to sign Google SA JWT: ${err instanceof Error ? err.message : String(err)}`);
+    logger.warn(
+      `Failed to sign Google SA JWT: ${err instanceof Error ? err.message : String(err)}`
+    );
     return null;
   }
 
@@ -175,7 +214,9 @@ export async function getGoogleIndexingAccessToken(
     const json = (await res.json()) as { access_token?: string };
     return json.access_token ?? null;
   } catch (err) {
-    logger.warn(`Google token request failed: ${err instanceof Error ? err.message : String(err)}`);
+    logger.warn(
+      `Google token request failed: ${err instanceof Error ? err.message : String(err)}`
+    );
     return null;
   }
 }
@@ -189,7 +230,12 @@ export async function pingGoogleIndexing(
   fetchImpl: FetchLike = fetch
 ): Promise<GoogleIndexResult> {
   if (!/^https?:\/\//i.test(url)) {
-    return { submitted: false, status: null, url, skippedReason: 'invalid URL' };
+    return {
+      submitted: false,
+      status: null,
+      url,
+      skippedReason: 'invalid URL',
+    };
   }
   try {
     const res = await fetchImpl(GOOGLE_INDEXING_ENDPOINT, {
@@ -204,8 +250,15 @@ export async function pingGoogleIndexing(
     if (!ok) logger.warn(`Google Indexing returned ${res.status} for ${url}`);
     return { submitted: ok, status: res.status, url };
   } catch (err) {
-    logger.warn(`Google Indexing ping failed: ${err instanceof Error ? err.message : String(err)}`);
-    return { submitted: false, status: null, url, skippedReason: 'request failed' };
+    logger.warn(
+      `Google Indexing ping failed: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return {
+      submitted: false,
+      status: null,
+      url,
+      skippedReason: 'request failed',
+    };
   }
 }
 
@@ -220,7 +273,12 @@ export async function pingGoogleIndexing(
  */
 export async function pingIndexationOnPublish(
   supabase: SupabaseClient,
-  params: { orgId: string; contentItemId: string; url: string; highPriority?: boolean },
+  params: {
+    orgId: string;
+    contentItemId: string;
+    url: string;
+    highPriority?: boolean;
+  },
   fetchImpl: FetchLike = fetch
 ): Promise<IndexationPingResult> {
   const { orgId, contentItemId, url, highPriority } = params;

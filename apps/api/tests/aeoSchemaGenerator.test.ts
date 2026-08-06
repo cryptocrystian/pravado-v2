@@ -14,7 +14,12 @@ import {
 } from '../src/services/citeMind/citeMindSchemaGenerator';
 import { createMockSupabaseClient } from './helpers/supabaseMock';
 
-const ORG = { name: 'Acme Corp', website_url: 'https://acme.example', logo_url: 'https://acme.example/logo.png', description: 'Acme makes widgets.' };
+const ORG = {
+  name: 'Acme Corp',
+  website_url: 'https://acme.example',
+  logo_url: 'https://acme.example/logo.png',
+  description: 'Acme makes widgets.',
+};
 
 function mockFor(item: Record<string, unknown>): SupabaseClient {
   return createMockSupabaseClient({
@@ -27,26 +32,48 @@ function mockFor(item: Record<string, unknown>): SupabaseClient {
 describe('detectSchemaType — new canonical types', () => {
   it('detects NewsArticle for press releases', () => {
     expect(
-      detectSchemaType('Acme Press Release', 'FOR IMMEDIATE RELEASE\nAcme today announced a new product.')
+      detectSchemaType(
+        'Acme Press Release',
+        'FOR IMMEDIATE RELEASE\nAcme today announced a new product.'
+      )
     ).toBe('NewsArticle');
-    expect(detectSchemaType('Acme announces Series B', 'The company announced funding.', 'press_release')).toBe(
-      'NewsArticle'
-    );
+    expect(
+      detectSchemaType(
+        'Acme announces Series B',
+        'The company announced funding.',
+        'press_release'
+      )
+    ).toBe('NewsArticle');
   });
 
   it('detects Person for executive bios', () => {
-    const body = 'Jane Doe is the Chief Executive Officer of Acme Corp. She leads strategy.';
+    const body =
+      'Jane Doe is the Chief Executive Officer of Acme Corp. She leads strategy.';
     expect(detectSchemaType('Jane Doe Biography', body)).toBe('Person');
-    expect(detectSchemaType('Executive Profile', 'Bob Lee is our CEO and founder.', 'bio')).toBe('Person');
+    expect(
+      detectSchemaType(
+        'Executive Profile',
+        'Bob Lee is our CEO and founder.',
+        'bio'
+      )
+    ).toBe('Person');
   });
 
   it('detects Organization for about/brand-entity content', () => {
-    expect(detectSchemaType('About Us', 'Acme was founded in 2015 to build widgets.')).toBe('Organization');
-    expect(detectSchemaType('Company Overview', 'We are a widget maker.', 'about')).toBe('Organization');
+    expect(
+      detectSchemaType('About Us', 'Acme was founded in 2015 to build widgets.')
+    ).toBe('Organization');
+    expect(
+      detectSchemaType('Company Overview', 'We are a widget maker.', 'about')
+    ).toBe('Organization');
   });
 
   it('honors an explicit metadata.schema_type override', () => {
-    expect(detectSchemaType('Anything', 'body', 'blog_post', { schema_type: 'Person' })).toBe('Person');
+    expect(
+      detectSchemaType('Anything', 'body', 'blog_post', {
+        schema_type: 'Person',
+      })
+    ).toBe('Person');
   });
 
   it('still falls back to BlogPosting / Article', () => {
@@ -74,7 +101,9 @@ describe('generateSchema — NewsArticle', () => {
     expect(res.schema_json.headline).toBe('Acme announces Series B');
     expect(res.schema_json.articleBody).toContain('Series B');
     expect(res.schema_json.image).toBe('https://acme.example/hero.png');
-    expect((res.schema_json.publisher as Record<string, unknown>).name).toBe('Acme Corp');
+    expect((res.schema_json.publisher as Record<string, unknown>).name).toBe(
+      'Acme Corp'
+    );
   });
 });
 
@@ -89,7 +118,11 @@ describe('generateSchema — Organization', () => {
       url: 'https://acme.example/about',
       published_at: null,
       word_count: 12,
-      metadata: { sameAs: ['https://twitter.com/acme'], founder: 'Jane Doe', foundingDate: '2015-06-01' },
+      metadata: {
+        sameAs: ['https://twitter.com/acme'],
+        founder: 'Jane Doe',
+        foundingDate: '2015-06-01',
+      },
     });
 
     const res = await generateSchema(supabase, 'c2', 'o1');
@@ -98,7 +131,9 @@ describe('generateSchema — Organization', () => {
     expect(res.schema_json.name).toBe('Acme Corp');
     expect(res.schema_json.logo).toBe('https://acme.example/logo.png');
     expect(res.schema_json.sameAs).toEqual(['https://twitter.com/acme']);
-    expect((res.schema_json.founder as Record<string, unknown>).name).toBe('Jane Doe');
+    expect((res.schema_json.founder as Record<string, unknown>).name).toBe(
+      'Jane Doe'
+    );
     expect(res.schema_json.foundingDate).toBe('2015-06-01');
   });
 });
@@ -122,7 +157,9 @@ describe('generateSchema — Person', () => {
     expect(res.schema_json['@type']).toBe('Person');
     expect(res.schema_json.name).toBe('Jane Doe');
     expect(res.schema_json.jobTitle).toBe('Chief Executive Officer');
-    expect((res.schema_json.worksFor as Record<string, unknown>).name).toBe('Acme Corp');
+    expect((res.schema_json.worksFor as Record<string, unknown>).name).toBe(
+      'Acme Corp'
+    );
     expect(res.schema_json.sameAs).toEqual(['https://linkedin.com/in/janedoe']);
   });
 });

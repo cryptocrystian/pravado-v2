@@ -28,8 +28,16 @@ The North American market grew 30% in 2025. Analysts at Forrester noted strong d
 
 The Widget Pro ships with three modules. Microsoft and Google adopted similar designs in 2024.`;
 
-const THIN = { title: 'It works', body: 'It is that thing. They did this. It that this here.', content_type: 'blog_post' };
-const RICH = { title: 'Acme Widget Report 2026', body: RICH_BODY, content_type: 'blog_post' };
+const THIN = {
+  title: 'It works',
+  body: 'It is that thing. They did this. It that this here.',
+  content_type: 'blog_post',
+};
+const RICH = {
+  title: 'Acme Widget Report 2026',
+  body: RICH_BODY,
+  content_type: 'blog_post',
+};
 
 describe('AEO score formula (canon §3C)', () => {
   it('weights sum to 1.0 and match canon', () => {
@@ -76,7 +84,10 @@ describe('computeAeoScore — pass vs fail', () => {
 
   it('scores rich, entity-dense content at/above threshold (eligible)', () => {
     const { score, components } = computeAeoScore(RICH, [
-      { schema_type: 'BlogPosting', schema_json: { '@type': 'BlogPosting', headline: 'x', author: 'y' } },
+      {
+        schema_type: 'BlogPosting',
+        schema_json: { '@type': 'BlogPosting', headline: 'x', author: 'y' },
+      },
     ]);
     expect(score).toBeGreaterThanOrEqual(AEO_GATE_THRESHOLD);
     expect(components.entity_clarity).toBeGreaterThan(50);
@@ -84,7 +95,10 @@ describe('computeAeoScore — pass vs fail', () => {
   });
 });
 
-function gateMock(item: Record<string, unknown>, schemas: unknown[]): SupabaseClient {
+function gateMock(
+  item: Record<string, unknown>,
+  schemas: unknown[]
+): SupabaseClient {
   return createMockSupabaseClient({
     content_items: { data: item, error: null },
     citemind_schemas: { data: schemas as unknown as null, error: null },
@@ -95,7 +109,14 @@ function gateMock(item: Record<string, unknown>, schemas: unknown[]): SupabaseCl
 describe('runAeoGate — end to end', () => {
   it('BLOCKS below-threshold content with a bypass-permitting explanation', async () => {
     const supabase = gateMock(
-      { id: 'c1', org_id: 'o1', title: THIN.title, body: THIN.body, content_type: 'blog_post', url: null },
+      {
+        id: 'c1',
+        org_id: 'o1',
+        title: THIN.title,
+        body: THIN.body,
+        content_type: 'blog_post',
+        url: null,
+      },
       []
     );
     const spy = vi.spyOn(supabase, 'from');
@@ -114,8 +135,20 @@ describe('runAeoGate — end to end', () => {
 
   it('PASSES eligible content and does not block', async () => {
     const supabase = gateMock(
-      { id: 'c2', org_id: 'o1', title: RICH.title, body: RICH.body, content_type: 'blog_post', url: 'https://acme.example/r' },
-      [{ schema_type: 'BlogPosting', schema_json: { '@type': 'BlogPosting', headline: 'x', author: 'y' } }]
+      {
+        id: 'c2',
+        org_id: 'o1',
+        title: RICH.title,
+        body: RICH.body,
+        content_type: 'blog_post',
+        url: 'https://acme.example/r',
+      },
+      [
+        {
+          schema_type: 'BlogPosting',
+          schema_json: { '@type': 'BlogPosting', headline: 'x', author: 'y' },
+        },
+      ]
     );
 
     const res = await runAeoGate(supabase, 'c2', 'o1');
@@ -123,12 +156,23 @@ describe('runAeoGate — end to end', () => {
     expect(res.blocked).toBe(false);
     expect(res.passed).toBe(true);
     expect(res.aeo_score).toBeGreaterThanOrEqual(AEO_GATE_THRESHOLD);
-    expect(['partially_eligible', 'citation_ready', 'citation_dominant']).toContain(res.band);
+    expect([
+      'partially_eligible',
+      'citation_ready',
+      'citation_dominant',
+    ]).toContain(res.band);
   });
 
   it('can skip persistence when persist:false', async () => {
     const supabase = gateMock(
-      { id: 'c3', org_id: 'o1', title: THIN.title, body: THIN.body, content_type: 'blog_post', url: null },
+      {
+        id: 'c3',
+        org_id: 'o1',
+        title: THIN.title,
+        body: THIN.body,
+        content_type: 'blog_post',
+        url: null,
+      },
       []
     );
     const spy = vi.spyOn(supabase, 'from');

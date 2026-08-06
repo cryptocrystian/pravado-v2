@@ -11,8 +11,8 @@
  *   NewsArticle, Organization, Person       (Lane D — added here)
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const logger = createLogger('citemind:schema');
 
@@ -76,9 +76,15 @@ export function detectSchemaType(
   const override = metadata?.schema_type;
   if (
     typeof override === 'string' &&
-    ['Article', 'BlogPosting', 'NewsArticle', 'HowTo', 'FAQPage', 'Organization', 'Person'].includes(
-      override
-    )
+    [
+      'Article',
+      'BlogPosting',
+      'NewsArticle',
+      'HowTo',
+      'FAQPage',
+      'Organization',
+      'Person',
+    ].includes(override)
   ) {
     return override as SchemaType;
   }
@@ -123,9 +129,10 @@ export function detectSchemaType(
     ct === 'executive_bio' ||
     titleLower.includes(' bio') ||
     titleLower.includes('biography') ||
-    /\b(ceo|cto|cfo|coo|founder|co-founder|president|vice president|spokesperson|chief\s+\w+\s+officer)\b/.test(
+    (/\b(ceo|cto|cfo|coo|founder|co-founder|president|vice president|spokesperson|chief\s+\w+\s+officer)\b/.test(
       bodyLower.slice(0, 300)
-    ) && /\bis (the|a|our)\b/.test(bodyLower.slice(0, 300));
+    ) &&
+      /\bis (the|a|our)\b/.test(bodyLower.slice(0, 300)));
   if (isPerson) return 'Person';
 
   // Organization: about / brand-entity content
@@ -140,7 +147,11 @@ export function detectSchemaType(
 
   // --- Generic -------------------------------------------------------------
 
-  if (titleLower.includes('blog') || ct === 'blog_post' || body.split(/\s+/).length < 1500) {
+  if (
+    titleLower.includes('blog') ||
+    ct === 'blog_post' ||
+    body.split(/\s+/).length < 1500
+  ) {
     return 'BlogPosting';
   }
 
@@ -182,7 +193,9 @@ function articleFamilySchema(
   // NewsArticle carries the full articleBody + image per canon §2.3
   if (atType === 'NewsArticle') {
     schema.articleBody = body.replace(/\n{2,}/g, '\n').trim();
-    const image = metaString(item.metadata, 'image') || metaString(item.metadata, 'image_url');
+    const image =
+      metaString(item.metadata, 'image') ||
+      metaString(item.metadata, 'image_url');
     if (image) schema.image = image;
   }
 
@@ -196,10 +209,13 @@ function generateHowToSchema(
   const body = item.body || '';
 
   const steps: Array<{ '@type': string; text: string; position: number }> = [];
-  const stepMatches = body.match(/(?:^|\n)\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)(.+)/gim) || [];
+  const stepMatches =
+    body.match(/(?:^|\n)\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)(.+)/gim) || [];
 
   stepMatches.forEach((match, idx) => {
-    const text = match.replace(/^\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)/i, '').trim();
+    const text = match
+      .replace(/^\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)/i, '')
+      .trim();
     if (text.length > 5) {
       steps.push({ '@type': 'HowToStep', text, position: idx + 1 });
     }
@@ -217,7 +233,9 @@ function generateHowToSchema(
   };
 }
 
-function generateFAQSchema(item: ContentItemForSchema): Record<string, unknown> {
+function generateFAQSchema(
+  item: ContentItemForSchema
+): Record<string, unknown> {
   const body = item.body || '';
   const faqEntries: Array<{
     '@type': string;
@@ -278,14 +296,22 @@ function generateOrganizationSchema(
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: metaString(md, 'name') || org.name,
-    ...(item.url || org.website_url ? { url: item.url || org.website_url } : {}),
+    ...(item.url || org.website_url
+      ? { url: item.url || org.website_url }
+      : {}),
     ...(org.logo_url || metaString(md, 'logo')
       ? { logo: org.logo_url || metaString(md, 'logo') }
       : {}),
-    ...(metaStringArray(md, 'sameAs') ? { sameAs: metaStringArray(md, 'sameAs') } : {}),
+    ...(metaStringArray(md, 'sameAs')
+      ? { sameAs: metaStringArray(md, 'sameAs') }
+      : {}),
     ...(description ? { description } : {}),
-    ...(metaString(md, 'founder') ? { founder: { '@type': 'Person', name: metaString(md, 'founder') } } : {}),
-    ...(metaString(md, 'foundingDate') ? { foundingDate: metaString(md, 'foundingDate') } : {}),
+    ...(metaString(md, 'founder')
+      ? { founder: { '@type': 'Person', name: metaString(md, 'founder') } }
+      : {}),
+    ...(metaString(md, 'foundingDate')
+      ? { foundingDate: metaString(md, 'foundingDate') }
+      : {}),
   };
 }
 
@@ -310,8 +336,13 @@ function generatePersonSchema(
     '@type': 'Person',
     name,
     ...(jobTitle ? { jobTitle } : {}),
-    worksFor: { '@type': 'Organization', name: metaString(md, 'worksFor') || org.name },
-    ...(metaStringArray(md, 'sameAs') ? { sameAs: metaStringArray(md, 'sameAs') } : {}),
+    worksFor: {
+      '@type': 'Organization',
+      name: metaString(md, 'worksFor') || org.name,
+    },
+    ...(metaStringArray(md, 'sameAs')
+      ? { sameAs: metaStringArray(md, 'sameAs') }
+      : {}),
     ...(metaString(md, 'image') ? { image: metaString(md, 'image') } : {}),
     description: body.substring(0, 250).replace(/\n/g, ' ').trim(),
     ...(item.url ? { url: item.url } : {}),
@@ -322,7 +353,10 @@ function generatePersonSchema(
 // Extraction helpers
 // ============================================================================
 
-function metaString(md: Record<string, unknown> | null | undefined, key: string): string | null {
+function metaString(
+  md: Record<string, unknown> | null | undefined,
+  key: string
+): string | null {
   const v = md?.[key];
   return typeof v === 'string' && v.trim().length > 0 ? v.trim() : null;
 }
@@ -333,7 +367,9 @@ function metaStringArray(
 ): string[] | null {
   const v = md?.[key];
   if (Array.isArray(v)) {
-    const arr = v.filter((x): x is string => typeof x === 'string' && x.length > 0);
+    const arr = v.filter(
+      (x): x is string => typeof x === 'string' && x.length > 0
+    );
     return arr.length > 0 ? arr : null;
   }
   return null;
@@ -341,7 +377,9 @@ function metaStringArray(
 
 function extractPersonName(title: string, body: string): string | null {
   // "Jane Doe is the CEO ..." — capture leading proper-noun name
-  const m = body.match(/^\s*([A-Z][a-z]+(?:\s+[A-Z][a-z.]+){1,2})\s+is\s+(?:the|a|our)\b/);
+  const m = body.match(
+    /^\s*([A-Z][a-z]+(?:\s+[A-Z][a-z.]+){1,2})\s+is\s+(?:the|a|our)\b/
+  );
   if (m) return m[1];
   // Fall back to a title that looks like a bare person name
   const t = title.trim();
@@ -373,13 +411,17 @@ export async function generateSchema(
   // Get content item (now including metadata for entity schema fields)
   const { data: item, error: itemError } = await supabase
     .from('content_items')
-    .select('id, org_id, title, body, content_type, url, published_at, word_count, metadata')
+    .select(
+      'id, org_id, title, body, content_type, url, published_at, word_count, metadata'
+    )
     .eq('id', contentItemId)
     .eq('org_id', orgId)
     .single();
 
   if (itemError || !item) {
-    throw new Error(`Content item ${contentItemId} not found: ${itemError?.message}`);
+    throw new Error(
+      `Content item ${contentItemId} not found: ${itemError?.message}`
+    );
   }
 
   // Get org (name + branding fields for publisher/logo/url)
@@ -436,12 +478,14 @@ export async function generateSchema(
     .eq('content_item_id', contentItemId)
     .eq('org_id', orgId);
 
-  const { error: insertError } = await supabase.from('citemind_schemas').insert({
-    org_id: orgId,
-    content_item_id: contentItemId,
-    schema_type: schemaType,
-    schema_json: schemaJson,
-  });
+  const { error: insertError } = await supabase
+    .from('citemind_schemas')
+    .insert({
+      org_id: orgId,
+      content_item_id: contentItemId,
+      schema_type: schemaType,
+      schema_json: schemaJson,
+    });
 
   if (insertError) {
     logger.error(`Failed to save schema: ${insertError.message}`);

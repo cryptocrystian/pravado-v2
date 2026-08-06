@@ -29,8 +29,8 @@
  * link equity into Authority Signal is a later slice and is NOT built here.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLogger } from '@pravado/utils';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { detectSchemaType, type SchemaType } from './citeMindSchemaGenerator';
 
@@ -132,17 +132,21 @@ export function scoreEntityClarity(title: string, body: string): number {
   if (words.length === 0) return 0;
 
   // Proper-noun / named-entity signal: capitalized tokens not at sentence start.
-  const properNouns = (text.match(/(?<=\w[.,;:]?\s)[A-Z][a-zA-Z]{2,}/g) || []).length;
+  const properNouns = (text.match(/(?<=\w[.,;:]?\s)[A-Z][a-zA-Z]{2,}/g) || [])
+    .length;
   const properNounDensity = properNouns / words.length; // typical good content ~0.05–0.15
 
   // Explicit dates and numeric facts anchor when/what.
-  const hasDate = /\b(19|20)\d{2}\b|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}\b/.test(
-    text
-  );
+  const hasDate =
+    /\b(19|20)\d{2}\b|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}\b/.test(
+      text
+    );
   const numericFacts = (text.match(/\b\d[\d,.]*%?\b/g) || []).length;
 
   // Ambiguous pronouns dilute entity clarity.
-  const pronouns = (text.match(/\b(it|they|them|this|that|these|those)\b/gi) || []).length;
+  const pronouns = (
+    text.match(/\b(it|they|them|this|that|these|those)\b/gi) || []
+  ).length;
   const pronounRatio = pronouns / words.length;
 
   let score = 0;
@@ -169,11 +173,14 @@ export function scoreSemanticDepth(body: string): number {
 
   // Structure: markdown/HTML headings indicate multi-facet coverage.
   const headings =
-    (body.match(/^#{1,6}\s+/gm) || []).length + (body.match(/<h[1-6][\s>]/gi) || []).length;
+    (body.match(/^#{1,6}\s+/gm) || []).length +
+    (body.match(/<h[1-6][\s>]/gi) || []).length;
   const structureScore = Math.min(30, headings * 6);
 
   // Lexical richness: unique-word ratio (capped sample to avoid TTR bias).
-  const sample = words.slice(0, 800).map((w) => w.toLowerCase().replace(/[^a-z0-9]/g, ''));
+  const sample = words
+    .slice(0, 800)
+    .map((w) => w.toLowerCase().replace(/[^a-z0-9]/g, ''));
   const unique = new Set(sample.filter(Boolean)).size;
   const ttr = sample.length > 0 ? unique / sample.length : 0;
   const richnessScore = Math.min(30, ttr * 60);
@@ -189,13 +196,16 @@ export function scoreSemanticDepth(body: string): number {
 export function scoreAuthoritySignal(body: string): number {
   // Outbound links / citations (markdown or html).
   const mdLinks = (body.match(/\]\(https?:\/\/[^)]+\)/g) || []).length;
-  const htmlLinks = (body.match(/<a\s[^>]*href=["']https?:\/\//gi) || []).length;
+  const htmlLinks = (body.match(/<a\s[^>]*href=["']https?:\/\//gi) || [])
+    .length;
   const outbound = mdLinks + htmlLinks;
 
   // Data density and attributions ("according to", "study", "report").
   const stats = (body.match(/\b\d+(\.\d+)?\s?(%|percent)\b/gi) || []).length;
-  const attributions = (body.match(/\b(according to|study|research|report|survey|data from)\b/gi) || [])
-    .length;
+  const attributions = (
+    body.match(/\b(according to|study|research|report|survey|data from)\b/gi) ||
+    []
+  ).length;
 
   let score = 20; // neutral baseline (no live backlink data yet)
   score += Math.min(35, outbound * 8);
@@ -220,7 +230,8 @@ export function computeSchemaCoverage(
 
   // Format overlays that warrant their own schema even for an Article.
   const questionCount = (body.match(/\?[\s\n]/g) || []).length;
-  if (questionCount >= 3 || /faq|frequently asked/i.test(title)) applicable.add('FAQPage');
+  if (questionCount >= 3 || /faq|frequently asked/i.test(title))
+    applicable.add('FAQPage');
   if (/how to|step 1/i.test(`${title}\n${body}`)) applicable.add('HowTo');
 
   const validPresent = new Set<string>();
@@ -231,7 +242,8 @@ export function computeSchemaCoverage(
       typeof json === 'object' &&
       typeof (json as Record<string, unknown>)['@type'] === 'string' &&
       Object.keys(json).length >= 3;
-    if (valid) validPresent.add(String((json as Record<string, unknown>)['@type']));
+    if (valid)
+      validPresent.add(String((json as Record<string, unknown>)['@type']));
   }
 
   let covered = 0;
@@ -281,7 +293,12 @@ export function computeAeoScore(
 
   const components: AeoComponentScores = {
     entity_clarity: scoreEntityClarity(title, body),
-    schema_coverage: computeSchemaCoverage(detected, title, body, presentSchemas),
+    schema_coverage: computeSchemaCoverage(
+      detected,
+      title,
+      body,
+      presentSchemas
+    ),
     semantic_depth: scoreSemanticDepth(body),
     authority_signal: scoreAuthoritySignal(body),
   };
@@ -321,7 +338,9 @@ export async function runAeoGate(
     .single();
 
   if (error || !item) {
-    throw new Error(`Content item ${contentItemId} not found: ${error?.message ?? 'no row'}`);
+    throw new Error(
+      `Content item ${contentItemId} not found: ${error?.message ?? 'no row'}`
+    );
   }
   const content = item as ContentItemForGate;
 
@@ -334,7 +353,10 @@ export async function runAeoGate(
 
   const presentSchemas = (schemaRows as SchemaRow[] | null) ?? [];
 
-  const { score, components, detected } = computeAeoScore(content, presentSchemas);
+  const { score, components, detected } = computeAeoScore(
+    content,
+    presentSchemas
+  );
   const band = bandForScore(score);
   const blocked = score < AEO_GATE_THRESHOLD;
   const gaps = buildGaps(components);
@@ -359,22 +381,24 @@ export async function runAeoGate(
   };
 
   if (persist) {
-    const { error: insertError } = await supabase.from('aeo_gate_results').insert({
-      org_id: orgId,
-      content_item_id: contentItemId,
-      aeo_score: score,
-      band,
-      passed: result.passed,
-      blocked: result.blocked,
-      entity_clarity_score: components.entity_clarity,
-      schema_coverage_score: components.schema_coverage,
-      semantic_depth_score: components.semantic_depth,
-      authority_signal_score: components.authority_signal,
-      detected_schema_type: detected,
-      gaps,
-      explanation,
-      gate_version: AEO_GATE_VERSION,
-    });
+    const { error: insertError } = await supabase
+      .from('aeo_gate_results')
+      .insert({
+        org_id: orgId,
+        content_item_id: contentItemId,
+        aeo_score: score,
+        band,
+        passed: result.passed,
+        blocked: result.blocked,
+        entity_clarity_score: components.entity_clarity,
+        schema_coverage_score: components.schema_coverage,
+        semantic_depth_score: components.semantic_depth,
+        authority_signal_score: components.authority_signal,
+        detected_schema_type: detected,
+        gaps,
+        explanation,
+        gate_version: AEO_GATE_VERSION,
+      });
     if (insertError) {
       // Non-fatal: never let audit persistence block the gate decision.
       logger.warn(`Failed to persist AEO gate result: ${insertError.message}`);
