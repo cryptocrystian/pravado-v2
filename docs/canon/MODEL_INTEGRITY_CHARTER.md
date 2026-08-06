@@ -48,13 +48,13 @@ A **Foundational Model** is a named **engine or formal model** that passes **all
 
 They change **only** by named human ratification; **no agent, session, or sprint doc may alter or re-scope them within a run.**
 
-| Model                 | Canonical defining doc(s)                          | Mechanism                   | Invariant                                                                                |
-| --------------------- | -------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------- |
-| **SAGE**              | `SAGE_v2.md`, `SAGE_OPERATING_MODEL.md`            | feedback mesh               | Signal·Authority·Growth·Exposure **feedback mesh** — cross-pillar, causal. Not a scorer. |
-| **CRAFT** (execution) | `AUTOMATE_v2.md` / CRAFT canon (D031 rename)       | governed execution pipeline | Turns SAGE proposals into governed, mode-aware, traceable tasks. No silent automation.   |
-| **CiteMind**          | CiteMind canon                                     | citation-tracking pipeline  | Qualifies content, tracks AI citations, measures brand authority in LLM answers.         |
-| **EVI**               | `EARNED_VISIBILITY_INDEX.md`, `EVI_MATHEMATICS.md` | scoring formula             | EVI = Visibility·0.40 + Authority·0.35 + Momentum·0.25, canonical sub-math.              |
-| **Entity Map**        | `ENTITY_MAP_SPEC.md`, `ENTITY-MAP-SAGE.md`         | knowledge graph             | The entity/relationship graph SAGE reasons over; zone model per D012.                    |
+| Model                 | Canonical defining doc(s)                          | Mechanism                   | Invariant                                                                                                                     |
+| --------------------- | -------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **SAGE**              | `SAGE_v2.md`, `SAGE_OPERATING_MODEL.md`            | feedback mesh               | Signal·Authority·Growth·Exposure **feedback mesh** — cross-pillar, causal. Not a scorer.                                      |
+| **CRAFT** (execution) | `AUTOMATE_v2.md` / CRAFT canon (D031 rename)       | governed execution pipeline | Turns SAGE proposals into governed, mode-aware, traceable tasks. No silent automation.                                        |
+| **CiteMind**          | CiteMind canon                                     | citation-tracking pipeline  | Qualifies content, tracks AI citations, measures brand authority in LLM answers.                                              |
+| **EVI**               | `EARNED_VISIBILITY_INDEX.md`, `EVI_MATHEMATICS.md` | scoring formula             | EVI = Visibility·0.40 + Authority·0.35 + Momentum·0.25, canonical sub-math.                                                   |
+| **Entity Map**        | `ENTITY_MAP_SPEC.md`, `ENTITY-MAP-SAGE.md`         | knowledge graph             | The entity/relationship graph SAGE reasons over; concentric **ring** model (Ring 0–3) per D012, which retired the zone model. |
 
 ## Article III — Supersession discipline (no silent peers)
 

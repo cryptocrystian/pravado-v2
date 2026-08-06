@@ -27,5 +27,5 @@ Pravado's intelligence layer (SAGE, CRAFT, CiteMind, EVI, journalist database) i
 
 ## Reference
 
-- Extraction decision: see DECISIONS_LOG D026
+- Extraction decision: see DECISIONS_LOG D032 (renumbered from D026 on 2026-08-05, D036)
 - API architecture: TBD (will be documented when activation begins)
