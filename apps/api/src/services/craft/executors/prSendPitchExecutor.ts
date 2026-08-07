@@ -14,16 +14,32 @@
  * (see executors/types.ts). It does not flip proposals or write audit rows — the
  * lifecycle owns that. It only produces the pillar effect + the outcome to record.
  *
- * OUTCOME SEMANTICS — three distinct, honest cases (no lying) + a needs-content path:
+ * PITCH COMPOSITION (Wave-2 refinement): a `pr.send_pitch` proposal usually carries
+ * a journalist + a signal/title but NO pitch body. Rather than self-refuse
+ * (`needs_content`) and send nothing, the executor invokes the LLM-backed
+ * `composePitch` service to draft a PERSONALIZED subject/body grounded in the
+ * journalist's beat/outlet, THEN routes it through the SAME chokepoint. The composer
+ * NEVER sends; the chokepoint still re-computes the personalization score from the
+ * ACTUAL composed body, so a generic draft is refused there — never force-sent.
+ *
+ * SAFETY: composing-then-sending is only safe today because prod egress is a STUB
+ * (EMAIL_PROVIDER unset). A human-review-of-the-composed-pitch step is REQUIRED
+ * before SendGrid is ever provisioned — this executor deliberately does NOT enable
+ * autonomous real sending; it stays human-initiated inside the CRAFT lifecycle.
+ *
+ * OUTCOME SEMANTICS — distinct, honest cases (no lying):
  *   - Guarded send ACCEPTED by the provider          → `success`      (real send;
  *     prod EMAIL_PROVIDER is the stub, so egress is a stub but governance still ran).
  *   - A governor / suppression / eligibility / personalization gate REFUSED the send
  *     → `governed_complete` carrying the block reason. NOT `success` (nothing sent)
- *     and NOT `failure` (nothing errored) — the system worked as designed.
+ *     and NOT `failure` (nothing errored) — the system worked as designed. A composed
+ *     pitch that still reads generic lands here (personalization refusal), NOT success.
  *   - Provider attempted the send and reported failure, or an exception is thrown
  *     (caught by the runner) → `failure`.
- *   - No pitch subject/body on the proposal           → `governed_complete`
- *     (kind `pr_pitch_needs_content`). We NEVER fabricate a pitch body or send empty.
+ *   - The composer could not produce a pitch (LLM unavailable/errored)
+ *     → `failure` (kind `pr_pitch_compose_failed`). We NEVER fabricate a pitch body.
+ *   - No resolvable recipient (missing ids / unresolved email)
+ *     → `governed_complete` (kind `pr_pitch_needs_recipient`). Nothing sent.
  */
 
 import type { ProviderConfig } from '@pravado/types';
@@ -35,6 +51,11 @@ import {
   createOutreachDeliverabilityService,
   type OutreachDeliverabilityService,
 } from '../../outreachDeliverabilityService';
+import {
+  composePitch as defaultComposePitch,
+  type ComposePitchInput,
+  type ComposedPitch,
+} from '../../pr/pitchComposer';
 import {
   deliverabilityRawSend,
   sendGuardedEmail,
@@ -55,6 +76,12 @@ interface SendPitchParams {
   body?: unknown;
   is_follow_up?: unknown;
   isFollowUp?: unknown;
+  // ---- optional signal/brand context the composer grounds a pitch in ----
+  angle?: unknown;
+  summary?: unknown;
+  topic?: unknown;
+  org_name?: unknown;
+  brand_name?: unknown;
 }
 
 /** The recipient the pitch is addressed to, resolved through the governed path. */
@@ -67,7 +94,7 @@ export interface ResolvedRecipient {
   contactId: string | null;
 }
 
-/** Injectable seams so the executor's logic is unit-testable without a DB/provider. */
+/** Injectable seams so the executor's logic is unit-testable without a DB/provider/LLM. */
 export interface PrSendPitchDeps {
   gateways?: GovernanceGateways;
   rawSend?: RawSend;
@@ -76,6 +103,8 @@ export interface PrSendPitchDeps {
     journalistId: string,
     contactId: string
   ) => Promise<ResolvedRecipient | null>;
+  /** LLM-backed pitch composer seam (tests inject a deterministic fake). */
+  composePitch?: (input: ComposePitchInput) => Promise<ComposedPitch | null>;
 }
 
 function asTrimmedString(v: unknown): string {
@@ -190,8 +219,8 @@ async function defaultResolveRecipient(
 
 /**
  * Core, dependency-injected implementation. `prSendPitchExecutor` is the thin
- * production binding; tests call this with fake gateways/rawSend to assert the
- * governors + the "chokepoint is the ONLY path to the provider" invariant.
+ * production binding; tests call this with fake gateways/rawSend/composePitch to
+ * assert the governors + the "chokepoint is the ONLY path to the provider" invariant.
  */
 export async function runPrSendPitch(
   proposal: Record<string, unknown>,
@@ -204,34 +233,25 @@ export async function runPrSendPitch(
     params.journalist_id ?? params.journalistId
   );
   const contactId = asTrimmedString(params.contact_id ?? params.contactId);
-  const subject = asTrimmedString(params.subject);
-  const bodyHtml = asTrimmedString(
+  const subjectParam = asTrimmedString(params.subject);
+  const bodyHtmlParam = asTrimmedString(
     params.body_html ?? params.bodyHtml ?? params.body
   );
-  const bodyTextRaw = asTrimmedString(params.body_text ?? params.bodyText);
-  const bodyText = bodyTextRaw || (bodyHtml ? stripHtml(bodyHtml) : '');
+  const bodyTextParamRaw = asTrimmedString(params.body_text ?? params.bodyText);
+  const bodyTextParam =
+    bodyTextParamRaw || (bodyHtmlParam ? stripHtml(bodyHtmlParam) : '');
   const isFollowUp = params.is_follow_up === true || params.isFollowUp === true;
 
-  // ---- needs_content: never send an empty pitch (neutral, governed) ----
-  // Pitch bodies are composed elsewhere; at proposal time they are usually absent
-  // (the PR signals carry a journalist + optional subject, never a body). We do NOT
-  // fabricate one — we record an honest needs_content outcome and send nothing.
-  if (!subject || !(bodyHtml || bodyText)) {
-    return {
-      result: 'governed_complete',
-      detail: {
-        kind: 'pr_pitch_needs_content',
-        action_type: 'pr.send_pitch',
-        note: 'Pitch subject/body not available on the proposal; nothing sent (no fabricated pitch).',
-        has_subject: Boolean(subject),
-        has_body: Boolean(bodyHtml || bodyText),
-        journalist_id: journalistId || null,
-        contact_id: contactId || null,
-      },
-    };
-  }
+  // Does the proposal already carry a usable pitch? If not, we COMPOSE one below
+  // (grounded in the resolved journalist context) rather than self-refuse + send
+  // nothing. Either way the send still routes through the chokepoint unchanged.
+  const hasProposalContent = Boolean(
+    subjectParam && (bodyHtmlParam || bodyTextParam)
+  );
 
   // ---- resolve the recipient through the governed path ----
+  // A recipient id is required BOTH to send AND to ground a composed pitch in real
+  // journalist context. Without one we cannot proceed (neutral governed outcome).
   if (!journalistId && !contactId) {
     return {
       result: 'governed_complete',
@@ -260,6 +280,68 @@ export async function runPrSendPitch(
         contact_id: contactId || null,
       },
     };
+  }
+
+  // ---- content: use the proposal's pitch if present, else COMPOSE one ----
+  let subject = subjectParam;
+  let bodyHtml = bodyHtmlParam;
+  let bodyText = bodyTextParam;
+  let recentWorkHook: string | null = null;
+  let composed = false;
+  let composeModel: string | null = null;
+
+  if (!hasProposalContent) {
+    const composePitch = deps.composePitch ?? defaultComposePitch;
+    const proposalTitle = asTrimmedString(proposal.title);
+    const draft = await composePitch({
+      journalist: {
+        name: recipient.name,
+        outlet: recipient.outlet,
+        beats: recipient.beats,
+        recentWorkHook: null,
+      },
+      brand: {
+        name:
+          asTrimmedString(params.brand_name) ||
+          asTrimmedString(params.org_name) ||
+          asTrimmedString(proposal.org_name) ||
+          null,
+      },
+      signal: {
+        title:
+          proposalTitle ||
+          asTrimmedString(params.topic) ||
+          subjectParam ||
+          'Story pitch',
+        summary: asTrimmedString(params.summary) || null,
+        angle: asTrimmedString(params.angle) || null,
+      },
+      orgId: ctx.orgId,
+      isFollowUp,
+    });
+
+    // HONEST DEGRADE: the composer returns null when the LLM is unavailable /
+    // errored / produced unusable output. We NEVER fabricate a body or send the
+    // router's generic stub text — record a failure and send nothing.
+    if (!draft) {
+      return {
+        result: 'failure',
+        detail: {
+          kind: 'pr_pitch_compose_failed',
+          action_type: 'pr.send_pitch',
+          note: 'Pitch composer could not produce a personalized subject/body (LLM unavailable or unusable output). Nothing sent; no fabricated pitch.',
+          journalist_id: recipient.journalistId,
+          contact_id: recipient.contactId,
+        },
+      };
+    }
+
+    subject = draft.subject;
+    bodyHtml = draft.bodyHtml;
+    bodyText = draft.bodyText;
+    recentWorkHook = draft.recentWorkHook;
+    composed = true;
+    composeModel = draft.model;
   }
 
   // ---- send EXCLUSIVELY through the governed chokepoint ----
@@ -292,6 +374,7 @@ export async function runPrSendPitch(
         executionId: ctx.executionId,
         source: 'sage_proposal',
         action_type: 'pr.send_pitch',
+        composed,
       },
     },
     context: {
@@ -305,6 +388,7 @@ export async function runPrSendPitch(
         name: recipient.name,
         outlet: recipient.outlet,
         beats: recipient.beats,
+        recentWorkHook,
       },
     },
     gateways,
@@ -312,7 +396,8 @@ export async function runPrSendPitch(
   });
 
   // ---- Case 2: a governor REFUSED — neutral governed outcome carrying the reason.
-  // NOT success (nothing sent), NOT failure (nothing errored).
+  // NOT success (nothing sent), NOT failure (nothing errored). A composed pitch that
+  // still fails the personalization gate lands here (governor 'personalization').
   if (guarded.refusal) {
     return {
       result: 'governed_complete',
@@ -323,6 +408,7 @@ export async function runPrSendPitch(
         reason: guarded.refusal.reason,
         refusal_details: guarded.refusal.details ?? null,
         personalization_score: guarded.personalization.score,
+        composed,
         journalist_id: recipient.journalistId,
         contact_id: recipient.contactId,
       },
@@ -348,6 +434,7 @@ export async function runPrSendPitch(
             proposalId: ctx.proposalId,
             executionId: ctx.executionId,
             provider: provider.provider,
+            composed,
           },
         });
       } catch {
@@ -364,6 +451,8 @@ export async function runPrSendPitch(
         recipient_email_redacted: redact(recipient.email),
         personalization_score: guarded.personalization.score,
         warnings: guarded.warnings,
+        composed,
+        compose_model: composeModel,
         journalist_id: recipient.journalistId,
         contact_id: recipient.contactId,
         is_follow_up: isFollowUp,
@@ -379,6 +468,7 @@ export async function runPrSendPitch(
       action_type: 'pr.send_pitch',
       provider: provider?.provider ?? null,
       error: provider?.error ?? 'Provider send failed with no error detail.',
+      composed,
       journalist_id: recipient.journalistId,
       contact_id: recipient.contactId,
     },
