@@ -30,6 +30,7 @@ import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { checkLLMBudget } from './llmBudget';
+import { deriveImpactPillars } from './sageImpactPillars';
 import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
 import {
@@ -266,6 +267,10 @@ export async function generateColdStartProposals(
       // own column already.
       signal_type: `cold_start_${draft.pillar.toLowerCase()}`,
       pillar: draft.pillar,
+      impact_pillars: deriveImpactPillars(
+        draft.pillar,
+        `cold_start_${draft.pillar.toLowerCase()}`
+      ),
       priority: draft.priority,
       title: draft.title,
       rationale: `${draft.rationale}\n\nRecommended: ${draft.suggested_action}`,

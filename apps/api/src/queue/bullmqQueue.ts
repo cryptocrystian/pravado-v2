@@ -39,6 +39,8 @@ let eviQueue: QueueInstance | null = null;
 let eviWorker: WorkerInstance | null = null;
 let sageQueue: QueueInstance | null = null;
 let sageWorker: WorkerInstance | null = null;
+let sageExecutionQueue: QueueInstance | null = null;
+let sageExecutionWorker: WorkerInstance | null = null;
 let citeMindQueue: QueueInstance | null = null;
 let citeMindWorker: WorkerInstance | null = null;
 let citationMonitorQueue: QueueInstance | null = null;
@@ -167,6 +169,35 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       );
 
       logger.info('SAGE signal scan queue initialized');
+
+      // Governed execution queue (Wave-2 SAGE↔CRAFT loop closure). Runs the
+      // CRAFT execution created when a user executes a proposal, then feeds the
+      // outcome back to SAGE (loop closed).
+      const { processSageExecution } = await import(
+        './workers/sageExecutionWorker'
+      );
+
+      sageExecutionQueue = new Queue('sage-execution', {
+        connection,
+        prefix: bullPrefix,
+      });
+
+      sageExecutionWorker = new Worker(
+        'sage-execution',
+        async (job) => {
+          logger.info(
+            `Processing SAGE execution job ${job.id} for execution ${job.data.executionId}`
+          );
+          await processSageExecution(job.data);
+        },
+        {
+          connection,
+          prefix: bullPrefix,
+          concurrency: 2,
+        }
+      );
+
+      logger.info('SAGE governed execution queue initialized');
     }
 
     // Create the CiteMind scoring queue (S-INT-04)
@@ -415,6 +446,33 @@ export async function enqueueSageSignalScan(orgId: string): Promise<void> {
 }
 
 /**
+ * Enqueue a governed CRAFT execution for a SAGE proposal (Wave-2 loop closure).
+ * No-op if BullMQ or the execution queue is not initialised — the caller has
+ * already written the sage_executions + audit rows, so the loop is reconcilable
+ * even when Redis is down.
+ */
+export async function enqueueSageExecution(args: {
+  executionId: string;
+  orgId: string;
+  proposalId: string;
+}): Promise<void> {
+  if (!sageExecutionQueue) {
+    logger.warn(
+      `Cannot enqueue SAGE execution ${args.executionId} — queue not initialized`
+    );
+    return;
+  }
+
+  await sageExecutionQueue.add('execute', args, {
+    jobId: `sage-execution-${args.executionId}`,
+    removeOnComplete: { age: 86400 },
+    removeOnFail: { age: 604800 },
+  });
+
+  logger.info(`Enqueued SAGE execution ${args.executionId}`);
+}
+
+/**
  * Enqueue a CiteMind scoring job for a content item.
  * No-op if BullMQ or CiteMind queue is not initialized.
  */
@@ -575,6 +633,12 @@ export async function shutdownBullMQ(): Promise<void> {
   }
   if (sageQueue) {
     closePromises.push(sageQueue.close());
+  }
+  if (sageExecutionWorker) {
+    closePromises.push(sageExecutionWorker.close());
+  }
+  if (sageExecutionQueue) {
+    closePromises.push(sageExecutionQueue.close());
   }
   if (citeMindWorker) {
     closePromises.push(citeMindWorker.close());

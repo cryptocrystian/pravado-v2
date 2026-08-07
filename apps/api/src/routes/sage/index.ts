@@ -18,6 +18,7 @@ import { FastifyInstance } from 'fastify';
 import { createLogger } from '../../lib/logger';
 import { getSupabaseClient } from '../../lib/supabase';
 import { requireUser } from '../../middleware/requireUser';
+import { enqueueSageExecution } from '../../queue/bullmqQueue';
 import {
   planLimitError,
   PLAN_LIMIT_STATUS,
@@ -26,6 +27,7 @@ import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
+import { executeProposal } from '../../services/craft/craftExecutionService';
 import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
 import { getActionStreamForOrg } from '../../services/sage/sageActionStreamService';
@@ -338,12 +340,34 @@ export async function sageRoutes(server: FastifyInstance) {
       }
 
       const action = request.body?.action ?? '';
+      const userId = request.user.id;
       const result = await applyProposalAction(
         supabase,
         orgId,
-        request.user.id,
+        userId,
         request.params.id,
-        action
+        action,
+        {
+          // Wave-2: `execute` runs a governed CRAFT execution (creates the
+          // sage_executions row + immutable audit, enqueues on the real
+          // substrate) BEFORE the proposal is flipped to 'executed'. This is
+          // what closes the SAGE→CRAFT→outcome→SAGE loop.
+          onExecute: async (proposal) => {
+            const exec = await executeProposal(
+              supabase,
+              {
+                proposal: proposal as unknown as Parameters<
+                  typeof executeProposal
+                >[1]['proposal'],
+                userId,
+              },
+              { enqueue: enqueueSageExecution }
+            );
+            return exec.ok
+              ? { ok: true, executionId: exec.executionId }
+              : { ok: false };
+          },
+        }
       );
 
       if (!result.ok) {

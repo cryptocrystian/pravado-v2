@@ -1,24 +1,30 @@
 /**
- * SAGE Proposal Action Service (PR-5a).
+ * SAGE Proposal Action Service (PR-5a + Wave-2 loop closure).
  *
- * Applies a user action to a SAGE proposal. Canon-mapped action model (FLAG 1):
- *   - `execute` → status 'executed'
+ * Applies a user action to a SAGE proposal. Canon-mapped action model:
+ *   - `execute` → governed CRAFT execution + status 'executed'
  *   - `dismiss` → status 'dismissed'
  * There is NO 'approved' or 'modified' status (canon: SAGE_v2 §183 + migration 81
  * CHECK). "Modify" is handled by the canon-native `edit` deep-link handoff on the
  * frontend (PR-5b), not here.
  *
- * Only `active` proposals transition. Terminal states (executed / dismissed /
- * expired) are idempotent no-ops — the current state is returned unchanged with
- * `previous_status === proposal.status`, no error, no re-write. Records who acted
- * (`acted_by`) and when (`acted_at`); `reasoning_trace` remains the generation
- * audit (no sage_proposal_actions table — FLAG 3).
+ * WAVE-2 CHANGE — proposals are no longer terminal. `execute` now runs a governed
+ * CRAFT execution FIRST (via the injected `onExecute` hook →
+ * `craftExecutionService.executeProposal`): it creates a `sage_executions` row,
+ * writes an immutable audit row, and enqueues onto the real execution substrate.
+ * Only if that governed intake succeeds is the proposal flipped to 'executed'
+ * (which now means "handed to execution", not "done"). If intake fails we return
+ * `write_failed` and do NOT flip — "No Silent Automation": a proposal is never
+ * marked executed without a governed, audited execution behind it. The `onExecute`
+ * hook is MANDATORY for `execute`: calling `execute` without it returns
+ * `execution_required` and never flips the proposal (fail closed — the route always
+ * wires the hook). `dismiss` needs no hook.
  *
- * Pure function taking the Supabase client (mirrors modeService) so the logic is
- * unit-testable without booting Fastify. The caller (route) is responsible for
- * auth + resolving the caller's org; this function scopes every query by orgId so
- * a proposal in another org is indistinguishable from a non-existent one (no
- * existence leak → the route maps `not_found` to 404, never 403).
+ * Only `active` proposals transition. Terminal states are idempotent no-ops. Records
+ * who acted (`acted_by`) and when (`acted_at`). Pure function taking the Supabase
+ * client (mirrors modeService) so the logic is unit-testable without booting Fastify.
+ * The caller (route) resolves auth + org; every query is org-scoped so a proposal in
+ * another org is indistinguishable from a non-existent one (no existence leak).
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -35,20 +41,42 @@ const ACTION_TO_STATUS: Record<ProposalAction, 'executed' | 'dismissed'> = {
 
 const VALID_ACTIONS: readonly string[] = ['execute', 'dismiss'];
 
+/**
+ * Governed-execution hook. Wired to `craftExecutionService.executeProposal` by the
+ * route; injected so this module stays queue-free and unit-testable. Receives the
+ * full proposal row (pillar/signal_type/confidence drive risk + mode computation).
+ */
+export type ProposalExecutionHook = (
+  proposal: Record<string, unknown>
+) => Promise<{ ok: true; executionId: string } | { ok: false }>;
+
+export interface ApplyProposalActionDeps {
+  onExecute?: ProposalExecutionHook;
+}
+
 export type ApplyProposalActionResult =
   | {
       ok: true;
       proposal: Record<string, unknown>;
       previous_status: ProposalStatus;
+      execution_id?: string;
     }
-  | { ok: false; reason: 'invalid_action' | 'not_found' | 'write_failed' };
+  | {
+      ok: false;
+      reason:
+        | 'invalid_action'
+        | 'not_found'
+        | 'write_failed'
+        | 'execution_required';
+    };
 
 export async function applyProposalAction(
   supabase: SupabaseClient,
   orgId: string,
   userId: string,
   proposalId: string,
-  action: string
+  action: string,
+  deps: ApplyProposalActionDeps = {}
 ): Promise<ApplyProposalActionResult> {
   if (!VALID_ACTIONS.includes(action)) {
     return { ok: false, reason: 'invalid_action' };
@@ -74,6 +102,19 @@ export async function applyProposalAction(
     return { ok: true, proposal: existing, previous_status };
   }
 
+  // Governed execution BEFORE the status flip (No Silent Automation). The
+  // `onExecute` hook is MANDATORY for `execute`: a proposal can NEVER be flipped to
+  // 'executed' without a governed, audited execution behind it. A missing hook is a
+  // wiring bug (the route always provides it) — fail closed rather than silently
+  // flip. A hook failure likewise aborts the flip.
+  let executionId: string | undefined;
+  if (action === 'execute') {
+    if (!deps.onExecute) return { ok: false, reason: 'execution_required' };
+    const exec = await deps.onExecute(existing as Record<string, unknown>);
+    if (!exec.ok) return { ok: false, reason: 'write_failed' };
+    executionId = exec.executionId;
+  }
+
   const newStatus = ACTION_TO_STATUS[action as ProposalAction];
   const actedAt = new Date().toISOString();
 
@@ -92,5 +133,10 @@ export async function applyProposalAction(
 
   if (updateErr || !updated) return { ok: false, reason: 'write_failed' };
 
-  return { ok: true, proposal: updated, previous_status };
+  return {
+    ok: true,
+    proposal: updated,
+    previous_status,
+    execution_id: executionId,
+  };
 }

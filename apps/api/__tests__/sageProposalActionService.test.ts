@@ -15,6 +15,10 @@ import { applyProposalAction } from '../src/services/sage/sageProposalActionServ
 const ORG = 'org-1';
 const USER = 'user-1';
 
+// The onExecute hook is MANDATORY for `execute` (governed intake before any flip);
+// a permissive stub that reports a governed execution was created.
+const okHook = async () => ({ ok: true as const, executionId: 'exec-1' });
+
 function activeProposal(overrides: Record<string, unknown> = {}) {
   return {
     id: 'prop-1',
@@ -82,12 +86,14 @@ describe('applyProposalAction — canon action model (PR-5a)', () => {
       ORG,
       USER,
       'prop-1',
-      'execute'
+      'execute',
+      { onExecute: okHook }
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.previous_status).toBe('active');
     expect(result.proposal.status).toBe('executed');
+    expect(result.execution_id).toBe('exec-1');
     expect(result.proposal.acted_by).toBe(USER);
     expect(result.proposal.acted_at).toEqual(expect.any(String));
     expect(updateSpy).toHaveBeenCalledWith(
@@ -223,8 +229,82 @@ describe('applyProposalAction — canon action model (PR-5a)', () => {
       ORG,
       USER,
       'prop-1',
-      'execute'
+      'execute',
+      { onExecute: okHook }
     );
     expect(result).toEqual({ ok: false, reason: 'write_failed' });
+  });
+
+  it('execute WITHOUT a governed-execution hook → execution_required, never flips', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute'
+      // no deps → mandatory hook missing
+    );
+    expect(result).toEqual({ ok: false, reason: 'execution_required' });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('applyProposalAction — Wave-2 governed execution hook', () => {
+  it('execute runs onExecute and attaches execution_id, then flips status', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const onExecute = vi.fn(async (proposal: Record<string, unknown>) => {
+      // Hook receives the full proposal row (drives risk/mode computation) and
+      // runs while the proposal is still un-flipped (status 'active').
+      expect(proposal.id).toBe('prop-1');
+      expect(proposal.status).toBe('active');
+      expect(updateSpy).not.toHaveBeenCalled();
+      return { ok: true as const, executionId: 'exec-1' };
+    });
+
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute',
+      { onExecute }
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(onExecute).toHaveBeenCalledTimes(1);
+    expect(result.execution_id).toBe('exec-1');
+    expect(result.proposal.status).toBe('executed');
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('aborts the status flip (write_failed) when onExecute fails — no silent automation', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const onExecute = vi.fn(async () => ({ ok: false as const }));
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute',
+      { onExecute }
+    );
+    expect(result).toEqual({ ok: false, reason: 'write_failed' });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('dismiss does not invoke the execution hook', async () => {
+    const { client } = makeSupabase({ proposal: activeProposal() });
+    const onExecute = vi.fn();
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'dismiss',
+      { onExecute }
+    );
+    expect(result.ok).toBe(true);
+    expect(onExecute).not.toHaveBeenCalled();
   });
 });
