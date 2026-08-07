@@ -15,6 +15,7 @@ import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { checkLLMBudget } from './llmBudget';
+import { mapSignalToAction } from './sageActionMapper';
 import { deriveImpactPillars } from './sageImpactPillars';
 import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
@@ -182,6 +183,15 @@ export async function generateProposals(
         signal.signal_data
       );
 
+      // Structured, machine-executable action (Wave-2). `suggested_action`
+      // stays free-text for display; this is the executable half the CRAFT
+      // executor registry dispatches on.
+      const structuredAction = mapSignalToAction(
+        signal.pillar,
+        signal.signal_type,
+        signal.signal_data as Record<string, unknown>
+      );
+
       // Save proposal to sage_proposals
       const { error: insertError } = await supabase
         .from('sage_proposals')
@@ -201,6 +211,8 @@ export async function generateProposals(
           confidence: signal.confidence,
           mode: proposalMode,
           deep_link: deepLink,
+          action_type: structuredAction.action_type,
+          action_params: structuredAction.action_params,
           status: 'active',
           expires_at: signal.expires_at,
           reasoning_trace: reasoningTrace,
