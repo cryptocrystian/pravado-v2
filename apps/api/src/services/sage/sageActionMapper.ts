@@ -11,7 +11,7 @@
  *     topic/coverage gap → content.create_brief with {topic, keyword}).
  *   - Otherwise fall back to the safe per-pillar default action_type
  *     (DEFAULT_ACTION_BY_PILLAR) with best-effort params — never invent an action
- *     outside the closed vocabulary.
+ *     outside the closed vocabulary, and never fabricate an id.
  *
  * NOTE: `suggested_action` (free-text display) is produced elsewhere and left
  * untouched — this module only produces the executable half of the contract.
@@ -100,10 +100,22 @@ export function mapSignalToAction(
     return { action_type: 'pr.send_pitch', action_params: params };
   }
 
-  // --- SEO (reserved this slice) ------------------------------------------
-  // No concrete executor is registered yet, so we emit the safe per-pillar
-  // default action_type with minimal params. These degrade to the governed
-  // no-op at dispatch until their executors land.
+  // --- SEO ----------------------------------------------------------------
+  // A concrete seo.generate_schema executor IS registered (runs CiteMind Engine-1's
+  // generator and persists the JSON-LD to citemind_schemas). Emit a `content_item_id`
+  // when the signal carries one (some content-linked SEO/AEO signals do); otherwise
+  // emit empty params — the executor then records a neutral `governed_complete`
+  // (needs_content). We NEVER fabricate a content id. The current SEO ingestor emits
+  // keyword-scoped signals with no content id, so that is the common (neutral) path.
+  if (pillar === 'SEO') {
+    const contentItemId =
+      str(signalData, 'content_item_id') ?? str(signalData, 'contentItemId');
+    const params: Record<string, unknown> = {};
+    if (contentItemId) params.content_item_id = contentItemId;
+    return { action_type: 'seo.generate_schema', action_params: params };
+  }
+
+  // --- Unknown pillar -----------------------------------------------------
   const fallback = defaultActionTypeForPillar(pillar);
   return { action_type: fallback, action_params: {} };
 }

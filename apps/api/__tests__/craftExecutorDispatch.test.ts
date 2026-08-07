@@ -5,11 +5,14 @@
  *   1. dispatchProposalExecution routes a `content.create_brief` proposal to the
  *      Content executor, which creates a REAL content brief and returns a VERIFIED
  *      `success` outcome carrying the real brief id.
- *   2. An unregistered / reserved action (`pr.send_pitch`) degrades GRACEFULLY to a
- *      neutral `governed_complete` no-op — no crash, no fabricated effect.
- *   3. runQueuedExecution (the worker body) runs the whole lifecycle: for a
+ *   2. A still-reserved action (`content.publish`) degrades GRACEFULLY to a neutral
+ *      `governed_complete` no-op — no crash, no fabricated effect.
+ *   3. A registered SEO `seo.generate_schema` with no content_item_id records a
+ *      neutral `seo_schema_needs_content` governed_complete (nothing fabricated).
+ *   4. runQueuedExecution (the worker body) runs the whole lifecycle: for a
  *      content.create_brief proposal a brief is created AND the outcome + immutable
- *      audit are written; for pr.send_pitch the governed lifecycle is still recorded.
+ *      audit are written; for a needs_content path the governed lifecycle is still
+ *      recorded.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -163,13 +166,13 @@ describe('dispatchProposalExecution', () => {
     });
   });
 
-  it('unregistered seo.generate_schema → graceful governed no-op, NO brief written', async () => {
+  it('still-reserved content.publish → graceful governed no-op, NO brief written', async () => {
     const { client, calls } = makeSupabase();
     const proposal = {
       id: 'prop-2',
       org_id: 'org-1',
-      title: 'Add FAQ schema',
-      action_type: 'seo.generate_schema',
+      title: 'Publish the explainer',
+      action_type: 'content.publish',
       action_params: {},
     };
 
@@ -181,10 +184,36 @@ describe('dispatchProposalExecution', () => {
     expect(outcome.result).toBe('governed_complete');
     expect(outcome.detail).toMatchObject({
       kind: 'governed_handoff',
-      action_type: 'seo.generate_schema',
+      action_type: 'content.publish',
     });
     // No fabricated effect.
     expect(calls.inserts.find((c) => c.table === 'content_briefs')).toBeFalsy();
+  });
+
+  it('registered seo.generate_schema with NO content_item_id → needs_content governed outcome', async () => {
+    const { client, calls } = makeSupabase();
+    const proposal = {
+      id: 'prop-4',
+      org_id: 'org-1',
+      title: 'Generate FAQ schema',
+      action_type: 'seo.generate_schema',
+      action_params: {}, // no content_item_id
+    };
+
+    const outcome = await dispatchProposalExecution(proposal, {
+      supabase: client,
+      ...CTX,
+    });
+
+    // Registered now (not a governed_handoff) but neutral — nothing fabricated.
+    expect(outcome.result).toBe('governed_complete');
+    expect(outcome.detail).toMatchObject({
+      kind: 'seo_schema_needs_content',
+      action_type: 'seo.generate_schema',
+    });
+    expect(
+      calls.inserts.find((c) => c.table === 'citemind_schemas')
+    ).toBeFalsy();
   });
 
   it('pr.send_pitch with NO pitch content → needs_content governed outcome (nothing sent)', async () => {
@@ -318,20 +347,20 @@ describe('runQueuedExecution — full governed lifecycle', () => {
     });
   });
 
-  it('pr.send_pitch proposal with no content → needs_content governed_complete lifecycle recorded, no crash', async () => {
+  it('seo.generate_schema proposal with no content id → needs_content governed_complete lifecycle recorded, no crash', async () => {
     const { client, calls } = makeSupabase({
       executionRow: {
         ...executionRow,
         proposal_id: 'prop-2',
-        signal_type: 'pr_high_value_unpitched',
-        pillar: 'PR',
+        signal_type: 'seo_position_drop',
+        pillar: 'SEO',
       },
       proposal: {
         id: 'prop-2',
         org_id: 'org-1',
-        title: 'Pitch FreightWaves',
-        action_type: 'pr.send_pitch',
-        action_params: {}, // no subject/body → needs_content, nothing sent
+        title: 'Generate schema',
+        action_type: 'seo.generate_schema',
+        action_params: {}, // no content_item_id → needs_content, nothing generated
       },
     });
 
@@ -344,8 +373,10 @@ describe('runQueuedExecution — full governed lifecycle', () => {
     // Ran without crashing; neutral governed completion recorded.
     expect(result).toEqual({ ran: true, outcome: 'governed_complete' });
 
-    // No fabricated content effect.
-    expect(calls.inserts.find((c) => c.table === 'content_briefs')).toBeFalsy();
+    // No fabricated schema effect.
+    expect(
+      calls.inserts.find((c) => c.table === 'citemind_schemas')
+    ).toBeFalsy();
 
     // Governed lifecycle still recorded: terminal completion + neutral tally.
     const execUpdate = calls.updates.find(

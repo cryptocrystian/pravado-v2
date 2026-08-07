@@ -42,16 +42,19 @@ describe('SAGE action vocabulary', () => {
     ]);
   });
 
-  it('marks content.create_brief AND pr.send_pitch as implemented', () => {
+  it('marks the complete per-pillar executor set as implemented', () => {
     expect([...IMPLEMENTED_ACTION_TYPES]).toEqual([
       'content.create_brief',
       'pr.send_pitch',
+      'seo.generate_schema',
     ]);
     expect(isImplementedActionType('content.create_brief')).toBe(true);
     expect(isImplementedActionType('pr.send_pitch')).toBe(true);
+    expect(isImplementedActionType('seo.generate_schema')).toBe(true);
     // still-reserved actions remain unimplemented
     expect(isImplementedActionType('content.publish')).toBe(false);
-    expect(isImplementedActionType('seo.generate_schema')).toBe(false);
+    expect(isImplementedActionType('content.generate_draft')).toBe(false);
+    expect(isImplementedActionType('pr.add_to_list')).toBe(false);
   });
 
   it('type guard accepts vocabulary members and rejects anything else', () => {
@@ -190,8 +193,18 @@ describe('mapSignalToAction', () => {
     expect(action.action_params).toEqual({});
   });
 
-  it('SEO signals map to the reserved seo.generate_schema default', () => {
-    const action = mapSignalToAction('SEO', 'seo_position_drop', {});
+  it('SEO signal with a content_item_id maps to seo.generate_schema carrying it', () => {
+    const action = mapSignalToAction('SEO', 'seo_schema_gap', {
+      content_item_id: 'ci-9',
+    });
+    expect(action.action_type).toBe('seo.generate_schema');
+    expect(action.action_params).toEqual({ content_item_id: 'ci-9' });
+  });
+
+  it('SEO signal without a content id maps to seo.generate_schema with empty params (never fabricated)', () => {
+    const action = mapSignalToAction('SEO', 'seo_position_drop', {
+      keyword: 'ai freight',
+    });
     expect(action.action_type).toBe('seo.generate_schema');
     expect(action.action_params).toEqual({});
   });
