@@ -42,6 +42,9 @@ const REQUIRED_CHOKEPOINT_IMPORTERS = [
   'src/routes/prOutreach/index.ts',
   'src/routes/prOutreachDeliverability/index.ts',
   'src/services/outreachService.ts',
+  // Wave-2: the pr.send_pitch executor is a fourth send-site — it MUST keep
+  // routing pitches through the governed chokepoint (never the provider).
+  'src/services/craft/executors/prSendPitchExecutor.ts',
 ];
 
 function walk(dir) {

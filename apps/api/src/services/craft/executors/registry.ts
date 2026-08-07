@@ -5,8 +5,8 @@
  * per domain"). Dispatch is the seam the governed execution lifecycle calls between
  * markExecuting and completeExecution.
  *
- * DEGRADATION CONTRACT: an action_type with NO registered executor (every PR/SEO
- * action + the reserved Content actions this slice) degrades GRACEFULLY — dispatch
+ * DEGRADATION CONTRACT: an action_type with NO registered executor (every remaining
+ * PR/SEO action + the reserved Content actions) degrades GRACEFULLY — dispatch
  * returns a neutral `governed_complete` outcome with NO fabricated effect, exactly as
  * the pre-executor loop (migration 107) behaved. This preserves governance: the
  * lifecycle + immutable audit are still recorded; nothing is invented.
@@ -17,15 +17,20 @@
 import type { SageActionType } from '../actionTypes';
 import { isSageActionType } from '../actionTypes';
 import { contentCreateBriefExecutor } from './contentCreateBriefExecutor';
+import { prSendPitchExecutor } from './prSendPitchExecutor';
 import type { ActionExecutor, ExecutorContext, ExecutorResult } from './types';
 
 /**
- * The registry. Only actions with a real effect this slice are present; everything
- * else falls through to the graceful governed no-op. IMPLEMENTED_ACTION_TYPES in
- * actionTypes.ts is the declared counterpart of these keys (a test cross-checks).
+ * The registry. Only actions with a real effect are present; everything else falls
+ * through to the graceful governed no-op. IMPLEMENTED_ACTION_TYPES in actionTypes.ts
+ * is the declared counterpart of these keys (a test cross-checks).
  */
 const EXECUTORS: Partial<Record<SageActionType, ActionExecutor>> = {
   'content.create_brief': contentCreateBriefExecutor,
+  // PR: the pitch send routes EXCLUSIVELY through the B+C governed chokepoint
+  // (sendGuardedEmail) — it inherits CAN-SPAM suppression, pitch-eligibility, the
+  // caps, and the personalization gate; it never touches the provider directly.
+  'pr.send_pitch': prSendPitchExecutor,
 };
 
 /** Look up a registered executor, or undefined for reserved/unknown actions. */

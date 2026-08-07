@@ -5,8 +5,8 @@
  * in lockstep with the CHECK enum on `sage_proposals.action_type` (migration 108)
  * — a test asserts the two match so drift fails CI rather than silently at runtime.
  *
- * Only Content `create_brief` is IMPLEMENTED this slice (a concrete executor is
- * registered). The rest are DEFINED/reserved: the vocabulary is fixed so future
+ * Content `create_brief` and PR `send_pitch` are IMPLEMENTED (concrete executors
+ * are registered). The rest are DEFINED/reserved: the vocabulary is fixed so future
  * per-pillar executors register against a stable contract, but until an executor
  * is registered they degrade to the governed no-op (no fabricated effect).
  */
@@ -47,6 +47,10 @@ export const SAGE_ACTION_TYPES_BY_PILLAR: Record<
  */
 export const IMPLEMENTED_ACTION_TYPES: readonly SageActionType[] = [
   'content.create_brief',
+  // PR pitch send — routed through the B+C governed chokepoint (sendGuardedEmail),
+  // inheriting CAN-SPAM suppression, pitch-eligibility, the caps, and the
+  // personalization gate. Registered in executors/registry.ts.
+  'pr.send_pitch',
 ];
 
 /**
