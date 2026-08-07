@@ -338,7 +338,43 @@ describe('completeExecution — outcome feedback closes the loop', () => {
     expect(tally!.payload).toMatchObject({
       org_id: 'org-1',
       signal_type: 'high_value_unpitched',
+      governed_complete_count: 0,
       success_count: 1,
+      failure_count: 0,
+    });
+  });
+
+  it('governed_complete (the worker path) → state completed, neutral tally, NOT success', async () => {
+    const { client, calls } = makeSupabase({ executionRow, tallyRow: null });
+
+    const result = await completeExecution(client, {
+      executionId: 'exec-1',
+      result: 'governed_complete',
+      detail: { kind: 'governed_handoff' },
+    });
+
+    expect(result.ok).toBe(true);
+
+    // Execution is COMPLETED (lifecycle finished) — but the outcome is neutral.
+    const execUpdate = calls.updates.find((c) => c.table === 'sage_executions');
+    expect(execUpdate!.payload).toMatchObject({
+      state: 'completed',
+      outcome: 'governed_complete',
+    });
+
+    const outcomeInsert = calls.inserts.find(
+      (c) => c.table === 'sage_outcomes'
+    );
+    expect(outcomeInsert!.payload.result).toBe('governed_complete');
+
+    // Only the neutral counter moves — business success/failure stay at 0 so a
+    // future SAGE reader is not biased toward ~100% success.
+    const tally = calls.upserts.find(
+      (c) => c.table === 'sage_signal_outcome_tally'
+    );
+    expect(tally!.payload).toMatchObject({
+      governed_complete_count: 1,
+      success_count: 0,
       failure_count: 0,
     });
   });

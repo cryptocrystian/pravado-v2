@@ -57,9 +57,13 @@ export async function processSageExecution(
   try {
     // LATER SLICE: dispatch to a concrete per-pillar action executor here. For now
     // the governed handoff is recorded and the execution completes.
+    // Record a NEUTRAL governed-lifecycle completion — NOT a business `success`.
+    // The concrete per-pillar action executor (and thus a verified business
+    // outcome) is a later slice; recording `success` here would bias the SAGE
+    // signal-type tally toward ~100% success.
     const result = await completeExecution(supabase, {
       executionId,
-      result: 'success',
+      result: 'governed_complete',
       detail: {
         kind: 'governed_handoff',
         note: 'Execution lifecycle recorded; concrete pillar action executor deferred to a later slice.',

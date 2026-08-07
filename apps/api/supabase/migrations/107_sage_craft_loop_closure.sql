@@ -18,9 +18,25 @@
 --   5. sage_signal_outcome_tally       — minimum-viable per-signal-type outcome
 --                                        rollup that feeds back into SAGE state.
 --
+-- WRITE MODEL (SECURITY): all five tables are written ONLY by the server-side
+-- execution engine/worker, which uses the Supabase SERVICE ROLE. The service role
+-- BYPASSES RLS, so no authenticated-user write policy is granted on these tables.
+-- RLS stays ENABLED with org-scoped SELECT only — an authenticated client can read
+-- its own org's rows but can NEVER insert/update/delete (which would let a user
+-- forge audit rows or cross-org executions). This mirrors the service-role-only
+-- write model used for `contact_state_transitions` / `suppressed_email_hashes`.
+--
 -- Scope note (this slice): the full mesh mechanics (decay, reinforcement matrix,
 -- causal tracing, trust ladder, autonomous Autopilot execution) are LATER slices.
 -- This migration only wires the loop so it is closed and auditable.
+--
+-- OUTCOME SEMANTICS: `outcome`/`result` distinguish a NEUTRAL governed-lifecycle
+-- completion (`governed_complete`) from a VERIFIED business outcome
+-- (`success`/`failure`). This slice's worker only records `governed_complete`
+-- (the execution ran without error) — it must never be misread as a business KPI.
+-- Verified business `success`/`failure` is populated by a LATER slice via downstream
+-- signal correlation. The tally keeps a separate counter per category so a future
+-- SAGE reader is not biased toward ~100% "success".
 
 -- ============================================================================
 -- 1. impact_pillars on proposals (SAGE_v2 proposal contract)
@@ -65,7 +81,9 @@ CREATE TABLE sage_executions (
   -- enabled in this slice).
   initiated_by text NOT NULL,
 
-  outcome text CHECK (outcome IS NULL OR outcome IN ('success', 'failure')),
+  -- 'governed_complete' = the execution lifecycle finished without error (neutral,
+  -- NOT a business KPI). 'success'/'failure' = verified business outcome (later slice).
+  outcome text CHECK (outcome IS NULL OR outcome IN ('governed_complete', 'success', 'failure')),
   outcome_detail jsonb,
 
   queued_at timestamptz NOT NULL DEFAULT now(),
@@ -77,13 +95,14 @@ CREATE TABLE sage_executions (
 
 ALTER TABLE sage_executions ENABLE ROW LEVEL SECURITY;
 
+-- Read: org members. Write: NONE for authenticated users — the execution engine
+-- writes via the service role (RLS bypass). No `WITH CHECK (true)` policy: that
+-- would grant every authenticated user INSERT and let them forge cross-org
+-- executions.
 CREATE POLICY "org members can read sage executions" ON sage_executions
   FOR SELECT USING (
     org_id IN (SELECT org_id FROM org_members WHERE user_id = auth.uid())
   );
-
-CREATE POLICY "service role can manage sage executions" ON sage_executions
-  FOR ALL WITH CHECK (true);
 
 CREATE INDEX idx_sage_executions_org_state ON sage_executions(org_id, state, created_at DESC);
 CREATE INDEX idx_sage_executions_proposal ON sage_executions(proposal_id);
@@ -107,22 +126,21 @@ CREATE TABLE sage_execution_audit (
   inputs jsonb NOT NULL DEFAULT '{}'::jsonb,
   outputs jsonb NOT NULL DEFAULT '{}'::jsonb,
   approvals jsonb NOT NULL DEFAULT '[]'::jsonb,
-  outcome text,                                            -- success|failure|null
+  outcome text,                                            -- governed_complete|success|failure|null
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
 ALTER TABLE sage_execution_audit ENABLE ROW LEVEL SECURITY;
 
+-- Read: org members. Write: NONE for authenticated users. The audit trail is
+-- written ONLY by the execution engine via the service role (RLS bypass). Granting
+-- an INSERT policy to authenticated users would let anyone forge audit rows and
+-- defeat the append-only guarantee. Append-only for the service role itself is
+-- enforced by the trigger below (which fires regardless of role).
 CREATE POLICY "org members can read execution audit" ON sage_execution_audit
   FOR SELECT USING (
     org_id IN (SELECT org_id FROM org_members WHERE user_id = auth.uid())
   );
-
--- Append-only: only INSERT is granted via RLS; UPDATE/DELETE have no policy and
--- are additionally hard-blocked by the trigger below (defence in depth — the
--- trigger fires even for the service role / table owner, which RLS does not gate).
-CREATE POLICY "service role can insert execution audit" ON sage_execution_audit
-  FOR INSERT WITH CHECK (true);
 
 CREATE OR REPLACE FUNCTION sage_execution_audit_block_mutation()
 RETURNS trigger AS $$
@@ -151,7 +169,10 @@ CREATE TABLE sage_outcomes (
   signal_type text NOT NULL,
   pillar text NOT NULL CHECK (pillar IN ('PR', 'Content', 'SEO')),
   impact_pillars text[] NOT NULL DEFAULT '{}'::text[],
-  result text NOT NULL CHECK (result IN ('success', 'failure')),
+  -- 'governed_complete' = neutral lifecycle completion (this slice). 'success'/
+  -- 'failure' = verified business outcome (later slice). Kept distinct so the tally
+  -- and any SAGE reader never misread a governed completion as a business win.
+  result text NOT NULL CHECK (result IN ('governed_complete', 'success', 'failure')),
   evi_impact_estimate numeric(5,2),
   detail jsonb NOT NULL DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -159,13 +180,12 @@ CREATE TABLE sage_outcomes (
 
 ALTER TABLE sage_outcomes ENABLE ROW LEVEL SECURITY;
 
+-- Read: org members. Write: service role only (RLS bypass); no authenticated-user
+-- write policy.
 CREATE POLICY "org members can read sage outcomes" ON sage_outcomes
   FOR SELECT USING (
     org_id IN (SELECT org_id FROM org_members WHERE user_id = auth.uid())
   );
-
-CREATE POLICY "service role can manage sage outcomes" ON sage_outcomes
-  FOR ALL WITH CHECK (true);
 
 CREATE INDEX idx_sage_outcomes_proposal ON sage_outcomes(proposal_id);
 CREATE INDEX idx_sage_outcomes_signal ON sage_outcomes(signal_id);
@@ -173,12 +193,16 @@ CREATE INDEX idx_sage_outcomes_org_type ON sage_outcomes(org_id, signal_type, cr
 
 -- ============================================================================
 -- 5. sage_signal_outcome_tally — minimum-viable feedback into SAGE state
---    (per-signal-type success/failure rollup; the seed of pattern reinforcement)
+--    (per-signal-type rollup; the seed of pattern reinforcement)
 -- ============================================================================
 
 CREATE TABLE sage_signal_outcome_tally (
   org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   signal_type text NOT NULL,
+  -- Neutral governed-lifecycle completions. This slice increments ONLY this counter
+  -- — it is NOT a business-success signal and must not be read as one.
+  governed_complete_count integer NOT NULL DEFAULT 0,
+  -- Verified business outcomes (populated by a later slice via downstream signals).
   success_count integer NOT NULL DEFAULT 0,
   failure_count integer NOT NULL DEFAULT 0,
   last_outcome_at timestamptz,
@@ -188,10 +212,9 @@ CREATE TABLE sage_signal_outcome_tally (
 
 ALTER TABLE sage_signal_outcome_tally ENABLE ROW LEVEL SECURITY;
 
+-- Read: org members. Write: service role only (RLS bypass); no authenticated-user
+-- write policy.
 CREATE POLICY "org members can read signal outcome tally" ON sage_signal_outcome_tally
   FOR SELECT USING (
     org_id IN (SELECT org_id FROM org_members WHERE user_id = auth.uid())
   );
-
-CREATE POLICY "service role can manage signal outcome tally" ON sage_signal_outcome_tally
-  FOR ALL WITH CHECK (true);

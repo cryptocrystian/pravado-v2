@@ -15,9 +15,10 @@
  * Only if that governed intake succeeds is the proposal flipped to 'executed'
  * (which now means "handed to execution", not "done"). If intake fails we return
  * `write_failed` and do NOT flip — "No Silent Automation": a proposal is never
- * marked executed without a governed, audited execution behind it. When no hook is
- * injected (e.g. legacy callers / unit tests of the status transition), behaviour is
- * the original status flip — backwards compatible.
+ * marked executed without a governed, audited execution behind it. The `onExecute`
+ * hook is MANDATORY for `execute`: calling `execute` without it returns
+ * `execution_required` and never flips the proposal (fail closed — the route always
+ * wires the hook). `dismiss` needs no hook.
  *
  * Only `active` proposals transition. Terminal states are idempotent no-ops. Records
  * who acted (`acted_by`) and when (`acted_at`). Pure function taking the Supabase
@@ -60,7 +61,14 @@ export type ApplyProposalActionResult =
       previous_status: ProposalStatus;
       execution_id?: string;
     }
-  | { ok: false; reason: 'invalid_action' | 'not_found' | 'write_failed' };
+  | {
+      ok: false;
+      reason:
+        | 'invalid_action'
+        | 'not_found'
+        | 'write_failed'
+        | 'execution_required';
+    };
 
 export async function applyProposalAction(
   supabase: SupabaseClient,
@@ -94,10 +102,14 @@ export async function applyProposalAction(
     return { ok: true, proposal: existing, previous_status };
   }
 
-  // Governed execution BEFORE the status flip (No Silent Automation). Only runs on
-  // `execute` and only when a hook is injected. A failure here aborts the flip.
+  // Governed execution BEFORE the status flip (No Silent Automation). The
+  // `onExecute` hook is MANDATORY for `execute`: a proposal can NEVER be flipped to
+  // 'executed' without a governed, audited execution behind it. A missing hook is a
+  // wiring bug (the route always provides it) — fail closed rather than silently
+  // flip. A hook failure likewise aborts the flip.
   let executionId: string | undefined;
-  if (action === 'execute' && deps.onExecute) {
+  if (action === 'execute') {
+    if (!deps.onExecute) return { ok: false, reason: 'execution_required' };
     const exec = await deps.onExecute(existing as Record<string, unknown>);
     if (!exec.ok) return { ok: false, reason: 'write_failed' };
     executionId = exec.executionId;

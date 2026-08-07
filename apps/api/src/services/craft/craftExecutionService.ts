@@ -384,9 +384,19 @@ export async function markExecuting(
 // completeExecution — terminal state + outcome fed back to SAGE (LOOP CLOSED).
 // ---------------------------------------------------------------------------
 
+/**
+ * Outcome vocabulary. `governed_complete` = the governed execution lifecycle
+ * finished without error — a NEUTRAL value, NOT a business KPI (this slice only
+ * ever records this for the handoff worker). `success`/`failure` = a VERIFIED
+ * business outcome, populated by a later slice via downstream signal correlation.
+ * Keeping them distinct stops a future SAGE reader from misreading ~100% governed
+ * completions as ~100% business success.
+ */
+export type OutcomeResult = 'governed_complete' | 'success' | 'failure';
+
 export interface CompleteExecutionArgs {
   executionId: string;
-  result: 'success' | 'failure';
+  result: OutcomeResult;
   /** Free-form execution output/detail, recorded on the audit + outcome rows. */
   detail?: Record<string, unknown>;
 }
@@ -403,10 +413,12 @@ export type CompleteExecutionResult =
  * that closes the loop: SAGE can now read whether actions on a given signal type
  * have historically succeeded.
  *
- * NOTE ON "success": at this slice the outcome result reflects whether the GOVERNED
- * EXECUTION completed without error (canon §8.2 Completed vs. Failed), NOT a verified
- * business KPI. Business-outcome verification (did the pitch earn coverage?) rides on
- * the same rows in a LATER slice via downstream signal correlation.
+ * OUTCOME SEMANTICS: the worker records `governed_complete` — a NEUTRAL value meaning
+ * "the governed execution lifecycle finished without error" (canon §8.2 Completed) —
+ * NOT a verified business KPI, and counted in its OWN tally column
+ * (`governed_complete_count`). Verified business `success`/`failure` (did the pitch
+ * earn coverage?) is a separate vocabulary populated by a LATER slice via downstream
+ * signal correlation, so a SAGE reader is never biased toward ~100% "success".
  */
 export async function completeExecution(
   supabase: SupabaseClient,
@@ -415,7 +427,9 @@ export async function completeExecution(
   const { executionId, result } = args;
   const detail = args.detail ?? {};
   const nowIso = new Date().toISOString();
-  const state = result === 'success' ? 'completed' : 'failed';
+  // Only a verified business `failure` (or an execution error surfaced as such)
+  // marks the execution FAILED; `governed_complete` and `success` both COMPLETED.
+  const state = result === 'failure' ? 'failed' : 'completed';
 
   const { data: exec, error: fetchErr } = await supabase
     .from('sage_executions')
@@ -498,29 +512,37 @@ async function upsertSignalOutcomeTally(
   supabase: SupabaseClient,
   orgId: string,
   signalType: string,
-  result: 'success' | 'failure',
+  result: OutcomeResult,
   nowIso: string
 ): Promise<void> {
   const { data: existing } = await supabase
     .from('sage_signal_outcome_tally')
-    .select('success_count, failure_count')
+    .select('governed_complete_count, success_count, failure_count')
     .eq('org_id', orgId)
     .eq('signal_type', signalType)
     .maybeSingle();
 
+  const prev = existing as {
+    governed_complete_count?: number;
+    success_count?: number;
+    failure_count?: number;
+  } | null;
+
+  // Each outcome increments EXACTLY its own counter. `governed_complete` is kept
+  // strictly separate from business `success` so completion is never a counted win.
+  const governedComplete =
+    Number(prev?.governed_complete_count ?? 0) +
+    (result === 'governed_complete' ? 1 : 0);
   const success =
-    Number(
-      (existing as { success_count?: number } | null)?.success_count ?? 0
-    ) + (result === 'success' ? 1 : 0);
+    Number(prev?.success_count ?? 0) + (result === 'success' ? 1 : 0);
   const failure =
-    Number(
-      (existing as { failure_count?: number } | null)?.failure_count ?? 0
-    ) + (result === 'failure' ? 1 : 0);
+    Number(prev?.failure_count ?? 0) + (result === 'failure' ? 1 : 0);
 
   await supabase.from('sage_signal_outcome_tally').upsert(
     {
       org_id: orgId,
       signal_type: signalType,
+      governed_complete_count: governedComplete,
       success_count: success,
       failure_count: failure,
       last_outcome_at: nowIso,
