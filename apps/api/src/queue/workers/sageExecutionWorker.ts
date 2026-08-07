@@ -1,31 +1,28 @@
 /**
- * SAGE Governed Execution Worker (Wave-2 — SAGE↔CRAFT loop closure).
+ * SAGE Governed Execution Worker (Wave-2 — SAGE↔CRAFT loop closure + executors).
  *
  * BullMQ worker that runs a governed CRAFT execution created by
  * `craftExecutionService.executeProposal`. Job name: 'sage:execution'.
  * Payload: { executionId, orgId, proposalId }.
  *
  * Lifecycle (CRAFT_EXECUTION_MODEL §8): the execution row arrives in state 'queued'.
- * This worker transitions it queued→executing (audited), runs the action, then calls
- * `completeExecution` which writes the terminal state + immutable audit row + the
- * outcome fed back to the originating proposal/signal + the signal-type tally — the
- * moment the SAGE→CRAFT→outcome→SAGE loop is closed.
+ * The heavy lifting lives in `runQueuedExecution` (craftExecutionRunner) so it is
+ * unit-testable without BullMQ: it transitions queued→executing (audited), DISPATCHES
+ * to the registered per-pillar action executor (Wave-2 — the Content
+ * `content.create_brief` executor produces a real brief; reserved PR/SEO actions
+ * degrade to a governed no-op), then calls `completeExecution` which writes the
+ * terminal state + immutable audit + the outcome fed back to the proposal/signal +
+ * the signal-type tally — closing the SAGE→CRAFT→outcome→SAGE loop.
  *
- * SCOPE NOTE: concrete per-pillar action executors (actually send the pitch, publish
- * the content) are a LATER slice. Until one is registered for the proposal's action
- * type, the "action" is a governed handoff that records the lifecycle and completes.
- * The outcome `result` therefore reflects whether the governed execution completed
- * without error (canon §8.2), not a verified business KPI — see completeExecution.
+ * This worker is a thin wrapper: it owns logging + Sentry error reporting and the
+ * Supabase client; the runner owns the governed lifecycle + dispatch.
  */
 
 import { createLogger } from '@pravado/utils';
 import * as Sentry from '@sentry/node';
 
 import { getSupabaseClient } from '../../lib/supabase';
-import {
-  markExecuting,
-  completeExecution,
-} from '../../services/craft/craftExecutionService';
+import { runQueuedExecution } from '../../services/craft/craftExecutionRunner';
 
 const logger = createLogger('queue:sage-execution');
 
@@ -45,49 +42,27 @@ export async function processSageExecution(
 
   const supabase = getSupabaseClient();
 
-  const started = await markExecuting(supabase, executionId);
-  if (!started.ok) {
-    // Not in 'queued' state (already picked up, or missing) — idempotent no-op.
-    logger.warn(
-      `Execution ${executionId} not in queued state; skipping (idempotent).`
-    );
-    return;
-  }
-
   try {
-    // LATER SLICE: dispatch to a concrete per-pillar action executor here. For now
-    // the governed handoff is recorded and the execution completes.
-    // Record a NEUTRAL governed-lifecycle completion — NOT a business `success`.
-    // The concrete per-pillar action executor (and thus a verified business
-    // outcome) is a later slice; recording `success` here would bias the SAGE
-    // signal-type tally toward ~100% success.
-    const result = await completeExecution(supabase, {
-      executionId,
-      result: 'governed_complete',
-      detail: {
-        kind: 'governed_handoff',
-        note: 'Execution lifecycle recorded; concrete pillar action executor deferred to a later slice.',
-      },
-    });
+    const result = await runQueuedExecution(supabase, payload);
 
-    if (!result.ok) {
-      throw new Error(`completeExecution failed: ${result.reason}`);
+    if (!result.ran) {
+      logger.warn(
+        `Execution ${executionId} not in queued state; skipping (idempotent).`
+      );
+      return;
     }
 
     logger.info(
-      `Execution ${executionId} completed; outcome ${result.outcomeId} fed back to SAGE.`
+      `Execution ${executionId} completed with outcome '${result.outcome}'; fed back to SAGE.`
     );
   } catch (err) {
+    // runQueuedExecution records the failure outcome itself; this is a last-resort
+    // guard (e.g. markExecuting/DB unreachable) so the worker still reports.
     const message = err instanceof Error ? err.message : String(err);
     logger.error(`Execution ${executionId} failed: ${message}`);
     Sentry.captureException(err, {
       tags: { queue_name: 'sage-execution', org_id: orgId },
     });
-    // Record the failure outcome so the loop closes even on error.
-    await completeExecution(supabase, {
-      executionId,
-      result: 'failure',
-      detail: { kind: 'execution_error', error: message },
-    });
+    throw err;
   }
 }

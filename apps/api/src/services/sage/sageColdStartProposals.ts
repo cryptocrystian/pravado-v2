@@ -30,6 +30,7 @@ import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { checkLLMBudget } from './llmBudget';
+import { mapSignalToAction } from './sageActionMapper';
 import { deriveImpactPillars } from './sageImpactPillars';
 import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
@@ -259,6 +260,14 @@ export async function generateColdStartProposals(
   const proposalMode = await resolveOrgProposalMode(supabase, orgId);
 
   for (const draft of topDrafts) {
+    // Structured, machine-executable action (Wave-2). Cold-start drafts carry no
+    // signal_data, so seed the mapper with the draft title as the topic hint.
+    const structuredAction = mapSignalToAction(
+      draft.pillar,
+      `cold_start_${draft.pillar.toLowerCase()}`,
+      { title: draft.title }
+    );
+
     const { error: insertErr } = await supabase.from('sage_proposals').insert({
       org_id: orgId,
       signal_id: null, // No signal drove this — schema allows null
@@ -278,6 +287,8 @@ export async function generateColdStartProposals(
       confidence: draft.confidence,
       mode: proposalMode,
       deep_link: null,
+      action_type: structuredAction.action_type,
+      action_params: structuredAction.action_params,
       status: 'active',
       expires_at: null,
       // reasoning_trace is the origin channel — see file header.
