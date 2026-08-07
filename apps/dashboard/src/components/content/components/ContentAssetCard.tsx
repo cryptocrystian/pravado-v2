@@ -35,13 +35,13 @@ const STATUS_CONFIG: Record<ContentStatus, { label: string; classes: string }> =
       label: 'Draft',
       classes: 'bg-white/10 text-white/60 border-white/20',
     },
-    needs_review: {
-      label: 'Needs Review',
+    review: {
+      label: 'In Review',
       classes:
         'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
     },
-    ready: {
-      label: 'Ready',
+    approved: {
+      label: 'Approved',
       classes: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20',
     },
     published: {

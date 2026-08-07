@@ -62,28 +62,28 @@ const FORMAT_CONFIG: Record<
   ContentType,
   { label: string; color: string; bgColor: string }
 > = {
-  article: {
-    label: 'Article',
+  blog_post: {
+    label: 'Blog Post',
     color: 'text-brand-iris',
     bgColor: 'bg-brand-iris/10',
   },
-  email: {
-    label: 'Email',
+  long_form: {
+    label: 'Long-Form',
     color: 'text-brand-cyan',
     bgColor: 'bg-brand-cyan/10',
-  },
-  social_post: {
-    label: 'Social Post',
-    color: 'text-brand-magenta',
-    bgColor: 'bg-brand-magenta/10',
   },
   landing_page: {
     label: 'Landing Page',
     color: 'text-semantic-success',
     bgColor: 'bg-semantic-success/10',
   },
-  campaign: {
-    label: 'Campaign',
+  guide: {
+    label: 'Guide',
+    color: 'text-brand-magenta',
+    bgColor: 'bg-brand-magenta/10',
+  },
+  case_study: {
+    label: 'Case Study',
     color: 'text-semantic-warning',
     bgColor: 'bg-semantic-warning/10',
   },
@@ -452,8 +452,8 @@ function CalendarEntryCard({
   crossPillarDeps = [],
   onClick,
 }: CalendarEntryCardProps) {
-  const format: ContentType = asset.contentType || 'article';
-  const formatConfig = FORMAT_CONFIG[format] || FORMAT_CONFIG.article;
+  const format: ContentType = asset.contentType || 'blog_post';
+  const formatConfig = FORMAT_CONFIG[format] || FORMAT_CONFIG.blog_post;
   const modeConfig = modeTokens[automationMode];
 
   // Check for cross-pillar dependencies
@@ -713,7 +713,7 @@ export function ContentAgendaView({
             {items.map((item, index) => {
               const format: ContentType | null =
                 item.type === 'asset'
-                  ? (item.item as ContentAsset).contentType || 'article'
+                  ? (item.item as ContentAsset).contentType || 'blog_post'
                   : null;
               const formatConfig = format ? FORMAT_CONFIG[format] : null;
 

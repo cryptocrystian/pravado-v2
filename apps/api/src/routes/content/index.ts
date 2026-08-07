@@ -45,6 +45,7 @@ import {
 } from '../../services/billing/planLimitsService';
 import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
 import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
+import { enforcePublishGovernance } from '../../services/content/publishGovernance';
 import { ContentService } from '../../services/contentService';
 
 /**
@@ -326,6 +327,39 @@ export async function contentRoutes(server: FastifyInstance) {
       }
 
       const updates = validation.data;
+      // Canon governance chokepoint: a transition to `published` is not a plain
+      // status write. It must clear the Manual-only mode ceiling (§7.4) and the
+      // CiteMind qualification gate (§7.1) BEFORE the DB mutation — a HARD BLOCK.
+      // This is the server-side enforcement of "no content bypasses governance".
+      if (updates.status === 'published') {
+        const governance = await enforcePublishGovernance(
+          supabase,
+          request.user.id,
+          orgId,
+          id
+        );
+        if (!governance.ok) {
+          return reply.code(422).send({
+            success: false,
+            error: {
+              code:
+                governance.reason === 'mode_ceiling'
+                  ? 'PUBLISH_MODE_CEILING'
+                  : 'CITEMIND_GATE_BLOCKED',
+              message: governance.message ?? 'Publishing is not permitted.',
+              details: {
+                mode: governance.mode,
+                gateStatus: governance.gate?.gate_status,
+                score: governance.gate?.score,
+                recommendations: governance.gate?.recommendations,
+              },
+            },
+          });
+        }
+      }
+
+      // The AEO ingestion-readiness gate (below, post-write) is ADVISORY, not a
+      // block — canon SEO_AEO §3E: the check is non-optional but never blocks publish.
       const isPublishing = updates.status === 'published';
 
       const item = await contentService.updateContentItem(orgId, id, updates);

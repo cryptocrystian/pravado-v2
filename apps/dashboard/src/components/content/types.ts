@@ -17,20 +17,22 @@
  */
 export type ContentStatus =
   | 'draft'
-  | 'needs_review'
-  | 'ready'
+  | 'review'
+  | 'approved'
   | 'published'
   | 'archived';
 
 /**
- * Content types used across existing components and mock data
+ * Content types — canon lifecycle set (CONTENT_WORK_SURFACE_CONTRACT §9.1).
+ * Reconciled from the prior FE-only set (article/email/social_post/campaign)
+ * which the API rejected.
  */
 export type ContentType =
-  | 'article'
-  | 'email'
-  | 'social_post'
+  | 'blog_post'
+  | 'long_form'
   | 'landing_page'
-  | 'campaign';
+  | 'guide'
+  | 'case_study';
 
 /**
  * Content types for the creation overlay (new creation flow)
@@ -170,23 +172,17 @@ export interface ContentTypeConfig {
 }
 
 export const CONTENT_TYPE_CONFIG: Record<ContentType, ContentTypeConfig> = {
-  article: {
-    label: 'Article',
+  blog_post: {
+    label: 'Blog Post',
     icon: '📝',
     placeholder: 'Write your headline...',
-    description: 'Long-form content for blogs, guides, and thought leadership',
+    description: 'SEO-oriented posts, frequent cadence',
   },
-  email: {
-    label: 'Email',
-    icon: '✉️',
-    placeholder: 'Subject line...',
-    description: 'Email campaigns, newsletters, and outreach',
-  },
-  social_post: {
-    label: 'Social Post',
-    icon: '📱',
-    placeholder: 'Hook your audience...',
-    description: 'Social media content for any platform',
+  long_form: {
+    label: 'Long-Form',
+    icon: '📚',
+    placeholder: 'Write your headline...',
+    description: 'Thought leadership, byline-eligible long articles',
   },
   landing_page: {
     label: 'Landing Page',
@@ -194,11 +190,17 @@ export const CONTENT_TYPE_CONFIG: Record<ContentType, ContentTypeConfig> = {
     placeholder: 'Your headline goes here...',
     description: 'Conversion-focused web pages',
   },
-  campaign: {
-    label: 'Campaign',
-    icon: '📣',
-    placeholder: 'Campaign name...',
-    description: 'Container for organizing related content',
+  guide: {
+    label: 'Guide',
+    icon: '📖',
+    placeholder: 'Name your guide...',
+    description: 'Comprehensive how-to and reference content',
+  },
+  case_study: {
+    label: 'Case Study',
+    icon: '📊',
+    placeholder: 'Case study title...',
+    description: 'Evidence-driven proof and outcomes',
   },
 };
 
@@ -210,8 +212,8 @@ export const CONTENT_STATUS_CONFIG: Record<
   { label: string; color: string }
 > = {
   draft: { label: 'Draft', color: 'text-white/50' },
-  needs_review: { label: 'Needs Review', color: 'text-amber-400' },
-  ready: { label: 'Ready', color: 'text-brand-cyan' },
+  review: { label: 'In Review', color: 'text-amber-400' },
+  approved: { label: 'Approved', color: 'text-brand-cyan' },
   published: { label: 'Published', color: 'text-green-400' },
   archived: { label: 'Archived', color: 'text-white/30' },
 };

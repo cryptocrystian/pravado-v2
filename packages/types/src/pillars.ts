@@ -132,19 +132,28 @@ export interface PRListWithMembers {
 // CONTENT INTELLIGENCE TYPES (S3 + S12)
 // ========================================
 
-export type ContentStatus = 'draft' | 'published' | 'archived';
+// Canon content lifecycle (CONTENT_WORK_SURFACE_CONTRACT.md §4.1/§9.1).
+export type ContentStatus =
+  | 'draft'
+  | 'review'
+  | 'approved'
+  | 'published'
+  | 'archived';
+
+// Canon content types (CONTENT_WORK_SURFACE_CONTRACT.md §9.1).
+export type ContentType =
+  | 'blog_post'
+  | 'long_form'
+  | 'landing_page'
+  | 'guide'
+  | 'case_study';
 export type ContentBriefStatus = 'draft' | 'in_progress' | 'completed';
 
 export interface ContentItem extends BaseEntity {
   orgId: UUID;
   title: string;
   slug: string | null; // URL-friendly identifier
-  contentType:
-    | 'blog_post'
-    | 'social_post'
-    | 'long_form'
-    | 'video_script'
-    | 'newsletter';
+  contentType: ContentType;
   status: ContentStatus; // S12: Enhanced with type
   body: string | null;
   url: string | null; // S12: Added

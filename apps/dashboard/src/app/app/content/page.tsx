@@ -23,6 +23,7 @@ import { useState, useCallback, useRef } from 'react';
 import { ContentLoadingSkeleton } from '@/components/content/components/ContentLoadingSkeleton';
 import { CONTENT_OVERVIEW_MOCK } from '@/components/content/content-mock-data';
 import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
+import { useContentItems } from '@/components/content/hooks/useContentData';
 import type {
   ContentView,
   ContentType,
@@ -64,6 +65,13 @@ export default function ContentSurfacePage() {
   // First-paint hydration gate — avoid flashing the wrong mode's view before
   // the server mode resolves (MODE_UX_ARCHITECTURE §4D).
   const viewState = resolveContentViewState(isModeLoading, mode);
+  // Real content library data (replaces CONTENT_OVERVIEW_MOCK for the Library
+  // view). Honest loading/empty/error states are handled by ContentLibraryView.
+  const {
+    assets: libraryAssets,
+    isLoading: libraryLoading,
+    error: libraryError,
+  } = useContentItems();
   const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(
     null
   );
@@ -173,16 +181,10 @@ export default function ContentSurfacePage() {
       case 'library':
         return (
           <ContentLibraryView
-            assets={CONTENT_OVERVIEW_MOCK.recentAssets}
-            isLoading={false}
-            availableEntities={[
-              'Brand',
-              'AEO Strategy',
-              'Enterprise',
-              'PR Technology',
-              'AI Marketing',
-            ]}
-            onCreateAsset={() => handleCreateContent('article')}
+            assets={libraryAssets}
+            isLoading={libraryLoading}
+            error={libraryError ?? null}
+            onCreateAsset={() => handleCreateContent('blog_post')}
           />
         );
 

@@ -392,7 +392,7 @@ export function PravadoEditor({
                   ? 'bg-white/40'
                   : status === 'published'
                     ? 'bg-green-400'
-                    : status === 'ready'
+                    : status === 'approved'
                       ? 'bg-brand-cyan'
                       : 'bg-amber-400'
               }`}
