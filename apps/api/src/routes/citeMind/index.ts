@@ -23,6 +23,7 @@ import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
+import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
 import { monitorCitations } from '../../services/citeMind/citationMonitor';
 import {
   checkGate,
@@ -340,6 +341,97 @@ export async function citeMindRoutes(server: FastifyInstance) {
         supabase,
         request.params.contentItemId,
         orgId
+      );
+
+      // ========================================
+      // POST /aeo-gate/:contentItemId — Run Pre-Publish AEO ingestion-readiness gate
+      // Canon SEO_AEO_PILLAR_CANON §3E. Advisory: bypass always permitted.
+      // ========================================
+
+      server.post<{ Params: { contentItemId: string } }>(
+        '/aeo-gate/:contentItemId',
+        { preHandler: requireUser },
+        async (request, reply) => {
+          if (!FLAGS.ENABLE_CITEMIND || !FLAGS.ENABLE_AEO_GATE) {
+            return reply.code(404).send({
+              success: false,
+              error: { message: 'AEO gate is not enabled' },
+            });
+          }
+
+          if (!request.user) {
+            return reply.code(401).send({
+              success: false,
+              error: { message: 'Authentication required' },
+            });
+          }
+
+          const orgId = await getUserOrgId(request.user.id, supabase);
+          if (!orgId) {
+            return reply.code(403).send({
+              success: false,
+              error: { message: 'No organization found' },
+            });
+          }
+
+          try {
+            const result = await runAeoGate(
+              supabase,
+              request.params.contentItemId,
+              orgId
+            );
+            return reply.send({ success: true, data: result });
+          } catch (error) {
+            const msg =
+              error instanceof Error
+                ? error.message
+                : 'AEO gate evaluation failed';
+            return reply
+              .code(500)
+              .send({ success: false, error: { message: msg } });
+          }
+        }
+      );
+
+      // ========================================
+      // GET /aeo-gate/:contentItemId — Latest AEO gate result
+      // ========================================
+
+      server.get<{ Params: { contentItemId: string } }>(
+        '/aeo-gate/:contentItemId',
+        { preHandler: requireUser },
+        async (request, reply) => {
+          if (!FLAGS.ENABLE_CITEMIND || !FLAGS.ENABLE_AEO_GATE) {
+            return reply.send({ success: true, data: null });
+          }
+
+          if (!request.user) {
+            return reply.code(401).send({
+              success: false,
+              error: { message: 'Authentication required' },
+            });
+          }
+
+          const orgId = await getUserOrgId(request.user.id, supabase);
+          if (!orgId) {
+            return reply.code(403).send({
+              success: false,
+              error: { message: 'No organization found' },
+            });
+          }
+
+          const { data } = await supabase
+            .from('aeo_gate_results')
+            .select('*')
+            .eq('content_item_id', request.params.contentItemId)
+            .eq('org_id', orgId)
+            .order('evaluated_at', { ascending: false })
+            .limit(1);
+
+          const latest =
+            Array.isArray(data) && data.length > 0 ? data[0] : null;
+          return reply.send({ success: true, data: latest });
+        }
       );
       return reply.send({ success: true, data: result });
     }

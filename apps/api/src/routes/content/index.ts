@@ -3,6 +3,7 @@
  * Full implementation of Content Intelligence Engine V1
  */
 
+import { FLAGS } from '@pravado/feature-flags';
 import type {
   ListContentItemsResponse,
   GetContentItemResponse,
@@ -16,6 +17,7 @@ import type {
   ListContentGapsResponse,
   ContentItem,
   ContentBrief,
+  AeoGateInfo,
 } from '@pravado/types';
 import {
   listContentItemsSchema,
@@ -41,6 +43,8 @@ import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
+import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
+import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
 import { enforcePublishGovernance } from '../../services/content/publishGovernance';
 import { ContentService } from '../../services/contentService';
 
@@ -323,12 +327,10 @@ export async function contentRoutes(server: FastifyInstance) {
       }
 
       const updates = validation.data;
-
       // Canon governance chokepoint: a transition to `published` is not a plain
       // status write. It must clear the Manual-only mode ceiling (§7.4) and the
-      // CiteMind qualification gate (§7.1) BEFORE the DB mutation. This is the
-      // server-side enforcement of "no content bypasses governance"; the old
-      // FE-only gate was dead, always-bypassable code.
+      // CiteMind qualification gate (§7.1) BEFORE the DB mutation — a HARD BLOCK.
+      // This is the server-side enforcement of "no content bypasses governance".
       if (updates.status === 'published') {
         const governance = await enforcePublishGovernance(
           supabase,
@@ -356,6 +358,10 @@ export async function contentRoutes(server: FastifyInstance) {
         }
       }
 
+      // The AEO ingestion-readiness gate (below, post-write) is ADVISORY, not a
+      // block — canon SEO_AEO §3E: the check is non-optional but never blocks publish.
+      const isPublishing = updates.status === 'published';
+
       const item = await contentService.updateContentItem(orgId, id, updates);
 
       if (!item) {
@@ -375,9 +381,41 @@ export async function contentRoutes(server: FastifyInstance) {
         });
       }
 
+      // Pre-Publish AEO ingestion-readiness gate (canon SEO_AEO_PILLAR_CANON §3E).
+      // ADVISORY, never blocking: on publish it always runs and persists the
+      // score/band/gaps to aeo_gate_results, and the result is surfaced as
+      // non-blocking info on the response. Publish proceeds regardless of score.
+      let aeo: AeoGateInfo | undefined;
+      if (isPublishing && FLAGS.ENABLE_CITEMIND && FLAGS.ENABLE_AEO_GATE) {
+        try {
+          const gate = await runAeoGate(supabase, id, orgId);
+          aeo = {
+            aeo_score: gate.aeo_score,
+            band: gate.band,
+            passed: gate.passed,
+            gaps: gate.gaps,
+            explanation: gate.explanation,
+          };
+        } catch {
+          aeo = undefined; // advisory: gate failure must never affect publish
+        }
+      }
+
+      // Indexation ping on publish (Autopilot; canon §3D / CITEMIND_SYSTEM §2.5).
+      // Fire-and-forget IndexNow submit (+ Google Indexing for high-priority).
+      if (isPublishing && FLAGS.ENABLE_INDEXNOW && item?.url) {
+        pingIndexationOnPublish(supabase, {
+          orgId,
+          contentItemId: id,
+          url: item.url,
+        }).catch(() => {
+          /* non-critical */
+        });
+      }
+
       return reply.send({
         success: true,
-        data: { item },
+        data: { item, ...(aeo ? { aeo } : {}) },
       });
     }
   );

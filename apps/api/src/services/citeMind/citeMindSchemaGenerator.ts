@@ -1,15 +1,18 @@
 /**
- * CiteMind Schema Generator (Sprint S-INT-04)
+ * CiteMind Schema Generator (Sprint S-INT-04; Lane D / Engine 1 expansion)
  *
  * Generates JSON-LD structured data for content items.
- * Detects content type from title + body heuristics and generates
- * the appropriate schema (Article, BlogPosting, HowTo, FAQPage).
- * Saves to citemind_schemas table.
+ * Detects content type from title + body + content_type heuristics and
+ * generates the appropriate schema, then saves to citemind_schemas.
+ *
+ * Canon: CITEMIND_SYSTEM.md §2.3 + SEO_AEO_PILLAR_CANON.md §3D require the
+ * full canonical set of Engine-1 schema types:
+ *   Article, BlogPosting, HowTo, FAQPage (original)
+ *   NewsArticle, Organization, Person       (Lane D — added here)
  */
 
+import { createLogger } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('citemind:schema');
 
@@ -17,7 +20,14 @@ const logger = createLogger('citemind:schema');
 // Types
 // ============================================================================
 
-type SchemaType = 'Article' | 'BlogPosting' | 'HowTo' | 'FAQPage';
+export type SchemaType =
+  | 'Article'
+  | 'BlogPosting'
+  | 'NewsArticle'
+  | 'HowTo'
+  | 'FAQPage'
+  | 'Organization'
+  | 'Person';
 
 interface SchemaGenerationResult {
   schema_type: SchemaType;
@@ -34,15 +44,56 @@ interface ContentItemForSchema {
   url: string | null;
   published_at: string | null;
   word_count: number | null;
+  metadata: Record<string, unknown> | null;
+}
+
+interface OrgForSchema {
+  name: string;
+  website_url?: string | null;
+  logo_url?: string | null;
+  description?: string | null;
 }
 
 // ============================================================================
 // Schema Detection
 // ============================================================================
 
-function detectSchemaType(title: string, body: string): SchemaType {
+/**
+ * Detect the most appropriate schema.org type for a content item.
+ *
+ * Precedence (highest first):
+ *   1. Explicit `metadata.schema_type` override
+ *   2. Format-driven: FAQPage, HowTo
+ *   3. Entity-driven: NewsArticle (press release), Person (bio), Organization (about)
+ *   4. Generic: BlogPosting, Article
+ */
+export function detectSchemaType(
+  title: string,
+  body: string,
+  contentType?: string | null,
+  metadata?: Record<string, unknown> | null
+): SchemaType {
+  const override = metadata?.schema_type;
+  if (
+    typeof override === 'string' &&
+    [
+      'Article',
+      'BlogPosting',
+      'NewsArticle',
+      'HowTo',
+      'FAQPage',
+      'Organization',
+      'Person',
+    ].includes(override)
+  ) {
+    return override as SchemaType;
+  }
+
   const titleLower = title.toLowerCase();
   const bodyLower = body.toLowerCase();
+  const ct = (contentType || '').toLowerCase();
+
+  // --- Format-driven -------------------------------------------------------
 
   // FAQ detection: multiple questions in content
   const questionCount = (body.match(/\?[\s\n]/g) || []).length;
@@ -50,21 +101,57 @@ function detectSchemaType(title: string, body: string): SchemaType {
     titleLower.includes('faq') ||
     titleLower.includes('frequently asked') ||
     questionCount >= 3;
-
   if (hasFAQPattern) return 'FAQPage';
 
   // HowTo detection: step-by-step instructions
   const hasHowTo =
     titleLower.includes('how to') ||
-    titleLower.includes('guide') ||
     titleLower.includes('tutorial') ||
     titleLower.includes('step-by-step') ||
     (bodyLower.includes('step 1') && bodyLower.includes('step 2'));
-
   if (hasHowTo) return 'HowTo';
 
-  // BlogPosting: shorter content, blog-style
-  if (titleLower.includes('blog') || body.split(/\s+/).length < 1500) {
+  // --- Entity-driven -------------------------------------------------------
+
+  // NewsArticle: press releases / news announcements
+  const isNews =
+    ct === 'press_release' ||
+    ct === 'news' ||
+    titleLower.includes('press release') ||
+    bodyLower.includes('for immediate release') ||
+    /\b(today\s+)?announced?\b/.test(titleLower) ||
+    /\b(today\s+)?announced?\b/.test(bodyLower.slice(0, 400));
+  if (isNews) return 'NewsArticle';
+
+  // Person: executive bio / spokesperson content
+  const isPerson =
+    ct === 'bio' ||
+    ct === 'executive_bio' ||
+    titleLower.includes(' bio') ||
+    titleLower.includes('biography') ||
+    (/\b(ceo|cto|cfo|coo|founder|co-founder|president|vice president|spokesperson|chief\s+\w+\s+officer)\b/.test(
+      bodyLower.slice(0, 300)
+    ) &&
+      /\bis (the|a|our)\b/.test(bodyLower.slice(0, 300)));
+  if (isPerson) return 'Person';
+
+  // Organization: about / brand-entity content
+  const isOrg =
+    ct === 'about' ||
+    ct === 'company' ||
+    titleLower.startsWith('about') ||
+    titleLower.includes('about us') ||
+    titleLower.includes('company overview') ||
+    bodyLower.slice(0, 300).includes('founded in');
+  if (isOrg) return 'Organization';
+
+  // --- Generic -------------------------------------------------------------
+
+  if (
+    titleLower.includes('blog') ||
+    ct === 'blog_post' ||
+    body.split(/\s+/).length < 1500
+  ) {
     return 'BlogPosting';
   }
 
@@ -72,64 +159,55 @@ function detectSchemaType(title: string, body: string): SchemaType {
 }
 
 // ============================================================================
-// Schema Templates
+// Schema Templates — Article family
 // ============================================================================
 
-function generateArticleSchema(
+function articleFamilySchema(
+  atType: 'Article' | 'BlogPosting' | 'NewsArticle',
   item: ContentItemForSchema,
-  orgName: string
+  org: OrgForSchema
 ): Record<string, unknown> {
-  return {
+  const body = item.body || '';
+  const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': atType,
     headline: item.title,
     author: {
       '@type': 'Organization',
-      name: orgName,
+      name: org.name,
     },
     publisher: {
       '@type': 'Organization',
-      name: orgName,
+      name: org.name,
+      ...(org.logo_url
+        ? { logo: { '@type': 'ImageObject', url: org.logo_url } }
+        : {}),
     },
     datePublished: item.published_at || new Date().toISOString(),
     dateModified: new Date().toISOString(),
     ...(item.url ? { url: item.url } : {}),
     ...(item.word_count ? { wordCount: item.word_count } : {}),
-    description: (item.body || '').substring(0, 200).replace(/\n/g, ' ').trim(),
+    description: body.substring(0, 200).replace(/\n/g, ' ').trim(),
   };
-}
 
-function generateBlogPostingSchema(
-  item: ContentItemForSchema,
-  orgName: string
-): Record<string, unknown> {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: item.title,
-    author: {
-      '@type': 'Organization',
-      name: orgName,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: orgName,
-    },
-    datePublished: item.published_at || new Date().toISOString(),
-    dateModified: new Date().toISOString(),
-    ...(item.url ? { url: item.url } : {}),
-    ...(item.word_count ? { wordCount: item.word_count } : {}),
-    description: (item.body || '').substring(0, 200).replace(/\n/g, ' ').trim(),
-  };
+  // NewsArticle carries the full articleBody + image per canon §2.3
+  if (atType === 'NewsArticle') {
+    schema.articleBody = body.replace(/\n{2,}/g, '\n').trim();
+    const image =
+      metaString(item.metadata, 'image') ||
+      metaString(item.metadata, 'image_url');
+    if (image) schema.image = image;
+  }
+
+  return schema;
 }
 
 function generateHowToSchema(
   item: ContentItemForSchema,
-  orgName: string
+  org: OrgForSchema
 ): Record<string, unknown> {
   const body = item.body || '';
 
-  // Extract steps from numbered lists or "Step N" patterns
   const steps: Array<{ '@type': string; text: string; position: number }> = [];
   const stepMatches =
     body.match(/(?:^|\n)\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)(.+)/gim) || [];
@@ -139,11 +217,7 @@ function generateHowToSchema(
       .replace(/^\s*(?:\d+[.)]\s+|step\s+\d+[:.]\s*)/i, '')
       .trim();
     if (text.length > 5) {
-      steps.push({
-        '@type': 'HowToStep',
-        text,
-        position: idx + 1,
-      });
+      steps.push({ '@type': 'HowToStep', text, position: idx + 1 });
     }
   });
 
@@ -153,22 +227,16 @@ function generateHowToSchema(
     name: item.title,
     description: body.substring(0, 200).replace(/\n/g, ' ').trim(),
     ...(steps.length > 0 ? { step: steps } : {}),
-    author: {
-      '@type': 'Organization',
-      name: orgName,
-    },
+    author: { '@type': 'Organization', name: org.name },
     datePublished: item.published_at || new Date().toISOString(),
     ...(item.url ? { url: item.url } : {}),
   };
 }
 
 function generateFAQSchema(
-  item: ContentItemForSchema,
-  _orgName: string
+  item: ContentItemForSchema
 ): Record<string, unknown> {
   const body = item.body || '';
-
-  // Extract Q&A pairs: lines ending with ? followed by answer text
   const faqEntries: Array<{
     '@type': string;
     name: string;
@@ -179,7 +247,6 @@ function generateFAQSchema(
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (line.endsWith('?') && line.length > 10) {
-      // Get next non-empty line as answer
       let answer = '';
       for (let j = i + 1; j < lines.length && j < i + 5; j++) {
         const nextLine = lines[j].trim();
@@ -192,10 +259,7 @@ function generateFAQSchema(
         faqEntries.push({
           '@type': 'Question',
           name: line.replace(/^#+\s*/, ''),
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: answer,
-          },
+          acceptedAnswer: { '@type': 'Answer', text: answer },
         });
       }
     }
@@ -211,6 +275,128 @@ function generateFAQSchema(
 }
 
 // ============================================================================
+// Schema Templates — Entity family (Lane D additions)
+// ============================================================================
+
+/**
+ * Organization schema — canon fields: name, url, logo, sameAs, description,
+ * founder, foundingDate. Values are drawn from org record + content metadata.
+ */
+function generateOrganizationSchema(
+  item: ContentItemForSchema,
+  org: OrgForSchema
+): Record<string, unknown> {
+  const md = item.metadata || {};
+  const description =
+    metaString(md, 'description') ||
+    org.description ||
+    (item.body || '').substring(0, 250).replace(/\n/g, ' ').trim();
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: metaString(md, 'name') || org.name,
+    ...(item.url || org.website_url
+      ? { url: item.url || org.website_url }
+      : {}),
+    ...(org.logo_url || metaString(md, 'logo')
+      ? { logo: org.logo_url || metaString(md, 'logo') }
+      : {}),
+    ...(metaStringArray(md, 'sameAs')
+      ? { sameAs: metaStringArray(md, 'sameAs') }
+      : {}),
+    ...(description ? { description } : {}),
+    ...(metaString(md, 'founder')
+      ? { founder: { '@type': 'Person', name: metaString(md, 'founder') } }
+      : {}),
+    ...(metaString(md, 'foundingDate')
+      ? { foundingDate: metaString(md, 'foundingDate') }
+      : {}),
+  };
+}
+
+/**
+ * Person schema — canon fields: name, jobTitle, worksFor, sameAs, image,
+ * description. Name/jobTitle are extracted from metadata or heuristically
+ * from the opening of the body ("Jane Doe is the CEO of ...").
+ */
+function generatePersonSchema(
+  item: ContentItemForSchema,
+  org: OrgForSchema
+): Record<string, unknown> {
+  const md = item.metadata || {};
+  const body = item.body || '';
+
+  const name =
+    metaString(md, 'name') || extractPersonName(item.title, body) || item.title;
+  const jobTitle = metaString(md, 'jobTitle') || extractJobTitle(body);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name,
+    ...(jobTitle ? { jobTitle } : {}),
+    worksFor: {
+      '@type': 'Organization',
+      name: metaString(md, 'worksFor') || org.name,
+    },
+    ...(metaStringArray(md, 'sameAs')
+      ? { sameAs: metaStringArray(md, 'sameAs') }
+      : {}),
+    ...(metaString(md, 'image') ? { image: metaString(md, 'image') } : {}),
+    description: body.substring(0, 250).replace(/\n/g, ' ').trim(),
+    ...(item.url ? { url: item.url } : {}),
+  };
+}
+
+// ============================================================================
+// Extraction helpers
+// ============================================================================
+
+function metaString(
+  md: Record<string, unknown> | null | undefined,
+  key: string
+): string | null {
+  const v = md?.[key];
+  return typeof v === 'string' && v.trim().length > 0 ? v.trim() : null;
+}
+
+function metaStringArray(
+  md: Record<string, unknown> | null | undefined,
+  key: string
+): string[] | null {
+  const v = md?.[key];
+  if (Array.isArray(v)) {
+    const arr = v.filter(
+      (x): x is string => typeof x === 'string' && x.length > 0
+    );
+    return arr.length > 0 ? arr : null;
+  }
+  return null;
+}
+
+function extractPersonName(title: string, body: string): string | null {
+  // "Jane Doe is the CEO ..." — capture leading proper-noun name
+  const m = body.match(
+    /^\s*([A-Z][a-z]+(?:\s+[A-Z][a-z.]+){1,2})\s+is\s+(?:the|a|our)\b/
+  );
+  if (m) return m[1];
+  // Fall back to a title that looks like a bare person name
+  const t = title.trim();
+  if (/^[A-Z][a-z]+(\s+[A-Z][a-z.]+){1,2}$/.test(t)) return t;
+  return null;
+}
+
+function extractJobTitle(body: string): string | null {
+  const m = body
+    .slice(0, 400)
+    .match(
+      /\bis\s+(?:the|a|our)\s+((?:Chief\s+\w+\s+Officer)|CEO|CTO|CFO|COO|President|Vice President|Founder|Co-Founder|Head of [A-Z][a-z]+|Director of [A-Z][a-z]+)/
+    );
+  return m ? m[1] : null;
+}
+
+// ============================================================================
 // Main Generator
 // ============================================================================
 
@@ -222,11 +408,11 @@ export async function generateSchema(
   contentItemId: string,
   orgId: string
 ): Promise<SchemaGenerationResult> {
-  // Get content item
+  // Get content item (now including metadata for entity schema fields)
   const { data: item, error: itemError } = await supabase
     .from('content_items')
     .select(
-      'id, org_id, title, body, content_type, url, published_at, word_count'
+      'id, org_id, title, body, content_type, url, published_at, word_count, metadata'
     )
     .eq('id', contentItemId)
     .eq('org_id', orgId)
@@ -238,33 +424,51 @@ export async function generateSchema(
     );
   }
 
-  // Get org name
-  const { data: org } = await supabase
+  // Get org (name + branding fields for publisher/logo/url)
+  const { data: orgRow } = await supabase
     .from('orgs')
-    .select('name')
+    .select('name, website_url, logo_url, description')
     .eq('id', orgId)
     .single();
 
-  const orgName =
-    (org as { name: string } | null)?.name || 'Unknown Organization';
+  const org: OrgForSchema = {
+    name: (orgRow as OrgForSchema | null)?.name || 'Unknown Organization',
+    website_url: (orgRow as OrgForSchema | null)?.website_url ?? null,
+    logo_url: (orgRow as OrgForSchema | null)?.logo_url ?? null,
+    description: (orgRow as OrgForSchema | null)?.description ?? null,
+  };
+
   const content = item as ContentItemForSchema;
 
-  // Detect type and generate schema
-  const schemaType = detectSchemaType(content.title, content.body || '');
-  let schemaJson: Record<string, unknown>;
+  const schemaType = detectSchemaType(
+    content.title,
+    content.body || '',
+    content.content_type,
+    content.metadata
+  );
 
+  let schemaJson: Record<string, unknown>;
   switch (schemaType) {
     case 'HowTo':
-      schemaJson = generateHowToSchema(content, orgName);
+      schemaJson = generateHowToSchema(content, org);
       break;
     case 'FAQPage':
-      schemaJson = generateFAQSchema(content, orgName);
+      schemaJson = generateFAQSchema(content);
+      break;
+    case 'Organization':
+      schemaJson = generateOrganizationSchema(content, org);
+      break;
+    case 'Person':
+      schemaJson = generatePersonSchema(content, org);
+      break;
+    case 'NewsArticle':
+      schemaJson = articleFamilySchema('NewsArticle', content, org);
       break;
     case 'BlogPosting':
-      schemaJson = generateBlogPostingSchema(content, orgName);
+      schemaJson = articleFamilySchema('BlogPosting', content, org);
       break;
     default:
-      schemaJson = generateArticleSchema(content, orgName);
+      schemaJson = articleFamilySchema('Article', content, org);
   }
 
   // Upsert to citemind_schemas (delete old, insert new)
@@ -296,3 +500,6 @@ export async function generateSchema(
     content_item_id: contentItemId,
   };
 }
+
+// Exported for reuse by the AEO ingestion gate (schema-coverage component).
+export { articleFamilySchema, generateHowToSchema, generateFAQSchema };
