@@ -228,3 +228,62 @@ describe('applyProposalAction — canon action model (PR-5a)', () => {
     expect(result).toEqual({ ok: false, reason: 'write_failed' });
   });
 });
+
+describe('applyProposalAction — Wave-2 governed execution hook', () => {
+  it('execute runs onExecute and attaches execution_id, then flips status', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const onExecute = vi.fn(async (proposal: Record<string, unknown>) => {
+      // Hook receives the full proposal row (drives risk/mode computation) and
+      // runs while the proposal is still un-flipped (status 'active').
+      expect(proposal.id).toBe('prop-1');
+      expect(proposal.status).toBe('active');
+      expect(updateSpy).not.toHaveBeenCalled();
+      return { ok: true as const, executionId: 'exec-1' };
+    });
+
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute',
+      { onExecute }
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(onExecute).toHaveBeenCalledTimes(1);
+    expect(result.execution_id).toBe('exec-1');
+    expect(result.proposal.status).toBe('executed');
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('aborts the status flip (write_failed) when onExecute fails — no silent automation', async () => {
+    const { client, updateSpy } = makeSupabase({ proposal: activeProposal() });
+    const onExecute = vi.fn(async () => ({ ok: false as const }));
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'execute',
+      { onExecute }
+    );
+    expect(result).toEqual({ ok: false, reason: 'write_failed' });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('dismiss does not invoke the execution hook', async () => {
+    const { client } = makeSupabase({ proposal: activeProposal() });
+    const onExecute = vi.fn();
+    const result = await applyProposalAction(
+      client,
+      ORG,
+      USER,
+      'prop-1',
+      'dismiss',
+      { onExecute }
+    );
+    expect(result.ok).toBe(true);
+    expect(onExecute).not.toHaveBeenCalled();
+  });
+});

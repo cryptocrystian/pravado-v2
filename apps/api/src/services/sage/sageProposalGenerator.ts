@@ -15,6 +15,7 @@ import { LlmRouter, getAnthropicModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { checkLLMBudget } from './llmBudget';
+import { deriveImpactPillars } from './sageImpactPillars';
 import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
 import {
@@ -189,6 +190,10 @@ export async function generateProposals(
           signal_id: signal.id,
           signal_type: signal.signal_type,
           pillar: signal.pillar,
+          impact_pillars: deriveImpactPillars(
+            signal.pillar,
+            signal.signal_type
+          ),
           priority: signal.priority,
           title,
           rationale: `${rationale}\n\nRecommended: ${suggestedAction}`,
