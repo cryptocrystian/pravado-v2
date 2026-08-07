@@ -42,11 +42,16 @@ describe('SAGE action vocabulary', () => {
     ]);
   });
 
-  it('marks ONLY content.create_brief as implemented this slice', () => {
-    expect([...IMPLEMENTED_ACTION_TYPES]).toEqual(['content.create_brief']);
+  it('marks content.create_brief AND pr.send_pitch as implemented', () => {
+    expect([...IMPLEMENTED_ACTION_TYPES]).toEqual([
+      'content.create_brief',
+      'pr.send_pitch',
+    ]);
     expect(isImplementedActionType('content.create_brief')).toBe(true);
-    expect(isImplementedActionType('pr.send_pitch')).toBe(false);
+    expect(isImplementedActionType('pr.send_pitch')).toBe(true);
+    // still-reserved actions remain unimplemented
     expect(isImplementedActionType('content.publish')).toBe(false);
+    expect(isImplementedActionType('seo.generate_schema')).toBe(false);
   });
 
   it('type guard accepts vocabulary members and rejects anything else', () => {
@@ -154,10 +159,33 @@ describe('mapSignalToAction', () => {
     expect(a).toEqual(b);
   });
 
-  it('PR signals map to the reserved pr.send_pitch default (no params)', () => {
+  it('PR signals map to pr.send_pitch carrying the derivable recipient (journalist_id)', () => {
     const action = mapSignalToAction('PR', 'pr_high_value_unpitched', {
-      journalist: 'j-1',
+      journalist_id: 'j-1',
     });
+    expect(action.action_type).toBe('pr.send_pitch');
+    expect(action.action_params).toEqual({ journalist_id: 'j-1' });
+  });
+
+  it('PR stale-followup maps to pr.send_pitch with subject + follow-up flag (no body)', () => {
+    const action = mapSignalToAction('PR', 'pr_stale_followup', {
+      journalist_id: 'j-2',
+      sequence_id: 'seq-9',
+      subject: 'Re: our earlier conversation',
+    });
+    expect(action.action_type).toBe('pr.send_pitch');
+    expect(action.action_params).toEqual({
+      journalist_id: 'j-2',
+      sequence_id: 'seq-9',
+      subject: 'Re: our earlier conversation',
+      is_follow_up: true,
+    });
+    // We never fabricate a pitch body at proposal time.
+    expect(action.action_params).not.toHaveProperty('body');
+  });
+
+  it('PR signal with no derivable recipient still maps to pr.send_pitch (empty params)', () => {
+    const action = mapSignalToAction('PR', 'pr_pitch_window', {});
     expect(action.action_type).toBe('pr.send_pitch');
     expect(action.action_params).toEqual({});
   });

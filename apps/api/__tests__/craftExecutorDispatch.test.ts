@@ -163,13 +163,13 @@ describe('dispatchProposalExecution', () => {
     });
   });
 
-  it('unregistered pr.send_pitch → graceful governed no-op, NO brief written', async () => {
+  it('unregistered seo.generate_schema → graceful governed no-op, NO brief written', async () => {
     const { client, calls } = makeSupabase();
     const proposal = {
       id: 'prop-2',
       org_id: 'org-1',
-      title: 'Pitch FreightWaves',
-      action_type: 'pr.send_pitch',
+      title: 'Add FAQ schema',
+      action_type: 'seo.generate_schema',
       action_params: {},
     };
 
@@ -181,9 +181,33 @@ describe('dispatchProposalExecution', () => {
     expect(outcome.result).toBe('governed_complete');
     expect(outcome.detail).toMatchObject({
       kind: 'governed_handoff',
-      action_type: 'pr.send_pitch',
+      action_type: 'seo.generate_schema',
     });
     // No fabricated effect.
+    expect(calls.inserts.find((c) => c.table === 'content_briefs')).toBeFalsy();
+  });
+
+  it('pr.send_pitch with NO pitch content → needs_content governed outcome (nothing sent)', async () => {
+    const { client, calls } = makeSupabase();
+    const proposal = {
+      id: 'prop-3',
+      org_id: 'org-1',
+      title: 'Pitch FreightWaves',
+      action_type: 'pr.send_pitch',
+      action_params: { journalist_id: 'j-1' }, // no subject/body
+    };
+
+    const outcome = await dispatchProposalExecution(proposal, {
+      supabase: client,
+      ...CTX,
+    });
+
+    // Registered now (not a governed_handoff) but neutral — no fabricated pitch.
+    expect(outcome.result).toBe('governed_complete');
+    expect(outcome.detail).toMatchObject({
+      kind: 'pr_pitch_needs_content',
+      action_type: 'pr.send_pitch',
+    });
     expect(calls.inserts.find((c) => c.table === 'content_briefs')).toBeFalsy();
   });
 
@@ -294,7 +318,7 @@ describe('runQueuedExecution — full governed lifecycle', () => {
     });
   });
 
-  it('reserved pr.send_pitch proposal → governed no-op lifecycle recorded, no crash', async () => {
+  it('pr.send_pitch proposal with no content → needs_content governed_complete lifecycle recorded, no crash', async () => {
     const { client, calls } = makeSupabase({
       executionRow: {
         ...executionRow,
@@ -307,7 +331,7 @@ describe('runQueuedExecution — full governed lifecycle', () => {
         org_id: 'org-1',
         title: 'Pitch FreightWaves',
         action_type: 'pr.send_pitch',
-        action_params: {},
+        action_params: {}, // no subject/body → needs_content, nothing sent
       },
     });
 

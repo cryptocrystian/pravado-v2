@@ -75,7 +75,32 @@ export function mapSignalToAction(
     };
   }
 
-  // --- PR + SEO (reserved this slice) -------------------------------------
+  // --- PR -----------------------------------------------------------------
+  // A concrete pr.send_pitch executor IS registered (routes through the B+C
+  // governed send chokepoint). Emit whatever recipient/subject is cleanly
+  // derivable from the signal; the PR signals (sagePRSignalIngestor) carry a
+  // journalist_id, and pr_stale_followup also carries the sequence subject +
+  // sequence_id. We NEVER fabricate a pitch body — when the body is absent (the
+  // usual case at proposal time) the executor records a needs_content outcome.
+  if (pillar === 'PR') {
+    const journalistId =
+      str(signalData, 'journalist_id') ?? str(signalData, 'journalist');
+    const contactId = str(signalData, 'contact_id');
+    const subject = str(signalData, 'subject');
+    const sequenceId = str(signalData, 'sequence_id');
+    const params: Record<string, unknown> = {};
+    if (journalistId) params.journalist_id = journalistId;
+    if (contactId) params.contact_id = contactId;
+    if (subject) params.subject = subject;
+    if (sequenceId) {
+      params.sequence_id = sequenceId;
+      // A follow-up on an existing sequence — subject to the 2-per-7-days cap.
+      params.is_follow_up = true;
+    }
+    return { action_type: 'pr.send_pitch', action_params: params };
+  }
+
+  // --- SEO (reserved this slice) ------------------------------------------
   // No concrete executor is registered yet, so we emit the safe per-pillar
   // default action_type with minimal params. These degrade to the governed
   // no-op at dispatch until their executors land.
