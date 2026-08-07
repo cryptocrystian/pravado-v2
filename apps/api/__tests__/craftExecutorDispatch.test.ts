@@ -216,7 +216,7 @@ describe('dispatchProposalExecution', () => {
     ).toBeFalsy();
   });
 
-  it('pr.send_pitch with NO pitch content → needs_content governed outcome (nothing sent)', async () => {
+  it('pr.send_pitch with NO pitch content + unresolvable recipient → needs_recipient governed outcome (nothing sent)', async () => {
     const { client, calls } = makeSupabase();
     const proposal = {
       id: 'prop-3',
@@ -231,10 +231,14 @@ describe('dispatchProposalExecution', () => {
       ...CTX,
     });
 
-    // Registered now (not a governed_handoff) but neutral — no fabricated pitch.
+    // No content on the proposal now triggers the LLM composer path — but the fake
+    // DB resolves no recipient email, so the executor neutrally stops at
+    // needs_recipient BEFORE composing/sending. No fabricated pitch, nothing sent.
+    // (The compose-then-send-through-the-chokepoint path is covered with injected
+    // deps in prSendPitchExecutor.test.ts.)
     expect(outcome.result).toBe('governed_complete');
     expect(outcome.detail).toMatchObject({
-      kind: 'pr_pitch_needs_content',
+      kind: 'pr_pitch_needs_recipient',
       action_type: 'pr.send_pitch',
     });
     expect(calls.inserts.find((c) => c.table === 'content_briefs')).toBeFalsy();
