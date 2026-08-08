@@ -1,5 +1,10 @@
 # ENTITY_MAP_SPEC.md
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the Entity Map model (co-canonical with `ENTITY-MAP-SAGE.md`)
+**Supersedes:** none
+
 ## Pravado v2 — Intelligence Canvas: Entity Map
 
 **Version:** 2.0

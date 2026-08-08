@@ -1,5 +1,10 @@
 # SAGE — Phase-1 Implementation Reference
 
+**Layer:** Implementation-Status
+**Status:** Phase-1 Implementation
+**Governs / Subordinate-to:** Subordinate to the SAGE model (`SAGE_v2.md`, `SAGE_OPERATING_MODEL.md`)
+**Supersedes:** none
+
 **Version:** 1.0  
 **Status:** Implementation-Status — Phase-1 of the SAGE model (as of Sprints S-INT-02/03). Not a definition of SAGE; see `SAGE_v2.md` + `MODEL_INTEGRITY_CHARTER.md`.  
 **Implementation:** `apps/api/src/services/sage/`

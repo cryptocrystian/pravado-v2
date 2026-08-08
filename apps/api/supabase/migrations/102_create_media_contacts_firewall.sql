@@ -181,18 +181,6 @@ CREATE POLICY outlet_affiliations_read_all
 -- platform-wide reshape (drop org_id, add UNIQUE(domain), platform read) is
 -- DEFERRED to the reshape PR. See CANON DRIFT note at the top of this file.
 
--- updated_at maintenance triggers (reuse existing set_updated_at if present)
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'set_updated_at') THEN
-    DROP TRIGGER IF EXISTS trg_media_contacts_updated_at ON public.media_contacts;
-    CREATE TRIGGER trg_media_contacts_updated_at
-      BEFORE UPDATE ON public.media_contacts
-      FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
-    DROP TRIGGER IF EXISTS trg_contact_emails_updated_at ON public.contact_emails;
-    CREATE TRIGGER trg_contact_emails_updated_at
-      BEFORE UPDATE ON public.contact_emails
-      FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-  END IF;
-END $$;
+-- updated_at maintenance triggers are DEFERRED: set_updated_at() lives in the
+-- agency schema (not public), so a public trigger block would fail on replay.
+-- updated_at defaults on insert; update-time maintenance is deferred to the reshape PR.

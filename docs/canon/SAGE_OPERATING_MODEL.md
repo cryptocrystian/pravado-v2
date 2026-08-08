@@ -1,5 +1,10 @@
 # SAGE OPERATING MODEL
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the SAGE model (co-canonical with `SAGE_v2.md`)
+**Supersedes:** none
+
 > **Status:** CANONICAL
 > **Authority:** This document defines the foundational operating model for Pravado's strategy mesh.
 > **Classification:** Defensible IP (Trade Secret + Patent Eligible)

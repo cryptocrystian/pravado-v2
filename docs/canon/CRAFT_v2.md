@@ -1,5 +1,10 @@
 # PRAVADO v2 — CRAFT v2 SPEC
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the CRAFT model
+**Supersedes:** none
+
 Version: v1.0 (Canon)
 
 ## Purpose
