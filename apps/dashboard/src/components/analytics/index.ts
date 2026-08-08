@@ -9,6 +9,13 @@ export { AnalyticsChromeBar } from './AnalyticsChromeBar';
 export { AnalyticsShell } from './AnalyticsShell';
 export { AnalyticsTabBar } from './AnalyticsTabBar';
 
+// Wave-2 real-data surfaces
+export { HeadlineMetrics } from './HeadlineMetrics';
+export { TopWins } from './TopWins';
+export { EviGrowthChart } from './EviGrowthChart';
+export { EVIDriverBreakdown } from './EVIDriverBreakdown';
+export { EarnedMediaAnalytics } from './EarnedMediaAnalytics';
+
 export type {
   EVIDataPoint,
   SoMCluster,

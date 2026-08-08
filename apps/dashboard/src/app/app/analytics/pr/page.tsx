@@ -2,13 +2,15 @@
 
 /**
  * PR Analytics — /app/analytics/pr
- * Earned placements, pitch funnel, EVI contribution.
+ * Earned placements + coverage timeline from REAL media-monitoring data.
  *
- * Phase 0 Track 0B: full ComingSoonGate behind ANALYTICS_PR_WIRED.
- * Mock placements + narrative removed; CSV export will return in Phase 1
- * against real data.
+ * Wave-2: ANALYTICS_PR_WIRED is now TRUE. The PR pillar has real earned-media
+ * rows (earned_mentions / media_monitoring_articles), so this tab renders
+ * EarnedMediaAnalytics — real stats + coverage timeline with honest empty
+ * states when an org has no monitored sources yet.
  */
 
+import { EarnedMediaAnalytics } from '@/components/analytics/EarnedMediaAnalytics';
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
@@ -17,6 +19,5 @@ export default function PRAnalyticsPage() {
   if (!wired) {
     return <ComingSoonGate pillar="Analytics" subsurface="PR" />;
   }
-  // Phase 1 restores the PlacementsTable / CoverageTimeline / funnels render.
-  return null;
+  return <EarnedMediaAnalytics />;
 }

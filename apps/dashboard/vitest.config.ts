@@ -17,6 +17,12 @@ export default defineConfig({
     alias: {
       // Mirror tsconfig `@/* -> ./src/*`.
       '@': path.resolve(__dirname, './src'),
+      // Workspace packages ship a `dist` build for the `import` condition, which
+      // isn't present under a source-only test run. Point tests at the source.
+      '@pravado/feature-flags': path.resolve(
+        __dirname,
+        '../../packages/feature-flags/src/index.ts'
+      ),
     },
   },
   test: {
