@@ -30,6 +30,7 @@ import {
 import { executeProposal } from '../../services/craft/craftExecutionService';
 import { calculateEVI } from '../../services/evi/eviCalculationService';
 import { getEVIDelta } from '../../services/evi/eviDeltaService';
+import { buildEntityMap } from '../../services/sage/entityMapService';
 import { getActionStreamForOrg } from '../../services/sage/sageActionStreamService';
 import { scoreOpportunities } from '../../services/sage/sageOpportunityScorer';
 import { applyProposalAction } from '../../services/sage/sageProposalActionService';
@@ -715,8 +716,11 @@ export async function sageRoutes(server: FastifyInstance) {
 
   /**
    * GET /entity-map
-   * Returns entity map graph built from real data.
-   * Ring 1 (Owned): content_topics, Ring 2 (Earned): journalist_profiles
+   * Returns the canonical concentric Ring 0-3 Entity Map (D012 — zone model
+   * retired). Ring 0 Brand Core, Ring 1 Owned/topic clusters (SEO), Ring 2
+   * Earned/journalists (PR), Ring 3 Perceived/AI engines (AEO). Node shaping and
+   * coherence fields (affinity_score, authority_weight, entity_insight,
+   * linked_action_id) live in `entityMapService.buildEntityMap`.
    */
   server.get(
     '/entity-map',
@@ -746,165 +750,11 @@ export async function sageRoutes(server: FastifyInstance) {
           .single();
         const orgName = (org as { name: string } | null)?.name || 'Brand';
 
-        // Ring 1 (Owned): content topics
-        const { data: topics } = await supabase
-          .from('content_topics')
-          .select('id, name, content_items!inner (org_id)')
-          .eq('content_items.org_id', orgId)
-          .limit(20);
+        // Canonical concentric Ring 0-3 contract (D012 - zone model retired).
+        // All node/edge/coherence shaping lives in the entity-map service.
+        const payload = await buildEntityMap(supabase, orgId, orgName);
 
-        // Ring 2 (Earned): journalist profiles
-        const { data: journalists } = await supabase
-          .from('journalist_profiles')
-          .select('id, journalist_id, engagement_score, relevance_score')
-          .eq('org_id', orgId)
-          .limit(20);
-
-        // Get journalist names from the journalists table
-        const journalistIds = (journalists ?? [])
-          .map((j: any) => j.journalist_id)
-          .filter(Boolean);
-        const { data: journalistNames } =
-          journalistIds.length > 0
-            ? await supabase
-                .from('journalists')
-                .select('id, name')
-                .in('id', journalistIds)
-            : { data: [] };
-        const nameMap = new Map(
-          (journalistNames ?? []).map((j: any) => [j.id, j.name])
-        );
-
-        // Build nodes
-        const nodes: any[] = [];
-        const edges: any[] = [];
-
-        // Brand core node
-        nodes.push({
-          id: `n_brand_${orgId}`,
-          kind: 'brand',
-          label: orgName,
-          zone: 'authority',
-          pillar: null,
-          meta: {},
-        });
-
-        // Topic nodes (Ring 1)
-        const seenTopics = new Set<string>();
-        for (const topic of topics ?? []) {
-          if (seenTopics.has(topic.name)) continue;
-          seenTopics.add(topic.name);
-          const nodeId = `n_topic_${topic.id}`;
-          nodes.push({
-            id: nodeId,
-            kind: 'topic',
-            label: topic.name,
-            zone: 'growth',
-            pillar: 'content',
-            meta: {},
-          });
-          edges.push({
-            id: `e_brand_${topic.id}`,
-            from: `n_brand_${orgId}`,
-            to: nodeId,
-            rel: 'authority_on',
-            strength: 0.7,
-            pillar: 'content',
-          });
-        }
-
-        // Journalist nodes (Ring 2)
-        for (const jp of journalists ?? []) {
-          const nodeId = `n_journalist_${jp.id}`;
-          const name =
-            nameMap.get(jp.journalist_id) ||
-            `Journalist ${jp.id.substring(0, 6)}`;
-          nodes.push({
-            id: nodeId,
-            kind: 'journalist',
-            label: name,
-            zone: 'signal',
-            pillar: 'pr',
-            meta: {
-              engagement_score: jp.engagement_score,
-              relevance_score: jp.relevance_score,
-            },
-          });
-          edges.push({
-            id: `e_journalist_brand_${jp.id}`,
-            from: nodeId,
-            to: `n_brand_${orgId}`,
-            rel: 'covers',
-            strength: (jp.engagement_score || 50) / 100,
-            pillar: 'pr',
-          });
-        }
-
-        // Ring 3 (Perceived): AI engine citation nodes (S-INT-05)
-        const AI_ENGINES = [
-          { id: 'chatgpt', label: 'ChatGPT', color: '#10A37F' },
-          { id: 'perplexity', label: 'Perplexity', color: '#20B2AA' },
-          { id: 'claude', label: 'Claude', color: '#D97706' },
-          { id: 'gemini', label: 'Gemini', color: '#4285F4' },
-        ];
-
-        // Get citation counts per engine for this org (last 30 days)
-        const thirtyDaysAgo = new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000
-        ).toISOString();
-        const { data: citationCounts } = await supabase
-          .from('citation_monitor_results')
-          .select('engine, brand_mentioned')
-          .eq('org_id', orgId)
-          .gte('monitored_at', thirtyDaysAgo);
-
-        const engineStats: Record<string, { total: number; mentions: number }> =
-          {};
-        for (const c of citationCounts ?? []) {
-          const eng = (c as { engine: string; brand_mentioned: boolean })
-            .engine;
-          if (!engineStats[eng]) engineStats[eng] = { total: 0, mentions: 0 };
-          engineStats[eng].total++;
-          if ((c as { brand_mentioned: boolean }).brand_mentioned)
-            engineStats[eng].mentions++;
-        }
-
-        for (const engine of AI_ENGINES) {
-          const stats = engineStats[engine.id] || { total: 0, mentions: 0 };
-          const hasCited = stats.mentions > 0;
-
-          nodes.push({
-            id: `n_ai_${engine.id}`,
-            kind: 'ai_engine',
-            label: engine.label,
-            zone: 'signal',
-            pillar: 'seo',
-            meta: {
-              color: engine.color,
-              citation_count_30d: stats.mentions,
-              total_queries_30d: stats.total,
-              has_cited: hasCited,
-            },
-          });
-
-          edges.push({
-            id: `e_ai_${engine.id}_brand`,
-            from: `n_ai_${engine.id}`,
-            to: `n_brand_${orgId}`,
-            rel: 'cites_brand',
-            strength: stats.total > 0 ? stats.mentions / stats.total : 0,
-            pillar: 'seo',
-            state: hasCited ? 'verified_solid' : 'gap',
-          });
-        }
-
-        return reply.send({
-          generated_at: new Date().toISOString(),
-          layout_seed: `${orgId}-${new Date().toISOString().split('T')[0]}`,
-          nodes,
-          edges,
-          action_impacts: {},
-        });
+        return reply.send(payload);
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'Entity map failed';
