@@ -32,6 +32,12 @@ import type { AutomationMode } from '@pravado/types';
 import { clampMode } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { evaluateAutonomousGuardrails } from './craftGuardrailService';
+import {
+  getPillarTrust,
+  recordExecutionOutcome,
+  type TrustPillar,
+} from './craftTrustService';
 import { getPlanCeiling, resolveOrgPlanSlug } from '../mode/modeService';
 import { deriveImpactPillars } from '../sage/sageImpactPillars';
 import { propagateReinforcement } from '../sage/sageReinforcement';
@@ -157,6 +163,14 @@ export interface ComputeModeInput {
   riskClass: RiskClass;
   reversibility: Reversibility;
   planCeiling: AutomationMode;
+  /**
+   * Trust-ladder mode ceiling for the (org, pillar) (CRAFT §2.2/§2.3). A pillar with
+   * low earned trust CANNOT reach Autopilot eligibility even at 0.99 confidence — this
+   * is the fifth canonical ceiling. Optional for backward-compat; absent → 'autopilot'
+   * (no trust constraint), so a caller that has not yet resolved trust is never blocked
+   * by a phantom low ceiling. `executeProposal` always supplies the real value.
+   */
+  trustCeiling?: AutomationMode;
 }
 
 export interface ComputedMode {
@@ -168,6 +182,7 @@ export interface ComputedMode {
     reversibilityCeiling: AutomationMode;
     confidenceCeiling: AutomationMode;
     planCeiling: AutomationMode;
+    trustCeiling: AutomationMode;
     autonomousAutopilotEnabled: boolean;
   };
 }
@@ -182,12 +197,17 @@ export function computeExecutionMode(input: ComputeModeInput): ComputedMode {
   const rc = riskCeiling(input.riskClass);
   const revc = reversibilityCeiling(input.reversibility);
   const cc = confidenceCeiling(input.confidence);
+  // A low-trust pillar caps the mode regardless of confidence (CRAFT §2.2/§2.3).
+  const tc: AutomationMode = input.trustCeiling ?? 'autopilot';
 
-  // Fold the ceilings by clamping down repeatedly from 'autopilot'.
+  // Fold the ceilings by clamping down repeatedly from 'autopilot'. The eligible mode is
+  // the MOST RESTRICTIVE of the five canonical ceilings (risk, reversibility, confidence,
+  // trust, plan).
   let mode: AutomationMode = 'autopilot';
   mode = clampMode(mode, 'manual', rc);
   mode = clampMode(mode, 'manual', revc);
   mode = clampMode(mode, 'manual', cc);
+  mode = clampMode(mode, 'manual', tc);
   mode = clampMode(mode, 'manual', input.planCeiling);
 
   const requiresApproval =
@@ -201,6 +221,7 @@ export function computeExecutionMode(input: ComputeModeInput): ComputedMode {
       reversibilityCeiling: revc,
       confidenceCeiling: cc,
       planCeiling: input.planCeiling,
+      trustCeiling: tc,
       autonomousAutopilotEnabled: AUTONOMOUS_AUTOPILOT_ENABLED,
     },
   };
@@ -272,11 +293,33 @@ export async function executeProposal(
     proposal.signal_type,
     reversibility
   );
+
+  // Trust ladder (CRAFT §2.2/§2.3): the per-(org, pillar) earned-trust ceiling is the
+  // FIFTH input to mode eligibility. A low-trust pillar can never reach Autopilot
+  // eligibility even at high confidence — the reason Autopilot must be EARNED, not
+  // toggled. 'new'/fresh orgs resolve to a Manual ceiling by construction.
+  const trust = await getPillarTrust(
+    supabase,
+    orgId,
+    proposal.pillar as TrustPillar
+  );
+
   const computed = computeExecutionMode({
     confidence,
     riskClass,
     reversibility,
     planCeiling,
+    trustCeiling: trust.ceiling,
+  });
+
+  // Execution guardrails (CRAFT §6 / §11.2): evaluate the caps + kill-switch for a
+  // would-be AUTONOMOUS run. This ANNOTATES the execution (recorded below) and would
+  // gate an autonomous execution once enabled. Autonomy is OFF this slice, so
+  // `autonomousAllowed` is always false and the human-initiated flow is unchanged.
+  const guardrail = await evaluateAutonomousGuardrails(supabase, {
+    orgId,
+    isExternal: reversibility === 'irreversible',
+    planSlug,
   });
 
   const nowIso = new Date().toISOString();
@@ -295,6 +338,9 @@ export async function executeProposal(
       reversibility,
       confidence: Number.isFinite(confidence) ? confidence : null,
       plan_ceiling: planCeiling,
+      trust_ceiling: trust.ceiling,
+      kill_switch_engaged: guardrail.killSwitchEngaged,
+      guardrail_decision: guardrail,
       requires_approval: computed.requiresApproval,
       initiated_by: userId,
       queued_at: nowIso,
@@ -324,6 +370,8 @@ export async function executeProposal(
         pillar: proposal.pillar,
         reversibility,
         mode_rationale: computed.rationale,
+        trust_level: trust.level,
+        guardrail_decision: guardrail,
       },
       approvals: [{ actor: userId, decision: 'initiated', at: nowIso }],
     });
@@ -500,6 +548,23 @@ export async function completeExecution(
 
   // Minimum-viable SAGE state update: per-signal-type success/failure tally.
   await upsertSignalOutcomeTally(supabase, orgId, signalType, result, nowIso);
+
+  // TRUST LADDER (CRAFT §2.3): fold this completed execution into the (org, pillar)
+  // earned-trust counters. A completed-without-incident execution (governed_complete or
+  // success) accrues trust toward Established/Proven/Veteran; a failure accrues against
+  // it (and a failure on a critical-risk action is a critical failure). This is the
+  // earned-signal write path that lets trust GRADUATE over time. Best-effort: a trust
+  // write must not fail the already-persisted loop closure. Autonomy stays OFF — a higher
+  // trust level only widens mode ELIGIBILITY; it never authorizes an autonomous run.
+  await recordExecutionOutcome(supabase, {
+    orgId,
+    pillar: pillar as TrustPillar,
+    outcome: result,
+    riskClass:
+      (e.risk_class as 'low' | 'medium' | 'high' | 'critical' | undefined) ??
+      undefined,
+    actor: (e.initiated_by as string) ?? 'system',
+  });
 
   // MESH: cross-pillar reinforcement. A completed action's OUTPUTS become the INPUTS
   // of the other pillars — canon SAGE_OPERATING_MODEL §3 ("Every action in one pillar

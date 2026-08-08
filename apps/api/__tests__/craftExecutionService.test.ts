@@ -83,6 +83,7 @@ function makeSupabase(config: MockConfig = {}) {
     const chain: any = {
       select: () => chain,
       eq: () => chain,
+      gte: () => chain,
       insert: (payload: any) => {
         calls.inserts.push({ table: name, payload });
         state.op = 'insert';

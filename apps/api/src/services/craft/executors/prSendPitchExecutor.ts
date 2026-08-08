@@ -62,6 +62,10 @@ import {
   type GovernanceGateways,
   type RawSend,
 } from '../../sendGuardedEmail';
+import {
+  requireOutreachReview,
+  type OutreachReviewContext,
+} from '../outreachReviewGate';
 
 interface SendPitchParams {
   journalist_id?: unknown;
@@ -105,6 +109,13 @@ export interface PrSendPitchDeps {
   ) => Promise<ResolvedRecipient | null>;
   /** LLM-backed pitch composer seam (tests inject a deterministic fake). */
   composePitch?: (input: ComposePitchInput) => Promise<ComposedPitch | null>;
+  /**
+   * Human-review gate context (Wave-2 safety floor). Lets a caller/test force the egress
+   * mode + supply a recorded human approval. When absent, the gate resolves egress from
+   * `EMAIL_PROVIDER` (stub in prod) and treats the pitch as un-reviewed — fail-closed for
+   * any real-egress path.
+   */
+  reviewContext?: OutreachReviewContext;
 }
 
 function asTrimmedString(v: unknown): string {
@@ -342,6 +353,28 @@ export async function runPrSendPitch(
     recentWorkHook = draft.recentWorkHook;
     composed = true;
     composeModel = draft.model;
+  }
+
+  // ---- HUMAN-REVIEW GATE (Wave-2 safety floor) ----
+  // Outreach is IRREVERSIBLE (CRAFT §4.2/§5.4) → a real send requires a recorded human
+  // review of the ACTUAL composed pitch. INERT while egress is the stub (the current
+  // human-initiated stub flow proceeds unchanged); it ACTIVATES — blocking un-reviewed
+  // sends — the instant a real provider (SendGrid/Mailgun) is provisioned. This gate +
+  // SendGrid provisioning are the TWO gates before any real send. Autonomy stays OFF.
+  const review = requireOutreachReview(deps.reviewContext);
+  if (!review.proceed) {
+    return {
+      result: 'governed_complete',
+      detail: {
+        kind: 'pr_pitch_review_required',
+        action_type: 'pr.send_pitch',
+        note: 'Real email egress is provisioned but this composed pitch has no recorded human review/approval. Nothing sent (fail-closed). Human review + SendGrid provisioning are the two gates before real sends.',
+        egress: review.egress,
+        composed,
+        journalist_id: recipient.journalistId,
+        contact_id: recipient.contactId,
+      },
+    };
   }
 
   // ---- send EXCLUSIVELY through the governed chokepoint ----

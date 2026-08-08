@@ -37,6 +37,32 @@ export interface PlanLimits {
   autopilotMode: boolean;
   /** Number of AI engines CiteMind can monitor */
   citeMindEngineLimit: number;
+
+  // --------------------------------------------------------------------------
+  // CRAFT execution guardrails (CRAFT_EXECUTION_MODEL §6.2 / §6.3). These are the
+  // HARD per-tier ceilings the CRAFT autonomous-execution gate enforces (Wave-2
+  // safety floor). Autonomy is OFF this slice, so they gate/annotate a simulated
+  // autonomous path today; they become live limits the moment autonomy is enabled.
+  // The sentinel 999_999 = "unlimited" (Enterprise custom / internal-dev).
+  //
+  // CANON-vs-PRICING FLAG: canon §6.2 orders tiers Starter<Growth<Pro<Enterprise
+  // with MONOTONICALLY increasing caps (Growth=50/day, Pro=200/day). The live
+  // pricing ladder here has `growth` ($1,199) priced ABOVE `pro` ($599). Following
+  // canon LITERALLY by tier name (CLAUDE.md: "canon wins on ALL conflicts") gives
+  // `pro` a HIGHER daily-action cap than the pricier `growth` — a real canon/pricing
+  // ordering conflict flagged for product reconciliation, NOT silently smoothed here.
+  // Safe to defer: the caps are inert while autonomy is off.
+  // --------------------------------------------------------------------------
+  /** §6.2 Max Actions/Day — total governed actions per calendar day. */
+  maxActionsPerDay: number;
+  /** §6.2 External Actions/Day — irreversible external actions (sends/publishes) per day. */
+  externalActionsPerDay: number;
+  /** §6.2 Concurrent Executions — max simultaneously-executing governed actions. */
+  concurrentExecutions: number;
+  /** §6.2 LLM Calls/Hour. */
+  llmCallsPerHour: number;
+  /** §6.3 LLM Spend/Month (USD) — cost ceiling. */
+  llmSpendPerMonthUsd: number;
 }
 
 export const PLAN_LIMITS: Record<string, PlanLimits> = {
@@ -52,6 +78,13 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: false,
     autopilotMode: false,
     citeMindEngineLimit: 2,
+    // Canon §6.2 has no "trial" column → conservative floor BELOW Starter (ASSERTED,
+    // canon-silent). Trial never reaches Autopilot anyway (autopilotMode:false).
+    maxActionsPerDay: 5,
+    externalActionsPerDay: 1,
+    concurrentExecutions: 1,
+    llmCallsPerHour: 10,
+    llmSpendPerMonthUsd: 25,
   },
   /** Starter — $199/mo: 1 seat, 3 SAGE actions/day, daily CiteMind, 10 CRAFT/mo, 2.5M tokens */
   starter: {
@@ -65,6 +98,12 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: false,
     autopilotMode: false,
     citeMindEngineLimit: 5,
+    // Canon §6.2/§6.3 Starter column (verbatim).
+    maxActionsPerDay: 10,
+    externalActionsPerDay: 2,
+    concurrentExecutions: 1,
+    llmCallsPerHour: 20,
+    llmSpendPerMonthUsd: 50,
   },
   /** Pro — $599/mo: 5 seats, 50 CRAFT/mo, 5M tokens (live pricing page; PR-C) */
   pro: {
@@ -81,6 +120,13 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     // action-level restriction (§2C), not a plan-tier ceiling of Copilot.
     autopilotMode: true,
     citeMindEngineLimit: 5,
+    // Canon §6.2/§6.3 Pro column (verbatim). See the CANON-vs-PRICING FLAG above:
+    // canon's Pro caps exceed canon's Growth caps.
+    maxActionsPerDay: 200,
+    externalActionsPerDay: 50,
+    concurrentExecutions: 10,
+    llmCallsPerHour: 500,
+    llmSpendPerMonthUsd: 1_000,
   },
   /** Growth — $1,199/mo: 15 seats, unlimited CRAFT, 50M tokens, autopilot (live page; PR-C) */
   growth: {
@@ -94,6 +140,13 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: true,
     autopilotMode: true,
     citeMindEngineLimit: 5,
+    // Canon §6.2/§6.3 Growth column (verbatim). NOTE the flagged conflict: these are
+    // LOWER than Pro's above despite `growth` being the pricier tier here.
+    maxActionsPerDay: 50,
+    externalActionsPerDay: 10,
+    concurrentExecutions: 3,
+    llmCallsPerHour: 100,
+    llmSpendPerMonthUsd: 200,
   },
   /**
    * Enterprise — custom contract: per-pillar mode control incl. Autopilot
@@ -116,6 +169,13 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: true,
     autopilotMode: true,
     citeMindEngineLimit: 5,
+    // Canon §6.2/§6.3 Enterprise = "Unlimited*/Custom" (subject to abuse prevention).
+    // 999_999 sentinel = unlimited until per-contract limits are wired (§7 admin surface).
+    maxActionsPerDay: 999_999,
+    externalActionsPerDay: 999_999,
+    concurrentExecutions: 999_999,
+    llmCallsPerHour: 999_999,
+    llmSpendPerMonthUsd: 999_999,
   },
   /** Internal dev — unlimited (for development) */
   'internal-dev': {
@@ -129,6 +189,11 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: true,
     autopilotMode: true,
     citeMindEngineLimit: 5,
+    maxActionsPerDay: 999_999,
+    externalActionsPerDay: 999_999,
+    concurrentExecutions: 999_999,
+    llmCallsPerHour: 999_999,
+    llmSpendPerMonthUsd: 999_999,
   },
 };
 

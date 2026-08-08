@@ -29,6 +29,11 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import {
+  recordProposalDecision,
+  type TrustPillar,
+} from '../craft/craftTrustService';
+
 export type ProposalAction = 'execute' | 'dismiss';
 
 export type ProposalStatus = 'active' | 'dismissed' | 'executed' | 'expired';
@@ -132,6 +137,20 @@ export async function applyProposalAction(
     .maybeSingle();
 
   if (updateErr || !updated) return { ok: false, reason: 'write_failed' };
+
+  // TRUST LADDER — human-in-the-loop signal (CRAFT §2.3). A human approving execution
+  // vs dismissing a proposal is the earned-trust track record for the pillar. Best-effort
+  // and non-authoritative for graduation (executions drive the level); it never blocks
+  // the action and never authorizes autonomy (which stays OFF). Pillar vocabulary matches
+  // craft_pillar_trust: 'PR' | 'Content' | 'SEO'.
+  const pillar = (updated as { pillar?: string }).pillar;
+  if (pillar === 'PR' || pillar === 'Content' || pillar === 'SEO') {
+    await recordProposalDecision(supabase, {
+      orgId,
+      pillar: pillar as TrustPillar,
+      decision: action === 'execute' ? 'approved' : 'dismissed',
+    });
+  }
 
   return {
     ok: true,
