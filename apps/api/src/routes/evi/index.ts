@@ -172,7 +172,7 @@ export async function eviRoutes(server: FastifyInstance) {
       }
 
       const days = parseInt(request.query.days || '90', 10);
-      const validDays = [30, 60, 90].includes(days) ? days : 90;
+      const validDays = [7, 30, 60, 90].includes(days) ? days : 90;
 
       try {
         const history = await getEVIHistory(supabase, orgId, validDays);

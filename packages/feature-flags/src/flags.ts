@@ -193,11 +193,11 @@ export const FLAGS = {
   CONTENT_EDITOR_WIRED: false,
 
   // Analytics pillar
-  ANALYTICS_OVERVIEW_NARRATIVE_WIRED: false,
-  ANALYTICS_OVERVIEW_TREND_WIRED: false,
-  ANALYTICS_CONTENT_WIRED: false,
-  ANALYTICS_PR_WIRED: false,
-  ANALYTICS_SEO_WIRED: false,
+  ANALYTICS_OVERVIEW_NARRATIVE_WIRED: false, // No real AI narrative generator wired — stays gated to avoid fabricated prose.
+  ANALYTICS_OVERVIEW_TREND_WIRED: true, // Wave-2: real EVI trend (/api/evi/history) + EVI driver breakdown (/api/evi/current).
+  ANALYTICS_CONTENT_WIRED: false, // Content pillar has ~0 rows — no real source yet.
+  ANALYTICS_PR_WIRED: true, // Wave-2: real earned-media stats + coverage timeline (media-monitoring).
+  ANALYTICS_SEO_WIRED: false, // No SERP/rank source wired (GSC/DataForSEO absent).
   ANALYTICS_REPORTS_WIRED: false, // Reports nav entry REMOVED in Phase 0; flag kept for the route-file early-return + Phase 1 reactivation.
 
   // SEO pillar (Overview is exemplary — not gated)
