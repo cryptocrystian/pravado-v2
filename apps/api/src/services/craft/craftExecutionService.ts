@@ -13,6 +13,7 @@
  *                                  → immutable audit row (outcome)
  *                                  → sage_outcomes row linked to proposal + signal
  *                                  → sage_signal_outcome_tally upsert  (feedback → SAGE)
+ *                                  → sage_signal_reinforcements (cross-pillar mesh)
  *
  * Governance (CRAFT_EXECUTION_MODEL): the execution mode is COMPUTED from
  * Confidence × Risk × Reversibility × plan-ceiling — NOT a plan-default label.
@@ -33,6 +34,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { getPlanCeiling, resolveOrgPlanSlug } from '../mode/modeService';
 import { deriveImpactPillars } from '../sage/sageImpactPillars';
+import { propagateReinforcement } from '../sage/sageReinforcement';
 
 export type RiskClass = 'low' | 'medium' | 'high' | 'critical';
 export type Reversibility = 'fully' | 'partially' | 'irreversible';
@@ -498,6 +500,21 @@ export async function completeExecution(
 
   // Minimum-viable SAGE state update: per-signal-type success/failure tally.
   await upsertSignalOutcomeTally(supabase, orgId, signalType, result, nowIso);
+
+  // MESH: cross-pillar reinforcement. A completed action's OUTPUTS become the INPUTS
+  // of the other pillars — canon SAGE_OPERATING_MODEL §3 ("Every action in one pillar
+  // reinforces outcomes in other pillars"). Only completions propagate; a verified
+  // business `failure` does not reinforce. Best-effort: a reinforcement write must not
+  // fail the (already-persisted) loop closure.
+  if (result !== 'failure') {
+    await propagateReinforcement(supabase, {
+      orgId,
+      sourcePillar: pillar,
+      sourceSignalType: signalType,
+      sourceOutcomeId: (outcome as { id: string }).id,
+      sourceImpact: (e.evi_impact_estimate as number | null) ?? 0,
+    });
+  }
 
   return { ok: true, outcomeId: (outcome as { id: string }).id };
 }

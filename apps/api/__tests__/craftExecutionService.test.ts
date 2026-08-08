@@ -411,3 +411,68 @@ describe('completeExecution — outcome feedback closes the loop', () => {
     expect(result).toEqual({ ok: false, reason: 'not_found' });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 4. completeExecution — cross-pillar reinforcement (SAGE mesh, canon §3.3)
+// ---------------------------------------------------------------------------
+
+describe('completeExecution — cross-pillar reinforcement', () => {
+  const prExecutionRow = {
+    id: 'exec-1',
+    org_id: 'org-1',
+    proposal_id: 'prop-1',
+    signal_id: 'sig-1',
+    signal_type: 'pr_high_value_unpitched',
+    pillar: 'PR',
+    mode: 'manual',
+    risk_class: 'high',
+    confidence: 0.8,
+    evi_impact_estimate: 4.0,
+    initiated_by: 'user-1',
+  };
+
+  it('a completed PR action reinforces Content (0.50) and SEO (0.35) by the canon weight', async () => {
+    const { client, calls } = makeSupabase({
+      executionRow: prExecutionRow,
+      tallyRow: null,
+    });
+
+    const result = await completeExecution(client, {
+      executionId: 'exec-1',
+      result: 'success',
+    });
+    expect(result.ok).toBe(true);
+
+    const reinf = calls.inserts.filter(
+      (c) => c.table === 'sage_signal_reinforcements'
+    );
+    // One insert call carrying the two canon recipient rows.
+    expect(reinf).toHaveLength(1);
+    const rows = reinf[0].payload as Array<any>;
+    const content = rows.find((r) => r.recipient_pillar === 'Content');
+    const seo = rows.find((r) => r.recipient_pillar === 'SEO');
+    expect(content).toMatchObject({
+      org_id: 'org-1',
+      source_pillar: 'PR',
+      coefficient: 0.5,
+      strength_delta: 2, // 0.50 × 4.0 EVI
+    });
+    expect(seo).toMatchObject({ coefficient: 0.35, strength_delta: 1.4 });
+    // PR never reinforces itself (that is Direct impact 1.0).
+    expect(rows.some((r) => r.recipient_pillar === 'PR')).toBe(false);
+  });
+
+  it('a business FAILURE does NOT propagate reinforcement', async () => {
+    const { client, calls } = makeSupabase({
+      executionRow: prExecutionRow,
+      tallyRow: null,
+    });
+    await completeExecution(client, {
+      executionId: 'exec-1',
+      result: 'failure',
+    });
+    expect(
+      calls.inserts.some((c) => c.table === 'sage_signal_reinforcements')
+    ).toBe(false);
+  });
+});
