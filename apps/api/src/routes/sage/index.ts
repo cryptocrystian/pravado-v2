@@ -491,6 +491,63 @@ export async function sageRoutes(server: FastifyInstance) {
           trend: 'up' as const,
         }));
 
+        // Wave-2 (#129 real EVI): surface the REAL per-component data coverage and
+        // the real contributing sub-metrics from the canonical math (NOT hardcoded).
+        // `overall_coverage` + per-driver `coverage` tell the UI how much of the
+        // 14-sub-metric formula is currently observable — honest partiality, not a
+        // hidden proxy. Only sub-metrics backed by real data are surfaced as metrics.
+        const sb = eviBreakdown.signal_breakdown;
+        const humanizeMetric = (key: string): string =>
+          key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        const toMetrics = (
+          component: (typeof sb)['visibility'],
+          driverType: 'visibility' | 'authority' | 'momentum'
+        ) =>
+          (component.sub_metrics ?? [])
+            .filter((m) => m.status === 'real' && m.value !== null)
+            .map((m) => ({
+              id: m.key,
+              label: humanizeMetric(m.key),
+              value: Math.round(Number(m.value) * 100) / 100,
+              max_value: 100,
+              delta_7d: 0,
+              trend: 'flat' as const,
+              driver: driverType,
+              description: m.source,
+            }));
+        const eviDrivers = [
+          {
+            type: 'visibility' as const,
+            label: 'Visibility',
+            score: sb.visibility.score,
+            weight: 0.4,
+            coverage: sb.visibility.coverage,
+            delta_7d: 0,
+            trend: 'flat' as const,
+            metrics: toMetrics(sb.visibility, 'visibility'),
+          },
+          {
+            type: 'authority' as const,
+            label: 'Authority',
+            score: sb.authority.score,
+            weight: 0.35,
+            coverage: sb.authority.coverage,
+            delta_7d: 0,
+            trend: 'flat' as const,
+            metrics: toMetrics(sb.authority, 'authority'),
+          },
+          {
+            type: 'momentum' as const,
+            label: 'Momentum',
+            score: sb.momentum.score,
+            weight: 0.25,
+            coverage: sb.momentum.coverage,
+            delta_7d: 0,
+            trend: 'flat' as const,
+            metrics: toMetrics(sb.momentum, 'momentum'),
+          },
+        ];
+
         const strategyPanel = {
           generated_at: new Date().toISOString(),
           evi: {
@@ -501,35 +558,10 @@ export async function sageRoutes(server: FastifyInstance) {
             status: eviStatus,
             trend,
             sparkline: [eviBreakdown.evi_score],
-            drivers: [
-              {
-                type: 'visibility',
-                label: 'Visibility',
-                score: eviBreakdown.visibility_score,
-                weight: 0.4,
-                delta_7d: 0,
-                trend: 'flat',
-                metrics: [],
-              },
-              {
-                type: 'authority',
-                label: 'Authority',
-                score: eviBreakdown.authority_score,
-                weight: 0.35,
-                delta_7d: 0,
-                trend: 'flat',
-                metrics: [],
-              },
-              {
-                type: 'momentum',
-                label: 'Momentum',
-                score: eviBreakdown.momentum_score,
-                weight: 0.25,
-                delta_7d: 0,
-                trend: 'flat',
-                metrics: [],
-              },
-            ],
+            // Real weighted data coverage across the three components (0..1). Partial
+            // until all 14 sub-metric signals land — surfaced honestly, never hidden.
+            overall_coverage: sb.overall_coverage,
+            drivers: eviDrivers,
           },
           narratives: [],
           upgrade_hooks: [],
