@@ -114,6 +114,37 @@ function getLifecycleBucket(
   return 'active';
 }
 
+/**
+ * Wave-2 loop visibility: derive the client execution state from the server-persisted
+ * CRAFT lifecycle carried on the ActionItem (`execution_state` + `outcome`). This is
+ * what lets a proposal that was executed in a PRIOR session render its Executing →
+ * outcome lifecycle after a fresh fetch (the ephemeral `executionStates` prop only
+ * covers the current session). Honest: no execution → 'idle'.
+ *
+ * A terminal `governed_complete` maps to 'success' for BUCKET purposes (it belongs in
+ * History), but the card renders it with neutral (non-green) styling from `outcome`
+ * — a governor-refused pitch is never shown as a business win.
+ */
+function deriveServerExecState(
+  item: ActionItem
+): 'idle' | 'executing' | 'success' | 'error' {
+  const state = item.execution_state;
+  if (!state) return 'idle';
+  if (state === 'completed') {
+    return item.outcome?.result === 'failure' ? 'error' : 'success';
+  }
+  if (
+    state === 'failed' ||
+    state === 'rejected' ||
+    state === 'declined' ||
+    state === 'expired'
+  ) {
+    return 'error';
+  }
+  // proposed | queued | approved | executing — still in flight.
+  return 'executing';
+}
+
 // NEW: Density thresholds aligned with UX-Pilot contract
 // Comfortable is DEFAULT and most common
 const DENSITY_THRESHOLDS = {
@@ -389,6 +420,15 @@ export function ActionStreamPane({
     densityOverride && validOverrides.includes(densityOverride)
   );
 
+  // Wave-2: the effective execution state prefers the current-session ephemeral
+  // `executionStates` (e.g. an execute click in flight) and falls back to the
+  // server-persisted lifecycle carried on the item. This drives bucketing + the card.
+  const getEffectiveState = useCallback(
+    (item: ActionItem): 'idle' | 'executing' | 'success' | 'error' =>
+      executionStates[item.id] ?? deriveServerExecState(item),
+    [executionStates]
+  );
+
   // LOCKED ACTIONS: Separate locked items (sorted by impact)
   const lockedItems = useMemo(() => {
     if (!data?.items) return [];
@@ -407,7 +447,7 @@ export function ActionStreamPane({
       // Locked items go to their own section, not here
       if (isActionLocked(item)) return false;
 
-      const itemState = executionStates[item.id] || 'idle';
+      const itemState = getEffectiveState(item);
       const itemBucket = getLifecycleBucket(itemState);
       return itemBucket === lifecycleBucket;
     });
@@ -463,7 +503,7 @@ export function ActionStreamPane({
     }
 
     return items;
-  }, [data, activeFilter, lifecycleBucket, executionStates, eviFilter]);
+  }, [data, activeFilter, lifecycleBucket, getEffectiveState, eviFilter]);
 
   // Adaptive density calculation
   useLayoutEffect(() => {
@@ -511,14 +551,14 @@ export function ActionStreamPane({
           acc.locked++;
           return acc;
         }
-        const itemState = executionStates[item.id] || 'idle';
+        const itemState = getEffectiveState(item);
         const bucket = getLifecycleBucket(itemState);
         acc[bucket]++;
         return acc;
       },
       { active: 0, history: 0, locked: 0 }
     );
-  }, [data, executionStates]);
+  }, [data, getEffectiveState]);
 
   // Count items per filter (within current lifecycle bucket, excluding locked)
   const counts = useMemo(() => {
@@ -527,7 +567,7 @@ export function ActionStreamPane({
       data?.items.filter((item) => {
         // LOCKED ACTIONS: Exclude from counts
         if (isActionLocked(item)) return false;
-        const itemState = executionStates[item.id] || 'idle';
+        const itemState = getEffectiveState(item);
         return getLifecycleBucket(itemState) === lifecycleBucket;
       }) || [];
 
@@ -542,7 +582,7 @@ export function ActionStreamPane({
       ).length,
       signal: bucketItems.filter((i) => i.confidence > 0.8).length,
     };
-  }, [data, lifecycleBucket, executionStates]);
+  }, [data, lifecycleBucket, getEffectiveState]);
 
   // INTERACTION CONTRACT v2.0:
   // - handleReview opens the modal (card click or Review button)
@@ -910,7 +950,8 @@ export function ActionStreamPane({
                     action={action}
                     densityLevel={effectiveDensity}
                     isSelected={selectedActionId === action.id}
-                    executionState={executionStates[action.id] || 'idle'}
+                    executionState={getEffectiveState(action)}
+                    outcome={action.outcome}
                     onPrimaryAction={() => handlePrimaryActionClick(action)}
                     onReview={() => handleReview(action)}
                     // v5: HoverCard coordination props

@@ -64,6 +64,35 @@ export interface ActionEvidence {
 export type ActionControl = 'schedule' | 'edit' | 'assign';
 
 /**
+ * CRAFT execution state machine (backend migration 107 §2). Mirrors
+ * `sage_executions.state`. Wave-2 loop visibility: an ActionItem carries this when a
+ * governed execution exists for its proposal.
+ */
+export type ExecutionLifecycleState =
+  | 'proposed'
+  | 'queued'
+  | 'approved'
+  | 'executing'
+  | 'completed'
+  | 'declined'
+  | 'expired'
+  | 'rejected'
+  | 'failed';
+
+/**
+ * Outcome of a CRAFT execution fed back to the proposal (backend `sage_outcomes`).
+ * `governed_complete` is NEUTRAL (lifecycle finished without an external effect —
+ * e.g. a governor refused a pitch), distinct from a verified business
+ * `success`/`failure`. `reason` is a short human-readable summary; `kind` is the raw
+ * executor detail kind.
+ */
+export interface ActionOutcome {
+  result: 'governed_complete' | 'success' | 'failure';
+  reason: string | null;
+  kind: string | null;
+}
+
+/**
  * Action Item v3.0 - Decision Support Model
  *
  * Supports:
@@ -102,6 +131,16 @@ export interface ActionItem {
   updated_at: string;
   /** EVI driver this action primarily impacts (for filtering) */
   evi_driver?: EVIDriverType;
+  /**
+   * Wave-2 loop visibility. Present + non-null once a governed CRAFT execution
+   * exists for this proposal; `null`/absent when it has never been executed.
+   */
+  execution_state?: ExecutionLifecycleState | null;
+  /**
+   * Wave-2 loop visibility. Present once the execution reaches a terminal outcome;
+   * `null`/absent while queued/executing or never executed.
+   */
+  outcome?: ActionOutcome | null;
 }
 
 export interface ActionStreamResponse {
@@ -313,6 +352,12 @@ export interface EVIDriver {
   label: string;
   score: number;
   weight: number; // 0.40, 0.35, or 0.25
+  /**
+   * Real data coverage for this driver (0..1): (weight backed by real signals) /
+   * (total component weight). < 1 means the score is computed from a partial set
+   * of the canonical sub-metrics. Surfaced honestly in the UI.
+   */
+  coverage?: number;
   delta_7d: number;
   trend: Trend;
   /** Metrics that compose this driver */
@@ -337,6 +382,11 @@ export interface EarnedVisibilityIndex {
   trend: Trend;
   /** Sparkline data for mini chart */
   sparkline: number[];
+  /**
+   * Weighted real data coverage across all three components (0..1). < 1 means the
+   * score is partial until the remaining canonical signals land. Shown, not hidden.
+   */
+  overall_coverage?: number;
   /** The three drivers that compose EVI */
   drivers: EVIDriver[];
 }

@@ -46,11 +46,17 @@
  * @see /docs/canon/COMMAND-CENTER-UI.md
  */
 
-import { Lock, CaretRight, Check } from '@phosphor-icons/react';
+import {
+  Lock,
+  CaretRight,
+  Check,
+  ShieldCheck,
+  WarningCircle,
+} from '@phosphor-icons/react';
 
 import { ActionHoverBrief } from './ActionHoverBrief';
 import { pillarAccents } from './pillar-accents';
-import type { ActionItem, Priority } from './types';
+import type { ActionItem, ActionOutcome, Priority } from './types';
 import {
   HoverCard,
   HoverCardContent,
@@ -100,6 +106,137 @@ const priorityConfig: Record<
 const successBadge =
   'bg-semantic-success/15 text-semantic-success border-semantic-success/30';
 
+// Wave-2 loop visibility: how each terminal CRAFT outcome renders. `governed_complete`
+// is NEUTRAL (iris) — it is NOT styled as a business win, so a governor-refused pitch
+// is never shown as green success.
+const outcomeConfig: Record<
+  ActionOutcome['result'],
+  { title: string; wrap: string; accent: string; Icon: typeof Check }
+> = {
+  success: {
+    title: 'Outcome — Success',
+    wrap: 'bg-semantic-success/10 border-semantic-success/25',
+    accent: 'text-semantic-success',
+    Icon: Check,
+  },
+  governed_complete: {
+    title: 'Governed — No External Send',
+    wrap: 'bg-brand-iris/10 border-brand-iris/25',
+    accent: 'text-brand-iris',
+    Icon: ShieldCheck,
+  },
+  failure: {
+    title: 'Outcome — Failed',
+    wrap: 'bg-semantic-danger/10 border-semantic-danger/25',
+    accent: 'text-semantic-danger',
+    Icon: WarningCircle,
+  },
+};
+
+/**
+ * Renders the proposal's execution lifecycle: an in-flight "Executing" chip while the
+ * governed execution runs, or the terminal outcome (success / governed_complete +
+ * reason / failure) once it lands. Honest: `null` when there is no execution yet.
+ */
+function ExecutionStatus({
+  outcome,
+  executionState,
+}: {
+  outcome?: ActionOutcome | null;
+  executionState: ExecutionState;
+}) {
+  if (outcome) {
+    const cfg = outcomeConfig[outcome.result];
+    const Icon = cfg.Icon;
+    return (
+      <div
+        className={`mt-1.5 flex items-start gap-2 px-2.5 py-1.5 rounded-lg border ${cfg.wrap}`}
+      >
+        <Icon
+          weight="fill"
+          className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${cfg.accent}`}
+        />
+        <div className="min-w-0">
+          <span
+            className={`block text-[11px] font-bold uppercase tracking-wide ${cfg.accent}`}
+          >
+            {cfg.title}
+          </span>
+          {outcome.reason && (
+            <span className="block text-xs text-white/70 leading-snug line-clamp-2">
+              {outcome.reason}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (executionState === 'executing') {
+    return (
+      <div className="mt-1.5 flex items-center gap-2 px-2.5 py-1.5 rounded-lg border bg-brand-cyan/10 border-brand-cyan/25">
+        <svg
+          className="w-3.5 h-3.5 animate-spin text-brand-cyan flex-shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+        <span className="text-[11px] font-bold uppercase tracking-wide text-brand-cyan">
+          Executing
+        </span>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+/** Compact-mode inline chip for the execution outcome (row layout, no strip). */
+function ExecutionChipCompact({
+  outcome,
+  executionState,
+}: {
+  outcome?: ActionOutcome | null;
+  executionState: ExecutionState;
+}) {
+  if (outcome) {
+    const cfg = outcomeConfig[outcome.result];
+    return (
+      <span
+        className={`px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border flex-shrink-0 ${cfg.wrap} ${cfg.accent}`}
+        title={outcome.reason ?? cfg.title}
+      >
+        {outcome.result === 'success'
+          ? 'Success'
+          : outcome.result === 'failure'
+            ? 'Failed'
+            : 'Governed'}
+      </span>
+    );
+  }
+  if (executionState === 'executing') {
+    return (
+      <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded border border-brand-cyan/25 bg-brand-cyan/10 text-brand-cyan flex-shrink-0">
+        Executing
+      </span>
+    );
+  }
+  return null;
+}
+
 // v5: 3 density levels
 export type DensityLevel = 'compact' | 'standard' | 'comfortable';
 
@@ -122,6 +259,8 @@ interface ActionCardProps {
   onHoverOpenChange?: (open: boolean) => void;
   // v5: Dimmed when another card's hover is open
   isDimmed?: boolean;
+  // Wave-2: execution lifecycle outcome for this proposal (loop visibility)
+  outcome?: ActionOutcome | null;
 }
 
 /**
@@ -175,6 +314,7 @@ export function ActionCard({
   isHoverOpen,
   onHoverOpenChange,
   isDimmed,
+  outcome,
 }: ActionCardProps) {
   const pillar = pillarAccents[action.pillar];
   const priority = priorityConfig[action.priority];
@@ -279,16 +419,25 @@ export function ActionCard({
             </span>
           )}
 
-          {/* Execution state badge */}
-          {isCompleted && (
-            <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex-shrink-0">
-              Done
-            </span>
-          )}
-          {hasError && (
-            <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30 flex-shrink-0">
-              Error
-            </span>
+          {/* Execution state badge — outcome-aware (Wave-2 loop visibility) */}
+          {outcome ? (
+            <ExecutionChipCompact
+              outcome={outcome}
+              executionState={executionState}
+            />
+          ) : (
+            <>
+              {isCompleted && (
+                <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex-shrink-0">
+                  Done
+                </span>
+              )}
+              {hasError && (
+                <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30 flex-shrink-0">
+                  Error
+                </span>
+              )}
+            </>
           )}
 
           {/* Title */}
@@ -425,7 +574,7 @@ export function ActionCard({
                   Ready
                 </span>
               )}
-              {isCompleted && (
+              {isCompleted && !outcome && (
                 <span className="px-1.5 py-0.5 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30">
                   Completed
                 </span>
@@ -474,6 +623,9 @@ export function ActionCard({
           <p className="text-xs text-white/55 line-clamp-2 mb-auto">
             {action.summary}
           </p>
+
+          {/* Execution lifecycle — Executing chip or terminal outcome (Wave-2) */}
+          <ExecutionStatus outcome={outcome} executionState={executionState} />
 
           {/* Row 4: CTAs - FIXED POSITION at bottom */}
           <div className="flex items-center gap-2 mt-1.5">
@@ -656,13 +808,13 @@ export function ActionCard({
             )}
 
             {/* Execution state badges */}
-            {isCompleted && (
+            {isCompleted && !outcome && (
               <span className="px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-success/15 text-semantic-success border border-semantic-success/30 flex items-center gap-1">
                 <Check weight="regular" className="w-3 h-3" />
                 Completed
               </span>
             )}
-            {hasError && (
+            {hasError && !outcome && (
               <span className="px-2 py-1 text-[11px] font-bold uppercase rounded bg-semantic-danger/15 text-semantic-danger border border-semantic-danger/30">
                 Error
               </span>
@@ -712,6 +864,9 @@ export function ActionCard({
         <p className="text-xs text-white/55 line-clamp-2 mb-auto">
           {action.summary}
         </p>
+
+        {/* Execution lifecycle — Executing chip or terminal outcome (Wave-2) */}
+        <ExecutionStatus outcome={outcome} executionState={executionState} />
 
         {/* Row 4: CTAs - FIXED POSITION at bottom */}
         <div className="flex items-center gap-2 mt-1.5">

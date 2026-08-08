@@ -244,6 +244,24 @@ function EVIHero({ evi }: { evi: EarnedVisibilityIndex }) {
           <span className="text-xs text-white/30">100</span>
         </div>
       </div>
+
+      {/* Data-coverage honesty (Wave-2 #129): the EVI is REAL but partial until all
+          14 canonical sub-metrics land. Surface it — never hide the partiality. */}
+      {typeof evi.overall_coverage === 'number' && evi.overall_coverage < 1 && (
+        <div className="mt-3 flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-brand-amber/10 border border-brand-amber/20">
+          <InfoTooltip
+            content="EVI is computed only from signals we can currently observe. Sub-metrics with no data source yet (e.g. SERP rank tracking) are excluded and the remaining weights renormalised — so the score is honest, just partial. Coverage rises as more signal sources come online."
+            size={11}
+          />
+          <p className="text-xs text-white/70 leading-snug">
+            Partial score — based on{' '}
+            <span className="font-semibold text-brand-amber">
+              {Math.round(evi.overall_coverage * 100)}%
+            </span>{' '}
+            of EVI signals. Accuracy rises as remaining signals come online.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -294,6 +312,14 @@ function DriverRow({
                 {driver.label}
               </span>
               <span className="text-xs text-white/40">({weightPct}%)</span>
+              {typeof driver.coverage === 'number' && driver.coverage < 1 && (
+                <span
+                  className="text-[11px] font-semibold text-brand-amber"
+                  title="Share of this driver's canonical signals currently observed"
+                >
+                  {Math.round(driver.coverage * 100)}% data
+                </span>
+              )}
             </div>
             <TrendIndicator trend={driver.trend} delta={driver.delta_7d} />
           </div>
