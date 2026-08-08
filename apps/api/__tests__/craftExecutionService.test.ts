@@ -377,6 +377,13 @@ describe('completeExecution — outcome feedback closes the loop', () => {
       success_count: 0,
       failure_count: 0,
     });
+
+    // A governed_complete produced NO cross-pillar output (suppressed / ineligible /
+    // needs_content / refused no-op) — it must NOT reinforce, or the mesh would be
+    // biased by an action that never happened.
+    expect(
+      calls.inserts.some((c) => c.table === 'sage_signal_reinforcements')
+    ).toBe(false);
   });
 
   it('records a failure outcome and increments the failure tally', async () => {
@@ -470,6 +477,23 @@ describe('completeExecution — cross-pillar reinforcement', () => {
     await completeExecution(client, {
       executionId: 'exec-1',
       result: 'failure',
+    });
+    expect(
+      calls.inserts.some((c) => c.table === 'sage_signal_reinforcements')
+    ).toBe(false);
+  });
+
+  it('a governed_complete (no output produced — e.g. a refused pitch) does NOT reinforce', async () => {
+    const { client, calls } = makeSupabase({
+      executionRow: prExecutionRow,
+      tallyRow: null,
+    });
+    // Governed lifecycle finished, but nothing was actually sent/generated. Reinforcing
+    // here would use the signal's non-zero evi_impact_estimate to boost SEO/Content
+    // from an action that never happened — canon §3.3 requires a real OUTPUT.
+    await completeExecution(client, {
+      executionId: 'exec-1',
+      result: 'governed_complete',
     });
     expect(
       calls.inserts.some((c) => c.table === 'sage_signal_reinforcements')

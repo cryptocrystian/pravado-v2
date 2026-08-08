@@ -503,10 +503,14 @@ export async function completeExecution(
 
   // MESH: cross-pillar reinforcement. A completed action's OUTPUTS become the INPUTS
   // of the other pillars — canon SAGE_OPERATING_MODEL §3 ("Every action in one pillar
-  // reinforces outcomes in other pillars"). Only completions propagate; a verified
-  // business `failure` does not reinforce. Best-effort: a reinforcement write must not
-  // fail the (already-persisted) loop closure.
-  if (result !== 'failure') {
+  // reinforces outcomes in other pillars" — outputs become inputs). ONLY a verified
+  // `success` propagates: it is the only outcome that produced a real cross-pillar
+  // output (a sent pitch, a real brief, generated schema). `governed_complete` means
+  // the governed lifecycle finished but NO output was produced (suppressed / ineligible
+  // / needs_content / refused no-op), and `failure` produced none either — neither may
+  // reinforce, or the mesh would be biased by actions that never happened. Best-effort:
+  // a reinforcement write must not fail the (already-persisted) loop closure.
+  if (result === 'success') {
     await propagateReinforcement(supabase, {
       orgId,
       sourcePillar: pillar,
