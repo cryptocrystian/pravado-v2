@@ -246,8 +246,8 @@ export interface EntityNode {
   connection_status: EdgeState;
   /** FK to Action Stream — null = system error for gap nodes */
   linked_action_id: string | null;
-  /** SAGE-generated insight. Max 160 chars. Required for gap nodes. */
-  entity_insight: string;
+  /** SAGE-generated insight. Max 160 chars. Required for gap nodes. Null on brand core. */
+  entity_insight: string | null;
   /** All pillars this node's actions affect */
   impact_pillars: string[];
   last_updated: string;

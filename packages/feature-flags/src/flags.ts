@@ -181,7 +181,9 @@ export const FLAGS = {
   // ========================================================================
 
   // Command Center
-  CC_ENTITY_MAP_WIRED: false,
+  // Wave-2: Entity Map FE v3 (concentric rings) wired to the real
+  // GET /api/command-center/entity-map contract. Ungated.
+  CC_ENTITY_MAP_WIRED: true,
 
   // PR pillar
   PR_ACTION_QUEUE_MANUAL_WIRED: false,

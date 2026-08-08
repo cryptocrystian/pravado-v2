@@ -403,6 +403,11 @@ export function ActionStreamPane({
   // Tracks which action ID has its HoverCard open (null = none open)
   const [hoveredActionId, setHoveredActionId] = useState<string | null>(null);
 
+  // Cross-surface coherence (canon §9 / D016): the Entity Map dispatches
+  // `cc:focus-action` with a linked_action_id when a gap node is clicked. This
+  // transiently highlights the matching card in the Action Stream.
+  const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
+
   // PR-5b: ActionModal state. The pane owns the modal (Review → open); the modal
   // overlays the viewport via fixed positioning. `modalExec` drives the modal's
   // in-flight/error UI while a PATCH is running.
@@ -428,6 +433,30 @@ export function ActionStreamPane({
       executionStates[item.id] ?? deriveServerExecState(item),
     [executionStates]
   );
+
+  // D016 receiver: focus the linked action when the Entity Map emits a gap-node
+  // navigation. Switches to the item's lifecycle bucket, scrolls it into view, and
+  // clears the highlight on a single one-shot timeout (event-driven, no loop).
+  useEffect(() => {
+    function onFocusAction(e: Event) {
+      const actionId = (e as CustomEvent<{ actionId?: string }>).detail
+        ?.actionId;
+      if (!actionId) return;
+      const item = (data?.items ?? []).find((i) => i.id === actionId);
+      if (!item) return;
+      setLifecycleBucket(getLifecycleBucket(getEffectiveState(item)));
+      setActiveFilter('all');
+      setFocusedActionId(actionId);
+      window.setTimeout(() => {
+        listRef.current
+          ?.querySelector(`[data-action-id="${actionId}"]`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 0);
+      window.setTimeout(() => setFocusedActionId(null), 2500);
+    }
+    window.addEventListener('cc:focus-action', onFocusAction);
+    return () => window.removeEventListener('cc:focus-action', onFocusAction);
+  }, [data, getEffectiveState]);
 
   // LOCKED ACTIONS: Separate locked items (sorted by impact)
   const lockedItems = useMemo(() => {
@@ -945,7 +974,15 @@ export function ActionStreamPane({
                 activeFilter === 'all';
 
               return (
-                <div key={action.id}>
+                <div
+                  key={action.id}
+                  data-action-id={action.id}
+                  className={
+                    focusedActionId === action.id
+                      ? 'rounded-lg ring-1 ring-brand-cyan/60'
+                      : undefined
+                  }
+                >
                   <ActionCard
                     action={action}
                     densityLevel={effectiveDensity}
