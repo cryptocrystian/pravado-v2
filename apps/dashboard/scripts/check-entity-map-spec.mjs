@@ -1,15 +1,24 @@
 #!/usr/bin/env node
 /**
- * CI Guard: Entity Map SAGE-Native Specification v2.0
+ * CI Guard: Entity Map Concentric-Ring Specification v3.0
  *
- * Prevents regression of:
- * 1. Zone-based layout (authority/signal/growth/exposure)
- * 2. Deterministic layout seed (stable positioning)
- * 3. Action Stream integration (hover highlight, execute pulse)
- * 4. Top-20 node constraint
- * 5. Pillar styling consistency
+ * Enforces the canonical concentric-ring model (ENTITY_MAP_SPEC.md v2.0) and
+ * prevents regression to the RETIRED zone model (D012) and continuous animation
+ * loops (D013).
  *
- * @see /docs/canon/ENTITY-MAP-SAGE.md
+ * Requires:
+ * 1. entity-map-v3 marker + concentric-ring layout (computeRingLayout, ring bands)
+ * 2. affinity-based angular positioning + authority_weight sizing
+ * 3. entity_insight progressive disclosure (D015) + linked_action_id wiring (D016)
+ * 4. Action Stream coordination props (hoveredActionId / executingActionId)
+ * 5. Real contract consumption (CC_ENTITY_MAP_WIRED gate)
+ *
+ * Forbids:
+ * - Zone-based layout (zone: 'authority'|'signal'|'growth'|'exposure') — D012
+ * - d3-force / forceSimulation physics layout
+ * - requestAnimationFrame draw loop (continuous animation) — D013
+ *
+ * @see /docs/canon/ENTITY_MAP_SPEC.md v2.0 §2, §7 (D012, D013), §11
  */
 
 import fs from 'fs';
@@ -18,26 +27,55 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const COMMAND_CENTER_COMPONENTS = path.resolve(__dirname, '../src/components/command-center');
+const COMMAND_CENTER_COMPONENTS = path.resolve(
+  __dirname,
+  '../src/components/command-center'
+);
 const CONTRACTS_DIR = path.resolve(__dirname, '../../..', 'contracts/examples');
 
-// Required patterns for compliance
+// Required patterns (must be present)
 const REQUIRED_PATTERNS = [
   {
     file: 'EntityMap.tsx',
     patterns: [
-      { regex: /entity-map-v2/, description: 'EntityMap v2 marker class' },
-      { regex: /layoutSeed|layout_seed/, description: 'Deterministic layout seed prop' },
-      { regex: /zone:/, description: 'Zone-based positioning reference' },
-      { regex: /hoveredActionId/, description: 'Hovered action ID prop for Action Stream coordination' },
-      { regex: /executingActionId/, description: 'Executing action ID prop for pulse animation' },
-      { regex: /entity-pulse|animate-entity-pulse/, description: 'Entity pulse animation class' },
-      { regex: /actionImpacts/, description: 'Action impacts mapping prop' },
-      { regex: /ZONE_POSITIONS|zoneConfig/, description: 'Zone position configuration' },
-      { regex: /pillarAccents|PILLAR_RGB/, description: 'Pillar styling reference' },
-      { regex: /isHighlighted/, description: 'Highlight state for nodes' },
-      { regex: /isDimmed/, description: 'Dimmed state for non-affected nodes' },
-      { regex: /isDriver|driver_node/, description: 'Driver node indication' },
+      { regex: /entity-map-v3/, description: 'entity-map-v3 marker class' },
+      {
+        regex: /computeRingLayout/,
+        description: 'Concentric-ring layout function',
+      },
+      { regex: /ring === 0|n\.ring/, description: 'Ring-based node placement' },
+      {
+        regex: /affinity_score/,
+        description: 'Affinity-based angular positioning',
+      },
+      {
+        regex: /authority_weight/,
+        description: 'Authority-weight node sizing',
+      },
+      {
+        regex: /entity_insight/,
+        description: 'Progressive disclosure of entity_insight (D015)',
+      },
+      {
+        regex: /linked_action_id/,
+        description: 'Gap node → linked action wiring (D016)',
+      },
+      {
+        regex: /cc:focus-action/,
+        description: 'Action Stream focus event (cross-surface coherence)',
+      },
+      {
+        regex: /hoveredActionId/,
+        description: 'Hovered action ID prop (cross-pane highlight)',
+      },
+      {
+        regex: /executingActionId/,
+        description: 'Executing action ID prop (cross-pane pulse)',
+      },
+      {
+        regex: /em-core-pulse|Brand Core pulse/,
+        description: 'Brand Core pulse (canon §7 — CSS, not a JS loop)',
+      },
     ],
   },
   {
@@ -45,58 +83,87 @@ const REQUIRED_PATTERNS = [
     patterns: [
       { regex: /EntityNode/, description: 'EntityNode type definition' },
       { regex: /EntityEdge/, description: 'EntityEdge type definition' },
-      { regex: /EntityZone/, description: 'EntityZone type definition' },
-      { regex: /ActionImpactMap/, description: 'ActionImpactMap type definition' },
-      { regex: /EntityMapResponse/, description: 'EntityMapResponse type definition' },
+      { regex: /EntityMapPayload/, description: 'EntityMapPayload type' },
       { regex: /EdgeRel/, description: 'EdgeRel type definition' },
+      {
+        regex: /SessionCitationEvent/,
+        description: 'SessionCitationEvent type (D013)',
+      },
     ],
   },
   {
     file: 'IntelligenceCanvasPane.tsx',
     patterns: [
-      { regex: /EntityMap/, description: 'EntityMap component import/usage' },
-      { regex: /entityMapData/, description: 'Entity map data prop' },
+      { regex: /EntityMap/, description: 'EntityMap component usage' },
+      {
+        regex: /CC_ENTITY_MAP_WIRED/,
+        description: 'Real-data feature gate',
+      },
       { regex: /hoveredActionId/, description: 'Hovered action ID prop' },
       { regex: /executingActionId/, description: 'Executing action ID prop' },
-    ],
-  },
-  {
-    file: 'ActionStreamPane.tsx',
-    patterns: [
-      { regex: /onHoverActionChange/, description: 'Hover action change callback prop' },
+      {
+        regex: /entity-map/,
+        description: 'Consumes /api/command-center/entity-map contract',
+      },
     ],
   },
 ];
 
-// Entity Map contract validation
+// Contract fixture validation (v3 ring shape)
 const CONTRACT_PATTERNS = [
   {
     file: 'entity-map.json',
     path: path.join(CONTRACTS_DIR, 'entity-map.json'),
     patterns: [
-      { regex: /"layout_seed"/, description: 'Contract includes layout_seed field' },
-      { regex: /"zone":\s*"(authority|signal|growth|exposure)"/, description: 'Contract uses valid zone values' },
-      { regex: /"action_impacts"/, description: 'Contract includes action_impacts mapping' },
-      { regex: /"driver_node"/, description: 'Contract includes driver_node in action impacts' },
-      { regex: /"impacted_nodes"/, description: 'Contract includes impacted_nodes in action impacts' },
-      { regex: /"impacted_edges"/, description: 'Contract includes impacted_edges in action impacts' },
+      { regex: /"layout_version":\s*"v3"/, description: 'layout_version v3' },
+      { regex: /"ring":\s*[0-3]/, description: 'ring 0–3 placement' },
+      { regex: /"affinity_score"/, description: 'affinity_score field' },
+      { regex: /"authority_weight"/, description: 'authority_weight field' },
+      { regex: /"linked_action_id"/, description: 'linked_action_id field' },
+      { regex: /"entity_insight"/, description: 'entity_insight field' },
     ],
   },
 ];
 
-// Forbidden patterns (should NOT be present)
+// Forbidden patterns (must NOT be present)
 const FORBIDDEN_PATTERNS = [
   {
     file: 'EntityMap.tsx',
     patterns: [
-      { regex: /forceSimulation/, description: 'Physics-based force simulation (use zone layout)' },
-      { regex: /d3\.force|d3-force/, description: 'D3 force layout (use zone layout)' },
-      { regex: /useLayoutEffect.*position.*setState/, description: 'Position recalculation during interaction' },
+      {
+        regex: /forceSimulation\(/,
+        description: 'd3-force physics simulation',
+      },
+      { regex: /from ['"]d3-force['"]/, description: 'd3-force import' },
+      {
+        regex: /requestAnimationFrame\(/,
+        description:
+          'requestAnimationFrame draw loop (D013 — event-driven only)',
+      },
+      {
+        regex: /zone:\s*['"](authority|signal|growth|exposure)['"]/,
+        description: 'Retired zone-based positioning (D012)',
+      },
+    ],
+  },
+  {
+    file: 'entity-map.json',
+    path: path.join(CONTRACTS_DIR, 'entity-map.json'),
+    patterns: [
+      {
+        regex: /"zone":\s*"(authority|signal|growth|exposure)"/,
+        description: 'Retired zone values in contract (D012)',
+      },
     ],
   },
 ];
 
-function checkFile(fileName, requiredPatterns, forbiddenPatterns = [], customPath = null) {
+function checkFile(
+  fileName,
+  requiredPatterns,
+  forbiddenPatterns = [],
+  customPath = null
+) {
   const filePath = customPath || path.join(COMMAND_CENTER_COMPONENTS, fileName);
 
   if (!fs.existsSync(filePath)) {
@@ -106,68 +173,49 @@ function checkFile(fileName, requiredPatterns, forbiddenPatterns = [], customPat
   const content = fs.readFileSync(filePath, 'utf-8');
   const errors = [];
 
-  // Check required patterns (must be present)
   for (const pattern of requiredPatterns) {
     if (!pattern.regex.test(content)) {
       errors.push(`Missing required: ${pattern.description}`);
     }
   }
-
-  // Check forbidden patterns (must NOT be present)
   for (const pattern of forbiddenPatterns) {
     if (pattern.regex.test(content)) {
       errors.push(`Found forbidden: ${pattern.description}`);
     }
   }
 
-  return {
-    success: errors.length === 0,
-    errors,
-  };
+  return { success: errors.length === 0, errors };
 }
 
 function main() {
-  console.log('Checking Entity Map SAGE-Native specification (v2.0)...\n');
+  console.log('Checking Entity Map concentric-ring specification (v3.0)...\n');
 
   let hasErrors = false;
   const results = [];
 
-  // Check required patterns in components
   for (const check of REQUIRED_PATTERNS) {
     const result = checkFile(check.file, check.patterns, [], check.path);
     results.push({ file: check.file, ...result });
-
-    if (!result.success) {
-      hasErrors = true;
-    }
+    if (!result.success) hasErrors = true;
   }
 
-  // Check contract patterns
   for (const check of CONTRACT_PATTERNS) {
     const result = checkFile(check.file, check.patterns, [], check.path);
     results.push({ file: check.file + ' (contract)', ...result });
-
-    if (!result.success) {
-      hasErrors = true;
-    }
+    if (!result.success) hasErrors = true;
   }
 
-  // Check forbidden patterns
   for (const check of FORBIDDEN_PATTERNS) {
     const result = checkFile(check.file, [], check.patterns, check.path);
     results.push({ file: check.file + ' (forbidden)', ...result });
-
-    if (!result.success) {
-      hasErrors = true;
-    }
+    if (!result.success) hasErrors = true;
   }
 
-  // Output results
   for (const result of results) {
     if (result.success) {
-      console.log(`\u2713 ${result.file}`);
+      console.log(`✓ ${result.file}`);
     } else {
-      console.error(`\u2717 ${result.file}`);
+      console.error(`✗ ${result.file}`);
       for (const error of result.errors) {
         console.error(`  - ${error}`);
       }
@@ -177,20 +225,21 @@ function main() {
   console.log('');
 
   if (hasErrors) {
-    console.error('FAIL: Entity Map specification has regressions.\n');
-    console.error('Required patterns:');
-    console.error('  - EntityMap.tsx: v2 marker, zone layout, action stream coordination');
-    console.error('  - types.ts: EntityNode, EntityEdge, EntityZone, ActionImpactMap types');
-    console.error('  - IntelligenceCanvasPane.tsx: EntityMap integration');
-    console.error('  - ActionStreamPane.tsx: onHoverActionChange callback');
-    console.error('  - entity-map.json: layout_seed, zone, action_impacts\n');
-    console.error('Forbidden patterns:');
-    console.error('  - Physics-based force simulation (use zone layout)');
-    console.error('  - Position recalculation during interaction\n');
+    console.error('FAIL: Entity Map v3 specification has regressions.\n');
+    console.error('Required: entity-map-v3 marker, concentric-ring layout,');
+    console.error('affinity/authority encoding, entity_insight (D015),');
+    console.error(
+      'linked_action_id wiring (D016), Action Stream coordination.\n'
+    );
+    console.error(
+      'Forbidden: zone model (D012), d3-force, RAF loops (D013).\n'
+    );
     process.exit(1);
   }
 
-  console.log('PASS: Entity Map SAGE-Native specification v2.0 compliant.\n');
+  console.log(
+    'PASS: Entity Map concentric-ring specification v3.0 compliant.\n'
+  );
   process.exit(0);
 }
 
