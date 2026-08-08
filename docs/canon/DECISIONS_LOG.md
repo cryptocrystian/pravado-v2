@@ -984,3 +984,14 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
 - **Rationale:** The duplicate IDs and the mislabel are exactly the drift the Charter exists to prevent; fixing them makes canon usable as a measuring stick. The dedupe uses Option B (renumber originals) to touch zero money-code.
 - **Deferred:** full Article-III header sweep across all 57 docs; wiring `canon-gates` to enforce unique IDs + headers; reconciling the stale frozen `ANALYTICS_CONTRACT` / `COMMAND_CENTER_CONTRACT` against the full-launch scope.
 - **Cross-refs:** D033 (corrected), D031/D032 (renumbered), D035; `_grounding/REMEDIATION_PLAN.md` Lane A.
+
+## D037 — Enterprise plan is post-launch (SOC 2 + case-studies gated)
+
+- **Date:** 2026-08-05
+- **Decision ID:** D037
+- **Area:** Scope / GTM / Plans
+- **Decision:** The Enterprise plan — and the ~20 enterprise-intelligence schemas that back it — is **v1.1 / post-launch**, not part of the v1 launch backlog. Enterprise ships only after a gated sequence: **market-share traction → published case-studies → SOC 2 attestation.** Until all three gates clear, the enterprise-intelligence schemas are excluded from the v1 launch scope and are not built, migrated to prod, or entitled.
+- **Rationale:** Enterprise buyers require compliance (SOC 2), approval-chain features, and social proof (case-studies) that a pre-launch product cannot yet furnish. Building the ~20 enterprise schemas now would burn v1 runway on capability no launch customer can buy; the honest sequence earns the right to sell enterprise by first winning share and references, then attesting SOC 2. Keeps the v1 backlog focused on SMB/Mid-market (Autopilot/Copilot) where the launch demand is.
+- **Scope note:** This gates **plan availability and the enterprise-intelligence schema build**, not the per-pillar Manual-mode floors (those remain in the Mode Contract for all tiers). Enterprise entitlements stay defined in `PLANS_LIMITS_ENTITLEMENTS.md` but flagged post-launch.
+- **Authority basis:** Founder-ratified 2026-08-05.
+- **Cross-refs:** D036 (canon hygiene); `PLANS_LIMITS_ENTITLEMENTS.md`.

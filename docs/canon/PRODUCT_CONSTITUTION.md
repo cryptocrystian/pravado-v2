@@ -1,5 +1,10 @@
 # PRAVADO v2 — PRODUCT CONSTITUTION
 
+**Layer:** Model Canon
+**Status:** Canonical — tier-1 (constitution-level)
+**Governs / Subordinate-to:** Governs all canon documents
+**Supersedes:** none
+
 Version: v1.0 (Canon)
 
 ## Mission

@@ -1,5 +1,10 @@
 # EVI MATHEMATICS
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the EVI model (co-canonical with `EARNED_VISIBILITY_INDEX.md`)
+**Supersedes:** none
+
 > **Status:** CANONICAL
 > **Authority:** This document defines the mathematical foundations of the Earned Visibility Index.
 > **Classification:** Defensible IP (Trade Secret + Patent Eligible)

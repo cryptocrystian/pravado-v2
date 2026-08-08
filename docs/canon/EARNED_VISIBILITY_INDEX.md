@@ -1,5 +1,10 @@
 # Earned Visibility Index (EVI)
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the EVI model (co-canonical with `EVI_MATHEMATICS.md`)
+**Supersedes:** none
+
 > **Status:** CANONICAL
 > **Authority:** This document defines the single North Star KPI for the Pravado Command Center.
 > **Last Updated:** 2026-01-11

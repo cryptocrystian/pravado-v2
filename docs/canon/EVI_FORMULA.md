@@ -1,7 +1,12 @@
 # EVI — Earned Visibility Index: Formula Reference
 
+**Layer:** Implementation-Status
+**Status:** Phase-1 Implementation
+**Governs / Subordinate-to:** Subordinate to the EVI model (`EARNED_VISIBILITY_INDEX.md`, `EVI_MATHEMATICS.md`)
+**Supersedes:** none
+
 **Version:** 1.0  
-**Status:** CANONICAL — reflects production implementation as of Sprint S-INT-01  
+**Status:** Implementation-Status — reflects production implementation as of Sprint S-INT-01; reconciled to the EVI model per D035 (4-band North-Star set)  
 **Implementation:** `apps/api/src/services/evi/`
 
 ---

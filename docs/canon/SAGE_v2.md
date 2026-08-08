@@ -1,5 +1,10 @@
 # PRAVADO v2 — SAGE v2 SPEC
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the SAGE model (co-canonical with `SAGE_OPERATING_MODEL.md`)
+**Supersedes:** none
+
 Version: v1.0 (Canon)
 
 ## Purpose

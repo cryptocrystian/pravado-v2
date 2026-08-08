@@ -1,5 +1,10 @@
 # CITEMIND™ SYSTEM
 
+**Layer:** Model Canon
+**Status:** Canonical
+**Governs / Subordinate-to:** Governs the CiteMind model
+**Supersedes:** none
+
 > **Status:** CANONICAL
 > **Authority:** This document defines the CiteMind multi-engine system architecture.
 > **Classification:** Defensible IP (Trade Secret + Patent Eligible) — RESTRICTED
