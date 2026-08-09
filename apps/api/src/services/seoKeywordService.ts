@@ -31,8 +31,17 @@ export interface KeywordProvider {
 }
 
 /**
- * Stub implementation for S4
- * Returns mock metrics based on simple heuristics
+ * StubKeywordProvider — DEV / TEST ONLY. NEVER selectable in production.
+ *
+ * Fabricates metrics from `Math.random` + string heuristics. This data is
+ * INVENTED and must never reach a live user surface. It is reachable only via
+ * the explicit `SEO_KEYWORD_PROVIDER=stub` escape hatch in `resolveKeywordProvider`,
+ * and that escape hatch is hard-ignored when `NODE_ENV === 'production'`.
+ *
+ * Honest data is the prime constraint (canon SEO_AEO_PILLAR_CANON — "measure vs.
+ * build": buy real commodity Layer-1 data, never synthesize it). The production
+ * factory returns DataForSEO (real bought data) or the Null provider (no data) —
+ * never this class.
  */
 export class StubKeywordProvider implements KeywordProvider {
   async enrichKeyword(
@@ -85,6 +94,325 @@ export class StubKeywordProvider implements KeywordProvider {
   }
 }
 
+/**
+ * NullKeywordProvider — the honest production default when NO real data source
+ * is configured. Returns `null` / `[]` (no metrics) rather than inventing any.
+ *
+ * This is the mechanism that GUARANTEES no fabricated data reaches a surface:
+ * absent DataForSEO credentials, the factory hands back this provider, so
+ * enrichment simply produces nothing — an empty, honest state.
+ */
+export class NullKeywordProvider implements KeywordProvider {
+  async enrichKeyword(): Promise<SEOKeywordMetric | null> {
+    return null;
+  }
+
+  async batchEnrichKeywords(): Promise<SEOKeywordMetric[]> {
+    return [];
+  }
+}
+
+// ========================================
+// DATAFORSEO PROVIDER (real bought Layer-1 data)
+// ========================================
+
+/**
+ * Minimal HTTP response shape the DataForSEO provider depends on. Kept narrow so
+ * the transport is trivially mockable in unit tests (no real network).
+ */
+export interface KeywordHttpResponse {
+  ok: boolean;
+  status: number;
+  json(): Promise<unknown>;
+  text(): Promise<string>;
+}
+
+/**
+ * Injectable fetch seam. Defaults to global `fetch`; unit tests pass a mock so
+ * the mapping + honest-degradation logic can be verified without a network call.
+ */
+export type KeywordFetchLike = (
+  url: string,
+  init: { method: string; headers: Record<string, string>; body: string }
+) => Promise<KeywordHttpResponse>;
+
+const defaultKeywordFetch: KeywordFetchLike = (url, init) =>
+  fetch(url, init) as unknown as Promise<KeywordHttpResponse>;
+
+export interface DataForSEOCredentials {
+  login: string;
+  password: string;
+}
+
+export interface DataForSEOProviderOptions {
+  /** DataForSEO base URL. Defaults to the production v3 REST base. */
+  baseUrl?: string;
+  /** Location code for volume/CPC (default 2840 = United States). */
+  locationCode?: number;
+  /** Language code (default 'en'). */
+  languageCode?: string;
+}
+
+/** DataForSEO "success" status code (per API envelope). */
+const DATAFORSEO_OK = 20000;
+
+/**
+ * DataForSEOKeywordProvider — calls DataForSEO Labs to fetch REAL commodity
+ * Layer-1 keyword metrics (search volume, keyword difficulty, CPC) and maps them
+ * to `SEOKeywordMetric` with `source: 'external_api'`.
+ *
+ * Endpoint used: POST `${base}dataforseo_labs/google/keyword_overview/live`
+ *   - returns `keyword_info.search_volume`, `keyword_info.cpc`
+ *   - returns `keyword_properties.keyword_difficulty`
+ *
+ * INERT-SAFE contract:
+ *   - Only ever constructed by the factory when credentials are present.
+ *   - On ANY failure (network throw, non-2xx, unexpected envelope, missing
+ *     fields) it degrades HONESTLY — returns null / empty and logs. It NEVER
+ *     fabricates and NEVER falls back to the stub.
+ */
+export class DataForSEOKeywordProvider implements KeywordProvider {
+  private readonly baseUrl: string;
+  private readonly locationCode: number;
+  private readonly languageCode: string;
+
+  constructor(
+    private readonly credentials: DataForSEOCredentials,
+    private readonly fetchImpl: KeywordFetchLike = defaultKeywordFetch,
+    options: DataForSEOProviderOptions = {}
+  ) {
+    // Normalize base URL to always end with a single trailing slash.
+    const base = options.baseUrl ?? 'https://api.dataforseo.com/v3/';
+    this.baseUrl = base.endsWith('/') ? base : `${base}/`;
+    this.locationCode = options.locationCode ?? 2840;
+    this.languageCode = options.languageCode ?? 'en';
+  }
+
+  async enrichKeyword(
+    orgId: string,
+    keyword: SEOKeyword
+  ): Promise<SEOKeywordMetric | null> {
+    const [metric] = await this.fetchOverview(orgId, [keyword]);
+    return metric ?? null;
+  }
+
+  async batchEnrichKeywords(
+    orgId: string,
+    keywords: SEOKeyword[]
+  ): Promise<SEOKeywordMetric[]> {
+    if (keywords.length === 0) {
+      return [];
+    }
+    return this.fetchOverview(orgId, keywords);
+  }
+
+  private authHeader(): string {
+    const token = Buffer.from(
+      `${this.credentials.login}:${this.credentials.password}`
+    ).toString('base64');
+    return `Basic ${token}`;
+  }
+
+  private async fetchOverview(
+    orgId: string,
+    keywords: SEOKeyword[]
+  ): Promise<SEOKeywordMetric[]> {
+    const url = `${this.baseUrl}dataforseo_labs/google/keyword_overview/live`;
+    const body = JSON.stringify([
+      {
+        keywords: keywords.map((k) => k.keyword),
+        location_code: this.locationCode,
+        language_code: this.languageCode,
+      },
+    ]);
+
+    let payload: any;
+    try {
+      const res = await this.fetchImpl(url, {
+        method: 'POST',
+        headers: {
+          Authorization: this.authHeader(),
+          'Content-Type': 'application/json',
+        },
+        body,
+      });
+
+      if (!res.ok) {
+        // Honest degradation: log and return no data (never fabricate).
+        console.warn(
+          `[DataForSEOKeywordProvider] HTTP ${res.status} from keyword_overview — degrading to no data`
+        );
+        return [];
+      }
+
+      payload = await res.json();
+    } catch (err) {
+      console.warn(
+        '[DataForSEOKeywordProvider] request failed — degrading to no data (no fabrication)',
+        err
+      );
+      return [];
+    }
+
+    const task = payload?.tasks?.[0];
+    if (
+      !task ||
+      task.status_code !== DATAFORSEO_OK ||
+      !Array.isArray(task.result)
+    ) {
+      console.warn(
+        '[DataForSEOKeywordProvider] unexpected task envelope — degrading to no data',
+        task?.status_code,
+        task?.status_message
+      );
+      return [];
+    }
+
+    // Map returned items back to the requested keyword rows by keyword string.
+    const byKeyword = new Map(
+      keywords.map((k) => [k.keyword.toLowerCase(), k])
+    );
+
+    const metrics: SEOKeywordMetric[] = [];
+    for (const result of task.result) {
+      const items = Array.isArray(result?.items) ? result.items : [];
+      for (const item of items) {
+        const source = byKeyword.get(String(item?.keyword ?? '').toLowerCase());
+        if (!source) {
+          continue;
+        }
+        const metric = this.mapItem(orgId, source, item);
+        if (metric) {
+          metrics.push(metric);
+        }
+      }
+    }
+    return metrics;
+  }
+
+  private mapItem(
+    orgId: string,
+    keyword: SEOKeyword,
+    item: any
+  ): SEOKeywordMetric | null {
+    const info = item?.keyword_info ?? {};
+    const props = item?.keyword_properties ?? {};
+
+    const searchVolume =
+      typeof info.search_volume === 'number' ? info.search_volume : null;
+    const difficulty =
+      typeof props.keyword_difficulty === 'number'
+        ? props.keyword_difficulty
+        : null;
+    const cpc =
+      typeof info.cpc === 'number' ? parseFloat(info.cpc.toFixed(2)) : null;
+
+    // priorityScore is a DETERMINISTIC transform of the real bought values —
+    // no randomness. Null when either input is missing (never invented).
+    const priorityScore =
+      searchVolume !== null && difficulty !== null
+        ? parseFloat(
+            Math.min(
+              100,
+              (searchVolume / 100) * 0.4 + (100 - difficulty) * 0.6
+            ).toFixed(2)
+          )
+        : null;
+
+    const now = new Date().toISOString();
+    return {
+      id: crypto.randomUUID(),
+      orgId,
+      keywordId: keyword.id,
+      source: 'external_api',
+      searchVolume,
+      difficulty,
+      cpc,
+      // DataForSEO does not provide CTR — honest null, never fabricated.
+      clickThroughRate: null,
+      priorityScore,
+      lastRefreshedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    };
+  }
+}
+
+// ========================================
+// PROVIDER FACTORY / SELECTION
+// ========================================
+
+export interface KeywordProviderConfig {
+  /** DataForSEO API login (env DATAFORSEO_LOGIN). */
+  dataForSeoLogin?: string;
+  /** DataForSEO API password (env DATAFORSEO_PASSWORD). */
+  dataForSeoPassword?: string;
+  /** Process NODE_ENV — production hard-disables the stub escape hatch. */
+  nodeEnv?: string;
+  /**
+   * Internal dev/test escape hatch (env SEO_KEYWORD_PROVIDER). Only value with
+   * an effect is 'stub', and only outside production. NOT a user-facing surface
+   * flag — surface wiring (SEO_*_WIRED / ANALYTICS_SEO_WIRED) is untouched here.
+   */
+  providerOverride?: string;
+}
+
+export interface ResolveKeywordProviderDeps {
+  /** Injectable transport for the DataForSEO provider (tests pass a mock). */
+  fetchImpl?: KeywordFetchLike;
+}
+
+/** Read provider config from the environment (lazily, at call time). */
+export function keywordProviderConfigFromEnv(): KeywordProviderConfig {
+  return {
+    dataForSeoLogin: process.env.DATAFORSEO_LOGIN,
+    dataForSeoPassword: process.env.DATAFORSEO_PASSWORD,
+    nodeEnv: process.env.NODE_ENV,
+    providerOverride: process.env.SEO_KEYWORD_PROVIDER,
+  };
+}
+
+/**
+ * resolveKeywordProvider — the SINGLE runtime seam that decides which keyword
+ * provider is active. Selection order:
+ *
+ *   1. SEO_KEYWORD_PROVIDER=stub  → StubKeywordProvider — DEV/TEST ONLY, and
+ *      HARD-IGNORED in production. This is the only path to the fabricating stub.
+ *   2. DataForSEO credentials set → DataForSEOKeywordProvider (real bought data).
+ *   3. Otherwise                  → NullKeywordProvider (NO data — honest empty).
+ *
+ * Guarantee: through this factory, no `Math.random` value can reach a live
+ * surface. In production, the stub branch is skipped entirely; with no creds the
+ * result is the Null provider, never the stub.
+ */
+export function resolveKeywordProvider(
+  cfg: KeywordProviderConfig = keywordProviderConfigFromEnv(),
+  deps: ResolveKeywordProviderDeps = {}
+): KeywordProvider {
+  const login = cfg.dataForSeoLogin?.trim();
+  const password = cfg.dataForSeoPassword?.trim();
+  const isProduction = cfg.nodeEnv === 'production';
+
+  // (1) Dev/test-only stub escape hatch — NEVER honored in production.
+  if (cfg.providerOverride === 'stub') {
+    if (isProduction) {
+      console.warn(
+        '[resolveKeywordProvider] SEO_KEYWORD_PROVIDER=stub ignored in production — fabricated data is never served'
+      );
+    } else {
+      return new StubKeywordProvider();
+    }
+  }
+
+  // (2) Real bought data when DataForSEO credentials are present.
+  if (login && password) {
+    return new DataForSEOKeywordProvider({ login, password }, deps.fetchImpl);
+  }
+
+  // (3) No credentials → NO data (honest empty state). Never the stub.
+  return new NullKeywordProvider();
+}
+
 // ========================================
 // KEYWORD SERVICE
 // ========================================
@@ -111,7 +439,9 @@ export class SEOKeywordService {
     private supabase: SupabaseClient,
     keywordProvider?: KeywordProvider
   ) {
-    this.keywordProvider = keywordProvider || new StubKeywordProvider();
+    // Default to the env-resolved provider (DataForSEO when configured, else the
+    // honest Null provider). NEVER defaults to the fabricating stub.
+    this.keywordProvider = keywordProvider ?? resolveKeywordProvider();
   }
 
   /**

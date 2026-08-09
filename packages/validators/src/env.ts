@@ -96,6 +96,18 @@ export const apiEnvSchema = baseEnvSchema.extend({
   // 2.5). Service-account credentials used to mint a short-lived access token.
   GOOGLE_INDEXING_SA_EMAIL: z.string().optional(),
   GOOGLE_INDEXING_SA_PRIVATE_KEY: z.string().optional(),
+  // SEO keyword data provider — commodity Layer-1 (search volume / difficulty /
+  // CPC) per canon SEO_AEO_PILLAR_CANON ("measure vs. build": buy Layer-1).
+  // DataForSEO REST credentials. OPTIONAL: absence must NOT fail boot — when
+  // unset, resolveKeywordProvider() returns the honest Null provider (no data),
+  // never the fabricating stub. Read directly by the provider factory
+  // (services/seoKeywordService.ts), matching the GSC direct-env pattern above.
+  DATAFORSEO_LOGIN: z.string().optional(),
+  DATAFORSEO_PASSWORD: z.string().optional(),
+  // Internal dev/test escape hatch for the keyword provider. Only 'stub' has an
+  // effect, and only outside production. NOT a user-facing surface flag — the
+  // SEO_*_WIRED / ANALYTICS_SEO_WIRED surface flags are intentionally untouched.
+  SEO_KEYWORD_PROVIDER: z.enum(['dataforseo', 'null', 'stub']).optional(),
 });
 
 export const dashboardEnvSchema = baseEnvSchema.extend({
