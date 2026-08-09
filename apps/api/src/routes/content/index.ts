@@ -27,6 +27,9 @@ import {
   createContentBriefSchema,
   updateContentBriefSchema,
   listContentGapsSchema,
+  listContentCalendarSchema,
+  createContentCalendarSchema,
+  updateContentCalendarSchema,
   validateEnv,
   apiEnvSchema,
 } from '@pravado/validators';
@@ -43,6 +46,10 @@ import {
   enforcePlanLimit,
   PlanLimitExceededError,
 } from '../../services/billing/planLimitsService';
+import {
+  CalendarService,
+  CalendarAssetNotFoundError,
+} from '../../services/calendarService';
 import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
 import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
 import { enforcePublishGovernance } from '../../services/content/publishGovernance';
@@ -72,6 +79,7 @@ export async function contentRoutes(server: FastifyInstance) {
     env.SUPABASE_SERVICE_ROLE_KEY
   );
   const contentService = new ContentService(supabase);
+  const calendarService = new CalendarService(supabase);
 
   // ========================================
   // CONTENT ITEMS ENDPOINTS
@@ -794,6 +802,271 @@ export async function contentRoutes(server: FastifyInstance) {
       return reply.send({
         success: true,
         data: { items },
+      });
+    }
+  );
+
+  // ========================================
+  // CONTENT CALENDAR ENDPOINTS (W2)
+  // ========================================
+  // Scheduling metadata + click-to-open ONLY. These endpoints NEVER publish,
+  // execute, or route through publish governance. `automation_mode` is stored
+  // as metadata and is not an execution trigger — there is no auto-publish path.
+
+  /**
+   * GET /api/v1/content/calendar?from=&to=
+   * List the org's calendar entries (joined to content_items), ordered by
+   * scheduled_at. Honest empty array when nothing is scheduled.
+   */
+  server.get<{
+    Querystring: { from?: string; to?: string };
+  }>(
+    '/calendar',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      const validation = listContentCalendarSchema.safeParse({
+        from: request.query.from,
+        to: request.query.to,
+      });
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid query parameters',
+          },
+        });
+      }
+
+      const items = await calendarService.listEntries(orgId, validation.data);
+
+      return reply.send({
+        success: true,
+        data: { items },
+      });
+    }
+  );
+
+  /**
+   * POST /api/v1/content/calendar
+   * Schedule an existing content item onto a date. The asset MUST belong to the
+   * caller's org — cross-org / unknown assets are rejected with 400.
+   */
+  server.post<{
+    Body: {
+      asset_id?: string;
+      scheduled_at?: string;
+      campaign?: string;
+      theme?: string;
+      automation_mode?: string;
+    };
+  }>(
+    '/calendar',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      const validation = createContentCalendarSchema.safeParse(request.body);
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid calendar entry data',
+          },
+        });
+      }
+
+      const body = validation.data;
+
+      try {
+        const item = await calendarService.createEntry(orgId, {
+          assetId: body.asset_id,
+          scheduledAt: body.scheduled_at,
+          campaign: body.campaign,
+          theme: body.theme,
+          automationMode: body.automation_mode,
+        });
+
+        return reply.code(201).send({
+          success: true,
+          data: { item },
+        });
+      } catch (e) {
+        // Cross-org / unknown asset — reject as a client error, never a 5xx and
+        // never a silent success.
+        if (e instanceof CalendarAssetNotFoundError) {
+          return reply.code(400).send({
+            success: false,
+            error: {
+              code: 'ASSET_NOT_IN_ORG',
+              message: e.message,
+            },
+          });
+        }
+        throw e;
+      }
+    }
+  );
+
+  /**
+   * PUT /api/v1/content/calendar/:id
+   * Reschedule / update a calendar entry, org-scoped.
+   */
+  server.put<{
+    Params: { id: string };
+    Body: {
+      scheduled_at?: string;
+      campaign?: string | null;
+      theme?: string | null;
+      automation_mode?: string;
+    };
+  }>(
+    '/calendar/:id',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      const validation = updateContentCalendarSchema.safeParse(request.body);
+      if (!validation.success) {
+        return reply.code(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid calendar entry update data',
+          },
+        });
+      }
+
+      const { id } = request.params;
+      const body = validation.data;
+
+      const item = await calendarService.updateEntry(orgId, id, {
+        scheduledAt: body.scheduled_at,
+        campaign: body.campaign,
+        theme: body.theme,
+        automationMode: body.automation_mode,
+      });
+
+      if (!item) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Calendar entry not found',
+          },
+        });
+      }
+
+      return reply.send({
+        success: true,
+        data: { item },
+      });
+    }
+  );
+
+  /**
+   * DELETE /api/v1/content/calendar/:id
+   * Unschedule a calendar entry, org-scoped.
+   */
+  server.delete<{
+    Params: { id: string };
+  }>(
+    '/calendar/:id',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      const { id } = request.params;
+      const deleted = await calendarService.deleteEntry(orgId, id);
+
+      if (!deleted) {
+        return reply.code(404).send({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Calendar entry not found',
+          },
+        });
+      }
+
+      return reply.send({
+        success: true,
+        data: { id },
       });
     }
   );

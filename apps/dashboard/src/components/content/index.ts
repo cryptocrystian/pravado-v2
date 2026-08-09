@@ -50,10 +50,7 @@ export {
   ContentLibraryView,
   AssetDetailPreview,
 } from './views/ContentLibraryView';
-export {
-  ContentCalendarView,
-  ContentAgendaView,
-} from './views/ContentCalendarView';
+export { ContentCalendarView } from './views/ContentCalendarView';
 export { ContentInsightsView } from './views/ContentInsightsView';
 
 // ============================================

@@ -189,13 +189,10 @@ export default function ContentSurfacePage() {
         );
 
       case 'calendar':
-        return (
-          <ContentCalendarView
-            assets={CONTENT_OVERVIEW_MOCK.recentAssets}
-            briefs={[]}
-            isLoading={false}
-          />
-        );
+        // Real content_calendar scheduling. The view owns its own data
+        // (useContentCalendar + useContentItems) and renders honest
+        // loading/empty/error states — no mock feed on the live path.
+        return <ContentCalendarView />;
 
       case 'insights':
         return (

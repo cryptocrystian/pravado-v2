@@ -224,6 +224,56 @@ export const listContentGapsSchema = z.object({
 export type ListContentGapsParams = z.infer<typeof listContentGapsSchema>;
 
 // ========================================
+// CONTENT CALENDAR SCHEMAS (W2 — content_calendar CRUD)
+// ========================================
+// Scheduling metadata ONLY. The calendar never publishes/executes and never
+// routes through publish governance. `automation_mode` is stored as metadata
+// and is NOT an execution trigger.
+
+const calendarAutomationModeSchema = z.enum(['manual', 'copilot', 'autopilot']);
+
+// List filter (both bounds optional). Kept loose (plain strings) so the range
+// filter accepts either full ISO timestamps or date-only bounds from the UI.
+export const listContentCalendarSchema = z.object({
+  from: z.string().min(1).optional(),
+  to: z.string().min(1).optional(),
+});
+
+export type ListContentCalendarParams = z.infer<
+  typeof listContentCalendarSchema
+>;
+
+// Create a calendar entry. `asset_id` MUST belong to the caller's org — that
+// ownership check is enforced server-side (see calendarService).
+export const createContentCalendarSchema = z.object({
+  asset_id: z.string().uuid(),
+  scheduled_at: z.string().datetime({ offset: true }),
+  campaign: z.string().max(200).optional(),
+  theme: z.string().max(200).optional(),
+  automation_mode: calendarAutomationModeSchema.optional().default('manual'),
+});
+
+export type CreateContentCalendarParams = z.infer<
+  typeof createContentCalendarSchema
+>;
+
+// Update / reschedule. All fields optional; at least one is required.
+export const updateContentCalendarSchema = z
+  .object({
+    scheduled_at: z.string().datetime({ offset: true }).optional(),
+    campaign: z.string().max(200).nullable().optional(),
+    theme: z.string().max(200).nullable().optional(),
+    automation_mode: calendarAutomationModeSchema.optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: 'At least one field must be provided',
+  });
+
+export type UpdateContentCalendarParams = z.infer<
+  typeof updateContentCalendarSchema
+>;
+
+// ========================================
 // SEO PILLAR SCHEMAS (S4 - Real Implementation)
 // ========================================
 
