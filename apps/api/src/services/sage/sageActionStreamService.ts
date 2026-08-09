@@ -105,6 +105,17 @@ const PILLAR_MAP: Record<string, 'pr' | 'content' | 'seo'> = {
   SEO: 'seo',
 };
 
+/**
+ * Canonical DB pillar values keyed by lowercased input. Mirrors the values the
+ * signal ingestor writes to `sage_proposals.pillar` (sageSignalIngestor.ts):
+ * 'PR' | 'Content' | 'SEO'. Used to normalize the action-stream pillar filter.
+ */
+const PILLAR_DB_VALUE: Record<string, string> = {
+  pr: 'PR',
+  content: 'Content',
+  seo: 'SEO',
+};
+
 const SIGNAL_TYPE_TO_ACTION_TYPE: Record<
   string,
   'proposal' | 'alert' | 'task'
@@ -285,11 +296,13 @@ export async function getActionStreamForOrg(
     .limit(50);
 
   if (filters?.pillar) {
+    // Canonical DB pillar values as written by the signal ingestor
+    // (sageSignalIngestor.ts): 'PR' | 'Content' | 'SEO'. Map explicitly so the
+    // filter is robust to input casing. Previously the char-casing produced 'Seo'
+    // for 'seo' (S + "eo"), which matched ZERO rows and made SEO surfaces show a
+    // false-empty state. Unknown values fall through to the raw input.
     const dbPillar =
-      filters.pillar.toUpperCase() === 'PR'
-        ? 'PR'
-        : filters.pillar.charAt(0).toUpperCase() +
-          filters.pillar.slice(1).toLowerCase();
+      PILLAR_DB_VALUE[filters.pillar.toLowerCase()] ?? filters.pillar;
     query = query.eq('pillar', dbPillar);
   }
 
