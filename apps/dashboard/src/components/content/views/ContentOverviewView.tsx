@@ -20,7 +20,6 @@
  */
 
 import {
-  Plus,
   Lightning,
   TrendUp,
   TrendDown,
@@ -41,6 +40,7 @@ import {
 import { useState, useEffect } from 'react';
 
 import { ContentAssetCard } from '../components/ContentAssetCard';
+import { ContentSageQueue } from '../components/ContentSageQueue';
 import type { ContentAsset, AutomationMode } from '../types';
 
 // ============================================
@@ -169,40 +169,6 @@ function getCiteGlow(s: number): string {
   return '';
 }
 
-const PRIORITY_CONFIG = {
-  critical: {
-    badge:
-      'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20',
-    label: 'Critical',
-    border: 'border-l-semantic-danger',
-  },
-  high: {
-    badge:
-      'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20',
-    label: 'High',
-    border: 'border-l-semantic-warning',
-  },
-  medium: {
-    badge: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20',
-    label: 'Medium',
-    border: 'border-l-brand-cyan',
-  },
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  guide: 'Guide',
-  article: 'Article',
-  report: 'Report',
-  comparison: 'Comparison',
-  faq: 'FAQ Page',
-};
-
-const EFFORT_LABELS: Record<string, string> = {
-  low: 'Low effort',
-  medium: 'Moderate effort',
-  high: 'High effort',
-};
-
 const EVENT_ICON_MAP = {
   pr_coverage: {
     icon: Newspaper,
@@ -226,14 +192,8 @@ const EVENT_ICON_MAP = {
   },
 };
 
-// Cross-pillar tail lines — populated dynamically from SAGE proposals
-const CROSS_PILLAR_TAILS: Record<string, string> = {};
-
 // Sparkline uses zeros until real trend data is available
 const SPARKLINE_POINTS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-// Confidence scores come from SAGE proposals — default 0.85
-const CONFIDENCE_SCORES: Record<string, number> = {};
 
 function MiniSparkline({
   data,
@@ -721,173 +681,6 @@ function CiteMindInstrumentStrip({
   );
 }
 
-function CopilotSAGECard({
-  proposal,
-  onApprove,
-  onDismiss,
-}: {
-  proposal: SAGEProposal;
-  onApprove?: (id: string) => void;
-  onDismiss?: (id: string) => void;
-}) {
-  const priority = PRIORITY_CONFIG[proposal.priority];
-  const tailLine =
-    CROSS_PILLAR_TAILS[proposal.id] || '→ Cross-pillar actions pending';
-  const confidence = CONFIDENCE_SCORES[proposal.id] || 0.85;
-
-  return (
-    <div
-      className={`
-        bg-slate-1 border border-border-subtle border-l-2 ${priority.border}
-        rounded-xl p-3.5
-        transition-all duration-150
-        hover:border-slate-5 hover:shadow-[0_0_0_1px_rgba(168,85,247,0.2)]
-      `}
-    >
-      {/* Row 1 — Badges + EVI impact */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span
-            className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${priority.badge}`}
-          >
-            {priority.label}
-          </span>
-          <span className="text-[13px] text-white/50">
-            {TYPE_LABELS[proposal.type]} · {proposal.topicCluster}
-          </span>
-        </div>
-        <div className="flex items-baseline gap-0.5 flex-shrink-0">
-          <span className="text-base font-bold text-semantic-success tabular-nums">
-            +{proposal.eviImpact.low}–{proposal.eviImpact.high}
-          </span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 ml-0.5">
-            EVI pts
-          </span>
-        </div>
-      </div>
-
-      {/* Row 2 — Title */}
-      <h4 className="text-[15px] font-semibold text-white/90 leading-snug mt-1.5">
-        {proposal.title}
-      </h4>
-
-      {/* Row 3 — SAGE Reasoning chip + Competitive gap text */}
-      <div className="mt-1.5">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-brand-iris/70">
-          SAGE Reasoning
-        </span>
-      </div>
-      <p className="text-sm text-white/65 leading-snug mt-0.5">
-        <Lightning
-          className="inline w-3.5 h-3.5 text-brand-iris opacity-80 mr-1 -mt-0.5"
-          weight="fill"
-        />
-        {proposal.competitiveGap}
-      </p>
-
-      {/* Row 4 — Cross-pillar tail line */}
-      <p className="text-xs text-white/45 mt-1">{tailLine}</p>
-
-      {/* Row 5 — Effort + Confidence + Actions */}
-      <div className="flex items-center justify-between mt-2.5">
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-white/40">
-            {EFFORT_LABELS[proposal.effort]} · {proposal.timeEstimate}
-          </span>
-          <span className="text-xs text-white/45">
-            Confidence {confidence.toFixed(2)}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onDismiss?.(proposal.id)}
-            className="px-3 py-1.5 text-sm text-white/50 hover:text-white/80 transition-colors"
-          >
-            Dismiss
-          </button>
-          <button
-            onClick={() => onApprove?.(proposal.id)}
-            className="px-3.5 py-1.5 text-sm font-semibold bg-brand-iris text-white/95 rounded-lg hover:bg-brand-iris/90 shadow-[0_0_12px_rgba(168,85,247,0.2)] transition-all duration-150"
-          >
-            Approve & Create Brief →
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CopilotSAGEQueue({
-  proposals,
-  onApprove,
-  onDismiss,
-  onViewAllProposals,
-  onCreateManual,
-}: {
-  proposals: SAGEProposal[];
-  onApprove?: (id: string) => void;
-  onDismiss?: (id: string) => void;
-  onViewAllProposals?: () => void;
-  onCreateManual?: () => void;
-}) {
-  const topProposals = proposals.slice(0, 3);
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Lightning className="w-4 h-4 text-brand-iris" weight="fill" />
-          <span className="text-sm font-semibold text-white/90">
-            SAGE Action Queue
-          </span>
-          <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-brand-iris/20 text-brand-iris border border-brand-iris/30">
-            {proposals.length}
-          </span>
-        </div>
-        <div className="flex items-center gap-2.5">
-          {proposals.length > 3 && (
-            <button
-              onClick={onViewAllProposals}
-              className="text-[13px] text-white/40 hover:text-white/70 transition-colors"
-            >
-              See all →
-            </button>
-          )}
-          <button
-            onClick={onCreateManual}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold bg-brand-iris text-white/95 rounded-lg hover:bg-brand-iris/90 shadow-[0_0_14px_rgba(168,85,247,0.35)] transition-all duration-150"
-          >
-            <Plus className="w-3.5 h-3.5" weight="regular" />
-            Create
-          </button>
-        </div>
-      </div>
-
-      {topProposals.length > 0 ? (
-        topProposals.map((p) => (
-          <CopilotSAGECard
-            key={p.id}
-            proposal={p}
-            onApprove={onApprove}
-            onDismiss={onDismiss}
-          />
-        ))
-      ) : (
-        <div className="flex flex-col items-center justify-center py-12">
-          <CheckCircle
-            className="w-8 h-8 text-brand-iris/40 mb-3"
-            weight="duotone"
-          />
-          <p className="text-sm text-white/50">All caught up</p>
-          <p className="text-[13px] text-white/30 mt-1">
-            SAGE has no open proposals
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function AttributionFeed({ events }: { events: CrossPillarEvent[] }) {
   if (events.length === 0) return null;
 
@@ -1045,16 +838,12 @@ function RecentAssetsSection({
 
 function CopilotView({
   data,
-  onApproveProposal,
-  onDismissProposal,
   onViewAllProposals,
   onViewAsset,
   onViewLibrary,
   onCreateManual,
 }: {
   data: ContentOverviewData;
-  onApproveProposal?: (id: string) => void;
-  onDismissProposal?: (id: string) => void;
   onViewAllProposals?: () => void;
   onViewAsset?: (id: string) => void;
   onViewLibrary?: () => void;
@@ -1080,10 +869,10 @@ function CopilotView({
         <div className="flex gap-5">
           {/* Left: SAGE Action Queue (~60%) */}
           <div className="flex-[3] min-w-0">
-            <CopilotSAGEQueue
-              proposals={data.proposals}
-              onApprove={onApproveProposal}
-              onDismiss={onDismissProposal}
+            {/* Real SAGE Content-pillar proposals (self-fetches
+                /api/content/recommendations). Honest loading/empty/error;
+                read-only CTA navigates to each proposal's deep_link. */}
+            <ContentSageQueue
               onViewAllProposals={onViewAllProposals}
               onCreateManual={onCreateManual}
             />
@@ -1358,9 +1147,6 @@ function AutopilotView({
 export function ContentOverviewView({
   data,
   mode = 'copilot',
-  onCreateFromBrief,
-  onApproveProposal,
-  onDismissProposal,
   onResolveException,
   onPauseAutopilot,
   onViewAllProposals,
@@ -1405,8 +1191,6 @@ export function ContentOverviewView({
   return (
     <CopilotView
       data={data}
-      onApproveProposal={onApproveProposal || onCreateFromBrief}
-      onDismissProposal={onDismissProposal}
       onViewAllProposals={onViewAllProposals}
       onViewAsset={onViewAsset}
       onViewLibrary={onViewLibrary}
