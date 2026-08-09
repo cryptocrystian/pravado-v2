@@ -4,13 +4,15 @@
  * SAGE Recommendations — /app/seo/recommendations
  * Prioritized action queue with urgency sections.
  *
- * Phase 0 Track 0B: gated behind SEO_RECOMMENDATIONS_WIRED until SAGE wires
- * real recommendations. Mock recommendation arrays + hardcoded counts removed.
+ * Wired to real SAGE proposals (SEO pillar) via /api/seo/recommendations →
+ * /api/v1/sage/action-stream?pillar=seo. Honest loading/empty/error states, no
+ * fabricated recommendations. Gated behind SEO_RECOMMENDATIONS_WIRED.
  */
 
 export const dynamic = 'force-dynamic';
 
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
+import { SeoRecommendationsQueue } from '@/components/seo/SeoRecommendationsQueue';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function RecommendationsPage() {
@@ -18,6 +20,11 @@ export default function RecommendationsPage() {
   if (!wired) {
     return <ComingSoonGate pillar="SEO" subsurface="Recommendations" />;
   }
-  // Phase 1 restores the real critical/high/medium pipeline render.
-  return null;
+  return (
+    <div className="pt-6 pb-16 px-8">
+      <div className="max-w-[1600px] mx-auto">
+        <SeoRecommendationsQueue />
+      </div>
+    </div>
+  );
 }

@@ -206,7 +206,7 @@ export const FLAGS = {
   SEO_TOPICS_WIRED: false,
   SEO_COMPETITORS_WIRED: false,
   SEO_CITATIONS_WIRED: true, // Wave-2: real CiteMind monitor results (/api/seo/citations → citemind/monitor/results + summary). Honest empty state for new orgs.
-  SEO_RECOMMENDATIONS_WIRED: false,
+  SEO_RECOMMENDATIONS_WIRED: true, // Wave-2: real SAGE proposals (SEO pillar) via /api/seo/recommendations → sage/action-stream?pillar=seo. Honest empty state for new orgs; no SERP/DataForSEO dependency.
 
   // Settings
   SETTINGS_BRAND_VOICE_WIRED: false,
