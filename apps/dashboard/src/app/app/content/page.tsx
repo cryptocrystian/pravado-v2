@@ -207,7 +207,12 @@ export default function ContentSurfacePage() {
                 CONTENT_OVERVIEW_MOCK.avgCitationEligibility,
               aiIngestionLikelihood: CONTENT_OVERVIEW_MOCK.avgAiIngestion,
               crossPillarImpact: CONTENT_OVERVIEW_MOCK.avgCrossPillarImpact,
-              competitiveAuthorityDelta: 2.1,
+              // Honest zero (unavailable) — was a fabricated +2.1. The real
+              // competitive-authority delta lands with the gated Insights
+              // surface (unapplied migration 105); until then it must not
+              // render a fake movement. Kept 0 to match the sibling honest
+              // zeros above rather than inventing a number.
+              competitiveAuthorityDelta: 0,
               measuredAt: new Date().toISOString(),
             }}
             topAssets={CONTENT_OVERVIEW_MOCK.recentAssets}
