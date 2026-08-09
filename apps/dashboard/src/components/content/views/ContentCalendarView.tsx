@@ -3,130 +3,66 @@
 /**
  * Content Calendar View
  *
- * Calendar view for content scheduling and planning.
- * Shows content publication schedule with theme grouping.
- * Entries link to content asset pages.
+ * Real content scheduling over the `content_calendar` table (migration 105).
+ * Users schedule an EXISTING content item onto a date; the calendar groups
+ * entries by `scheduled_at`.
  *
- * Phase 4C: Calendar entries bound to content asset IDs
- * Clicking calendar entry opens asset work surface.
+ * SCOPE — scheduling metadata + click-to-open ONLY:
+ * - Scheduling an item does NOT publish it and never routes through publish
+ *   governance. `automation_mode` is stored/shown as metadata, not a trigger.
+ * - Clicking a calendar entry opens the asset work surface (no publish).
  *
- * NAVIGATION BEHAVIOR NOTE:
- * This Content Calendar differs from the Orchestration Calendar in click behavior:
- * - Content Calendar: Click navigates to the asset/content detail page (work surface)
- * - Orchestration Calendar: Click opens a day-view drawer/modal (per ORCHESTRATION_CALENDAR_CONTRACT §3.2)
- *
- * This distinction is intentional:
- * - Content Calendar is a pillar-specific view optimized for content workflow
- * - Orchestration Calendar is a cross-pillar coordination view with inline day expansion
+ * Honest states: loading skeleton, empty ("No content scheduled yet"), and a
+ * real upstream error (no fabricated fallback data).
  *
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md Section 4.4 (calendar integration)
  * @see /docs/canon/ORCHESTRATION_CALENDAR_CONTRACT.md Section 3.2 (day view behavior)
- * @see /docs/canon/UX_SURFACES.md (surface hierarchy and navigation)
- * @see /docs/canon/AUTOMATION_MODES_UX.md
  */
 
 import { useRouter } from 'next/navigation';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
-import { modeTokens } from '../tokens';
-import type {
-  ContentAsset,
-  ContentItem,
-  ContentType,
-  AutomationMode,
-  CrossPillarDependency,
-} from '../types';
-
-interface ContentCalendarViewProps {
-  /** Published/scheduled assets */
-  assets: ContentAsset[];
-  /** Briefs with deadlines */
-  briefs: ContentItem[];
-  /** Loading state */
-  isLoading: boolean;
-  /** Error state */
-  error?: Error | null;
-  /** Action handlers */
-  onSelectAsset?: (assetId: string) => void;
-  onSelectBrief?: (briefId: string) => void;
-  onCreateBrief?: () => void;
-}
+import {
+  useContentCalendar,
+  type CalendarEntry,
+} from '../hooks/useContentCalendar';
+import { useContentItems } from '../hooks/useContentData';
+import type { AutomationMode, ContentType } from '../types';
 
 // ============================================
-// CONTENT FORMAT CONFIG
+// TYPE LABELS (Content pillar = iris; type is shown as a muted label, not a
+// decorative color — pillar colors are functional, not decorative.)
 // ============================================
 
-const FORMAT_CONFIG: Record<
-  ContentType,
-  { label: string; color: string; bgColor: string }
-> = {
-  blog_post: {
-    label: 'Blog Post',
-    color: 'text-brand-iris',
-    bgColor: 'bg-brand-iris/10',
-  },
-  long_form: {
-    label: 'Long-Form',
-    color: 'text-brand-cyan',
-    bgColor: 'bg-brand-cyan/10',
-  },
-  landing_page: {
-    label: 'Landing Page',
-    color: 'text-semantic-success',
-    bgColor: 'bg-semantic-success/10',
-  },
-  guide: {
-    label: 'Guide',
-    color: 'text-brand-magenta',
-    bgColor: 'bg-brand-magenta/10',
-  },
-  case_study: {
-    label: 'Case Study',
-    color: 'text-semantic-warning',
-    bgColor: 'bg-semantic-warning/10',
-  },
+const TYPE_LABELS: Record<string, string> = {
+  blog_post: 'Blog Post',
+  long_form: 'Long-Form',
+  landing_page: 'Landing Page',
+  guide: 'Guide',
+  case_study: 'Case Study',
 };
 
-// ============================================
-// CAMPAIGN TAGS
-// ============================================
-
-interface CampaignTag {
-  id: string;
-  name: string;
-  color: string;
-}
-
-const MOCK_CAMPAIGNS: CampaignTag[] = [
-  { id: 'camp-1', name: 'Q1 Launch', color: 'bg-brand-iris' },
-  { id: 'camp-2', name: 'Authority Build', color: 'bg-brand-cyan' },
-  { id: 'camp-3', name: 'Product Update', color: 'bg-brand-magenta' },
-];
+const MODE_LABELS: Record<AutomationMode, string> = {
+  manual: 'Manual',
+  copilot: 'Copilot',
+  autopilot: 'Autopilot',
+};
 
 // ============================================
 // DATE UTILITIES
 // ============================================
 
-function getMonthDays(year: number, month: number) {
+function getMonthDays(year: number, month: number): (number | null)[] {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const daysInMonth = lastDay.getDate();
   const startingDay = firstDay.getDay();
 
   const days: (number | null)[] = [];
-
-  // Fill in empty slots before the first day
-  for (let i = 0; i < startingDay; i++) {
-    days.push(null);
-  }
-
-  // Fill in the days of the month
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(i);
-  }
-
+  for (let i = 0; i < startingDay; i++) days.push(null);
+  for (let i = 1; i <= daysInMonth; i++) days.push(i);
   return days;
 }
 
@@ -142,97 +78,188 @@ function isSameDay(d1: Date, d2: Date): boolean {
   );
 }
 
+function dayKey(d: Date): string {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+// datetime-local <-> ISO helpers (values are local wall-clock; the API stores
+// timezone-aware timestamps).
+function isoToLocalInput(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`;
+}
+
+function localInputToIso(value: string): string {
+  return new Date(value).toISOString();
+}
+
+function defaultInputForDay(cellDate: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${cellDate.getFullYear()}-${pad(cellDate.getMonth() + 1)}-${pad(
+    cellDate.getDate()
+  )}T09:00`;
+}
+
+// ============================================
+// SCHEDULE / RESCHEDULE MODAL STATE
+// ============================================
+
+interface ModalState {
+  mode: 'create' | 'edit';
+  entryId?: string;
+  /** Locked asset title (edit mode) */
+  assetTitle?: string;
+  assetId: string;
+  date: string; // datetime-local value
+  campaign: string;
+  theme: string;
+  automationMode: AutomationMode;
+}
+
 // ============================================
 // MAIN COMPONENT
 // ============================================
 
-export function ContentCalendarView({
-  assets,
-  briefs,
-  isLoading,
-  error,
-  onSelectAsset,
-  onSelectBrief,
-  onCreateBrief,
-}: ContentCalendarViewProps) {
+export function ContentCalendarView() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedFormat, setSelectedFormat] = useState<ContentType | 'all'>(
-    'all'
-  );
   const today = new Date();
 
-  // Get days for current month
+  const {
+    entries,
+    isLoading,
+    error,
+    scheduleEntry,
+    rescheduleEntry,
+    unscheduleEntry,
+  } = useContentCalendar();
+
+  // Existing content items to choose from when scheduling.
+  const { assets } = useContentItems({ limit: 100 });
+
+  const [modal, setModal] = useState<ModalState | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+
   const days = getMonthDays(currentDate.getFullYear(), currentDate.getMonth());
 
-  // Filter by format
-  const filteredAssets = useMemo(() => {
-    if (selectedFormat === 'all') return assets;
-    return assets.filter((a) => a.contentType === selectedFormat);
-  }, [assets, selectedFormat]);
-
-  // Group items by date
-  const itemsByDate = useMemo(() => {
-    const map = new Map<
-      string,
-      { assets: ContentAsset[]; briefs: ContentItem[] }
-    >();
-
-    // Group assets by publish date
-    filteredAssets.forEach((asset) => {
-      if (asset.publishedAt) {
-        const date = new Date(asset.publishedAt);
-        const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-        if (!map.has(key)) {
-          map.set(key, { assets: [], briefs: [] });
-        }
-        map.get(key)!.assets.push(asset);
-      }
+  // Group real calendar entries by scheduled day.
+  const entriesByDate = useMemo(() => {
+    const map = new Map<string, CalendarEntry[]>();
+    entries.forEach((entry) => {
+      const d = new Date(entry.scheduledAt);
+      const key = dayKey(d);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(entry);
     });
-
-    // Group briefs by deadline
-    briefs.forEach((brief) => {
-      if (brief.deadline) {
-        const date = new Date(brief.deadline);
-        const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-        if (!map.has(key)) {
-          map.set(key, { assets: [], briefs: [] });
-        }
-        map.get(key)!.briefs.push(brief);
-      }
-    });
-
     return map;
-  }, [filteredAssets, briefs]);
+  }, [entries]);
 
-  // Navigation
-  const prevMonth = () => {
+  const prevMonth = () =>
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
     );
-  };
-
-  const nextMonth = () => {
+  const nextMonth = () =>
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
     );
-  };
+  const goToToday = () => setCurrentDate(new Date());
 
-  const goToToday = () => {
-    setCurrentDate(new Date());
-  };
+  const openAsset = useCallback(
+    (assetId: string) => {
+      // Click-to-open only. Never publishes.
+      router.push(`/app/content/asset/${assetId}`);
+    },
+    [router]
+  );
 
-  // Handle asset click - navigate to asset page
-  const handleAssetClick = (assetId: string) => {
-    router.push(`/app/content/asset/${assetId}`);
-    onSelectAsset?.(assetId);
-  };
+  const openCreateModal = useCallback((cellDate?: Date) => {
+    setActionError(null);
+    setModal({
+      mode: 'create',
+      assetId: '',
+      date: cellDate ? defaultInputForDay(cellDate) : '',
+      campaign: '',
+      theme: '',
+      automationMode: 'manual',
+    });
+  }, []);
 
-  // Handle brief click - navigate to content page
-  const handleBriefClick = (briefId: string) => {
-    router.push(`/app/content/${briefId}`);
-    onSelectBrief?.(briefId);
-  };
+  const openEditModal = useCallback((entry: CalendarEntry) => {
+    setActionError(null);
+    setModal({
+      mode: 'edit',
+      entryId: entry.id,
+      assetTitle: entry.asset?.title ?? 'Scheduled item',
+      assetId: entry.assetId,
+      date: isoToLocalInput(entry.scheduledAt),
+      campaign: entry.campaign ?? '',
+      theme: entry.theme ?? '',
+      automationMode: entry.automationMode,
+    });
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setModal(null);
+    setSubmitting(false);
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (!modal) return;
+    setActionError(null);
+
+    if (!modal.date) {
+      setActionError('Pick a date and time.');
+      return;
+    }
+    if (modal.mode === 'create' && !modal.assetId) {
+      setActionError('Choose a content item to schedule.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      if (modal.mode === 'create') {
+        await scheduleEntry({
+          asset_id: modal.assetId,
+          scheduled_at: localInputToIso(modal.date),
+          campaign: modal.campaign || undefined,
+          theme: modal.theme || undefined,
+          automation_mode: modal.automationMode,
+        });
+      } else if (modal.entryId) {
+        await rescheduleEntry(modal.entryId, {
+          scheduled_at: localInputToIso(modal.date),
+          campaign: modal.campaign ? modal.campaign : null,
+          theme: modal.theme ? modal.theme : null,
+          automation_mode: modal.automationMode,
+        });
+      }
+      closeModal();
+    } catch (e) {
+      setSubmitting(false);
+      setActionError(e instanceof Error ? e.message : 'Something went wrong.');
+    }
+  }, [modal, scheduleEntry, rescheduleEntry, closeModal]);
+
+  const handleUnschedule = useCallback(
+    async (entryId: string) => {
+      setActionError(null);
+      try {
+        await unscheduleEntry(entryId);
+      } catch (e) {
+        setActionError(
+          e instanceof Error ? e.message : 'Failed to unschedule.'
+        );
+      }
+    },
+    [unscheduleEntry]
+  );
+
+  // ---- Honest states -------------------------------------------------------
 
   if (isLoading) {
     return <ContentLoadingSkeleton type="calendar" />;
@@ -251,116 +278,56 @@ export function ContentCalendarView({
     );
   }
 
-  const hasData = assets.length > 0 || briefs.length > 0;
-
-  if (!hasData) {
+  if (entries.length === 0) {
     return (
-      <ContentEmptyState
-        view="calendar"
-        onAction={onCreateBrief}
-        actionLabel="Create Content"
-      />
+      <>
+        <div className="flex-1 flex flex-col">
+          <CalendarHeader
+            label={formatMonthYear(currentDate)}
+            onPrev={prevMonth}
+            onNext={nextMonth}
+            onToday={goToToday}
+            onSchedule={() => openCreateModal()}
+          />
+          <ContentEmptyState
+            view="calendar"
+            onAction={() => openCreateModal()}
+            actionLabel="Schedule content"
+          />
+        </div>
+        {modal && (
+          <ScheduleModal
+            state={modal}
+            assets={assets}
+            submitting={submitting}
+            error={actionError}
+            onChange={setModal}
+            onClose={closeModal}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </>
     );
   }
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Calendar Header */}
-      <div className="px-4 py-3 flex items-center justify-between border-b border-slate-4">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={prevMonth}
-            className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded-lg transition-colors"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-          <span className="text-sm font-semibold text-white min-w-[140px] text-center">
-            {formatMonthYear(currentDate)}
-          </span>
-          <button
-            onClick={nextMonth}
-            className="p-1.5 text-white/50 hover:text-white hover:bg-slate-3 rounded-lg transition-colors"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
+      <CalendarHeader
+        label={formatMonthYear(currentDate)}
+        onPrev={prevMonth}
+        onNext={nextMonth}
+        onToday={goToToday}
+        onSchedule={() => openCreateModal()}
+      />
+
+      {actionError && (
+        <div className="px-4 py-2">
+          <p className="text-xs text-semantic-danger">{actionError}</p>
         </div>
-
-        <div className="flex items-center gap-3">
-          {/* Format Filter */}
-          <select
-            value={selectedFormat}
-            onChange={(e) =>
-              setSelectedFormat(e.target.value as ContentType | 'all')
-            }
-            className="px-2 py-1 text-xs bg-slate-2 border border-border-subtle rounded-lg text-white/70 focus:outline-none focus:border-brand-iris/40"
-          >
-            <option value="all">All Formats</option>
-            {Object.entries(FORMAT_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>
-                {config.label}
-              </option>
-            ))}
-          </select>
-
-          <button
-            onClick={goToToday}
-            className="px-3 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/10 rounded-lg transition-colors"
-          >
-            Today
-          </button>
-        </div>
-      </div>
-
-      {/* Format Lanes Legend */}
-      <div className="px-4 py-2 flex items-center gap-3 border-b border-slate-4 overflow-x-auto">
-        {Object.entries(FORMAT_CONFIG).map(([key, config]) => (
-          <button
-            key={key}
-            onClick={() =>
-              setSelectedFormat(
-                selectedFormat === key ? 'all' : (key as ContentType)
-              )
-            }
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium transition-colors ${
-              selectedFormat === key
-                ? `${config.bgColor} ${config.color} ring-1 ring-current`
-                : 'bg-slate-4/50 text-white/40 hover:text-white/60'
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${config.bgColor.replace('/10', '')}`}
-            />
-            {config.label}
-          </button>
-        ))}
-      </div>
+      )}
 
       {/* Day Headers */}
-      <div className="grid grid-cols-7 border-b border-slate-4">
+      <div className="grid grid-cols-7 border-b border-border-subtle">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
           <div
             key={day}
@@ -373,13 +340,13 @@ export function ContentCalendarView({
 
       {/* Calendar Grid */}
       <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-7 auto-rows-[minmax(100px,1fr)]">
+        <div className="grid grid-cols-7 auto-rows-[minmax(110px,1fr)]">
           {days.map((day, index) => {
             if (day === null) {
               return (
                 <div
                   key={`empty-${index}`}
-                  className="border-r border-b border-slate-4 bg-slate-0"
+                  className="border-r border-b border-border-subtle bg-slate-0"
                 />
               );
             }
@@ -390,110 +357,117 @@ export function ContentCalendarView({
               day
             );
             const isToday = isSameDay(cellDate, today);
-            const key = `${cellDate.getFullYear()}-${cellDate.getMonth()}-${cellDate.getDate()}`;
-            const items = itemsByDate.get(key);
+            const cellEntries = entriesByDate.get(dayKey(cellDate)) || [];
 
             return (
               <CalendarCell
-                key={key}
+                key={dayKey(cellDate)}
                 day={day}
                 isToday={isToday}
-                assets={items?.assets || []}
-                briefs={items?.briefs || []}
-                onSelectAsset={handleAssetClick}
-                onSelectBrief={handleBriefClick}
+                entries={cellEntries}
+                onOpenAsset={openAsset}
+                onEdit={openEditModal}
+                onUnschedule={handleUnschedule}
+                onAddOnDay={() => openCreateModal(cellDate)}
               />
             );
           })}
         </div>
       </div>
 
-      {/* Campaign Legend */}
-      <div className="px-4 py-2 flex items-center gap-4 border-t border-slate-4">
-        <span className="text-xs text-white/40 uppercase">Campaigns:</span>
-        {MOCK_CAMPAIGNS.map((campaign) => (
-          <div key={campaign.id} className="flex items-center gap-1.5">
-            <div className={`w-2 h-2 rounded-full ${campaign.color}`} />
-            <span className="text-xs text-white/40">{campaign.name}</span>
-          </div>
-        ))}
-        <div className="flex-1" />
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-semantic-success" />
-            <span className="text-xs text-white/40">Published</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-brand-iris" />
-            <span className="text-xs text-white/40">Due</span>
-          </div>
-        </div>
-      </div>
+      {modal && (
+        <ScheduleModal
+          state={modal}
+          assets={assets}
+          submitting={submitting}
+          error={actionError}
+          onChange={setModal}
+          onClose={closeModal}
+          onSubmit={handleSubmit}
+        />
+      )}
     </div>
   );
 }
 
 // ============================================
-// CALENDAR ENTRY CARD
-// Per CONTENT_WORK_SURFACE_CONTRACT.md Section 4.4
+// HEADER
 // ============================================
 
-interface CalendarEntryCardProps {
-  asset: ContentAsset;
-  automationMode?: AutomationMode;
-  crossPillarDeps?: CrossPillarDependency[];
-  onClick: () => void;
+interface CalendarHeaderProps {
+  label: string;
+  onPrev: () => void;
+  onNext: () => void;
+  onToday: () => void;
+  onSchedule: () => void;
 }
 
-function CalendarEntryCard({
-  asset,
-  // Default to manual (most restrictive) per AUTOMATION_MODES_UX.md mode ceiling principle
-  automationMode = 'manual',
-  crossPillarDeps = [],
-  onClick,
-}: CalendarEntryCardProps) {
-  const format: ContentType = asset.contentType || 'blog_post';
-  const formatConfig = FORMAT_CONFIG[format] || FORMAT_CONFIG.blog_post;
-  const modeConfig = modeTokens[automationMode];
-
-  // Check for cross-pillar dependencies
-  const hasPRDeps = crossPillarDeps.some((d) => d.pillar === 'pr');
-  const hasSEODeps = crossPillarDeps.some((d) => d.pillar === 'seo');
-
+function CalendarHeader({
+  label,
+  onPrev,
+  onNext,
+  onToday,
+  onSchedule,
+}: CalendarHeaderProps) {
   return (
-    <button
-      onClick={onClick}
-      className={`w-full text-left px-1.5 py-1 text-xs rounded transition-colors ${formatConfig.bgColor} ${formatConfig.color} hover:opacity-80 group`}
-      title={`Click to open: ${asset.title}`}
-    >
-      <div className="flex items-center gap-1">
-        <span
-          className={`w-1 h-1 rounded-full shrink-0 ${formatConfig.bgColor.replace('/10', '')}`}
-        />
-        <span className="truncate flex-1">{asset.title}</span>
-        {/* Mode badge */}
-        <span
-          className={`px-1 py-0.5 text-xs font-medium rounded ${modeConfig.bg} ${modeConfig.text} opacity-0 group-hover:opacity-100 transition-opacity`}
+    <div className="px-4 py-3 flex items-center justify-between border-b border-border-subtle">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onPrev}
+          aria-label="Previous month"
+          className="p-1.5 text-white/50 hover:text-white hover:bg-slate-4/50 rounded-lg transition-colors"
         >
-          {modeConfig.label.charAt(0)}
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <span className="text-sm font-semibold text-white min-w-[140px] text-center">
+          {label}
         </span>
+        <button
+          onClick={onNext}
+          aria-label="Next month"
+          className="p-1.5 text-white/50 hover:text-white hover:bg-slate-4/50 rounded-lg transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+        <button
+          onClick={onToday}
+          className="px-3 py-1.5 text-xs text-brand-iris hover:bg-brand-iris/10 rounded-lg transition-colors"
+        >
+          Today
+        </button>
       </div>
-      {/* Cross-pillar dependency indicators */}
-      {(hasPRDeps || hasSEODeps) && (
-        <div className="flex items-center gap-1 mt-0.5 pl-2">
-          {hasPRDeps && (
-            <span className="text-xs text-brand-magenta" title="PR dependency">
-              PR
-            </span>
-          )}
-          {hasSEODeps && (
-            <span className="text-xs text-brand-cyan" title="SEO dependency">
-              SEO
-            </span>
-          )}
-        </div>
-      )}
-    </button>
+
+      <button
+        onClick={onSchedule}
+        className="px-4 py-2 text-sm font-semibold bg-brand-iris text-white rounded-lg hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)] transition-all duration-150"
+      >
+        Schedule content
+      </button>
+    </div>
   );
 }
 
@@ -504,104 +478,72 @@ function CalendarEntryCard({
 interface CalendarCellProps {
   day: number;
   isToday: boolean;
-  assets: ContentAsset[];
-  briefs: ContentItem[];
-  onSelectAsset?: (assetId: string) => void;
-  onSelectBrief?: (briefId: string) => void;
-  /** Cross-pillar dependencies by asset ID */
-  crossPillarDepsMap?: Map<string, CrossPillarDependency[]>;
-  /** Automation mode per asset ID */
-  automationModeMap?: Map<string, AutomationMode>;
+  entries: CalendarEntry[];
+  onOpenAsset: (assetId: string) => void;
+  onEdit: (entry: CalendarEntry) => void;
+  onUnschedule: (entryId: string) => void;
+  onAddOnDay: () => void;
 }
 
 function CalendarCell({
   day,
   isToday,
-  assets,
-  briefs,
-  onSelectAsset,
-  onSelectBrief,
-  crossPillarDepsMap = new Map(),
-  automationModeMap = new Map(),
+  entries,
+  onOpenAsset,
+  onEdit,
+  onUnschedule,
+  onAddOnDay,
 }: CalendarCellProps) {
-  const hasItems = assets.length > 0 || briefs.length > 0;
-
   return (
     <div
-      className={`
-        border-r border-b border-slate-4 p-1.5
-        ${isToday ? 'bg-brand-iris/5' : 'bg-slate-0'}
-        ${hasItems ? 'hover:bg-slate-2' : ''}
-        transition-colors
-      `}
+      className={`group/cell border-r border-b border-border-subtle p-1.5 ${
+        isToday ? 'bg-brand-iris/5' : 'bg-slate-0'
+      } transition-colors`}
     >
-      {/* Day Number */}
+      {/* Day Number + add affordance */}
       <div className="flex items-center justify-between mb-1">
         <span
-          className={`
-            text-xs font-medium
-            ${isToday ? 'text-brand-iris' : 'text-white/70'}
-          `}
+          className={`text-xs font-medium ${
+            isToday ? 'text-brand-iris' : 'text-white/70'
+          }`}
         >
           {day}
         </span>
-        {isToday && (
-          <span className="px-1 py-0.5 text-xs bg-brand-iris/20 text-brand-iris rounded">
-            Today
-          </span>
-        )}
+        <button
+          onClick={onAddOnDay}
+          aria-label="Schedule on this day"
+          className="opacity-0 group-hover/cell:opacity-100 w-4 h-4 flex items-center justify-center text-white/50 hover:text-brand-iris transition-all"
+        >
+          <svg
+            className="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </button>
       </div>
 
-      {/* Items */}
+      {/* Entries */}
       <div className="space-y-1">
-        {/* Published assets with CalendarEntryCard */}
-        {assets.slice(0, 2).map((asset) => (
+        {entries.slice(0, 3).map((entry) => (
           <CalendarEntryCard
-            key={asset.id}
-            asset={asset}
-            automationMode={automationModeMap.get(asset.id) || 'manual'}
-            crossPillarDeps={crossPillarDepsMap.get(asset.id) || []}
-            onClick={() => onSelectAsset?.(asset.id)}
+            key={entry.id}
+            entry={entry}
+            onOpen={() => onOpenAsset(entry.assetId)}
+            onEdit={() => onEdit(entry)}
+            onUnschedule={() => onUnschedule(entry.id)}
           />
         ))}
-
-        {/* Briefs */}
-        {briefs.slice(0, 2).map((brief) => (
-          <button
-            key={brief.id}
-            onClick={() => onSelectBrief?.(brief.id)}
-            className={`
-              w-full text-left px-1.5 py-1 text-xs rounded truncate transition-colors
-              ${
-                brief.status === 'draft'
-                  ? 'bg-semantic-warning/10 text-semantic-warning hover:bg-semantic-warning/20'
-                  : 'bg-brand-iris/10 text-brand-iris hover:bg-brand-iris/20'
-              }
-            `}
-            title={brief.title}
-          >
-            <span className="flex items-center gap-1">
-              <svg
-                className="w-2.5 h-2.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                <path
-                  fillRule="evenodd"
-                  d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="truncate">{brief.title}</span>
-            </span>
-          </button>
-        ))}
-
-        {/* Overflow indicator */}
-        {(assets.length > 2 || briefs.length > 2) && (
+        {entries.length > 3 && (
           <span className="text-xs text-white/40">
-            +{assets.length + briefs.length - 4} more
+            +{entries.length - 3} more
           </span>
         )}
       </div>
@@ -610,158 +552,264 @@ function CalendarCell({
 }
 
 // ============================================
-// AGENDA VIEW (Alternative list layout)
+// CALENDAR ENTRY CARD
 // ============================================
 
-interface ContentAgendaViewProps {
-  assets: ContentAsset[];
-  briefs: ContentItem[];
-  isLoading: boolean;
-  onSelectAsset?: (assetId: string) => void;
-  onSelectBrief?: (briefId: string) => void;
+interface CalendarEntryCardProps {
+  entry: CalendarEntry;
+  onOpen: () => void;
+  onEdit: () => void;
+  onUnschedule: () => void;
 }
 
-export function ContentAgendaView({
-  assets,
-  briefs,
-  isLoading,
-  onSelectAsset,
-  onSelectBrief,
-}: ContentAgendaViewProps) {
-  const router = useRouter();
-
-  // Handle asset click - navigate to asset page
-  const handleAssetClick = (assetId: string) => {
-    router.push(`/app/content/asset/${assetId}`);
-    onSelectAsset?.(assetId);
-  };
-
-  // Handle brief click - navigate to content page
-  const handleBriefClick = (briefId: string) => {
-    router.push(`/app/content/${briefId}`);
-    onSelectBrief?.(briefId);
-  };
-
-  // Group by date and sort
-  const groupedItems = useMemo(() => {
-    const items: Array<{
-      date: Date;
-      type: 'asset' | 'brief';
-      item: ContentAsset | ContentItem;
-    }> = [];
-
-    assets.forEach((asset) => {
-      if (asset.publishedAt) {
-        items.push({
-          date: new Date(asset.publishedAt),
-          type: 'asset',
-          item: asset,
-        });
-      }
-    });
-
-    briefs.forEach((brief) => {
-      if (brief.deadline) {
-        items.push({
-          date: new Date(brief.deadline),
-          type: 'brief',
-          item: brief,
-        });
-      }
-    });
-
-    // Sort by date
-    items.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-    // Group by date
-    const grouped = new Map<string, typeof items>();
-    items.forEach((item) => {
-      const key = item.date.toDateString();
-      if (!grouped.has(key)) {
-        grouped.set(key, []);
-      }
-      grouped.get(key)!.push(item);
-    });
-
-    return grouped;
-  }, [assets, briefs]);
-
-  if (isLoading) {
-    return <ContentLoadingSkeleton type="card" density="standard" count={6} />;
-  }
-
-  if (groupedItems.size === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-sm text-white/50">No scheduled content</p>
-      </div>
-    );
-  }
+function CalendarEntryCard({
+  entry,
+  onOpen,
+  onEdit,
+  onUnschedule,
+}: CalendarEntryCardProps) {
+  const title = entry.asset?.title ?? 'Scheduled item';
+  const typeLabel = entry.asset?.contentType
+    ? (TYPE_LABELS[entry.asset.contentType] ?? entry.asset.contentType)
+    : null;
 
   return (
-    <div className="space-y-4 p-4">
-      {Array.from(groupedItems.entries()).map(([dateKey, items]) => (
-        <div key={dateKey}>
-          <h4 className="text-xs font-medium text-white/50 mb-2">
-            {new Date(dateKey).toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'short',
-              day: 'numeric',
-            })}
-          </h4>
-          <div className="space-y-2">
-            {items.map((item, index) => {
-              const format: ContentType | null =
-                item.type === 'asset'
-                  ? (item.item as ContentAsset).contentType || 'blog_post'
-                  : null;
-              const formatConfig = format ? FORMAT_CONFIG[format] : null;
+    <div className="group/entry relative rounded bg-brand-iris/10 hover:bg-brand-iris/15 transition-colors">
+      <button
+        onClick={onOpen}
+        className="w-full text-left px-1.5 py-1 text-xs text-brand-iris"
+        title={`Open: ${title}`}
+      >
+        <span className="flex items-center gap-1">
+          <span className="w-1 h-1 rounded-full bg-brand-iris shrink-0" />
+          <span className="truncate flex-1">{title}</span>
+        </span>
+        {typeLabel && (
+          <span className="block pl-2 text-[10px] uppercase tracking-wide text-white/40">
+            {typeLabel}
+          </span>
+        )}
+      </button>
 
-              return (
-                <button
-                  key={index}
-                  onClick={() =>
-                    item.type === 'asset'
-                      ? handleAssetClick(item.item.id)
-                      : handleBriefClick(item.item.id)
-                  }
-                  className={`
-                    w-full text-left p-3 rounded-lg border transition-colors
-                    ${
-                      item.type === 'asset'
-                        ? 'bg-semantic-success/5 border-semantic-success/20 hover:border-semantic-success/40'
-                        : 'bg-brand-iris/5 border-brand-iris/20 hover:border-brand-iris/40'
-                    }
-                  `}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        item.type === 'asset'
-                          ? 'bg-semantic-success'
-                          : 'bg-brand-iris'
-                      }`}
-                    />
-                    <span className="text-xs text-white/40 uppercase">
-                      {item.type === 'asset' ? 'Published' : 'Due'}
-                    </span>
-                    {formatConfig && (
-                      <span
-                        className={`px-1.5 py-0.5 text-xs rounded-full ${formatConfig.bgColor} ${formatConfig.color}`}
-                      >
-                        {formatConfig.label}
-                      </span>
-                    )}
-                  </div>
-                  <h5 className="text-sm font-medium text-white/95">
-                    {item.item.title}
-                  </h5>
-                </button>
-              );
-            })}
-          </div>
+      {/* Manage affordances (reschedule / unschedule) — never publish */}
+      <div className="absolute top-0.5 right-0.5 hidden group-hover/entry:flex items-center gap-0.5">
+        <button
+          onClick={onEdit}
+          aria-label="Reschedule"
+          className="w-4 h-4 flex items-center justify-center rounded text-white/60 hover:text-brand-iris hover:bg-slate-4"
+        >
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+        </button>
+        <button
+          onClick={onUnschedule}
+          aria-label="Unschedule"
+          className="w-4 h-4 flex items-center justify-center rounded text-white/60 hover:text-semantic-danger hover:bg-slate-4"
+        >
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// SCHEDULE / RESCHEDULE MODAL
+// ============================================
+
+interface ScheduleModalProps {
+  state: ModalState;
+  assets: Array<{ id: string; title: string; contentType?: ContentType }>;
+  submitting: boolean;
+  error: string | null;
+  onChange: (next: ModalState) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+}
+
+function ScheduleModal({
+  state,
+  assets,
+  submitting,
+  error,
+  onChange,
+  onClose,
+  onSubmit,
+}: ScheduleModalProps) {
+  const isEdit = state.mode === 'edit';
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <button
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+      />
+      <div className="relative w-full max-w-md bg-slate-1/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-elev-3 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-white">
+            {isEdit ? 'Reschedule content' : 'Schedule content'}
+          </h3>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-white/50 hover:text-white"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
-      ))}
+
+        <div className="space-y-3">
+          {/* Asset picker (create) / locked asset (edit) */}
+          <div>
+            <label className="block text-xs text-white/50 mb-1">
+              Content item
+            </label>
+            {isEdit ? (
+              <div className="w-full px-3 py-2.5 text-sm text-white/70 bg-slate-3 border border-border-subtle rounded-lg">
+                {state.assetTitle}
+              </div>
+            ) : assets.length === 0 ? (
+              <p className="text-xs text-white/40 py-2">
+                No content items yet — create content before scheduling.
+              </p>
+            ) : (
+              <select
+                value={state.assetId}
+                onChange={(e) =>
+                  onChange({ ...state, assetId: e.target.value })
+                }
+                className="w-full px-3 py-2.5 text-sm text-white/90 bg-slate-3 border border-border-subtle rounded-lg focus:outline-none focus:border-brand-iris/50 focus:ring-1 focus:ring-brand-iris/20 transition-all"
+              >
+                <option value="">Select a content item…</option>
+                {assets.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.title}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {/* Date + time */}
+          <div>
+            <label className="block text-xs text-white/50 mb-1">
+              Scheduled date &amp; time
+            </label>
+            <input
+              type="datetime-local"
+              value={state.date}
+              onChange={(e) => onChange({ ...state, date: e.target.value })}
+              className="w-full px-3 py-2.5 text-sm text-white/90 bg-slate-3 border border-border-subtle rounded-lg focus:outline-none focus:border-brand-iris/50 focus:ring-1 focus:ring-brand-iris/20 transition-all"
+            />
+          </div>
+
+          {/* Campaign + theme */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-white/50 mb-1">
+                Campaign
+              </label>
+              <input
+                type="text"
+                value={state.campaign}
+                placeholder="Optional"
+                onChange={(e) =>
+                  onChange({ ...state, campaign: e.target.value })
+                }
+                className="w-full px-3 py-2.5 text-sm text-white/90 bg-slate-3 border border-border-subtle rounded-lg placeholder:text-white/30 focus:outline-none focus:border-brand-iris/50 focus:ring-1 focus:ring-brand-iris/20 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-white/50 mb-1">Theme</label>
+              <input
+                type="text"
+                value={state.theme}
+                placeholder="Optional"
+                onChange={(e) => onChange({ ...state, theme: e.target.value })}
+                className="w-full px-3 py-2.5 text-sm text-white/90 bg-slate-3 border border-border-subtle rounded-lg placeholder:text-white/30 focus:outline-none focus:border-brand-iris/50 focus:ring-1 focus:ring-brand-iris/20 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Automation mode — metadata only (does NOT trigger publishing) */}
+          <div>
+            <label className="block text-xs text-white/50 mb-1">
+              Automation mode
+              <span className="ml-1 text-white/30">(metadata only)</span>
+            </label>
+            <select
+              value={state.automationMode}
+              onChange={(e) =>
+                onChange({
+                  ...state,
+                  automationMode: e.target.value as AutomationMode,
+                })
+              }
+              className="w-full px-3 py-2.5 text-sm text-white/90 bg-slate-3 border border-border-subtle rounded-lg focus:outline-none focus:border-brand-iris/50 focus:ring-1 focus:ring-brand-iris/20 transition-all"
+            >
+              {(Object.keys(MODE_LABELS) as AutomationMode[]).map((m) => (
+                <option key={m} value={m}>
+                  {MODE_LABELS[m]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {error && <p className="text-xs text-semantic-danger">{error}</p>}
+        </div>
+
+        <div className="flex items-center justify-end gap-2 mt-5">
+          <button
+            onClick={onClose}
+            className="px-3 py-2 text-sm font-medium text-white/50 hover:text-white/80 hover:bg-slate-4/50 rounded-lg transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onSubmit}
+            disabled={submitting || (!isEdit && assets.length === 0)}
+            className="px-4 py-2 text-sm font-semibold bg-brand-iris text-white rounded-lg hover:bg-brand-iris/90 shadow-[0_0_16px_rgba(168,85,247,0.25)] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Saving…' : isEdit ? 'Save changes' : 'Schedule'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
