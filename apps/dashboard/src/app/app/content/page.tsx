@@ -23,7 +23,11 @@ import { useState, useCallback, useRef } from 'react';
 import { ContentLoadingSkeleton } from '@/components/content/components/ContentLoadingSkeleton';
 import { CONTENT_OVERVIEW_MOCK } from '@/components/content/content-mock-data';
 import { ContentWorkSurfaceShell } from '@/components/content/ContentWorkSurfaceShell';
-import { useContentItems } from '@/components/content/hooks/useContentData';
+import {
+  useContentItems,
+  useContentSignals,
+  useContentGaps,
+} from '@/components/content/hooks/useContentData';
 import type {
   ContentView,
   ContentType,
@@ -72,6 +76,16 @@ export default function ContentSurfacePage() {
     isLoading: libraryLoading,
     error: libraryError,
   } = useContentItems();
+  // Insights: authority signals DERIVED live from CiteMind scores + the real
+  // /gaps feed. No mock synthesis — non-derivable metrics arrive null and
+  // render "Not available yet".
+  const {
+    signals: insightsSignals,
+    topAssets: insightsTopAssets,
+    isLoading: insightsLoading,
+    error: insightsError,
+  } = useContentSignals();
+  const { gaps: insightsGaps } = useContentGaps({ limit: 10 });
   const [editorInitData, setEditorInitData] = useState<EditorInitData | null>(
     null
   );
@@ -195,26 +209,18 @@ export default function ContentSurfacePage() {
         return <ContentCalendarView />;
 
       case 'insights':
+        // Live path: authority signals derived on-the-fly from CiteMind scores
+        // (citemind_scores) + the real /gaps feed. The empty
+        // content_authority_signals table is neither read nor written. Only
+        // Citation Eligibility and AI Ingestion Likelihood have a faithful
+        // producer; the rest render "Not available yet".
         return (
           <ContentInsightsView
-            signals={{
-              authorityContributionScore:
-                CONTENT_OVERVIEW_MOCK.avgCiteMindScore,
-              citationEligibilityScore:
-                CONTENT_OVERVIEW_MOCK.avgCitationEligibility,
-              aiIngestionLikelihood: CONTENT_OVERVIEW_MOCK.avgAiIngestion,
-              crossPillarImpact: CONTENT_OVERVIEW_MOCK.avgCrossPillarImpact,
-              // Honest zero (unavailable) — was a fabricated +2.1. The real
-              // competitive-authority delta lands with the gated Insights
-              // surface (unapplied migration 105); until then it must not
-              // render a fake movement. Kept 0 to match the sibling honest
-              // zeros above rather than inventing a number.
-              competitiveAuthorityDelta: 0,
-              measuredAt: new Date().toISOString(),
-            }}
-            topAssets={CONTENT_OVERVIEW_MOCK.recentAssets}
-            gaps={[]}
-            isLoading={false}
+            signals={insightsSignals}
+            topAssets={insightsTopAssets}
+            gaps={insightsGaps}
+            isLoading={insightsLoading}
+            error={insightsError ?? null}
           />
         );
 

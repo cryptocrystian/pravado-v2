@@ -28,7 +28,7 @@ import type {
   ContentBrief,
   ContentGap,
   ContentClusterDTO,
-  AuthoritySignals,
+  ContentSignalsResponse,
   ContentStatus,
   ContentType,
   CiteMindStatus,
@@ -237,21 +237,26 @@ export function useContentClusters() {
 // ============================================
 // AUTHORITY SIGNALS HOOK
 // ============================================
-// NOTE: /api/content/signals has no backend endpoint yet (content_authority_signals
-// table is staged in migration 105 but no route is built). Until then this hook
-// surfaces an honest null/error rather than fabricated metrics.
+// GET /api/content/signals returns authority signals DERIVED on-the-fly from
+// the populated CiteMind scorer output (citemind_scores). Nothing reads or
+// writes the empty content_authority_signals table. Only two metrics have a
+// faithful producer (citationEligibilityScore, aiIngestionLikelihood); the
+// rest come back `null` so the UI renders "Not available yet" — never 0.
 
 export function useContentSignals() {
-  const { data, error, isLoading, mutate } = useSWR<{
-    signals: AuthoritySignals;
-  }>('/api/content/signals', fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 60000,
-    shouldRetryOnError: false,
-  });
+  const { data, error, isLoading, mutate } = useSWR<ContentSignalsResponse>(
+    '/api/content/signals',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+      shouldRetryOnError: false,
+    }
+  );
 
   return {
     signals: data?.signals ?? null,
+    topAssets: data?.topAssets ?? [],
     isLoading,
     error: error as Error | undefined,
     mutate,

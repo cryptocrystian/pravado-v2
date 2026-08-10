@@ -238,6 +238,59 @@ export interface AuthoritySignals {
 }
 
 // ============================================
+// DERIVED AUTHORITY SIGNALS (honest partial)
+// ============================================
+// Shape returned by GET /api/content/signals. Every metric is derived
+// ON-THE-FLY from the populated CiteMind scorer output (citemind_scores);
+// nothing reads or writes the empty content_authority_signals table.
+//
+// Only two of the five metrics have a genuinely faithful producer:
+//   - citationEligibilityScore ← mean(citemind_scores.overall_score)
+//       (the scorer's documented purpose: "predict whether AI engines will
+//        cite it")
+//   - aiIngestionLikelihood    ← mean(citemind_scores.schema_markup_score)
+//       (structured-data readiness — the mechanism by which AI engines
+//        ingest content)
+// The other three have NO faithful source and are returned as `null`, which
+// the UI renders as an explicit "Not available yet" state — never 0, never a
+// fabricated number.
+
+export interface DerivedAuthoritySignals {
+  /** No faithful producer — always null (renders "Not available yet"). */
+  authorityContributionScore: number | null;
+  /** 0-100, mean citemind_scores.overall_score. null when no scored content. */
+  citationEligibilityScore: number | null;
+  /** 0-100, mean citemind_scores.schema_markup_score. null when no scored content. */
+  aiIngestionLikelihood: number | null;
+  /** No faithful producer — always null. */
+  crossPillarImpact: number | null;
+  /** No faithful producer — always null (the fabricated +2.1 was removed). */
+  competitiveAuthorityDelta: number | null;
+  /** When derived (server timestamp). */
+  measuredAt: string;
+  /** How many assets have at least one CiteMind score (0 = empty org). */
+  scoredAssetCount: number;
+}
+
+export interface DerivedTopAsset {
+  id: string;
+  title: string;
+  status: ContentStatus;
+  contentType: ContentType;
+  /** 0-100, citemind_scores.overall_score for this asset. */
+  citationEligibilityScore: number | null;
+  /** 0-100, citemind_scores.schema_markup_score for this asset. */
+  aiIngestionLikelihood: number | null;
+  /** When this asset was scored. */
+  scoredAt: string;
+}
+
+export interface ContentSignalsResponse {
+  signals: DerivedAuthoritySignals;
+  topAssets: DerivedTopAsset[];
+}
+
+// ============================================
 // CONTENT ASSET
 // ============================================
 

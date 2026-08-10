@@ -52,6 +52,7 @@ import {
 } from '../../services/calendarService';
 import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
 import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
+import { deriveContentSignals } from '../../services/content/contentSignalsService';
 import { enforcePublishGovernance } from '../../services/content/publishGovernance';
 import { ContentService } from '../../services/contentService';
 
@@ -803,6 +804,69 @@ export async function contentRoutes(server: FastifyInstance) {
         success: true,
         data: { items },
       });
+    }
+  );
+
+  // ========================================
+  // CONTENT SIGNALS ENDPOINT (W2 — Content Insights, honest partial)
+  // ========================================
+  // READ-ONLY. Derives authority signals ON-THE-FLY from the populated
+  // CiteMind scorer output (citemind_scores). It NEVER reads or writes the
+  // empty content_authority_signals table, and writes nothing at all.
+  //
+  // Only two of the five Insights metrics have a faithful producer and carry
+  // real values (citationEligibilityScore ← overall_score,
+  // aiIngestionLikelihood ← schema_markup_score). The other three are returned
+  // as null so the FE can render an explicit "Not available yet" — never 0,
+  // never a fabricated number.
+
+  /**
+   * GET /api/v1/content/signals
+   * Aggregate + per-asset authority signals derived from CiteMind scores.
+   */
+  server.get(
+    '/signals',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        const payload = await deriveContentSignals(supabase, orgId);
+        return reply.send({ success: true, data: payload });
+      } catch (err) {
+        request.log.error(
+          { err },
+          'Failed to derive content signals from CiteMind scores'
+        );
+        return reply.code(502).send({
+          success: false,
+          error: {
+            code: 'SIGNALS_DERIVATION_FAILED',
+            message:
+              err instanceof Error
+                ? err.message
+                : 'Failed to derive content signals',
+          },
+        });
+      }
     }
   );
 
