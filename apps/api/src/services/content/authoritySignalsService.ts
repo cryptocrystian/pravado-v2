@@ -21,23 +21,21 @@
  *                                        structural_clarity_score,
  *                                        entity_density_score)
  *   §2.3 authority_contribution   = overall_score × gate_factor
- *          gate_factor = 1.0 (approved) / 0.5 (review) / 0.0 (blocked)
+ *          gate_factor = 1.0 (passed) / 0.5 (warning) / 0.0 (blocked)
+ *                        0.0 (pending | analyzing — not yet scored)
  *   §2.4 cross_pillar_impact_EVI  = (authority_contribution / 100) × 0.35
  *                                        × (1 + 0.45 + 0.70)
  *   §2.5 competitive_authority_delta = null (data-gated, DataForSEO)
  *
- * GATE-STATUS VOCABULARY NOTE (flagged discrepancy)
- * -------------------------------------------------
- * Canon §2.3 keys gate_factor on gate_status ∈ {approved, review, blocked}.
- * The actual `citemind_scores.gate_status` column (written by
- * citeMindQualityScorer.ts) uses the synonym domain {passed, warning, blocked}
- * (passed = overall ≥ 75, warning = overall ≥ 55, blocked < 55). We honor the
- * canon literals verbatim AND treat the scorer's synonyms as equivalent so real
- * persisted data is scored honestly rather than silently zeroed:
- *   approved | passed  → 1.0
- *   review   | warning → 0.5
- *   blocked            → 0.0
- * Any unrecognized value → 0.0 (anti-gaming conservative, EVI_MATHEMATICS §8.3).
+ * GATE-STATUS SOURCE
+ * ------------------
+ * gate_factor keys directly on the real `citemind_scores.gate_status` enum
+ * {pending, analyzing, passed, warning, blocked} (migration 82 CHECK; the
+ * scorer emits passed/warning/blocked — passed = overall ≥ 75, warning = ≥ 55,
+ * blocked < 55). Not-yet-scored states (pending, analyzing) and any unrecognized
+ * value contribute 0.0 (anti-gaming conservative, EVI_MATHEMATICS §8.3).
+ * (Canon §2.3 was corrected from the drafting placeholder {approved, review,
+ * blocked} to this real enum during implementation — see D038 Correction.)
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -93,21 +91,19 @@ export interface AuthoritySignals {
 // ============================================================================
 
 /**
- * gate_factor = 1.0 (approved) / 0.5 (review) / 0.0 (blocked), keyed on
- * citemind_scores.gate_status. Scorer synonyms passed/warning are treated as
- * approved/review respectively (see vocabulary note at file head).
+ * gate_factor = 1.0 (passed) / 0.5 (warning) / 0.0 (blocked), keyed on the real
+ * citemind_scores.gate_status enum. pending/analyzing/unknown → 0.0.
  */
 function gateFactor(gateStatus: string | null): number {
   switch (gateStatus) {
-    case 'approved':
     case 'passed':
       return 1.0;
-    case 'review':
     case 'warning':
       return 0.5;
     case 'blocked':
       return 0.0;
     default:
+      // pending / analyzing / unknown — anti-gaming conservative.
       return 0.0;
   }
 }

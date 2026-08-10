@@ -20,7 +20,7 @@ const base: CiteMindScoreRow = {
   schema_markup_score: 90,
   structural_clarity_score: 60,
   entity_density_score: 30,
-  gate_status: 'approved',
+  gate_status: 'passed',
 };
 
 describe('computeAuthoritySignals — canon formulas (AUTHORITY_SIGNALS_MODEL.md §2)', () => {
@@ -41,29 +41,29 @@ describe('computeAuthoritySignals — canon formulas (AUTHORITY_SIGNALS_MODEL.md
     expect(signals.authority_contribution).toBe(0);
   });
 
-  it('§2.3 authority_contribution: gate=approved, overall=80 → 80', () => {
+  it('§2.3 authority_contribution: gate=passed, overall=80 → 80', () => {
     const signals = computeAuthoritySignals({
       ...base,
-      gate_status: 'approved',
+      gate_status: 'passed',
       overall_score: 80,
     });
     expect(signals.authority_contribution).toBe(80);
   });
 
-  it('§2.3 gate_status=review → gate_factor 0.5 (overall 80 → 40)', () => {
-    const signals = computeAuthoritySignals({ ...base, gate_status: 'review' });
+  it('§2.3 gate_status=warning → gate_factor 0.5 (overall 80 → 40)', () => {
+    const signals = computeAuthoritySignals({
+      ...base,
+      gate_status: 'warning',
+    });
     expect(signals.authority_contribution).toBe(40);
   });
 
-  it('§2.3 scorer synonyms passed/warning map to approved/review', () => {
-    expect(
-      computeAuthoritySignals({ ...base, gate_status: 'passed' })
-        .authority_contribution
-    ).toBe(80);
-    expect(
-      computeAuthoritySignals({ ...base, gate_status: 'warning' })
-        .authority_contribution
-    ).toBe(40);
+  it('§2.3 gate_status=pending (not yet scored) → 0', () => {
+    const signals = computeAuthoritySignals({
+      ...base,
+      gate_status: 'pending',
+    });
+    expect(signals.authority_contribution).toBe(0);
   });
 
   it('§2.4 cross_pillar_impact = 0.8 × 0.35 × 2.15 = 0.602', () => {
@@ -71,7 +71,7 @@ describe('computeAuthoritySignals — canon formulas (AUTHORITY_SIGNALS_MODEL.md
     // = (80 / 100) × 0.35 × 2.15 = 0.602
     const signals = computeAuthoritySignals({
       ...base,
-      gate_status: 'approved',
+      gate_status: 'passed',
       overall_score: 80,
     });
     expect(signals.cross_pillar_impact).toBeCloseTo(0.602, 6);
@@ -96,12 +96,15 @@ describe('computeAuthoritySignals — canon formulas (AUTHORITY_SIGNALS_MODEL.md
     ).toBeNull();
   });
 
-  it('unrecognized gate_status → gate_factor 0 (anti-gaming conservative)', () => {
-    const signals = computeAuthoritySignals({
-      ...base,
-      gate_status: 'analyzing',
-    });
-    expect(signals.authority_contribution).toBe(0);
+  it('gate_status=analyzing / unrecognized → gate_factor 0 (anti-gaming conservative)', () => {
+    expect(
+      computeAuthoritySignals({ ...base, gate_status: 'analyzing' })
+        .authority_contribution
+    ).toBe(0);
+    expect(
+      computeAuthoritySignals({ ...base, gate_status: 'nonsense' })
+        .authority_contribution
+    ).toBe(0);
   });
 });
 
@@ -122,7 +125,7 @@ describe('computeAndPersistAuthoritySignals — org-scoped persistence', () => {
     const signals = await computeAndPersistAuthoritySignals(supabase, {
       orgId: 'org-42',
       assetId: 'asset-7',
-      score: { ...base, gate_status: 'approved', overall_score: 80 },
+      score: { ...base, gate_status: 'passed', overall_score: 80 },
     });
 
     expect(inserts).toHaveLength(1);
