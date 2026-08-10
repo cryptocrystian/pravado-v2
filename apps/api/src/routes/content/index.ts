@@ -52,6 +52,7 @@ import {
 } from '../../services/calendarService';
 import { runAeoGate } from '../../services/citeMind/aeoIngestionGate';
 import { pingIndexationOnPublish } from '../../services/citeMind/indexationPingService';
+import { readContentSignals } from '../../services/content/contentSignalsService';
 import { enforcePublishGovernance } from '../../services/content/publishGovernance';
 import { ContentService } from '../../services/contentService';
 
@@ -803,6 +804,63 @@ export async function contentRoutes(server: FastifyInstance) {
         success: true,
         data: { items },
       });
+    }
+  );
+
+  // ========================================
+  // CONTENT SIGNALS ENDPOINT (W2 — Content Insights, D038)
+  // ========================================
+  // READ-ONLY. Serves the org's Authority Signals FROM the persisted
+  // content_authority_signals table (written by authoritySignalsService.ts when
+  // CiteMind scoring completes). It re-derives nothing on the fly and writes
+  // nothing. Four signals carry real values; competitive_authority_delta is
+  // DATA-GATED (DataForSEO) and returned null → the UI shows "Not available
+  // yet", never 0. Preserves upstream status codes (no fake-success fallback).
+
+  /**
+   * GET /api/v1/content/signals
+   * Aggregate + per-asset Authority Signals from content_authority_signals.
+   */
+  server.get(
+    '/signals',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        const payload = await readContentSignals(supabase, orgId);
+        return reply.send({ success: true, data: payload });
+      } catch (err) {
+        request.log.error({ err }, 'Failed to read content authority signals');
+        return reply.code(502).send({
+          success: false,
+          error: {
+            code: 'SIGNALS_READ_FAILED',
+            message:
+              err instanceof Error
+                ? err.message
+                : 'Failed to read content signals',
+          },
+        });
+      }
     }
   );
 

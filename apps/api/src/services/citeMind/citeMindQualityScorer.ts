@@ -21,6 +21,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { reportLlmFallback } from '../../lib/llmErrorReporter';
 import { createLogger } from '../../lib/logger';
+import { computeAndPersistAuthoritySignalsSafe } from '../content/authoritySignalsService';
 
 const logger = createLogger('citemind:scorer');
 
@@ -207,6 +208,15 @@ export async function scoreAndPersist(
   logger.info(
     `Scored content ${contentItemId}: ${result.overall_score} (${result.gate_status})`
   );
+
+  // Follow-on: compute + persist the content Authority Signals (D038) from this
+  // fresh score. Fire-and-forget and fully isolated — swallows its own errors
+  // so it can NEVER break the scoring path (and never routes through publish).
+  await computeAndPersistAuthoritySignalsSafe(supabase, {
+    orgId,
+    assetId: contentItemId,
+    score: result,
+  });
 
   return result;
 }

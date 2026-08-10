@@ -238,6 +238,52 @@ export interface AuthoritySignals {
 }
 
 // ============================================
+// AUTHORITY SIGNALS — PERSISTED (D038)
+// ============================================
+// Shape returned by GET /api/content/signals. Served FROM the persisted
+// content_authority_signals table (computed by the canon scorer,
+// AUTHORITY_SIGNALS_MODEL.md, on CiteMind scoring completion).
+//
+// Four signals carry real persisted values. competitiveAuthorityDelta is
+// DATA-GATED (DataForSEO not provisioned) and is ALWAYS null → the UI renders
+// an explicit "Not available yet" state, never 0, never a fabricated number.
+// A null on any metric means "no scored content yet", never a fake 0.
+
+export interface AuthoritySignalsAggregate {
+  /** 0-100, mean overall_score × gate_factor across scored assets. */
+  authorityContributionScore: number | null;
+  /** 0-100, mean CiteMind overall_score (citation eligibility). */
+  citationEligibilityScore: number | null;
+  /** 0-100, mean of schema/structure/entity ingestion factors. */
+  aiIngestionLikelihood: number | null;
+  /** EVI points (not 0-100), mean cross-pillar impact. */
+  crossPillarImpact: number | null;
+  /** DATA-GATED — always null (renders "Not available yet"). */
+  competitiveAuthorityDelta: number | null;
+  /** Latest measurement timestamp, or null when no scored content. */
+  measuredAt: string | null;
+  /** Distinct assets with persisted signals (0 = empty org). */
+  scoredAssetCount: number;
+}
+
+export interface AuthoritySignalTopAsset {
+  id: string;
+  title: string;
+  status: ContentStatus;
+  contentType: ContentType;
+  authorityContributionScore: number | null;
+  citationEligibilityScore: number | null;
+  aiIngestionLikelihood: number | null;
+  crossPillarImpact: number | null;
+  measuredAt: string;
+}
+
+export interface ContentSignalsResponse {
+  signals: AuthoritySignalsAggregate;
+  topAssets: AuthoritySignalTopAsset[];
+}
+
+// ============================================
 // CONTENT ASSET
 // ============================================
 
