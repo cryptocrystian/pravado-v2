@@ -43,13 +43,14 @@ ai_ingestion_likelihood = mean(schema_markup_score, structural_clarity_score, en
 
 ```
 authority_contribution = overall_score × gate_factor
-  where gate_factor = 1.0 if gate_status = 'approved'
-                      0.5 if gate_status = 'review'
+  where gate_factor = 1.0 if gate_status = 'passed'
+                      0.5 if gate_status = 'warning'
                       0.0 if gate_status = 'blocked'
+                      0.0 if gate_status IN ('pending','analyzing')  // not yet scored
 ```
 
 - **Anchor:** EVI_MATHEMATICS §2.2 — a content asset contributes to org Authority chiefly via Citation Quality (0.30) and Schema Coverage (0.15). Anti-gaming §8.3 requires blocked/low-quality content to contribute ~0; the `gate_factor` enforces this.
-- **Source:** `citemind_scores.{overall_score, gate_status}`.
+- **Source:** `citemind_scores.{overall_score, gate_status}`, where `gate_status ∈ {pending, analyzing, passed, warning, blocked}` (migration 82 CHECK constraint; the scorer emits `passed`/`warning`/`blocked`). Not-yet-scored states (`pending`, `analyzing`) contribute 0.
 
 ### 2.4 Cross-Pillar Impact (EVI points)
 

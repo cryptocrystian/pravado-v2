@@ -3,10 +3,18 @@
 /**
  * Content Insights View
  *
- * Analytics and insights view for the Content pillar.
- * Shows authority trends, performance metrics, and recommendations.
- * CTAs route to: create content, open asset for revision, regenerate derivatives.
+ * Analytics view for the Content pillar. Renders the Authority Signals served
+ * FROM the persisted content_authority_signals table (computed by the canon
+ * scorer per AUTHORITY_SIGNALS_MODEL.md / D038 when CiteMind scoring completes),
+ * via GET /api/content/signals.
  *
+ * HONEST DATA: four signals carry real values (Authority Contribution, Citation
+ * Eligibility, AI Ingestion Likelihood, Cross-Pillar Impact). The fifth —
+ * Competitive Authority Delta — is DATA-GATED on DataForSEO and arrives null; it
+ * renders an explicit "Not available yet" state, never 0, never a fabricated
+ * number. The content accent is IRIS (brand-iris #A855F7) per the design system.
+ *
+ * @see /docs/canon/AUTHORITY_SIGNALS_MODEL.md
  * @see /docs/canon/CONTENT_WORK_SURFACE_CONTRACT.md
  */
 
@@ -14,14 +22,18 @@ import { useRouter } from 'next/navigation';
 
 import { ContentEmptyState } from '../components/ContentEmptyState';
 import { ContentLoadingSkeleton } from '../components/ContentLoadingSkeleton';
-import type { AuthoritySignals, ContentAsset, ContentGap } from '../types';
+import type {
+  AuthoritySignalsAggregate,
+  AuthoritySignalTopAsset,
+  ContentGap,
+} from '../types';
 
 interface ContentInsightsViewProps {
-  /** Aggregate authority signals */
-  signals: AuthoritySignals | null;
-  /** Top performing assets */
-  topAssets: ContentAsset[];
-  /** Content gaps/opportunities */
+  /** Aggregate Authority Signals from content_authority_signals (null until loaded). */
+  signals: AuthoritySignalsAggregate | null;
+  /** Top assets by authority contribution, from content_authority_signals. */
+  topAssets: AuthoritySignalTopAsset[];
+  /** Content gaps/opportunities (real /gaps feed). */
   gaps: ContentGap[];
   /** Loading state */
   isLoading: boolean;
@@ -31,23 +43,22 @@ interface ContentInsightsViewProps {
   onViewAsset?: (assetId: string) => void;
   onViewGap?: (keyword: string) => void;
   onGenerateBrief?: () => void;
-  onRegenerateDerivatives?: (assetId: string) => void;
 }
 
 // ============================================
-// SCORE STYLING
+// SCORE STYLING (iris accent for the Content pillar)
 // ============================================
 
 function getScoreColor(score: number): string {
   if (score >= 80) return 'text-semantic-success';
-  if (score >= 60) return 'text-brand-cyan';
+  if (score >= 60) return 'text-brand-iris';
   if (score >= 40) return 'text-semantic-warning';
   return 'text-semantic-danger';
 }
 
 function getScoreBgColor(score: number): string {
   if (score >= 80) return 'bg-semantic-success';
-  if (score >= 60) return 'bg-brand-cyan';
+  if (score >= 60) return 'bg-brand-iris';
   if (score >= 40) return 'bg-semantic-warning';
   return 'bg-semantic-danger';
 }
@@ -65,27 +76,17 @@ export function ContentInsightsView({
   onViewAsset,
   onViewGap,
   onGenerateBrief,
-  onRegenerateDerivatives,
 }: ContentInsightsViewProps) {
   const router = useRouter();
 
-  // Handle navigation to asset for revision
   const handleOpenAssetForRevision = (assetId: string) => {
     router.push(`/app/content/asset/${assetId}`);
     onViewAsset?.(assetId);
   };
 
-  // Handle navigation to create content
-  const handleCreateBrief = (_keyword?: string) => {
-    // In production, pass keyword to pre-fill brief
+  const handleCreateBrief = () => {
     router.push('/app/content/new');
     onGenerateBrief?.();
-  };
-
-  // Handle derivative regeneration
-  const handleRegenerateDerivatives = (assetId: string) => {
-    router.push(`/app/content/asset/${assetId}#derivatives`);
-    onRegenerateDerivatives?.(assetId);
   };
 
   if (isLoading) {
@@ -105,8 +106,10 @@ export function ContentInsightsView({
     );
   }
 
-  const hasData = signals || topAssets.length > 0 || gaps.length > 0;
+  const hasScoredContent = !!signals && signals.scoredAssetCount > 0;
+  const hasData = hasScoredContent || gaps.length > 0;
 
+  // Empty = new org with no scored content and no gap feed.
   if (!hasData) {
     return (
       <ContentEmptyState
@@ -119,46 +122,63 @@ export function ContentInsightsView({
 
   return (
     <div className="p-4 space-y-6 overflow-y-auto">
-      {/* Authority Trend Summary */}
-      {signals && (
+      {/* Authority Summary — real persisted Authority Signals (D038) */}
+      {hasScoredContent && signals && (
         <section>
-          <h3 className="text-sm font-semibold text-white mb-3">
-            Authority Summary
-          </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-white">
+              Authority Summary
+            </h3>
+            <span className="text-xs text-white/40">
+              {signals.scoredAssetCount} scored{' '}
+              {signals.scoredAssetCount === 1 ? 'asset' : 'assets'}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             <InsightMetricCard
-              label="Authority Score"
+              label="Authority Contribution"
               value={signals.authorityContributionScore}
-              trend={signals.competitiveAuthorityDelta}
-              description="Overall content authority"
+              description="Overall content authority (CiteMind score gated by publish status)"
             />
             <InsightMetricCard
-              label="Citation Ready"
+              label="Citation Eligibility"
               value={signals.citationEligibilityScore}
-              description="CiteMind eligibility"
+              description="Mean CiteMind score — predicts whether AI engines will cite your content"
             />
             <InsightMetricCard
-              label="AI Discovery"
+              label="AI Ingestion Likelihood"
               value={signals.aiIngestionLikelihood}
-              description="AI engine readiness"
+              description="Schema, structure & entity readiness for AI-engine ingestion"
             />
             <InsightMetricCard
-              label="Cross-Pillar"
+              label="Cross-Pillar Impact"
               value={signals.crossPillarImpact}
-              description="PR + SEO synergy"
+              format="evi"
+              description="Reinforced authority lift into PR + SEO, in EVI points"
+            />
+            <InsightMetricCard
+              label="Competitive Delta"
+              value={signals.competitiveAuthorityDelta}
+              description="Authority vs. competitors — requires DataForSEO (not yet provisioned)"
             />
           </div>
+          <p className="mt-3 text-xs text-white/35">
+            Served live from persisted Authority Signals. Data-gated metrics
+            show “Not available yet” rather than a placeholder number.
+          </p>
         </section>
       )}
 
-      {/* Top Performing Content with Actionable CTAs */}
+      {/* Top Performing Content by authority contribution (real persisted scores) */}
       {topAssets.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-white/95">
               Top Performing Content
             </h3>
-            <span className="text-xs text-white/40">By authority score</span>
+            <span className="text-xs text-white/40">
+              By authority contribution
+            </span>
           </div>
           <div className="space-y-2">
             {topAssets.slice(0, 5).map((asset, index) => (
@@ -167,16 +187,13 @@ export function ContentInsightsView({
                 rank={index + 1}
                 asset={asset}
                 onOpenForRevision={() => handleOpenAssetForRevision(asset.id)}
-                onRegenerateDerivatives={() =>
-                  handleRegenerateDerivatives(asset.id)
-                }
               />
             ))}
           </div>
         </section>
       )}
 
-      {/* Content Opportunities with Actionable CTAs */}
+      {/* Content Opportunities — real /gaps feed */}
       {gaps.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
@@ -192,7 +209,7 @@ export function ContentInsightsView({
               <GapOpportunityRow
                 key={index}
                 gap={gap}
-                onCreateBrief={() => handleCreateBrief(gap.keyword)}
+                onCreateBrief={handleCreateBrief}
                 onViewDetails={() => onViewGap?.(gap.keyword)}
               />
             ))}
@@ -207,87 +224,6 @@ export function ContentInsightsView({
           )}
         </section>
       )}
-
-      {/* SAGE Recommendations with Actionable CTAs */}
-      <section>
-        <h3 className="text-sm font-semibold text-white mb-3">
-          SAGE Recommendations
-        </h3>
-        <div className="space-y-3">
-          <RecommendationCard
-            type="opportunity"
-            title="High-value keyword gap detected"
-            description="Create content for 'marketing automation ROI' - high search volume, low competition"
-            actions={[
-              {
-                label: 'Start Writing',
-                primary: true,
-                onClick: () => handleCreateBrief('marketing automation ROI'),
-              },
-            ]}
-          />
-          <RecommendationCard
-            type="improvement"
-            title="Improve citation eligibility"
-            description="3 assets have citation scores below 50. Add structured data and improve factual accuracy."
-            actions={[
-              {
-                label: 'View Assets',
-                primary: false,
-                onClick: () => router.push('/app/content?filter=low-citation'),
-              },
-              {
-                label: 'Open First Asset',
-                primary: true,
-                onClick: () =>
-                  topAssets[0] && handleOpenAssetForRevision(topAssets[0].id),
-              },
-            ]}
-          />
-          <RecommendationCard
-            type="cross-pillar"
-            title="Derivatives need refresh"
-            description="2 assets have stale derivatives. Regenerate to maintain cross-pillar accuracy."
-            actions={[
-              {
-                label: 'Regenerate All',
-                primary: true,
-                onClick: () =>
-                  topAssets[0] && handleRegenerateDerivatives(topAssets[0].id),
-              },
-            ]}
-          />
-        </div>
-      </section>
-
-      {/* Authority Distribution Chart Placeholder */}
-      <section>
-        <h3 className="text-sm font-semibold text-white mb-3">
-          Authority Distribution
-        </h3>
-        <div className="p-6 bg-slate-2 border border-border-subtle rounded-lg">
-          <div className="flex items-center justify-center h-32">
-            <div className="text-center">
-              <svg
-                className="w-8 h-8 text-white/20 mx-auto mb-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-              <p className="text-xs text-white/40">
-                Chart visualization coming soon
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
@@ -298,47 +234,56 @@ export function ContentInsightsView({
 
 interface InsightMetricCardProps {
   label: string;
-  value: number;
-  trend?: number;
+  /** null → render an explicit "Not available yet" state (never 0). */
+  value: number | null;
   description: string;
+  /** 'score' = 0-100 with progress bar; 'evi' = EVI points, no bar. */
+  format?: 'score' | 'evi';
 }
 
 function InsightMetricCard({
   label,
   value,
-  trend,
   description,
+  format = 'score',
 }: InsightMetricCardProps) {
+  const available = value !== null;
+
   return (
     <div className="p-4 bg-slate-2 border border-border-subtle rounded-lg">
       <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
         {label}
       </div>
-      <div className="flex items-baseline gap-2">
-        <span className={`text-2xl font-bold ${getScoreColor(value)}`}>
-          {value}
-        </span>
-        {trend !== undefined && (
-          <span
-            className={`text-xs font-medium ${
-              trend > 0
-                ? 'text-semantic-success'
-                : trend < 0
-                  ? 'text-semantic-danger'
-                  : 'text-white/40'
-            }`}
-          >
-            {trend > 0 ? '↑' : trend < 0 ? '↓' : '→'}
-            {Math.abs(trend)}
+
+      {available && format === 'score' ? (
+        <>
+          <div className="flex items-baseline gap-2">
+            <span className={`text-2xl font-bold ${getScoreColor(value)}`}>
+              {value}
+            </span>
+            <span className="text-xs text-white/30">/ 100</span>
+          </div>
+          <div className="mt-2 h-1.5 bg-slate-4 rounded-full overflow-hidden">
+            <div
+              className={`h-full ${getScoreBgColor(value)} transition-all duration-500`}
+              style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
+            />
+          </div>
+        </>
+      ) : available ? (
+        // EVI-point metric: plain value, no 0-100 bar (it is not a percentage).
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-brand-iris">{value}</span>
+          <span className="text-xs text-white/30">EVI pts</span>
+        </div>
+      ) : (
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-medium text-white/30">
+            Not available yet
           </span>
-        )}
-      </div>
-      <div className="mt-2 h-1.5 bg-slate-4 rounded-full overflow-hidden">
-        <div
-          className={`h-full ${getScoreBgColor(value)} transition-all duration-500`}
-          style={{ width: `${value}%` }}
-        />
-      </div>
+        </div>
+      )}
+
       <p className="text-xs text-white/30 mt-2">{description}</p>
     </div>
   );
@@ -350,18 +295,12 @@ function InsightMetricCard({
 
 interface TopAssetRowProps {
   rank: number;
-  asset: ContentAsset;
+  asset: AuthoritySignalTopAsset;
   onOpenForRevision?: () => void;
-  onRegenerateDerivatives?: () => void;
 }
 
-function TopAssetRow({
-  rank,
-  asset,
-  onOpenForRevision,
-  onRegenerateDerivatives,
-}: TopAssetRowProps) {
-  const score = asset.authoritySignals?.authorityContributionScore ?? 0;
+function TopAssetRow({ rank, asset, onOpenForRevision }: TopAssetRowProps) {
+  const score = asset.authorityContributionScore;
 
   return (
     <div className="flex items-center gap-3 p-3 bg-slate-2 border border-border-subtle rounded-lg group hover:border-brand-iris/40 transition-colors">
@@ -372,15 +311,19 @@ function TopAssetRow({
         <h4 className="text-sm font-medium text-white truncate">
           {asset.title}
         </h4>
-        <p className="text-xs text-white/40">{asset.status}</p>
+        <p className="text-xs text-white/40 capitalize">{asset.status}</p>
       </div>
       <div className="text-right mr-2">
-        <span className={`text-lg font-bold ${getScoreColor(score)}`}>
-          {score}
-        </span>
+        {score !== null ? (
+          <span className={`text-lg font-bold ${getScoreColor(score)}`}>
+            {score}
+          </span>
+        ) : (
+          <span className="text-xs font-medium text-white/30">—</span>
+        )}
         <p className="text-xs text-white/30 uppercase">Authority</p>
       </div>
-      {/* Action buttons - visible on hover */}
+      {/* Action button — visible on hover */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={onOpenForRevision}
@@ -398,25 +341,6 @@ function TopAssetRow({
               strokeLinejoin="round"
               strokeWidth={1.5}
               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        </button>
-        <button
-          onClick={onRegenerateDerivatives}
-          className="p-1.5 text-brand-cyan hover:bg-brand-cyan/10 rounded transition-colors"
-          title="Regenerate derivatives"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
         </button>
@@ -480,100 +404,6 @@ function GapOpportunityRow({
         >
           Start Writing
         </button>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// RECOMMENDATION CARD
-// ============================================
-
-interface RecommendationAction {
-  label: string;
-  primary: boolean;
-  onClick: () => void;
-}
-
-interface RecommendationCardProps {
-  type: 'opportunity' | 'improvement' | 'cross-pillar';
-  title: string;
-  description: string;
-  actions: RecommendationAction[];
-}
-
-function RecommendationCard({
-  type,
-  title,
-  description,
-  actions,
-}: RecommendationCardProps) {
-  const typeConfig = {
-    opportunity: {
-      icon: (
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
-      color: 'brand-cyan',
-      bg: 'bg-brand-cyan/10',
-      border: 'border-brand-cyan/20',
-    },
-    improvement: {
-      icon: (
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
-      color: 'brand-iris',
-      bg: 'bg-brand-iris/10',
-      border: 'border-brand-iris/20',
-    },
-    'cross-pillar': {
-      icon: (
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" />
-        </svg>
-      ),
-      color: 'brand-magenta',
-      bg: 'bg-brand-magenta/10',
-      border: 'border-brand-magenta/20',
-    },
-  };
-
-  const config = typeConfig[type];
-
-  return (
-    <div className={`p-3 rounded-lg ${config.bg} border ${config.border}`}>
-      <div className="flex items-start gap-3">
-        <span className={`text-${config.color} mt-0.5`}>{config.icon}</span>
-        <div className="flex-1">
-          <h4 className="text-sm font-medium text-white mb-1">{title}</h4>
-          <p className="text-xs text-white/55 mb-2">{description}</p>
-          <div className="flex items-center gap-2">
-            {actions.map((action, index) => (
-              <button
-                key={index}
-                onClick={action.onClick}
-                className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                  action.primary
-                    ? `text-${config.color} bg-${config.color}/20 hover:bg-${config.color}/30`
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {action.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
