@@ -173,6 +173,7 @@ These files define trade secrets and patent-eligible systems:
 | `EVI_MATHEMATICS.md`               | EVI calculation mathematics (RESTRICTED)   |
 | `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED)   |
 | `CITEMIND_SYSTEM.md`               | CiteMind multi-engine system (RESTRICTED)  |
+| `AUTHORITY_SIGNALS_MODEL.md`       | Content authority-signal formulas (D038)   |
 | `PATENT_CLAIMS_DRAFT.md`           | Patent claim drafts (CONFIDENTIAL)         |
 | `TRADE_SECRET_BOUNDARIES.md`       | Disclosure classifications (INTERNAL)      |
 | `EXECUTIVE_NARRATIVE.md`           | CMO/CEO/Investor narrative (PUBLIC)        |

@@ -995,3 +995,14 @@ The delta is the whole point of CiteMind-governed generation: the stub keeps the
 - **Scope note:** This gates **plan availability and the enterprise-intelligence schema build**, not the per-pillar Manual-mode floors (those remain in the Mode Contract for all tiers). Enterprise entitlements stay defined in `PLANS_LIMITS_ENTITLEMENTS.md` but flagged post-launch.
 - **Authority basis:** Founder-ratified 2026-08-05.
 - **Cross-refs:** D036 (canon hygiene); `PLANS_LIMITS_ENTITLEMENTS.md`.
+
+## D038 — Authority Signals model: per-asset formulas ratified
+
+- **Date:** 2026-08-10
+- **Decision ID:** D038
+- **Area:** Foundational model (EVI / CiteMind / Content authority)
+- **Decision:** Ratify the computation of the five content-level Authority Signals (`content_authority_signals`, CONTENT_WORK_SURFACE_CONTRACT §4.5), defined in the new `AUTHORITY_SIGNALS_MODEL.md`. Citation Eligibility = `citemind_scores.overall_score`. AI Ingestion Likelihood = equal-weight mean of the three CiteMind ingestion factors (schema markup, structural clarity, entity density). Authority Contribution = `overall_score × gate_factor` (1.0/0.5/0 for approved/review/blocked). Cross-Pillar Impact (EVI pts) = `(authority_contribution/100) × 0.35 × (1 + 0.45 + 0.70)`. Competitive Authority Delta = `our − competitor topic authority`, **data-gated on DataForSEO** (null / "not available" until provisioned).
+- **Rationale:** Canon named these five signals but defined no formulas; a scorer therefore requires foundational-model math (Authority = 35% of EVI, feeding SAGE). Per the Model Integrity Charter (D033), each formula is traced to a canonical anchor — EVI_MATHEMATICS §2.2 (Authority sub-components), §7.5 (authority→EVI-point conversion ×0.35), §8 (anti-gaming / competitive relativity), and SAGE_OPERATING_MODEL §3.3 (Content→PR 0.45, Content→SEO 0.70, verbatim). No coefficient is invented; the only newly-defined elements are the gate-factor tiers and the cross-pillar aggregation form, both founder-ratified here. This replaces the illustrative hardcoded "+2.1 EVI pts" (removed as fabrication) with a computed value and retires the rejected schema-only "AI ingestion" shim.
+- **Scope note:** Four of five signals compute from real `citemind_scores` today; Competitive Authority Delta stays null until DataForSEO competitor data exists. Anti-gaming: blocked/low-quality content contributes ~0 (gate_factor), satisfying EVI §8.3.
+- **Authority basis:** Founder-ratified 2026-08-10.
+- **Cross-refs:** D033 (Model Integrity Charter); `AUTHORITY_SIGNALS_MODEL.md`; `EVI_MATHEMATICS.md` §2.2/§7.5/§8; `SAGE_OPERATING_MODEL.md` §3.3; `CONTENT_WORK_SURFACE_CONTRACT.md` §4.5.
