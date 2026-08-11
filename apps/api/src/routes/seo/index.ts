@@ -3,6 +3,7 @@
  */
 
 import type {
+  ApiResponse,
   ListSEOKeywordsWithMetricsResponse,
   ListSEOOpportunityDTOsResponse,
   GetSEOSerpSnapshotResponse,
@@ -23,10 +24,20 @@ import { FastifyInstance } from 'fastify';
 
 import { requireUser } from '../../middleware/requireUser';
 import { SEOBacklinkService } from '../../services/seoBacklinkService';
+import {
+  SEOCompetitorService,
+  type SEOCompetitorAnalysis,
+  type RefreshCompetitorsResult,
+} from '../../services/seoCompetitorService';
 import { SEOKeywordService } from '../../services/seoKeywordService';
 import { SEOOnPageService } from '../../services/seoOnPageService';
 import { SEOOpportunityService } from '../../services/seoOpportunityService';
+import { resolveSerpProvider } from '../../services/seoSerpProvider';
 import { SEOSerpService } from '../../services/seoSerpService';
+
+// Response envelopes for the Competitors surface (apps/api-scoped for now).
+type GetSEOCompetitorsResponse = ApiResponse<SEOCompetitorAnalysis>;
+type RefreshSEOCompetitorsResponse = ApiResponse<RefreshCompetitorsResult>;
 
 export async function seoRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
@@ -41,6 +52,7 @@ export async function seoRoutes(server: FastifyInstance) {
   const opportunityService = new SEOOpportunityService(supabase);
   const onPageService = new SEOOnPageService(supabase);
   const backlinkService = new SEOBacklinkService(supabase);
+  const competitorService = new SEOCompetitorService(supabase);
 
   /**
    * Helper to get user's org ID
@@ -481,6 +493,129 @@ export async function seoRoutes(server: FastifyInstance) {
           error: {
             code: 'INTERNAL_ERROR',
             message: error.message || 'Failed to fetch backlink profile',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // GET /api/v1/seo/competitors
+  // Share-of-Voice + competitor positions from CACHED SERP data (org-scoped).
+  // Read-only, free (no provider call). Honest-empty when there is no cache.
+  // ========================================
+  server.get<{
+    Reply: GetSEOCompetitorsResponse;
+  }>(
+    '/competitors',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        const analysis = await competitorService.getCompetitorAnalysis(orgId);
+        return {
+          success: true,
+          data: analysis,
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to fetch competitor analysis',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // POST /api/v1/seo/competitors/refresh
+  // DELIBERATE, COSTED refresh (org-scoped): fetches live SERPs per tracked
+  // keyword via the DataForSEO SERP provider and caches positions. With NO
+  // DataForSEO credentials the Null provider is selected and this is an honest
+  // no-op (nothing fetched, nothing written). Each processed keyword spends one
+  // DataForSEO SERP call (~$0.002) — never called on a read path.
+  // ========================================
+  server.post<{
+    Body: {
+      maxKeywords?: number;
+      locationCode?: number;
+      languageCode?: string;
+      depth?: number;
+    };
+    Reply: RefreshSEOCompetitorsResponse;
+  }>(
+    '/competitors/refresh',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        const provider = resolveSerpProvider();
+        const result = await competitorService.refreshCompetitors(
+          orgId,
+          provider,
+          {
+            maxKeywords: request.body?.maxKeywords,
+            locationCode: request.body?.locationCode,
+            languageCode: request.body?.languageCode,
+            depth: request.body?.depth,
+          }
+        );
+        return {
+          success: true,
+          data: result,
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to refresh competitor data',
           },
         });
       }
