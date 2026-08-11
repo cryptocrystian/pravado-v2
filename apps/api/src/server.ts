@@ -71,6 +71,7 @@ import { pressReleaseRoutes } from './routes/pressReleases'; // S38
 import prOutreachRoutes from './routes/prOutreach'; // S44
 import prOutreachDeliverabilityRoutes from './routes/prOutreachDeliverability'; // S45
 import { prPitchRoutes } from './routes/prPitches'; // S39
+import prReviewsRoutes from './routes/prReviews'; // Wave-2 outreach review gate
 import realityMapsRoutes from './routes/realityMaps'; // S73
 import { riskRadarRoutes } from './routes/riskRadar'; // S60
 import { sageRoutes } from './routes/sage'; // S-INT-02
@@ -224,6 +225,8 @@ export async function createServer() {
 
   // Pillar routes (S3)
   await server.register(prRoutes, { prefix: '/api/v1/pr' });
+  // Wave-2 outreach review/approval gate (GET/POST /api/v1/pr/reviews*)
+  await server.register(prReviewsRoutes, { prefix: '/api/v1/pr' });
   await server.register(contentRoutes, { prefix: '/api/v1/content' });
   await server.register(seoRoutes, { prefix: '/api/v1/seo' });
   await server.register(playbooksRoutes, { prefix: '/api/v1/playbooks' });
