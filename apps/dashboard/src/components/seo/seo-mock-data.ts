@@ -50,30 +50,12 @@ export interface SuggestedCluster {
   name: string;
 }
 
-export interface CompetitorProfile {
-  name: string;
-  evi: number;
-  bestEngine: string;
-  bestEngineScore: number;
-  weakestEngine: string;
-  weakestEngineScore: number;
-  strongClusters: number;
-  gaps: number;
-}
-
-export interface TopicComparison {
-  topic: string;
-  yourScore: number;
-  competitorScore: number;
-  delta: number;
-  status: 'winning' | 'narrow' | 'critical';
-}
-
-export interface CompetitorContent {
-  title: string;
-  citationsPerWeek: number;
-  engine: string;
-}
+// NOTE: Competitor mock types/data (CompetitorProfile, TopicComparison,
+// CompetitorContent, mockShareOfVoice, mock*Profile, mockTopicComparisons,
+// mockCompetitorContent) were REMOVED when the Competitors surface was lit from
+// real DataForSEO SERP data. Share-of-Voice + competitor positions now come from
+// /api/seo/competitors; per-competitor EVI/cited-content has no real source and is
+// deliberately not faked. See CompetitorComparison.tsx.
 
 export interface CitationRow {
   id: string;
@@ -478,94 +460,11 @@ export const mockSuggestedClusters: SuggestedCluster[] = [
 ];
 
 // ============================================
-// COMPETITORS
+// COMPETITORS — REMOVED (now real DataForSEO SERP data)
+// Share-of-Voice + competitor positions come from /api/seo/competitors via the
+// useSeoCompetitors hook. Per-competitor EVI head-to-head and "cited-content"
+// mock had no real source and were deleted rather than faked.
 // ============================================
-
-export const mockShareOfVoice = [
-  { name: 'Pravado', value: 28, fill: '#00E5CC' },
-  { name: 'CompetitorX', value: 35, fill: '#8B5CF6' },
-  { name: 'CompetitorY', value: 19, fill: '#F59E0B' },
-  { name: 'CompetitorZ', value: 11, fill: '#EC4899' },
-  { name: 'Others', value: 7, fill: 'rgba(255,255,255,0.2)' },
-];
-
-export const mockPravadoProfile: CompetitorProfile = {
-  name: 'Pravado',
-  evi: 74,
-  bestEngine: 'ChatGPT',
-  bestEngineScore: 81,
-  weakestEngine: 'Gemini',
-  weakestEngineScore: 61,
-  strongClusters: 5,
-  gaps: 3,
-};
-
-export const mockCompetitorXProfile: CompetitorProfile = {
-  name: 'CompetitorX',
-  evi: 81,
-  bestEngine: 'Gemini',
-  bestEngineScore: 88,
-  weakestEngine: 'Perplexity',
-  weakestEngineScore: 71,
-  strongClusters: 7,
-  gaps: 2,
-};
-
-export const mockTopicComparisons: TopicComparison[] = [
-  {
-    topic: 'AI Marketing Tools',
-    yourScore: 88,
-    competitorScore: 79,
-    delta: 9,
-    status: 'winning',
-  },
-  {
-    topic: 'PR Technology',
-    yourScore: 74,
-    competitorScore: 83,
-    delta: -9,
-    status: 'narrow',
-  },
-  {
-    topic: 'AI Visibility Strat.',
-    yourScore: 71,
-    competitorScore: 77,
-    delta: -6,
-    status: 'narrow',
-  },
-  {
-    topic: 'Enterprise AEO',
-    yourScore: 23,
-    competitorScore: 71,
-    delta: -48,
-    status: 'critical',
-  },
-  {
-    topic: 'Brand Monitoring',
-    yourScore: 54,
-    competitorScore: 61,
-    delta: -7,
-    status: 'narrow',
-  },
-];
-
-export const mockCompetitorContent: CompetitorContent[] = [
-  {
-    title: 'Enterprise guide to AEO',
-    citationsPerWeek: 134,
-    engine: 'ChatGPT',
-  },
-  {
-    title: 'AI visibility ROI calculator',
-    citationsPerWeek: 89,
-    engine: 'Perplexity',
-  },
-  {
-    title: 'B2B AI marketing benchmark report',
-    citationsPerWeek: 67,
-    engine: 'Gemini',
-  },
-];
 
 // ============================================
 // CITATIONS
