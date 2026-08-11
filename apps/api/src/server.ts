@@ -22,6 +22,7 @@ import { platformFreezePlugin } from './plugins/platformFreeze';
 import { adminRoutes } from './routes/admin'; // Admin panel
 import { agentsRoutes } from './routes/agents';
 import aiScenarioSimulationRoutes from './routes/aiScenarioSimulations'; // S71
+import { analyticsRoutes } from './routes/analytics'; // Wave-2 Analytics-SEO
 import audiencePersonasRoutes from './routes/audiencePersonas'; // S51
 import { auditRoutes } from './routes/audit'; // S35
 import { auditReplayRoutes } from './routes/auditReplay'; // S37
@@ -229,6 +230,8 @@ export async function createServer() {
   await server.register(prReviewsRoutes, { prefix: '/api/v1/pr' });
   await server.register(contentRoutes, { prefix: '/api/v1/content' });
   await server.register(seoRoutes, { prefix: '/api/v1/seo' });
+  // Wave-2 Analytics-SEO surface (GET /api/v1/analytics/seo) — read-only aggregate.
+  await server.register(analyticsRoutes, { prefix: '/api/v1/analytics' });
   await server.register(playbooksRoutes, { prefix: '/api/v1/playbooks' });
   await server.register(playbookRunsRoutes, {
     prefix: '/api/v1/playbook-runs',
