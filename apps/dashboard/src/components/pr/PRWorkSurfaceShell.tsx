@@ -22,7 +22,6 @@ import {
   Users,
   PaperPlaneTilt,
   Newspaper,
-  Brain,
   Lock,
   User,
   Lightning,
@@ -94,12 +93,6 @@ const PR_TABS: PRTabConfig[] = [
     label: 'Coverage',
     href: '/app/pr/coverage',
     icon: <Newspaper className="w-4 h-4" weight="regular" />,
-  },
-  {
-    key: 'intelligence',
-    label: 'Intelligence',
-    href: '/app/pr/intelligence',
-    icon: <Brain className="w-4 h-4" weight="regular" />,
   },
 ];
 

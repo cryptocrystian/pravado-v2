@@ -5,7 +5,7 @@
  *
  * Unified surface header for the PR pillar.
  * Row 1: Pillar indicator · EVI metric · SAGE tag · Mode switcher
- * Row 2: Tab navigation (Action Queue / Journalists / Pitches / Coverage / Intelligence)
+ * Row 2: Tab navigation (Action Queue / Journalists / Pitches / Coverage)
  *
  * Pillar accent: brand-magenta
  *
@@ -30,7 +30,6 @@ const TABS = [
   { label: 'Journalists', href: '/app/pr/journalists' },
   { label: 'Pitches', href: '/app/pr/pitches' },
   { label: 'Coverage', href: '/app/pr/coverage' },
-  { label: 'Intelligence', href: '/app/pr/intelligence' },
 ];
 
 // ============================================

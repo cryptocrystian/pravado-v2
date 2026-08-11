@@ -2,24 +2,14 @@
  * PR Intelligence Components (Sprint S95)
  *
  * Best-in-class PR pillar components with:
- * - Situation Brief (what's happening)
  * - AI Recommendations (what to do)
  * - Continuity Links (cross-pillar orchestration)
  *
+ * The mock-fed Situation Brief component was retired — the canonical brief is
+ * the SAGE Daily Brief in the Command Center (D039).
+ *
  * All components are DS v2 compliant with AI transparency
  */
-
-// Situation Brief
-export {
-  PRSituationBrief,
-  default as PRSituationBriefDefault,
-} from './PRSituationBrief';
-export type {
-  PRSituationBriefData,
-  PRChange,
-  PRSignal,
-  PRAttentionItem,
-} from './PRSituationBrief';
 
 // AI Recommendations
 export {
