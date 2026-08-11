@@ -97,6 +97,12 @@ interface ActionStreamItem {
 interface ActionStreamResponse {
   generated_at: string;
   items: ActionStreamItem[];
+  /**
+   * SAGE Daily Brief (D039). The latest persisted grounded narrative for the org,
+   * or `null` when none has been generated yet (honest empty — the Situation
+   * Brief card renders its empty state). Org-scoped. See sageDailyBriefService.
+   */
+  daily_brief: string | null;
 }
 
 const PILLAR_MAP: Record<string, 'pr' | 'content' | 'seo'> = {
@@ -316,7 +322,11 @@ export async function getActionStreamForOrg(
     logger.error(
       `Failed to fetch proposals for org ${orgId}: ${error.message}`
     );
-    return { generated_at: new Date().toISOString(), items: [] };
+    return {
+      generated_at: new Date().toISOString(),
+      items: [],
+      daily_brief: await getLatestDailyBrief(supabase, orgId),
+    };
   }
 
   const proposalRows = (proposals ?? []) as Array<Record<string, unknown>>;
@@ -378,7 +388,36 @@ export async function getActionStreamForOrg(
   return {
     generated_at: new Date().toISOString(),
     items,
+    // D039: serve the latest persisted daily brief (org-scoped, honest null).
+    daily_brief: await getLatestDailyBrief(supabase, orgId),
   };
+}
+
+/**
+ * Read the latest persisted SAGE Daily Brief text for an org (D039). Org-scoped
+ * (and RLS-enforced). Returns `null` when none exists — the Situation Brief card
+ * renders its empty state. Never fabricates: a null here is an honest empty.
+ */
+async function getLatestDailyBrief(
+  supabase: SupabaseClient,
+  orgId: string
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('sage_daily_briefs')
+    .select('brief_text')
+    .eq('org_id', orgId)
+    .order('generated_at', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    logger.warn(
+      `Failed to read daily brief for org ${orgId}: ${error.message}`
+    );
+    return null;
+  }
+
+  const rows = (data ?? []) as Array<{ brief_text: string | null }>;
+  return rows[0]?.brief_text ?? null;
 }
 
 function mapProposalToActionItem(
