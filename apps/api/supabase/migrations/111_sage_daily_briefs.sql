@@ -62,11 +62,15 @@ CREATE POLICY "org members can read sage daily briefs" ON sage_daily_briefs
     )
   );
 
--- Writes are service-role only (the nightly generator). No authenticated-user
--- write policy — a user must not be able to forge a brief for their org.
+-- Writes are service-role only (the nightly generator). The `TO service_role`
+-- clause is load-bearing: WITHOUT it the policy applies to ALL roles (incl.
+-- `authenticated`), and with WITH CHECK (true) any authenticated user could
+-- forge a brief for any org via PostgREST. Scoping to `service_role` means
+-- authenticated/anon roles retain ONLY the org-scoped SELECT policy above — no
+-- write path, no forgery. The nightly generator runs as service role.
 DROP POLICY IF EXISTS "service role can manage sage daily briefs" ON sage_daily_briefs;
 CREATE POLICY "service role can manage sage daily briefs" ON sage_daily_briefs
-  FOR ALL WITH CHECK (true);
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- Latest-brief-per-org lookup (served all day by the action-stream endpoint).
 CREATE INDEX IF NOT EXISTS idx_sage_daily_briefs_org_generated
