@@ -41,6 +41,8 @@ let sageQueue: QueueInstance | null = null;
 let sageWorker: WorkerInstance | null = null;
 let sageExecutionQueue: QueueInstance | null = null;
 let sageExecutionWorker: WorkerInstance | null = null;
+let briefQueue: QueueInstance | null = null;
+let briefWorker: WorkerInstance | null = null;
 let citeMindQueue: QueueInstance | null = null;
 let citeMindWorker: WorkerInstance | null = null;
 let citationMonitorQueue: QueueInstance | null = null;
@@ -198,6 +200,64 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       );
 
       logger.info('SAGE governed execution queue initialized');
+
+      // Nightly SAGE signal scan for ALL orgs (D039 prerequisite). Briefs must
+      // summarize FRESH signals — this repeatable job fans the scan out to every
+      // org each night. Runs at 01:00 UTC, after the EVI nightly recalc (00:00).
+      await sageQueue.add(
+        'sage-scan-schedule',
+        { type: 'scheduled' },
+        {
+          repeat: {
+            pattern: '0 1 * * *', // 1am UTC daily (after EVI midnight recalc)
+          },
+          jobId: 'sage-scan-scheduler',
+        }
+      );
+
+      logger.info('SAGE nightly signal scan scheduler configured (1am UTC)');
+
+      // SAGE Daily Brief generation queue (D039). Runs nightly AFTER the EVI
+      // recalc + SAGE signal scan so the brief summarizes fresh signals.
+      const { processBriefGenerate } = await import(
+        './workers/briefGenerateWorker'
+      );
+
+      briefQueue = new Queue('brief-generate', {
+        connection,
+        prefix: bullPrefix,
+      });
+
+      briefWorker = new Worker(
+        'brief-generate',
+        async (job) => {
+          logger.info(
+            `Processing brief-generate job ${job.id} (${
+              job.data.type ?? 'single-org'
+            })`
+          );
+          await processBriefGenerate(job.data);
+        },
+        {
+          connection,
+          prefix: bullPrefix,
+          concurrency: 1,
+        }
+      );
+
+      // Schedule: nightly at 02:00 UTC (after EVI 00:00 + SAGE scan 01:00).
+      await briefQueue.add(
+        'brief-generate-schedule',
+        { type: 'scheduled' },
+        {
+          repeat: {
+            pattern: '0 2 * * *', // 2am UTC daily
+          },
+          jobId: 'brief-generate-scheduler',
+        }
+      );
+
+      logger.info('SAGE Daily Brief queue initialized (nightly 2am UTC)');
     }
 
     // Create the CiteMind scoring queue (S-INT-04)
@@ -473,6 +533,32 @@ export async function enqueueSageExecution(args: {
 }
 
 /**
+ * Enqueue an on-demand SAGE Daily Brief generation for a single org (D039).
+ * No-op if BullMQ or the brief queue is not initialized. Used for on-demand
+ * regeneration (e.g. onboarding activation); the nightly batch runs separately.
+ */
+export async function enqueueBriefGenerate(orgId: string): Promise<void> {
+  if (!briefQueue) {
+    logger.warn(
+      `Cannot enqueue brief generation for org ${orgId} — queue not initialized`
+    );
+    return;
+  }
+
+  await briefQueue.add(
+    'generate',
+    { orgId },
+    {
+      jobId: `brief-generate-${orgId}-${Date.now()}`,
+      removeOnComplete: { age: 86400 },
+      removeOnFail: { age: 604800 },
+    }
+  );
+
+  logger.info(`Enqueued daily brief generation for org ${orgId}`);
+}
+
+/**
  * Enqueue a CiteMind scoring job for a content item.
  * No-op if BullMQ or CiteMind queue is not initialized.
  */
@@ -639,6 +725,12 @@ export async function shutdownBullMQ(): Promise<void> {
   }
   if (sageExecutionQueue) {
     closePromises.push(sageExecutionQueue.close());
+  }
+  if (briefWorker) {
+    closePromises.push(briefWorker.close());
+  }
+  if (briefQueue) {
+    closePromises.push(briefQueue.close());
   }
   if (citeMindWorker) {
     closePromises.push(citeMindWorker.close());

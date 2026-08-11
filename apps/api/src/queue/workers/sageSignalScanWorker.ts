@@ -30,20 +30,39 @@ import { runSignalScan } from '../../services/sage/sageSignalIngestor';
 const logger = createLogger('queue:sage-signal-scan');
 
 export interface SageSignalScanPayload {
-  orgId: string;
+  orgId?: string;
+  /**
+   * Nightly repeatable driver (D039 prerequisite): fan the scan out to every
+   * org so briefs summarize FRESH signals, not stale ones. Mirrors the GSC
+   * scheduled fan-out pattern.
+   */
+  type?: 'scheduled';
 }
 
 /**
  * Process a SAGE signal scan job.
  * Called by BullMQ worker when a job arrives on the 'sage:signal-scan' queue.
+ *
+ * Two shapes:
+ *   - `{ type: 'scheduled' }` — nightly: enqueue a per-org scan for every org.
+ *   - `{ orgId }` — run the scan for a single org.
  */
 export async function processSageSignalScan(
   payload: SageSignalScanPayload
 ): Promise<void> {
-  const { orgId } = payload;
-  logger.info(`Running SAGE signal scan for org ${orgId}`);
-
   const supabase = getSupabaseClient();
+
+  if (payload.type === 'scheduled') {
+    await runScheduledScanForAllOrgs(supabase);
+    return;
+  }
+
+  const { orgId } = payload;
+  if (!orgId) {
+    logger.warn('SAGE signal scan called without orgId or scheduled type');
+    return;
+  }
+  logger.info(`Running SAGE signal scan for org ${orgId}`);
 
   try {
     const result = await runSignalScan(supabase, orgId);
@@ -115,4 +134,44 @@ export async function processSageSignalScan(
     logger.error(`SAGE signal scan failed for org ${orgId}: ${message}`);
     throw error;
   }
+}
+
+/**
+ * Nightly fan-out: enqueue a per-org SAGE signal scan for every org. Mirrors the
+ * GSC scheduled-sync pattern — each org's scan runs as its own queue job so a
+ * single org's failure is isolated (per-job retry/dead-letter) and never breaks
+ * the batch. This keeps signals fresh for the downstream nightly brief.
+ */
+async function runScheduledScanForAllOrgs(
+  supabase: ReturnType<typeof getSupabaseClient>
+): Promise<void> {
+  logger.info('Running scheduled SAGE signal scan for all orgs');
+
+  const { data: orgs, error } = await supabase.from('orgs').select('id');
+  if (error || !orgs) {
+    logger.error(
+      `Scheduled SAGE scan could not list orgs: ${error?.message ?? 'no data'}`
+    );
+    return;
+  }
+
+  const { enqueueSageSignalScan } = await import('../bullmqQueue');
+
+  let enqueued = 0;
+  for (const org of orgs as Array<{ id: string }>) {
+    try {
+      await enqueueSageSignalScan(org.id);
+      enqueued++;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.error(`Failed to enqueue SAGE scan for org ${org.id}: ${msg}`);
+      Sentry.captureException(err, {
+        tags: { org_id: org.id, phase: 'sage_scheduled_scan_enqueue' },
+      });
+    }
+  }
+
+  logger.info(
+    `Scheduled SAGE scan fan-out complete: ${enqueued}/${orgs.length} orgs enqueued`
+  );
 }
