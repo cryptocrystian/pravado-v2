@@ -166,19 +166,20 @@ These files define FROZEN behavior for V1 release:
 
 These files define trade secrets and patent-eligible systems:
 
-| File                               | Purpose                                    |
-| ---------------------------------- | ------------------------------------------ |
-| `SAGE_OPERATING_MODEL.md`          | SAGE internal operating model (RESTRICTED) |
-| `CRAFT_EXECUTION_MODEL.md`         | CRAFT execution model (RESTRICTED)         |
-| `EVI_MATHEMATICS.md`               | EVI calculation mathematics (RESTRICTED)   |
-| `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED)   |
-| `CITEMIND_SYSTEM.md`               | CiteMind multi-engine system (RESTRICTED)  |
-| `AUTHORITY_SIGNALS_MODEL.md`       | Content authority-signal formulas (D038)   |
-| `PATENT_CLAIMS_DRAFT.md`           | Patent claim drafts (CONFIDENTIAL)         |
-| `TRADE_SECRET_BOUNDARIES.md`       | Disclosure classifications (INTERNAL)      |
-| `EXECUTIVE_NARRATIVE.md`           | CMO/CEO/Investor narrative (PUBLIC)        |
-| `SALES_OBJECTIONS.md`              | Sales objection handling (PUBLIC)          |
-| `EVI_FORMULA.md`                   | EVI formula (RESTRICTED)                   |
+| File                               | Purpose                                             |
+| ---------------------------------- | --------------------------------------------------- |
+| `SAGE_OPERATING_MODEL.md`          | SAGE internal operating model (RESTRICTED)          |
+| `CRAFT_EXECUTION_MODEL.md`         | CRAFT execution model (RESTRICTED)                  |
+| `EVI_MATHEMATICS.md`               | EVI calculation mathematics (RESTRICTED)            |
+| `INFLUENCE_FIELD_VISUALIZATION.md` | Physics-based visualization (RESTRICTED)            |
+| `CITEMIND_SYSTEM.md`               | CiteMind multi-engine system (RESTRICTED)           |
+| `AUTHORITY_SIGNALS_MODEL.md`       | Content authority-signal formulas (D038)            |
+| `SAGE_DAILY_BRIEF.md`              | SAGE Daily Brief — org-level daily narrative (D039) |
+| `PATENT_CLAIMS_DRAFT.md`           | Patent claim drafts (CONFIDENTIAL)                  |
+| `TRADE_SECRET_BOUNDARIES.md`       | Disclosure classifications (INTERNAL)               |
+| `EXECUTIVE_NARRATIVE.md`           | CMO/CEO/Investor narrative (PUBLIC)                 |
+| `SALES_OBJECTIONS.md`              | Sales objection handling (PUBLIC)                   |
+| `EVI_FORMULA.md`                   | EVI formula (RESTRICTED)                            |
 
 ---
 
