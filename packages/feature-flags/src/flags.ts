@@ -203,7 +203,7 @@ export const FLAGS = {
   ANALYTICS_REPORTS_WIRED: false, // Reports nav entry REMOVED in Phase 0; flag kept for the route-file early-return + Phase 1 reactivation.
 
   // SEO pillar (Overview is exemplary — not gated)
-  SEO_TOPICS_WIRED: false,
+  SEO_TOPICS_WIRED: true, // Wave-2: real SERP-overlap keyword clustering (/api/seo/topics → seo/topics). Clusters + score/avg-position/total-volume/trend derived ONLY from cached DataForSEO SERP data (no new paid calls); honest empty state until tracked keywords + a SERP refresh exist. Mock clusters + "SAGE suggested" REMOVED (no real per-cluster source).
   SEO_COMPETITORS_WIRED: true, // Wave-2: real DataForSEO SERP competitor analysis (/api/seo/competitors → seo/competitors). Renders Share-of-Voice + competitor positions only; honest empty state until DataForSEO creds + a refresh exist. EVI head-to-head + cited-content mock REMOVED (no real per-competitor source).
   SEO_CITATIONS_WIRED: true, // Wave-2: real CiteMind monitor results (/api/seo/citations → citemind/monitor/results + summary). Honest empty state for new orgs.
   SEO_RECOMMENDATIONS_WIRED: true, // Wave-2: real SAGE proposals (SEO pillar) via /api/seo/recommendations → sage/action-stream?pillar=seo. Honest empty state for new orgs; no SERP/DataForSEO dependency.

@@ -34,10 +34,17 @@ import { SEOOnPageService } from '../../services/seoOnPageService';
 import { SEOOpportunityService } from '../../services/seoOpportunityService';
 import { resolveSerpProvider } from '../../services/seoSerpProvider';
 import { SEOSerpService } from '../../services/seoSerpService';
+import {
+  SEOTopicClusterService,
+  type SeoKeywordCluster,
+} from '../../services/seoTopicClusterService';
 
 // Response envelopes for the Competitors surface (apps/api-scoped for now).
 type GetSEOCompetitorsResponse = ApiResponse<SEOCompetitorAnalysis>;
 type RefreshSEOCompetitorsResponse = ApiResponse<RefreshCompetitorsResult>;
+
+// Response envelope for the Topics surface (apps/api-scoped for now).
+type GetSEOTopicsResponse = ApiResponse<{ clusters: SeoKeywordCluster[] }>;
 
 export async function seoRoutes(server: FastifyInstance) {
   const env = validateEnv(apiEnvSchema);
@@ -53,6 +60,7 @@ export async function seoRoutes(server: FastifyInstance) {
   const onPageService = new SEOOnPageService(supabase);
   const backlinkService = new SEOBacklinkService(supabase);
   const competitorService = new SEOCompetitorService(supabase);
+  const topicClusterService = new SEOTopicClusterService(supabase);
 
   /**
    * Helper to get user's org ID
@@ -616,6 +624,63 @@ export async function seoRoutes(server: FastifyInstance) {
           error: {
             code: 'INTERNAL_ERROR',
             message: error.message || 'Failed to refresh competitor data',
+          },
+        });
+      }
+    }
+  );
+
+  // ========================================
+  // GET /api/v1/seo/topics
+  // Topic clusters (SERP-overlap) from CACHED SERP data (org-scoped). Clustering
+  // makes NO paid API calls — it reads the stored `seo_serp_results` populated by
+  // the competitor refresh, derives clusters + real metrics, persists them, and
+  // returns them. Honest-empty (`{ clusters: [] }`) when there is no cached SERP
+  // data yet. Real errors are surfaced; no fake-success fallback.
+  // ========================================
+  server.get<{
+    Reply: GetSEOTopicsResponse;
+  }>(
+    '/topics',
+    {
+      preHandler: requireUser,
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: {
+            code: 'NO_ORG',
+            message: 'User is not a member of any organization',
+          },
+        });
+      }
+
+      try {
+        // Free (no external call): recompute from cached SERP data and return the
+        // freshly persisted clusters. Honest-empty when there is no SERP cache.
+        const result = await topicClusterService.computeClusters(orgId);
+        return {
+          success: true,
+          data: { clusters: result.clusters },
+        };
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: error.message || 'Failed to compute topic clusters',
           },
         });
       }

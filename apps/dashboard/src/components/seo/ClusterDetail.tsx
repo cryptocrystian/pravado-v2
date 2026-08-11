@@ -1,32 +1,81 @@
 'use client';
 
 /**
- * ClusterDetail — Right panel showing full cluster analysis.
+ * ClusterDetail — Right panel showing a topic cluster's REAL, SERP-derived facts.
+ *
+ * HONEST DATA: only fields with a genuine source are shown:
+ *   - visibility score (from real avg owned SERP position)
+ *   - avg position, total volume (real)
+ *   - trend (only when ≥ 2 snapshots exist)
+ *   - the member keywords that form the SERP-overlap cluster
+ *
+ * DELIBERATELY REMOVED (were mock, NOT computed — no real per-cluster source):
+ *   per-engine scores, per-competitor head-to-head, tracked-prompt citation
+ *   grids, owned/earned citation lists and SAGE recommendations. Those are
+ *   CiteMind/EVI signals we do not yet produce per cluster; they are omitted
+ *   rather than invented. See the honest note at the foot of the panel.
  */
 
-import {
-  CheckCircle,
-  Warning,
-  XCircle,
-  Lightbulb,
-  House,
-  Newspaper,
-} from '@phosphor-icons/react';
-import { useRouter } from 'next/navigation';
+import { Info, ArrowUp, ArrowDown, Minus } from '@phosphor-icons/react';
 
-import type { TopicCluster } from './seo-mock-data';
+import type { SeoTopicCluster } from '@/hooks/useSeoTopics';
 
-const resultIcon: Record<string, React.ReactNode> = {
-  cited: (
-    <CheckCircle size={14} className="text-semantic-success" weight="fill" />
-  ),
-  partial: <Warning size={14} className="text-amber-500" weight="fill" />,
-  not_cited: <XCircle size={14} className="text-red-500" weight="fill" />,
-};
+import { getClusterStatusLabel, getClusterStatusColor } from './seo-mock-data';
 
-export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
-  const router = useRouter();
+function TrendPill({ trend }: { trend: SeoTopicCluster['trend'] }) {
+  if (trend === null) {
+    return (
+      <span className="text-xs text-white/40" title="Needs ≥ 2 SERP captures">
+        No trend yet
+      </span>
+    );
+  }
+  if (trend === 'up') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs text-semantic-success">
+        <ArrowUp size={12} weight="bold" /> Improving
+      </span>
+    );
+  }
+  if (trend === 'down') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs text-semantic-danger">
+        <ArrowDown size={12} weight="bold" /> Declining
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-xs text-white/45">
+      <Minus size={12} weight="bold" /> Stable
+    </span>
+  );
+}
 
+function MetricCard({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="bg-panel border border-border-subtle rounded-xl p-4">
+      <p className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-1.5">
+        {label}
+      </p>
+      <div className="text-lg font-bold text-white">{value}</div>
+      {hint && <p className="text-[11px] text-white/40 mt-1">{hint}</p>}
+    </div>
+  );
+}
+
+export function ClusterDetail({
+  cluster,
+}: {
+  cluster: SeoTopicCluster | null;
+}) {
   if (!cluster) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -37,7 +86,9 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
     );
   }
 
-  const isTrendHot = cluster.score >= 85;
+  const hasScore = cluster.score !== null;
+  const statusLabel = hasScore ? getClusterStatusLabel(cluster.score!) : null;
+  const statusColor = hasScore ? getClusterStatusColor(cluster.score!) : '';
 
   return (
     <div className="flex-1 min-w-0 overflow-y-auto p-6 space-y-6">
@@ -45,254 +96,94 @@ export function ClusterDetail({ cluster }: { cluster: TopicCluster | null }) {
       <div>
         <div className="flex items-center gap-3 mb-1">
           <h2 className="text-2xl font-bold text-white">{cluster.name}</h2>
-          <span className="text-2xl font-bold text-white">{cluster.score}</span>
-          {isTrendHot && (
-            <span className="bg-amber-500/10 text-amber-500 text-xs px-2 py-0.5 rounded-full font-medium">
-              Hot
+          {hasScore && (
+            <span className="text-2xl font-bold text-white">
+              {cluster.score}
+            </span>
+          )}
+          {statusLabel && (
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor}`}
+            >
+              {statusLabel}
             </span>
           )}
         </div>
         <p className="text-xs text-white/45">
-          {cluster.promptsTracked} prompts tracked &middot; Updated{' '}
-          {cluster.lastUpdated}
+          {cluster.memberKeywords.length} keyword
+          {cluster.memberKeywords.length === 1 ? '' : 's'} &middot; Clustered by
+          shared SERP results &middot; Updated{' '}
+          {new Date(cluster.computedAt).toLocaleDateString()}
         </p>
       </div>
 
-      {/* Score by Engine */}
+      {/* Real metrics */}
       <section>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-3">
-          Score by Engine
-        </h3>
-        <div className="space-y-2">
-          {cluster.engines.map((eng, i) => {
-            const isBest = i === 0;
-            return (
-              <div key={eng.engine} className="flex items-center gap-3">
-                <span className="w-24 text-sm text-white/70">{eng.engine}</span>
-                <div className="flex-1 h-2 bg-white/8 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-cc-cyan rounded-full"
-                    style={{ width: `${eng.score}%` }}
-                  />
-                </div>
-                <span className="w-10 text-right text-sm font-bold text-white">
-                  {eng.score}
-                </span>
-                {isBest && (
-                  <span className="text-xs text-white/45">
-                    &larr; Your best engine on this cluster
-                  </span>
-                )}
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <MetricCard
+            label="Visibility Score"
+            value={hasScore ? cluster.score : '—'}
+            hint={
+              hasScore
+                ? 'From your average organic position on this cluster'
+                : 'You do not rank for any keyword in this cluster yet'
+            }
+          />
+          <MetricCard
+            label="Avg Position"
+            value={
+              cluster.avgPosition !== null ? `#${cluster.avgPosition}` : '—'
+            }
+            hint="Your best organic rank, averaged across ranking keywords"
+          />
+          <MetricCard
+            label="Total Volume"
+            value={
+              cluster.totalVolume !== null
+                ? cluster.totalVolume.toLocaleString()
+                : '—'
+            }
+            hint="Sum of monthly search volume across member keywords"
+          />
         </div>
       </section>
 
-      {/* Competitive Position */}
+      {/* Trend */}
+      <section className="flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45">
+          Trend
+        </h3>
+        <TrendPill trend={cluster.trend} />
+      </section>
+
+      {/* Member keywords */}
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-3">
-          Competitive Position
+          Keywords in this cluster
         </h3>
-        <div className="space-y-2">
-          {cluster.competitors.map((comp, i) => {
-            const rank = i + 1;
-            const delta = comp.isYou
-              ? null
-              : comp.score -
-                (cluster.competitors.find((c) => c.isYou)?.score ?? 0);
-
-            return (
-              <div key={comp.name} className="flex items-center gap-3">
-                <span className="w-6 text-xs text-white/30 font-bold">
-                  #{rank}
-                </span>
-                <span className="w-28 text-sm text-white/70">{comp.name}</span>
-                <div className="flex-1 h-2 bg-white/8 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${comp.isYou ? 'bg-cc-cyan' : 'bg-white/20'}`}
-                    style={{ width: `${comp.score}%` }}
-                  />
-                </div>
-                <span className="w-10 text-right text-sm font-bold text-white">
-                  {comp.score}
-                </span>
-                {comp.isYou ? (
-                  <span className="bg-cc-cyan/10 text-cc-cyan text-xs px-2 py-0.5 rounded-full font-medium">
-                    You
-                  </span>
-                ) : delta !== null ? (
-                  <span className="text-xs text-white/30 w-12 text-right">
-                    ({delta > 0 ? '+' : ''}
-                    {delta})
-                  </span>
-                ) : (
-                  <span className="w-12" />
-                )}
-              </div>
-            );
-          })}
+        <div className="flex flex-wrap gap-2">
+          {cluster.memberKeywords.map((kw) => (
+            <span
+              key={kw}
+              className="inline-flex items-center px-2.5 py-1 rounded-lg bg-white/5 border border-border-subtle text-[13px] text-white/80"
+            >
+              {kw}
+            </span>
+          ))}
         </div>
       </section>
 
-      {/* Tracked Prompts */}
-      {cluster.trackedPrompts.length > 0 && (
-        <section>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-3">
-            Tracked Prompts
-          </h3>
-          <div className="space-y-2">
-            {cluster.trackedPrompts.map((tp) => (
-              <div
-                key={tp.prompt}
-                className="bg-white/[0.02] rounded-xl p-3 flex items-start gap-3"
-              >
-                <p className="flex-1 text-sm text-white/70 italic">
-                  &ldquo;{tp.prompt}&rdquo;
-                </p>
-                <div className="flex items-center gap-2 shrink-0">
-                  {Object.entries(tp.results).map(([engine, status]) => (
-                    <div
-                      key={engine}
-                      className="flex items-center gap-1"
-                      title={`${engine}: ${status}`}
-                    >
-                      <span className="text-xs text-white/30">
-                        {engine.slice(0, 3)}
-                      </span>
-                      {resultIcon[status]}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          {cluster.promptsTracked > cluster.trackedPrompts.length && (
-            <p className="text-xs text-cc-cyan mt-2">
-              View all {cluster.promptsTracked} prompts &rarr;
-            </p>
-          )}
-        </section>
-      )}
-
-      {/* Citation Sources */}
-      <section>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-3">
-          Citation Sources
-        </h3>
-
-        {cluster.ownedCitations.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs text-white/45 mb-1">
-              Your owned pages being cited:
-            </p>
-            {cluster.ownedCitations.map((c) => (
-              <div
-                key={c.url}
-                className="flex items-center gap-2 py-1 text-sm text-white/70"
-              >
-                <House size={12} className="text-cc-cyan shrink-0" />
-                <span className="font-mono text-xs">{c.url}</span>
-                <span className="text-white/30">&mdash;</span>
-                <span className="text-xs font-medium text-white">
-                  {c.count} citations
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {cluster.earnedCitations.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs text-white/45 mb-1">
-              Earned media being cited:
-            </p>
-            {cluster.earnedCitations.map((c) => (
-              <div
-                key={c.source}
-                className="flex items-center gap-2 py-1 text-sm text-white/70"
-              >
-                <Newspaper size={12} className="text-brand-iris shrink-0" />
-                <span className="text-xs">{c.source}</span>
-                <span className="text-white/30">&mdash;</span>
-                <span className="text-xs font-medium text-white">
-                  {c.count} citations
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {cluster.coverageGap && (
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3 text-xs text-amber-500">
-            <strong>Coverage gap:</strong> {cluster.coverageGap}
-          </div>
-        )}
-      </section>
-
-      {/* SAGE Recommendations */}
-      {cluster.recommendations.length > 0 && (
-        <section>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-white/45 mb-3">
-            SAGE Recommendations
-          </h3>
-          <div className="space-y-2">
-            {cluster.recommendations.map((rec, i) => (
-              <div key={i} className="flex items-start gap-2 py-1">
-                {rec.type === 'success' && (
-                  <CheckCircle
-                    size={14}
-                    className="text-semantic-success shrink-0 mt-0.5"
-                    weight="fill"
-                  />
-                )}
-                {rec.type === 'warning' && (
-                  <Warning
-                    size={14}
-                    className="text-amber-500 shrink-0 mt-0.5"
-                    weight="fill"
-                  />
-                )}
-                {rec.type === 'idea' && (
-                  <Lightbulb
-                    size={14}
-                    className="text-cc-cyan shrink-0 mt-0.5"
-                    weight="fill"
-                  />
-                )}
-                <div className="flex-1">
-                  <p
-                    className={`text-sm ${
-                      rec.type === 'success'
-                        ? 'text-semantic-success'
-                        : 'text-white/70'
-                    }`}
-                  >
-                    {rec.text}
-                  </p>
-                  {rec.cta && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        rec.ctaHref ? router.push(rec.ctaHref) : undefined
-                      }
-                      className="text-xs text-cc-cyan hover:text-cc-cyan/80 transition-colors mt-1 inline-flex items-center gap-1"
-                    >
-                      {rec.ctaHref ? (
-                        <span className="bg-cc-cyan text-cc-page rounded-xl px-3 py-1.5 text-xs font-medium hover:bg-cc-cyan/90">
-                          {rec.cta}
-                        </span>
-                      ) : (
-                        <span>{rec.cta}</span>
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Honest note on omitted capability */}
+      <div className="flex items-start gap-2 border-t border-border-subtle pt-5">
+        <Info size={15} className="text-white/35 mt-0.5 shrink-0" />
+        <p className="text-[13px] text-white/45 leading-relaxed max-w-2xl">
+          Per-engine citation scores, competitor head-to-head and AEO
+          recommendations are not shown here — those signals are not yet
+          computed per cluster, and we won&rsquo;t display estimated values.
+          Clusters and the metrics above are built entirely from your cached
+          SERP data.
+        </p>
+      </div>
     </div>
   );
 }
