@@ -8,7 +8,6 @@ const tabs = [
   { label: 'Journalists', href: '/app/pr/journalists' },
   { label: 'Pitches', href: '/app/pr/pitches' },
   { label: 'Coverage', href: '/app/pr/coverage' },
-  { label: 'Intelligence', href: '/app/pr/intelligence' },
 ];
 
 export function PRTabBar() {

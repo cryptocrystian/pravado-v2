@@ -17,14 +17,8 @@ export {
 } from './ExecDashboardLayout';
 
 // S94 Executive Intelligence Components
-export {
-  ExecSituationBrief,
-  type SituationBriefData,
-  type SituationChange,
-  type EmergingSignal,
-  type AttentionItem,
-} from './ExecSituationBrief';
-
+// (ExecSituationBrief retired — the canonical brief is the SAGE Daily Brief
+//  in the Command Center, D039.)
 export {
   ExecDecisionPanel,
   type DecisionPanelData,
