@@ -63,8 +63,12 @@ import {
   type RawSend,
 } from '../../sendGuardedEmail';
 import {
+  computeComposedHash,
+  createSupabaseOutreachReviewGateway,
   requireOutreachReview,
+  resolveEgressMode,
   type OutreachReviewContext,
+  type OutreachReviewGateway,
 } from '../outreachReviewGate';
 
 interface SendPitchParams {
@@ -116,6 +120,13 @@ export interface PrSendPitchDeps {
    * any real-egress path.
    */
   reviewContext?: OutreachReviewContext;
+  /**
+   * DB-backed review gateway seam (migration 112). Reads whether THIS exact composed
+   * pitch is approved (hash-matched) and UPSERTs a pending review row when a real send
+   * lacks approval. Defaults to the Supabase gateway over ctx.supabase; tests inject a
+   * fake to exercise the approved/mismatched/pending decisions without a live DB.
+   */
+  reviewGateway?: OutreachReviewGateway;
 }
 
 function asTrimmedString(v: unknown): string {
@@ -355,22 +366,66 @@ export async function runPrSendPitch(
     composeModel = draft.model;
   }
 
-  // ---- HUMAN-REVIEW GATE (Wave-2 safety floor) ----
+  // ---- HUMAN-REVIEW GATE (Wave-2 safety floor — now DB-backed) ----
   // Outreach is IRREVERSIBLE (CRAFT §4.2/§5.4) → a real send requires a recorded human
   // review of the ACTUAL composed pitch. INERT while egress is the stub (the current
   // human-initiated stub flow proceeds unchanged); it ACTIVATES — blocking un-reviewed
   // sends — the instant a real provider (SendGrid/Mailgun) is provisioned. This gate +
   // SendGrid provisioning are the TWO gates before any real send. Autonomy stays OFF.
-  const review = requireOutreachReview(deps.reviewContext);
+  //
+  // The "approved" decision is DB-backed (pr_pitch_reviews, migration 112): a real send
+  // proceeds ONLY when an `approved` row exists whose `composed_hash` MATCHES the hash of
+  // the text about to send. Anything else (missing / pending / rejected / re-composed →
+  // different hash / DB error) is NOT approved → we UPSERT a pending review row (so the
+  // pitch surfaces in the review queue) and fail-closed. The in-context
+  // `humanReviewApproved` boolean is honored FIRST — it is how the internal approved-send
+  // path re-sends the EXACT already-approved text (and how unit tests inject a decision).
+  const composedBodyForHash = bodyHtml || bodyText;
+  const composedHash = computeComposedHash(subject, composedBodyForHash);
+  const egress = deps.reviewContext?.egress ?? resolveEgressMode();
+
+  let dbApproved = false;
+  const needsDbApproval =
+    egress === 'real' && deps.reviewContext?.humanReviewApproved !== true;
+  const reviewGateway =
+    deps.reviewGateway ?? createSupabaseOutreachReviewGateway(ctx.supabase);
+
+  if (needsDbApproval) {
+    dbApproved = await reviewGateway.isApproved({
+      orgId: ctx.orgId,
+      proposalId: ctx.proposalId,
+      recipientContactId: recipient.contactId,
+      composedHash,
+    });
+  }
+
+  const review = requireOutreachReview({
+    egress: deps.reviewContext?.egress,
+    humanReviewApproved:
+      deps.reviewContext?.humanReviewApproved === true || dbApproved,
+  });
   if (!review.proceed) {
+    // Queue population: enqueue a PENDING review carrying the composed subject/body +
+    // hash + recipient so it appears in GET /api/v1/pr/reviews. Re-composition yields a
+    // new hash → a new pending row (unique index); the stale approval no longer matches.
+    await reviewGateway.upsertPending({
+      orgId: ctx.orgId,
+      proposalId: ctx.proposalId,
+      recipientContactId: recipient.contactId,
+      journalistId: recipient.journalistId,
+      composedSubject: subject,
+      composedBody: composedBodyForHash,
+      composedHash,
+    });
     return {
       result: 'governed_complete',
       detail: {
         kind: 'pr_pitch_review_required',
         action_type: 'pr.send_pitch',
-        note: 'Real email egress is provisioned but this composed pitch has no recorded human review/approval. Nothing sent (fail-closed). Human review + SendGrid provisioning are the two gates before real sends.',
+        note: 'Real email egress is provisioned but this composed pitch has no matching human approval (fail-closed). A pending review was queued. Human review + SendGrid provisioning are the two gates before real sends.',
         egress: review.egress,
         composed,
+        composed_hash: composedHash,
         journalist_id: recipient.journalistId,
         contact_id: recipient.contactId,
       },
