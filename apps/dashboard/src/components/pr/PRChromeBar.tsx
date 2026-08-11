@@ -29,6 +29,7 @@ const TABS = [
   { label: 'Action Queue', href: '/app/pr' },
   { label: 'Journalists', href: '/app/pr/journalists' },
   { label: 'Pitches', href: '/app/pr/pitches' },
+  { label: 'Reviews', href: '/app/pr/reviews' },
   { label: 'Coverage', href: '/app/pr/coverage' },
 ];
 
