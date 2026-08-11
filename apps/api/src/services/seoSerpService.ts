@@ -152,55 +152,10 @@ export class SEOSerpService {
     return gaps;
   }
 
-  /**
-   * Create or update SERP results (for future SERP scraping integration)
-   */
-  async upsertSerpResults(
-    orgId: string,
-    keywordId: string,
-    results: Array<{
-      url: string;
-      title?: string;
-      snippet?: string;
-      rank: number;
-      isCompetitor?: boolean;
-    }>
-  ): Promise<void> {
-    // First, verify the keyword exists and belongs to this org
-    const { data: keyword, error: keywordError } = await this.supabase
-      .from('seo_keywords')
-      .select('id')
-      .eq('id', keywordId)
-      .eq('org_id', orgId)
-      .single();
-
-    if (keywordError || !keyword) {
-      throw new Error('Keyword not found or access denied');
-    }
-
-    // Insert or update SERP results
-    const serpRecords = results.map((r) => ({
-      org_id: orgId,
-      keyword_id: keywordId,
-      url: r.url,
-      title: r.title || null,
-      snippet: r.snippet || null,
-      rank: r.rank,
-      is_competitor: r.isCompetitor !== undefined ? r.isCompetitor : true,
-      last_seen_at: new Date().toISOString(),
-    }));
-
-    const { error: insertError } = await this.supabase
-      .from('seo_serp_results')
-      .upsert(serpRecords, {
-        onConflict: 'org_id,keyword_id,url',
-        ignoreDuplicates: false,
-      });
-
-    if (insertError) {
-      throw new Error(`Failed to upsert SERP results: ${insertError.message}`);
-    }
-  }
+  // NOTE: The previous `upsertSerpResults` stub (never wired to any real SERP
+  // source) has been retired. Live SERP population now flows through
+  // `SEOCompetitorService.refreshCompetitors`, which fetches real positions via
+  // the DataForSEO SERP provider and writes snapshot-linked cached rows.
 
   // ========================================
   // HELPER METHODS
