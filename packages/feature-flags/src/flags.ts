@@ -199,7 +199,7 @@ export const FLAGS = {
   ANALYTICS_OVERVIEW_TREND_WIRED: true, // Wave-2: real EVI trend (/api/evi/history) + EVI driver breakdown (/api/evi/current).
   ANALYTICS_CONTENT_WIRED: false, // Content pillar has ~0 rows — no real source yet.
   ANALYTICS_PR_WIRED: true, // Wave-2: real earned-media stats + coverage timeline (media-monitoring).
-  ANALYTICS_SEO_WIRED: false, // GSC own-property rank IS wired (ENABLE_GSC_INTEGRATION), but full analytics-SEO still awaits a SERP source (DataForSEO absent) — stays gated until then.
+  ANALYTICS_SEO_WIRED: true, // Wave-2: real Analytics-SEO (/api/analytics/seo → /api/v1/analytics/seo). Four panels, each independently honest-empty from a real source: engine breakdown (CiteMind citation_summaries.by_engine + citation_monitor_results), own-rank summary (seo_keywords.current_position + seo_keyword_metrics GSC/DataForSEO), competitive movement (seo_snapshots.position over captured_at — empty until >= 2 snapshots), topic performance (persisted seo_keyword_clusters). No new paid calls; mock TopicOpportunityMatrix + CitationVelocity mocks REMOVED from the live path.
   ANALYTICS_REPORTS_WIRED: false, // Reports nav entry REMOVED in Phase 0; flag kept for the route-file early-return + Phase 1 reactivation.
 
   // SEO pillar (Overview is exemplary — not gated)
