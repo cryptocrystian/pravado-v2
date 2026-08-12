@@ -1,9 +1,15 @@
 /**
- * Journalist Intelligence Client Component (Sprint S100)
- * Client-side UI - ALL data loaded via /api/pr/journalists route handler
+ * Journalist Intelligence Client Component (Sprint S100 · identity-only re-source)
+ * Client-side UI — ALL data loaded via /api/pr/journalists route handler.
  *
  * INVARIANT: This component does NOT import from prDataServer.
- * All data flows through /api/pr/* route handlers.
+ * All data flows through /api/pr/* route handlers (real journalist_profiles).
+ *
+ * IDENTITY-ONLY: This surface renders journalist IDENTITY only (name, outlet,
+ * beat, engagement, last activity). Contact fields (primaryEmail / secondary
+ * emails) are deliberately NOT part of the local type and are never rendered —
+ * CAN-SPAM-sensitive contact data must not surface until outreach egress +
+ * governance are live. Do not add an email column to this surface.
  */
 
 'use client';
@@ -12,13 +18,12 @@ import Link from 'next/link';
 import { useState, useTransition, useEffect } from 'react';
 
 /**
- * Journalist profile type (inline to avoid prDataServer import)
- * S100: Types are defined locally to avoid ANY dependency on prDataServer
+ * Journalist profile type (inline to avoid prDataServer import).
+ * Identity-only: no email/contact fields by construction.
  */
 interface JournalistProfile {
   id: string;
   fullName: string;
-  primaryEmail: string | null;
   primaryOutlet: string | null;
   beat: string | null;
   engagementScore: number;
@@ -44,11 +49,12 @@ export default function JournalistsClient({
     initialProfiles.length === 0
   );
 
-  // S100: Load data on mount via route handler
+  // Load data on mount via route handler
   useEffect(() => {
     if (initialProfiles.length === 0) {
       loadJournalists();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadJournalists = async () => {
@@ -111,143 +117,120 @@ export default function JournalistsClient({
 
   return (
     <div className="p-6">
+      {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Journalist Intelligence</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-2xl font-bold text-white">Journalist Intelligence</h1>
+        <p className="text-sm text-white/45 mt-1">
           Unified contact intelligence and identity resolution
         </p>
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Search journalists..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="flex-1 px-4 py-2 border rounded"
-          />
-          <button
-            onClick={handleSearch}
-            disabled={isPending}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-          >
-            {isPending ? 'Searching...' : 'Search'}
-          </button>
-        </div>
+      <div className="mb-6 flex gap-2">
+        <input
+          type="text"
+          placeholder="Search journalists…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          className="flex-1 bg-white/5 border border-white/8 rounded-xl px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-cc-cyan/30"
+        />
+        <button
+          type="button"
+          onClick={handleSearch}
+          disabled={isPending}
+          className="bg-brand-magenta text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-brand-magenta/90 disabled:opacity-50 transition-colors"
+        >
+          {isPending ? 'Searching…' : 'Search'}
+        </button>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700">Error: {error}</p>
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+          <p className="text-sm text-red-400">{error}</p>
           <button
+            type="button"
             onClick={() => setError(null)}
-            className="mt-2 text-sm text-red-600 hover:text-red-800"
+            className="mt-2 text-xs text-red-400/70 hover:text-red-400 transition-colors"
           >
             Dismiss
           </button>
         </div>
       )}
 
-      {/* Initial Loading State */}
+      {/* Initial loading */}
       {isInitialLoading && (
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading journalists...</p>
+            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-brand-magenta mx-auto mb-3" />
+            <p className="text-sm text-white/45">Loading journalists…</p>
           </div>
         </div>
       )}
 
-      {/* Journalist List */}
+      {/* Journalist list */}
       {!isInitialLoading && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+            <thead>
+              <tr className="border-b border-white/8">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-white/45 py-3 pr-4">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-white/45 py-3 pr-4">
                   Outlet
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-white/45 py-3 pr-4">
                   Beat
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-white/45 py-3 pr-4">
                   Engagement
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-white/45 py-3">
                   Last Activity
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody>
               {journalists.map((journalist) => (
-                <tr key={journalist.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <tr
+                  key={journalist.id}
+                  className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                >
+                  <td className="py-3 pr-4">
                     <Link
                       href={`/app/pr/journalists/${journalist.id}`}
-                      className="block"
+                      className="text-sm font-medium text-white hover:text-brand-magenta transition-colors"
                     >
-                      <div className="font-medium text-gray-900 hover:text-blue-600">
-                        {journalist.fullName}
+                      {journalist.fullName}
+                    </Link>
+                  </td>
+                  <td className="py-3 pr-4 text-sm text-white/70">
+                    {journalist.primaryOutlet || '—'}
+                  </td>
+                  <td className="py-3 pr-4 text-sm text-white/70">
+                    {journalist.beat || '—'}
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-white/10 rounded-full h-1.5">
+                        <div
+                          className="bg-brand-magenta h-1.5 rounded-full"
+                          style={{
+                            width: `${Math.max(0, Math.min(1, journalist.engagementScore)) * 100}%`,
+                          }}
+                        />
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {journalist.primaryEmail}
-                      </div>
-                    </Link>
+                      <span className="text-xs text-white/45">
+                        {(journalist.engagementScore * 100).toFixed(0)}%
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <Link
-                      href={`/app/pr/journalists/${journalist.id}`}
-                      className="block hover:text-blue-600"
-                    >
-                      {journalist.primaryOutlet || '\u2014'}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <Link
-                      href={`/app/pr/journalists/${journalist.id}`}
-                      className="block hover:text-blue-600"
-                    >
-                      {journalist.beat || '\u2014'}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Link
-                      href={`/app/pr/journalists/${journalist.id}`}
-                      className="block"
-                    >
-                      <div className="flex items-center">
-                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{
-                              width: `${journalist.engagementScore * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm text-gray-600">
-                          {(journalist.engagementScore * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <Link
-                      href={`/app/pr/journalists/${journalist.id}`}
-                      className="block hover:text-blue-600"
-                    >
-                      {journalist.lastActivityAt
-                        ? new Date(
-                            journalist.lastActivityAt
-                          ).toLocaleDateString()
-                        : '\u2014'}
-                    </Link>
+                  <td className="py-3 text-sm text-white/70">
+                    {journalist.lastActivityAt
+                      ? new Date(journalist.lastActivityAt).toLocaleDateString()
+                      : '—'}
                   </td>
                 </tr>
               ))}
@@ -255,13 +238,14 @@ export default function JournalistsClient({
           </table>
 
           {journalists.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              No journalists found
+            <div className="text-center py-16 text-sm text-white/45">
+              No journalists yet — identities populate as PR discovery and
+              enrichment run.
             </div>
           )}
 
           {total > 0 && (
-            <div className="px-6 py-4 border-t border-gray-200 text-sm text-gray-600">
+            <div className="mt-4 pt-4 border-t border-white/8 text-xs text-white/45">
               Showing {journalists.length} of {total} journalists
             </div>
           )}
