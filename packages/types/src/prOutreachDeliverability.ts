@@ -252,6 +252,22 @@ export interface EngagementMetricsListResponse {
 }
 
 /**
+ * Per-send sender identity override (multi-tenant outreach).
+ *
+ * The `from` EMAIL always stays the provider-authenticated platform address
+ * (ProviderConfig.fromEmail) so DKIM/SPF/DMARC hold — you cannot send as an
+ * arbitrary customer domain without authenticating it. What varies per customer
+ * is the DISPLAY NAME (`fromName`, e.g. "Jane Doe (via Pravado)") and the
+ * `replyTo` (the customer's real address, so journalist replies reach them).
+ */
+export interface SenderIdentity {
+  /** Display name shown on the From line. Falls back to ProviderConfig.fromName. */
+  fromName?: string;
+  /** Reply-To address (customer's real mailbox); replies route here, not to the platform from. */
+  replyTo?: { email: string; name?: string };
+}
+
+/**
  * Sending email request
  */
 export interface SendEmailRequest {
@@ -260,6 +276,9 @@ export interface SendEmailRequest {
   bodyHtml: string;
   bodyText: string;
   metadata?: Record<string, unknown>;
+  /** Optional per-send sender identity (display name + reply-to). from-email stays the authenticated platform address. */
+  fromName?: string;
+  replyTo?: { email: string; name?: string };
 }
 
 /**

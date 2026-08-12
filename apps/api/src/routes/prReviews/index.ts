@@ -83,7 +83,17 @@ export default async function prReviewsRoutes(fastify: FastifyInstance) {
         orgId,
         userId: user.id,
         reviewId: request.params.id,
-        send: (review: PrPitchReviewRow) => sendApprovedPitch(supabase, review),
+        send: (review: PrPitchReviewRow) =>
+          // Thread the approver so their address becomes the outreach reply-to.
+          sendApprovedPitch(
+            supabase,
+            review,
+            {},
+            {
+              id: user.id,
+              email: user.email,
+            }
+          ),
       });
 
       if (!result.ok) {

@@ -182,9 +182,21 @@ class SendGridEmailProvider extends EmailProviderBase {
           },
         ],
         from: {
+          // from-EMAIL stays the authenticated platform address (DKIM/SPF/DMARC);
+          // only the DISPLAY NAME varies per customer.
           email: this.config.fromEmail || 'noreply@pravado.com',
-          name: this.config.fromName || 'Pravado',
+          name: request.fromName || this.config.fromName || 'Pravado',
         },
+        // Route journalist replies to the customer's real mailbox, not the
+        // platform from-address. Omitted when no per-send reply-to is provided.
+        ...(request.replyTo?.email
+          ? {
+              reply_to: {
+                email: request.replyTo.email,
+                ...(request.replyTo.name ? { name: request.replyTo.name } : {}),
+              },
+            }
+          : {}),
         content: [
           ...(request.bodyText
             ? [{ type: 'text/plain', value: request.bodyText }]
