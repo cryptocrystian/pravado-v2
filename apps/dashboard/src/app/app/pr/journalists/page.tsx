@@ -17,10 +17,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import JournalistsClient from './JournalistsClient';
-
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+
+import JournalistsClient from './JournalistsClient';
 
 export default function JournalistsPage() {
   const wired = useFeatureFlag('PR_JOURNALISTS_WIRED');
