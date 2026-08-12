@@ -187,7 +187,7 @@ export const FLAGS = {
 
   // PR pillar
   PR_ACTION_QUEUE_MANUAL_WIRED: false,
-  PR_JOURNALISTS_WIRED: false,
+  PR_JOURNALISTS_WIRED: true, // Lit: identity-only Journalist Intelligence list from real journalist_profiles (/api/pr/journalists). Renders name/outlet/beat/engagement/last-activity; contact emails withheld (CAN-SPAM) until outreach egress live. Honest-empty until discovery/enrichment populate rows.
   PR_PITCHES_WIRED: false,
   PR_INTELLIGENCE_WIRED: false,
 
