@@ -56,6 +56,7 @@ import {
   type ComposePitchInput,
   type ComposedPitch,
 } from '../../pr/pitchComposer';
+import { resolveSenderIdentity } from '../../pr/senderIdentity';
 import {
   deliverabilityRawSend,
   sendGuardedEmail,
@@ -448,12 +449,22 @@ export async function runPrSendPitch(
   const gateways =
     deps.gateways ?? createSupabaseGovernanceGateways(ctx.supabase);
 
+  // Per-customer sender identity (display name + reply-to). from-email stays the
+  // authenticated platform address. Best-effort — never blocks the governed send.
+  const senderIdentity = await resolveSenderIdentity(
+    ctx.supabase,
+    ctx.orgId,
+    ctx.actingUser
+  );
+
   const guarded = await sendGuardedEmail({
     request: {
       to: recipient.email,
       subject,
       bodyHtml: bodyHtml || bodyText,
       bodyText,
+      fromName: senderIdentity.fromName,
+      replyTo: senderIdentity.replyTo,
       metadata: {
         orgId: ctx.orgId,
         journalistId: recipient.journalistId,

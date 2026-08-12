@@ -21,6 +21,12 @@ export interface ExecutorContext {
   orgId: string;
   proposalId: string;
   executionId: string;
+  /**
+   * The human initiating this execution, when there is one (e.g. the approver in
+   * the PR pitch review flow). Optional: autonomous/scheduled executions have no
+   * acting user. Used to resolve outreach reply-to; never affects governance.
+   */
+  actingUser?: { id?: string; email?: string; name?: string };
 }
 
 /**

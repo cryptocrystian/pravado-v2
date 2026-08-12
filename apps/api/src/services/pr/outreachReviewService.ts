@@ -143,7 +143,8 @@ export function createSupabaseOutreachReviewStore(
 export async function sendApprovedPitch(
   supabase: SupabaseClient,
   review: PrPitchReviewRow,
-  deps: PrSendPitchDeps = {}
+  deps: PrSendPitchDeps = {},
+  actingUser?: { id?: string; email?: string; name?: string }
 ): Promise<ExecutorResult> {
   const proposal = {
     action_type: 'pr.send_pitch',
@@ -165,6 +166,9 @@ export async function sendApprovedPitch(
       orgId: review.org_id,
       proposalId: review.proposal_id,
       executionId: `pr-review-${review.id}`,
+      // The approver is the human on behalf of whom this pitch sends — their
+      // address becomes the outreach reply-to so journalist replies reach them.
+      actingUser,
     },
     {
       ...deps,

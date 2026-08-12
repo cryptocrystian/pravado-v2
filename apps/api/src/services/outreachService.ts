@@ -36,6 +36,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { createSupabaseGovernanceGateways } from './governanceGateways';
 import type { OutreachDeliverabilityService } from './outreachDeliverabilityService';
+import { resolveSenderIdentity } from './pr/senderIdentity';
 import { deliverabilityRawSend, sendGuardedEmail } from './sendGuardedEmail';
 import { createLogger } from '../lib/logger';
 /**
@@ -747,12 +748,20 @@ export class OutreachService {
         // step 1 is the initial pitch; steps > 1 are follow-ups (governed by
         // the 2-per-7-days follow-up cap).
         const gateways = createSupabaseGovernanceGateways(this.supabase);
+        // Per-customer sender identity. Sequence sends are autonomous (no acting
+        // user), so reply-to resolves from org config; from-email stays platform.
+        const senderIdentity = await resolveSenderIdentity(
+          this.supabase,
+          orgId
+        );
         const guarded = await sendGuardedEmail({
           request: {
             to: run.journalist.email,
             subject: email.subject,
             bodyHtml: email.body,
             bodyText: email.body,
+            fromName: senderIdentity.fromName,
+            replyTo: senderIdentity.replyTo,
             metadata: email.variables,
           },
           context: {
