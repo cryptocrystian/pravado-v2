@@ -152,6 +152,18 @@ export async function createServer() {
   // Raw-body capture is per-route via a `preParsing` hook — see
   // apps/api/src/lib/captureRawBody.ts. No global plugin registration needed.
 
+  // SendGrid Inbound Parse posts a journalist reply as multipart/form-data.
+  // Fastify has no built-in multipart parser and nothing else in the API accepts
+  // multipart, so register a minimal buffer parser — the inbound reply route
+  // parses the fields itself (apps/api/src/lib/parseMultipartFields.ts). Kept
+  // dependency-free (no @fastify/multipart plugin) to avoid new surface on the
+  // critical server; only multipart/form-data requests are affected.
+  server.addContentTypeParser(
+    'multipart/form-data',
+    { parseAs: 'buffer' },
+    (_req, body, done) => done(null, body)
+  );
+
   await server.register(cookie, {
     secret: config.COOKIE_SECRET,
   });

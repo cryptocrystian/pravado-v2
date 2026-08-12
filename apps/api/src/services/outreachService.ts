@@ -4,6 +4,7 @@ const logger = createLogger('api:services:outreachService');
  * Automated journalist outreach engine
  */
 
+import { FLAGS } from '@pravado/feature-flags';
 import type {
   CreateOutreachEventInput,
   CreateOutreachRunInput,
@@ -36,6 +37,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { createSupabaseGovernanceGateways } from './governanceGateways';
 import type { OutreachDeliverabilityService } from './outreachDeliverabilityService';
+import { createReplyToken } from './pr/replyCapture';
 import { resolveSenderIdentity } from './pr/senderIdentity';
 import { deliverabilityRawSend, sendGuardedEmail } from './sendGuardedEmail';
 import { createLogger } from '../lib/logger';
@@ -754,6 +756,20 @@ export class OutreachService {
           this.supabase,
           orgId
         );
+        // Reply capture: tokenized reply-to when wired (captured + forwarded via
+        // Inbound Parse). The sequence path carries run + message ids for threading.
+        let replyTo = senderIdentity.replyTo;
+        if (FLAGS.PR_OUTREACH_INBOUND_WIRED) {
+          const tokenAddress = await createReplyToken(this.supabase, {
+            orgId,
+            journalistId: run.journalist.id,
+            runId,
+            messageId: emailMessage.id,
+            forwardTo: senderIdentity.replyTo?.email ?? null,
+            subject: email.subject,
+          });
+          if (tokenAddress) replyTo = { email: tokenAddress };
+        }
         const guarded = await sendGuardedEmail({
           request: {
             to: run.journalist.email,
@@ -761,7 +777,7 @@ export class OutreachService {
             bodyHtml: email.body,
             bodyText: email.body,
             fromName: senderIdentity.fromName,
-            replyTo: senderIdentity.replyTo,
+            replyTo,
             metadata: email.variables,
           },
           context: {

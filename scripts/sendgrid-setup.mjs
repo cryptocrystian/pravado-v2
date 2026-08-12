@@ -33,6 +33,14 @@ const WEBHOOK_URL =
   process.env.SENDGRID_WEBHOOK_URL ||
   'https://pravado-api.onrender.com/api/v1/pr-outreach-deliverability/webhooks/sendgrid';
 const VALIDATE = process.argv.includes('--validate');
+// Opt-in: also configure SendGrid Inbound Parse for reply capture (reply.<domain>).
+const INBOUND = process.argv.includes('--inbound');
+const INBOUND_SECRET = process.env.PR_OUTREACH_INBOUND_SECRET;
+const INBOUND_URL =
+  (process.env.SENDGRID_INBOUND_URL ||
+    'https://pravado-api.onrender.com/api/v1/pr-outreach-deliverability/inbound/sendgrid') +
+  (INBOUND_SECRET ? `?key=${encodeURIComponent(INBOUND_SECRET)}` : '');
+const REPLY_HOST = `reply.${DOMAIN}`;
 
 if (!KEY) {
   console.error(
@@ -184,6 +192,37 @@ async function step3SignedWebhookKey() {
   return publicKey;
 }
 
+async function stepInboundParse() {
+  console.log(`\n[inbound] Inbound Parse for "${REPLY_HOST}" → ${INBOUND_URL}`);
+  const existing = await sg('GET', '/v3/user/webhooks/parse/settings');
+  const results = existing.result || [];
+  const found = results.find((r) => r.hostname === REPLY_HOST);
+  if (found) {
+    await sg(
+      'PATCH',
+      `/v3/user/webhooks/parse/settings/${encodeURIComponent(REPLY_HOST)}`,
+      { url: INBOUND_URL, spam_check: true, send_raw: false }
+    );
+    console.log('  ✓ Updated existing Inbound Parse setting.');
+  } else {
+    await sg('POST', '/v3/user/webhooks/parse/settings', {
+      hostname: REPLY_HOST,
+      url: INBOUND_URL,
+      spam_check: true,
+      send_raw: false,
+    });
+    console.log('  ✓ Created Inbound Parse setting.');
+  }
+  console.log('\n  Add this DNS record so journalist replies reach SendGrid:');
+  console.log('  ┌──────┬───────┬─────────────────┬──────────┐');
+  console.log('  │ TYPE │ HOST  │ VALUE           │ PRIORITY │');
+  console.log('  │ MX   │ reply │ mx.sendgrid.net │    10    │');
+  console.log('  └──────┴───────┴─────────────────┴──────────┘');
+  console.log(
+    '  (Namecheap: Type=MX Record, Host="reply", Value/Mail Server="mx.sendgrid.net", Priority=10.)'
+  );
+}
+
 async function main() {
   console.log('PRAVADO · SendGrid setup');
   console.log('========================');
@@ -196,6 +235,7 @@ async function main() {
   const domainResult = await step1DomainAuth();
   await step2EventWebhook();
   const publicKey = await step3SignedWebhookKey();
+  if (INBOUND) await stepInboundParse();
 
   console.log('\n────────────────────────────────────────────────────────');
   console.log('Summary');
