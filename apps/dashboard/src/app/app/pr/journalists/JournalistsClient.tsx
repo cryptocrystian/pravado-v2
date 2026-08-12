@@ -119,7 +119,9 @@ export default function JournalistsClient({
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Journalist Intelligence</h1>
+        <h1 className="text-2xl font-bold text-white">
+          Journalist Intelligence
+        </h1>
         <p className="text-sm text-white/45 mt-1">
           Unified contact intelligence and identity resolution
         </p>
