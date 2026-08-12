@@ -42,6 +42,7 @@
  *     → `governed_complete` (kind `pr_pitch_needs_recipient`). Nothing sent.
  */
 
+import { FLAGS } from '@pravado/feature-flags';
 import type { ProviderConfig } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -56,6 +57,7 @@ import {
   type ComposePitchInput,
   type ComposedPitch,
 } from '../../pr/pitchComposer';
+import { createReplyToken } from '../../pr/replyCapture';
 import { resolveSenderIdentity } from '../../pr/senderIdentity';
 import {
   deliverabilityRawSend,
@@ -457,6 +459,21 @@ export async function runPrSendPitch(
     ctx.actingUser
   );
 
+  // When reply capture is wired, intercept replies via a tokenized reply-to so
+  // journalist responses route through SendGrid Inbound Parse (captured +
+  // forwarded). Falls back to the customer's own address when off / on failure.
+  let replyTo = senderIdentity.replyTo;
+  if (FLAGS.PR_OUTREACH_INBOUND_WIRED) {
+    const tokenAddress = await createReplyToken(ctx.supabase, {
+      orgId: ctx.orgId,
+      journalistId: recipient.journalistId,
+      proposalId: ctx.proposalId,
+      forwardTo: senderIdentity.replyTo?.email ?? null,
+      subject,
+    });
+    if (tokenAddress) replyTo = { email: tokenAddress };
+  }
+
   const guarded = await sendGuardedEmail({
     request: {
       to: recipient.email,
@@ -464,7 +481,7 @@ export async function runPrSendPitch(
       bodyHtml: bodyHtml || bodyText,
       bodyText,
       fromName: senderIdentity.fromName,
-      replyTo: senderIdentity.replyTo,
+      replyTo,
       metadata: {
         orgId: ctx.orgId,
         journalistId: recipient.journalistId,

@@ -18,12 +18,20 @@ import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { captureRawBody } from '../../lib/captureRawBody';
+import { parseMultipartFields } from '../../lib/parseMultipartFields';
 import { requireUser } from '../../middleware/requireUser';
 import { createSupabaseGovernanceGateways } from '../../services/governanceGateways';
 import {
   createOutreachDeliverabilityService,
   resolveWebhookOrgId,
 } from '../../services/outreachDeliverabilityService';
+import {
+  extractMessageId,
+  isAutoResponder,
+  parseTokenFromRecipients,
+  recordInboundReply,
+  resolveReplyToken,
+} from '../../services/pr/replyCapture';
 import {
   deliverabilityRawSend,
   sendGuardedEmail,
@@ -587,6 +595,166 @@ export default async function prOutreachDeliverabilityRoutes(
       }
     }
   );
+
+  // ===========================================================================
+  // Inbound reply capture — SendGrid Inbound Parse (Phase 1: capture + forward)
+  // POST /api/v1/pr-outreach-deliverability/inbound/sendgrid
+  //
+  // A journalist reply to a tokenized reply-to (<token>@reply.pravado.io) lands
+  // here. We resolve the token → org/journalist/run + the customer inbox, dedupe
+  // on Message-ID, store the reply, score it (a reply is the strongest positive
+  // relationship signal), and forward it to the customer via the TRANSACTIONAL
+  // mailer (NOT the outreach provider — a forward is not a governed pitch). We
+  // ack 2xx on resolvable AND unresolvable input so SendGrid does not retry;
+  // 5xx only on an unexpected fault (so a transient error IS retried).
+  // ===========================================================================
+  fastify.post('/inbound/sendgrid', async (request, reply) => {
+    if (!FLAGS.PR_OUTREACH_INBOUND_WIRED) {
+      return reply
+        .status(404)
+        .send({ success: false, error: { code: 'NOT_WIRED' } });
+    }
+    // Optional shared-secret gate (defense-in-depth; the 128-bit token is the
+    // primary capability — an unsigned POST cannot forge a reply for a token it
+    // does not know).
+    const inboundSecret = process.env.PR_OUTREACH_INBOUND_SECRET;
+    if (
+      inboundSecret &&
+      (request.query as { key?: string } | undefined)?.key !== inboundSecret
+    ) {
+      return reply
+        .status(401)
+        .send({ success: false, error: { code: 'UNAUTHORIZED' } });
+    }
+
+    try {
+      const raw = request.body;
+      const buf = Buffer.isBuffer(raw)
+        ? raw
+        : Buffer.from(typeof raw === 'string' ? raw : '');
+      const fields = parseMultipartFields(buf, request.headers['content-type']);
+
+      const token = parseTokenFromRecipients(fields.to);
+      if (!token) {
+        return reply.send({
+          success: false,
+          data: { processed: false, reason: 'no_token' },
+        });
+      }
+      const tokenRow = await resolveReplyToken(supabase, token);
+      if (!tokenRow) {
+        return reply.send({
+          success: false,
+          data: { processed: false, reason: 'token_unresolved' },
+        });
+      }
+
+      // Auto-responders / bounces / vacation replies are not genuine replies.
+      if (isAutoResponder(fields)) {
+        return reply.send({
+          success: true,
+          data: { processed: false, reason: 'auto_responder' },
+        });
+      }
+
+      const inboundMessageId = extractMessageId(fields.headers);
+      const rec = await recordInboundReply(supabase, {
+        orgId: tokenRow.org_id,
+        tokenId: tokenRow.id,
+        journalistId: tokenRow.journalist_id,
+        runId: tokenRow.run_id,
+        fromEmail: fields.from ?? null,
+        subject: fields.subject ?? null,
+        bodyText: fields.text ?? null,
+        bodyHtml: fields.html ?? null,
+        inboundMessageId,
+      });
+      if (!rec.inserted) {
+        return reply.send({
+          success: true,
+          data: { processed: false, reason: 'duplicate' },
+        });
+      }
+
+      // Score the reply: mark the run replied (feeds total_replied) then recompute
+      // the journalist engagement score. The CRAFT single-pitch path has no run,
+      // so its reply is captured + forwarded but not run-scored (Phase 1 limit).
+      if (tokenRow.run_id) {
+        await supabase
+          .from('pr_outreach_runs')
+          .update({
+            replied_at: new Date().toISOString(),
+            stop_reason: 'journalist_replied',
+          })
+          .eq('id', tokenRow.run_id)
+          .eq('org_id', tokenRow.org_id)
+          .is('replied_at', null);
+      }
+      if (tokenRow.journalist_id) {
+        try {
+          const svc = createOutreachDeliverabilityService({
+            supabase,
+            providerConfig,
+          });
+          await svc.updateEngagementMetrics(
+            tokenRow.journalist_id,
+            tokenRow.org_id
+          );
+        } catch (err) {
+          fastify.log.warn(
+            { err },
+            'reply engagement update failed (non-fatal)'
+          );
+        }
+      }
+
+      // Forward to the customer via the transactional mailer (guard-clean:
+      // `sendMail`, not the outreach provider). Non-fatal — the reply is already
+      // captured + scored even if the forward fails.
+      let forwarded = false;
+      if (tokenRow.forward_to) {
+        try {
+          const journalistFrom = fields.from?.trim() || 'the journalist';
+          const baseSubject =
+            fields.subject?.trim() ||
+            (tokenRow.subject ? `Re: ${tokenRow.subject}` : 'Re: your pitch');
+          const noticeHtml = `<p style="color:#667;font-size:12px;margin:0 0 8px">A journalist replied to your Pravado pitch — reply directly to <b>${journalistFrom}</b>.</p><hr style="border:none;border-top:1px solid #ddd"/>`;
+          const noticeText = `A journalist replied to your Pravado pitch — reply directly to ${journalistFrom}.\n\n`;
+          await request.server.mailer.sendMail({
+            to: tokenRow.forward_to,
+            subject: baseSubject,
+            html:
+              noticeHtml + (fields.html || `<pre>${fields.text || ''}</pre>`),
+            text: noticeText + (fields.text || ''),
+          });
+          forwarded = true;
+          if (inboundMessageId) {
+            await supabase
+              .from('pr_outreach_inbound_replies')
+              .update({ forwarded_at: new Date().toISOString() })
+              .eq('org_id', tokenRow.org_id)
+              .eq('inbound_message_id', inboundMessageId);
+          }
+        } catch (err) {
+          fastify.log.warn({ err }, 'reply forward failed (non-fatal)');
+        }
+      }
+
+      return reply.send({
+        success: true,
+        data: { processed: true, forwarded },
+      });
+    } catch (error) {
+      fastify.log.error({ error }, 'Inbound reply processing error');
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'INBOUND_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+      });
+    }
+  });
 
   // =============================================
   // Testing & Development
