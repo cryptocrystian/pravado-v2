@@ -189,7 +189,9 @@ export const FLAGS = {
   PR_ACTION_QUEUE_MANUAL_WIRED: false,
   PR_JOURNALISTS_WIRED: true, // Lit: identity-only Journalist Intelligence list from real journalist_profiles (/api/pr/journalists). Renders name/outlet/beat/engagement/last-activity; contact emails withheld (CAN-SPAM) until outreach egress live. Honest-empty until discovery/enrichment populate rows.
   PR_PITCHES_WIRED: false,
-  PR_INTELLIGENCE_WIRED: false,
+  // PR_INTELLIGENCE_WIRED removed — the standalone PR Intelligence surface was
+  // retired (D039); intelligence is delivered via the SAGE PR action-queue +
+  // Command Center Daily Brief/Intelligence Canvas + integrated CiteMind.
 
   // Content pillar
   CONTENT_EDITOR_WIRED: false,
