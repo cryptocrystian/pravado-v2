@@ -1,10 +1,19 @@
 name: Smoke Tests
 
+# Cost-slimmed: this job installs Chromium + browser deps (~3 min) and runs
+# Playwright against the PRODUCTION dashboard (app.pravado.io). It does NOT
+# exercise the PR's code, so running it on every PR was pure waste. Now gated
+# to PRs that touch the dashboard, plus manual dispatch.
 on:
   pull_request:
     branches: [main]
-  # Allow manual trigger
+    paths:
+      - 'apps/dashboard/**'
   workflow_dispatch:
+
+concurrency:
+  group: smoke-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   smoke:

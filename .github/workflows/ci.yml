@@ -1,15 +1,30 @@
 name: CI
 
+# Cost-slimmed: a single `verify` job installs deps ONCE and runs lint →
+# typecheck → test → build sequentially (was 4 separate jobs each paying a
+# full `pnpm install`). Docs-only changes are skipped here — canon/docs are
+# validated by the Canon Integrity workflow, which needs no install.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
 
+# Cancel superseded runs on the same ref (rapid pushes queue N runs).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lint:
-    name: Lint
+  verify:
+    name: Verify (lint · typecheck · test · build)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,6 +44,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # --- Lint / format / mock-leak ---
       - name: Run linters
         run: pnpm lint
 
@@ -38,51 +54,11 @@ jobs:
       - name: Check for mock data leaks (Phase 0 Track 0B)
         run: bash scripts/detect-mock-leaks.sh
 
-  typecheck:
-    name: Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      # --- Type check ---
       - name: Run type checking
         run: pnpm typecheck
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      # --- Test ---
       - name: Run tests
         run: pnpm test
 
@@ -92,11 +68,7 @@ jobs:
         run: node apps/api/scripts/check-api-send-chokepoint.mjs
 
       # Phase 0.5 Plan 06d: catch the failure mode that bit Track 0D —
-      # typecheck + test pass while runtime plugin chain crashes at startup.
-      # Boots apps/api for 5 seconds and fails the build if the process
-      # exits. Env vars below are test placeholders that satisfy
-      # apiEnvSchema (validators/src/env.ts) without requiring real
-      # credentials. See docs/sprints/PHASE-0-5-OBSERVABILITY/06d-render-unblock.md
+      # typecheck + test pass while the runtime plugin chain crashes at startup.
       - name: API startup smoke test
         working-directory: apps/api
         env:
@@ -121,28 +93,7 @@ jobs:
           kill $API_PID 2>/dev/null || true
           wait $API_PID 2>/dev/null || true
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck, test]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      # --- Build (gated on the checks above passing, same as before) ---
       - name: Build all packages
         run: pnpm build
 
