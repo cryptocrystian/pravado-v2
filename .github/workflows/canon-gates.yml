@@ -1,106 +1,59 @@
 name: Canon Integrity
 
+# Cost-slimmed: the 6 fast guard checks (canon integrity + legacy-surface +
+# 4 Command Center guards) now run in ONE job with a single checkout, instead
+# of 6 separate runners each paying checkout + setup-node overhead. Each guard
+# is a pure Node script (no pnpm install). A failure in any guard fails the job;
+# `if: always()` on later steps ensures all guards report even when an earlier
+# one fails (so you see every violation in one run, as before).
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
 
+concurrency:
+  group: canon-gates-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  canon-integrity:
-    name: Canon Integrity Check
+  gates:
+    name: Canon + Command Center Guards
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history needed for git diff
+          fetch-depth: 0 # full history for the canon-integrity git diff
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Run Canon Integrity Check
+      - name: Canon Integrity Check
         run: node scripts/check-canon-integrity.mjs
 
-  legacy-surface-guard:
-    name: Legacy Surface Guard
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Check Legacy Surfaces
+      - name: Legacy Surface Guard
+        if: always()
         run: node apps/dashboard/scripts/check-legacy-surfaces.mjs
 
-  command-center-shell-guard:
-    name: Command Center Shell Guard
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Check Command Center Shell Integrity
+      - name: Command Center Shell Guard
+        if: always()
         working-directory: apps/dashboard
         run: node scripts/check-command-center-shell.mjs
 
-  command-center-topbar-guard:
-    name: Command Center Topbar Guard
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Check for Search Duplication
+      - name: Command Center Topbar Guard
+        if: always()
         working-directory: apps/dashboard
         run: node scripts/check-command-center-topbar.mjs
 
-  command-center-density-guard:
-    name: Command Center Density Guard
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Check Command Center Density Patterns
+      - name: Command Center Density Guard
+        if: always()
         working-directory: apps/dashboard
         run: node scripts/check-command-center-density.mjs
 
-  command-center-contrast-guard:
-    name: Command Center Contrast Guard
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Check Command Center Contrast / Legibility
+      - name: Command Center Contrast Guard
+        if: always()
         working-directory: apps/dashboard
         run: node scripts/check-command-center-contrast.mjs
