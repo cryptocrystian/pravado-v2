@@ -3,15 +3,16 @@
 /**
  * Journalist CRM — /app/pr/journalists
  *
- * Phase 0 Track 0B: full ComingSoonGate behind PR_JOURNALISTS_WIRED. The
- * page previously fell back to `mockJournalists` (Sarah Chen, Marcus Webb,
- * etc.) whenever the API returned empty or errored — the exact "fabricated
- * journalist relationships" failure mode flagged in the May 12 audit.
+ * Gated behind PR_JOURNALISTS_WIRED (default OFF → ComingSoonGate). When the
+ * flag is flipped ON, this renders the identity-only Journalist Intelligence
+ * list, sourced entirely from the real journalist_profiles table via
+ * /api/pr/journalists (no mock fallback in the render path).
  *
- * The SAGE Suggested tab consumes `mockSageJournalists` from pr-mock-data.ts;
- * that import is exempt per the Feb brief and returns when Phase 1
- * Workstream 2 wires journalist data. The mock-leak grep allows-list this
- * file's pr-mock-data.ts import path.
+ * IDENTITY-ONLY: the list renders name/outlet/beat/engagement/last-activity —
+ * NO contact emails (CAN-SPAM-sensitive; withheld until outreach egress +
+ * governance are live). The previous mockJournalists fallback (the May 12
+ * "fabricated journalist relationships" failure mode) and the mock-fed SAGE
+ * Suggested tab are intentionally NOT wired here.
  */
 
 export const dynamic = 'force-dynamic';
@@ -19,11 +20,13 @@ export const dynamic = 'force-dynamic';
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
+import JournalistsClient from './JournalistsClient';
+
 export default function JournalistsPage() {
   const wired = useFeatureFlag('PR_JOURNALISTS_WIRED');
   if (!wired) {
     return <ComingSoonGate pillar="PR" subsurface="Journalists" />;
   }
-  // Phase 1 restores the split-pane CRM render here.
-  return null;
+  // Client self-loads real profiles from /api/pr/journalists on mount.
+  return <JournalistsClient initialProfiles={[]} initialTotal={0} />;
 }
