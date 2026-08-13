@@ -39,8 +39,10 @@ export const apiEnvSchema = baseEnvSchema.extend({
   SENDGRID_FROM_NAME: z.string().optional(),
   /** SendGrid Event Webhook verification key (ECDSA public key) */
   SENDGRID_WEBHOOK_KEY: z.string().optional(),
-  // Email provider selection (sendgrid, mailgun, or stub)
-  EMAIL_PROVIDER: z.enum(['sendgrid', 'mailgun', 'stub']).default('stub'),
+  // Email provider selection — must match the EmailProvider union / factory.
+  EMAIL_PROVIDER: z
+    .enum(['sendgrid', 'resend', 'mailgun', 'ses', 'stub'])
+    .default('stub'),
   // Cron secret for scheduler endpoint authentication (S98)
   CRON_SECRET: z.string().optional(),
   DASHBOARD_URL: z.string().url().default('http://localhost:3000'),
