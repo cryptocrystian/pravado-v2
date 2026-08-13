@@ -16,7 +16,7 @@ export type EmailMessageStatus =
 /**
  * Email provider types
  */
-export type EmailProvider = 'sendgrid' | 'mailgun' | 'ses' | 'stub';
+export type EmailProvider = 'sendgrid' | 'resend' | 'mailgun' | 'ses' | 'stub';
 
 /**
  * Provider event types

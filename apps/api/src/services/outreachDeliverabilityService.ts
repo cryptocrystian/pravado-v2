@@ -115,7 +115,10 @@ abstract class EmailProviderBase {
   abstract validateWebhookSignature(
     payload: string,
     signature?: string,
-    timestamp?: string
+    timestamp?: string,
+    // Optional webhook id — Svix-signed providers (Resend) need it in the signed
+    // content; providers that don't (SendGrid ECDSA) ignore it.
+    id?: string
   ): Promise<boolean>;
   abstract normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null>;
 }
@@ -508,6 +511,156 @@ class SESEmailProvider extends EmailProviderBase {
   }
 }
 
+/** Resend tags allow only [A-Za-z0-9_-], max 256 chars. */
+function sanitizeResendTag(v: unknown): string {
+  return String(v ?? '')
+    .replace(/[^a-zA-Z0-9_-]/g, '')
+    .slice(0, 256);
+}
+
+/**
+ * Resend provider — real send + Svix-signed webhooks.
+ *
+ * Resend supports `reply_to` natively per-send (our tokenized reply-to) and has a
+ * true free tier. Correlation IDs ride as `tags` (echoed on webhook events) and
+ * as the returned message id (stored as provider_message_id for lookup). Webhooks
+ * are Svix-signed (svix-id / svix-timestamp / svix-signature headers, `whsec_` secret).
+ */
+class ResendEmailProvider extends EmailProviderBase {
+  async send(request: SendEmailRequest): Promise<SendEmailResponse> {
+    if (!this.config.apiKey) {
+      return {
+        success: false,
+        messageId: null,
+        provider: 'resend',
+        error: 'Resend API key not configured',
+      };
+    }
+    try {
+      const fromEmail = this.config.fromEmail || 'onboarding@resend.dev';
+      const fromName = request.fromName || this.config.fromName || 'Pravado';
+      const tags = [
+        { name: 'orgId', value: sanitizeResendTag(request.metadata?.orgId) },
+        { name: 'runId', value: sanitizeResendTag(request.metadata?.runId) },
+        {
+          name: 'journalistId',
+          value: sanitizeResendTag(request.metadata?.journalistId),
+        },
+      ].filter((t) => t.value);
+
+      const payload: Record<string, unknown> = {
+        from: `${fromName} <${fromEmail}>`,
+        to: [request.to],
+        subject: request.subject,
+        ...(request.bodyHtml ? { html: request.bodyHtml } : {}),
+        ...(request.bodyText ? { text: request.bodyText } : {}),
+        // Native per-send reply-to → our tokenized <token>@reply.pravado.io.
+        ...(request.replyTo?.email ? { reply_to: request.replyTo.email } : {}),
+        ...(tags.length ? { tags } : {}),
+      };
+
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      const body = (await response.json().catch(() => ({}))) as {
+        id?: string;
+        message?: string;
+      };
+      if (response.ok && body.id) {
+        return { success: true, messageId: body.id, provider: 'resend' };
+      }
+      return {
+        success: false,
+        messageId: null,
+        provider: 'resend',
+        error: `Resend API error ${response.status}: ${JSON.stringify(body)}`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        messageId: null,
+        provider: 'resend',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  async validateWebhookSignature(
+    payload: string,
+    signature?: string,
+    timestamp?: string,
+    id?: string
+  ): Promise<boolean> {
+    const secret = this.config.webhookKey;
+    if (!secret) {
+      logger.warn(
+        '[Resend] No webhook secret configured, skipping signature validation'
+      );
+      return true;
+    }
+    if (!signature || !timestamp || !id) {
+      logger.error('[Resend] Missing svix headers for webhook validation');
+      return false;
+    }
+    try {
+      const crypto = await import('crypto');
+      const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
+      const signedContent = `${id}.${timestamp}.${payload}`;
+      const expected = crypto
+        .createHmac('sha256', secretBytes)
+        .update(signedContent)
+        .digest('base64');
+      // svix-signature is a space-separated list of "v1,<base64sig>" tokens.
+      const provided = signature
+        .split(' ')
+        .map((s) => (s.includes(',') ? s.split(',')[1] : s));
+      const ok = provided.some((sig) => {
+        try {
+          const a = Buffer.from(sig);
+          const b = Buffer.from(expected);
+          return a.length === b.length && crypto.timingSafeEqual(a, b);
+        } catch {
+          return false;
+        }
+      });
+      if (!ok) logger.error('[Resend] Webhook signature validation failed');
+      return ok;
+    } catch (error) {
+      logger.error('[Resend] Webhook signature validation error:', error);
+      return false;
+    }
+  }
+
+  async normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null> {
+    const type = payload?.type as string | undefined;
+    const data = payload?.data;
+    if (!type || !data) return null;
+    const eventTypeMap: Record<string, ProviderEventType> = {
+      'email.delivered': 'delivered',
+      'email.opened': 'opened',
+      'email.clicked': 'clicked',
+      'email.bounced': 'bounced',
+      'email.complained': 'complained',
+      'email.delivery_delayed': 'failed',
+    };
+    const eventType = eventTypeMap[type];
+    if (!eventType) return null;
+    const recipient = Array.isArray(data.to) ? data.to[0] : data.to;
+    return {
+      messageId: data.email_id || data.id,
+      eventType,
+      timestamp: data.created_at ? new Date(data.created_at) : new Date(),
+      recipientEmail: recipient || '',
+      metadata: { resendEvent: type },
+    };
+  }
+}
+
 // =============================================
 // Provider Factory
 // =============================================
@@ -516,6 +669,8 @@ function createEmailProvider(config: ProviderConfig): EmailProviderBase {
   switch (config.provider) {
     case 'sendgrid':
       return new SendGridEmailProvider(config);
+    case 'resend':
+      return new ResendEmailProvider(config);
     case 'mailgun':
       return new MailgunEmailProvider(config);
     case 'ses':
@@ -898,7 +1053,8 @@ export class OutreachDeliverabilityService {
     payload: any,
     signature?: string,
     timestamp?: string,
-    rawBody?: string
+    rawBody?: string,
+    id?: string
   ): Promise<{ success: boolean; messageId: string | null }> {
     // Create provider instance for validation and normalization
     const providerConfig: ProviderConfig = {
@@ -915,7 +1071,8 @@ export class OutreachDeliverabilityService {
     const isValid = await provider.validateWebhookSignature(
       payloadForValidation,
       signature,
-      timestamp
+      timestamp,
+      id
     );
     if (!isValid) {
       // Webhook signature validation failed
@@ -1193,7 +1350,7 @@ export async function resolveWebhookOrgId(
   const fromArgs = payload.orgId ?? nested?.orgId;
   if (typeof fromArgs === 'string' && fromArgs.length > 0) return fromArgs;
 
-  // 2. provider_message_id prefix lookup.
+  // 2. provider_message_id prefix lookup (SendGrid).
   const rawId = payload.sg_message_id ?? payload['smtp-id'];
   if (typeof rawId === 'string' && rawId.length > 0) {
     const prefix = rawId.split('.')[0];
@@ -1204,6 +1361,27 @@ export async function resolveWebhookOrgId(
       .maybeSingle();
     const orgId = (data as { org_id?: string } | null)?.org_id;
     if (orgId) return orgId;
+  }
+
+  // 3. Resend event shape: { type, data: { email_id, tags: [{name,value}] } }.
+  const data = payload.data as Record<string, unknown> | undefined;
+  if (data) {
+    const tags = data.tags as
+      | Array<{ name?: string; value?: string }>
+      | undefined;
+    const tagOrg = tags?.find((t) => t?.name === 'orgId')?.value;
+    if (typeof tagOrg === 'string' && tagOrg.length > 0) return tagOrg;
+
+    const emailId = (data.email_id ?? data.id) as string | undefined;
+    if (typeof emailId === 'string' && emailId.length > 0) {
+      const { data: row } = await supabase
+        .from('pr_outreach_email_messages')
+        .select('org_id')
+        .eq('provider_message_id', emailId)
+        .maybeSingle();
+      const orgId = (row as { org_id?: string } | null)?.org_id;
+      if (orgId) return orgId;
+    }
   }
 
   return null;

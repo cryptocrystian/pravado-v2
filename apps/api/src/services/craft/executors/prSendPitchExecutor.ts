@@ -165,6 +165,16 @@ function resolveProviderConfig(): ProviderConfig {
       fromName: process.env.SENDGRID_FROM_NAME || 'Pravado',
     };
   }
+  if (provider === 'resend') {
+    return {
+      provider: 'resend',
+      apiKey: process.env.RESEND_API_KEY,
+      fromEmail:
+        process.env.RESEND_OUTREACH_FROM_EMAIL || 'outreach@pravado.io',
+      fromName: process.env.RESEND_FROM_NAME || 'Pravado',
+      webhookKey: process.env.RESEND_WEBHOOK_SECRET,
+    };
+  }
   if (provider === 'mailgun') {
     return {
       provider: 'mailgun',
