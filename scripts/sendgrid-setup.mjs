@@ -181,13 +181,23 @@ async function step2EventWebhook() {
 
 async function step3SignedWebhookKey() {
   console.log('\n[3/3] Signed Event Webhook (verification key)');
-  const signed = await sg('PATCH', '/v3/user/webhooks/event/settings/signed', {
-    enabled: true,
-  });
-  const publicKey =
-    signed.public_key ||
-    (await sg('GET', '/v3/user/webhooks/event/settings/signed')).public_key;
-  console.log('  ✓ Signed events enabled. Set this as SENDGRID_WEBHOOK_KEY:\n');
+  // IDEMPOTENT: fetch the existing key FIRST. Re-enabling an already-enabled
+  // signed webhook ROTATES the key — which would strand the value stored in
+  // Render and break signature verification. Only enable when not already on.
+  const current = await sg('GET', '/v3/user/webhooks/event/settings/signed');
+  let publicKey = current.public_key;
+  if (publicKey) {
+    console.log('  (already enabled — reusing existing key, NOT rotating)');
+  } else {
+    const enabled = await sg(
+      'PATCH',
+      '/v3/user/webhooks/event/settings/signed',
+      { enabled: true }
+    );
+    publicKey = enabled.public_key;
+    console.log('  ✓ Signed events enabled.');
+  }
+  console.log('  Set this as SENDGRID_WEBHOOK_KEY:\n');
   console.log(`SENDGRID_WEBHOOK_KEY=${publicKey}\n`);
   return publicKey;
 }
