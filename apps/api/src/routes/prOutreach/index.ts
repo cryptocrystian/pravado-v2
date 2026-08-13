@@ -395,7 +395,16 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
         ...body,
       });
 
-      const service = createOutreachService({ supabase });
+      // Wire the deliverability service so runs that auto-advance (delay 0) SEND.
+      const providerConfig = getProviderConfig();
+      const deliverabilityService = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
+      const service = createOutreachService({
+        supabase,
+        deliverabilityService,
+      });
       const result = await service.startSequenceRuns(orgId, input);
 
       return reply.send({
@@ -563,7 +572,18 @@ export default async function prOutreachRoutes(fastify: FastifyInstance) {
       const body = request.body as Record<string, unknown>;
       const input = advanceRunInputSchema.parse({ runId: id, ...body });
 
-      const service = createOutreachService({ supabase });
+      // Wire the deliverability service so advanceRun actually SENDS (its send
+      // block is gated on this.deliverabilityService). Without it, a run is marked
+      // sent while no email goes out.
+      const providerConfig = getProviderConfig();
+      const deliverabilityService = createOutreachDeliverabilityService({
+        supabase,
+        providerConfig,
+      });
+      const service = createOutreachService({
+        supabase,
+        deliverabilityService,
+      });
       const run = await service.advanceRun(id, orgId, input.forceAdvance);
 
       return reply.send({
