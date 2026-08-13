@@ -568,7 +568,13 @@ export class OutreachService {
     // Get journalist
     const { data: journalistData, error: journalistError } = await this.supabase
       .from('journalists')
-      .select('id, name, email, outlet:outlets(name)')
+      // Outlet name via the journalist's media_outlet_id FK. The relationship is
+      // disambiguated by constraint name because journalists has TWO FKs to
+      // media_outlets (media_outlet_id + primary_outlet_id); a bare
+      // media_outlets(name) embed is ambiguous. (Was `outlets(name)` — no such table.)
+      .select(
+        'id, name, email, outlet:media_outlets!journalists_media_outlet_id_fkey(name)'
+      )
       .eq('id', run.journalistId)
       .single();
 
@@ -701,20 +707,23 @@ export class OutreachService {
         completedAt: new Date(),
       });
 
-      // Update sequence stats
-      await this.supabase.rpc('increment', {
-        table_name: 'pr_outreach_sequences',
-        row_id: run.sequenceId,
-        column_name: 'completed_runs',
-        increment_by: 1,
-      });
-
-      await this.supabase.rpc('decrement', {
-        table_name: 'pr_outreach_sequences',
-        row_id: run.sequenceId,
-        column_name: 'active_runs',
-        decrement_by: 1,
-      });
+      // Update sequence stats (denormalized completed/active counters) via a
+      // direct read-modify-write. The generic `increment`/`decrement` RPCs this
+      // previously called do not exist in the database.
+      const { data: seqStats } = await this.supabase
+        .from('pr_outreach_sequences')
+        .select('completed_runs, active_runs')
+        .eq('id', run.sequenceId)
+        .single();
+      if (seqStats) {
+        await this.supabase
+          .from('pr_outreach_sequences')
+          .update({
+            completed_runs: (seqStats.completed_runs ?? 0) + 1,
+            active_runs: Math.max(0, (seqStats.active_runs ?? 0) - 1),
+          })
+          .eq('id', run.sequenceId);
+      }
 
       return this.getRunWithDetails(runId, orgId);
     }
@@ -1153,11 +1162,13 @@ export class OutreachService {
     }
 
     if (sequence.outletIds.length > 0) {
-      queryBuilder = queryBuilder.in('outlet_id', sequence.outletIds);
+      // journalists has media_outlet_id (not outlet_id).
+      queryBuilder = queryBuilder.in('media_outlet_id', sequence.outletIds);
     }
 
     if (sequence.beatFilter && sequence.beatFilter.length > 0) {
-      queryBuilder = queryBuilder.overlaps('beats', sequence.beatFilter);
+      // journalists.beat is a single text column (not a `beats` array) — match any.
+      queryBuilder = queryBuilder.in('beat', sequence.beatFilter);
     }
 
     const { data, error, count } = await queryBuilder;
