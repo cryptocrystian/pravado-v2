@@ -48,7 +48,18 @@ function getProviderConfig(): ProviderConfig {
       fromEmail: process.env.SENDGRID_FROM_EMAIL || 'noreply@pravado.com',
       fromName: process.env.SENDGRID_FROM_NAME || 'Pravado',
     };
-  } else if (provider === 'mailgun') {
+  }
+  if (provider === 'resend') {
+    return {
+      provider: 'resend',
+      apiKey: process.env.RESEND_API_KEY,
+      fromEmail:
+        process.env.RESEND_OUTREACH_FROM_EMAIL || 'outreach@pravado.io',
+      fromName: process.env.RESEND_FROM_NAME || 'Pravado',
+      webhookKey: process.env.RESEND_WEBHOOK_SECRET,
+    };
+  }
+  if (provider === 'mailgun') {
     return {
       provider: 'mailgun',
       apiKey: process.env.MAILGUN_API_KEY,

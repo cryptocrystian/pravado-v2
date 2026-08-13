@@ -25,6 +25,7 @@ export const emailMessageStatusSchema = z.enum([
  */
 export const emailProviderSchema = z.enum([
   'sendgrid',
+  'resend',
   'mailgun',
   'ses',
   'stub',

@@ -66,7 +66,18 @@ function getProviderConfig(): ProviderConfig {
       fromName: sendgridFromName,
       webhookKey: sendgridWebhookKey,
     };
-  } else if (provider === 'mailgun') {
+  }
+  if (provider === 'resend') {
+    return {
+      provider: 'resend',
+      apiKey: process.env.RESEND_API_KEY,
+      fromEmail:
+        process.env.RESEND_OUTREACH_FROM_EMAIL || 'outreach@pravado.io',
+      fromName: process.env.RESEND_FROM_NAME || 'Pravado',
+      webhookKey: process.env.RESEND_WEBHOOK_SECRET,
+    };
+  }
+  if (provider === 'mailgun') {
     return {
       provider: 'mailgun',
       apiKey: mailgunApiKey,
@@ -511,12 +522,16 @@ export default async function prOutreachDeliverabilityRoutes(
       // SendGrid uses X-Twilio-Email-Event-Webhook-Signature and X-Twilio-Email-Event-Webhook-Timestamp
       const signature =
         (request.headers['x-twilio-email-event-webhook-signature'] as string) ||
+        (request.headers['svix-signature'] as string) || // Resend (Svix)
         (request.headers['x-mailgun-signature'] as string) ||
         (request.headers['x-amz-sns-message-id'] as string);
 
-      const timestamp = request.headers[
+      const timestamp = (request.headers[
         'x-twilio-email-event-webhook-timestamp'
-      ] as string;
+      ] || request.headers['svix-timestamp']) as string;
+
+      // Svix message id (Resend) — part of the signed content.
+      const svixId = request.headers['svix-id'] as string | undefined;
 
       // Raw body required for HMAC signature verification. The route's
       // `preParsing: captureRawBody` hook (above) decorates `request.rawBody`
@@ -576,7 +591,8 @@ export default async function prOutreachDeliverabilityRoutes(
           payload,
           signature,
           timestamp,
-          rawBody
+          rawBody,
+          svixId
         );
 
         return reply.send({
