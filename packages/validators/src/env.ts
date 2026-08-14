@@ -29,6 +29,17 @@ export const apiEnvSchema = baseEnvSchema.extend({
   // Resend (primary)
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_EMAIL: z.string().optional().default('hello@pravado.io'),
+  // Outreach send-from + display name (read directly by the provider config
+  // resolvers; declared here for schema visibility).
+  RESEND_OUTREACH_FROM_EMAIL: z.string().optional(),
+  RESEND_FROM_NAME: z.string().optional(),
+  // Svix signing secret (whsec_...) for the Resend ENGAGEMENT webhook
+  // (delivered/opened/clicked/bounced/complained).
+  RESEND_WEBHOOK_SECRET: z.string().optional(),
+  // Svix signing secret (whsec_...) for the Resend INBOUND webhook
+  // (email.received → reply capture). Falls back to RESEND_WEBHOOK_SECRET when
+  // a single Resend endpoint serves both event families.
+  RESEND_INBOUND_WEBHOOK_SECRET: z.string().optional(),
   // Mailgun (legacy fallback)
   MAILGUN_API_KEY: z.string().optional(),
   MAILGUN_DOMAIN: z.string().optional(),

@@ -1,15 +1,21 @@
 /**
- * PR outreach reply capture (SendGrid Inbound Parse).
+ * PR outreach reply capture (provider-agnostic).
  *
- * Phase 1: an outbound pitch's reply-to becomes `<token>@reply.pravado.io`. The
- * token (a 128-bit random, unguessable local-part) maps to the org / journalist
- * / run and the customer inbox to forward to. When the journalist replies,
- * Inbound Parse POSTs the message; we resolve the token, dedupe, store the
- * reply, score it, and forward it to the customer.
+ * An outbound pitch's reply-to becomes `<token>@reply.pravado.io`. The token
+ * (a 128-bit random, unguessable local-part) maps to the org / journalist / run
+ * and the customer inbox to forward to. When the journalist replies, the inbound
+ * provider hands us the message; we resolve the token, dedupe, store the reply,
+ * score it, and forward it to the customer.
+ *
+ * Two inbound transports feed the same {@link processInboundReply} core:
+ *   - Resend inbound (primary): an `email.received` Svix webhook carries only
+ *     metadata; the body is fetched from the Received-emails API by `email_id`.
+ *   - SendGrid Inbound Parse (legacy): a multipart POST carries the full body.
+ *     Retained only through the reply.pravado.io MX cutover to Resend.
  *
  * The token doubles as the capability: a reply can only be attributed to a
- * thread by someone who received the address, so an unsigned Inbound Parse POST
- * cannot forge a reply for a token it does not know.
+ * thread by someone who received the address, so an unsigned inbound POST cannot
+ * forge a reply for a token it does not know.
  *
  * All helpers are best-effort where they touch a send path — reply-capture must
  * never block or fail an outbound pitch.
@@ -190,4 +196,141 @@ export async function recordInboundReply(
     throw error;
   }
   return { inserted: true };
+}
+
+/**
+ * A resolved inbound reply, normalized across transports (SendGrid multipart /
+ * Resend JSON). The transport route resolves the token first, then hands the
+ * normalized message here.
+ */
+export interface InboundReplyInput {
+  tokenRow: ReplyTokenRow;
+  fromEmail: string | null;
+  subject: string | null;
+  bodyText: string | null;
+  bodyHtml: string | null;
+  /** Raw header blob for auto-responder detection (may be empty). */
+  headersRaw?: string | null;
+  /** Provider/RFC Message-ID — the dedup key. */
+  inboundMessageId: string | null;
+}
+
+export interface InboundReplyDeps {
+  supabase: SupabaseClient;
+  /**
+   * Transactional mailer used to forward the reply to the customer. This is the
+   * governance-clean channel (a forward is NOT a governed outreach pitch), so it
+   * must NOT be the outreach email provider.
+   */
+  sendMail: (msg: {
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+  }) => Promise<unknown>;
+  /** Recompute journalist engagement after a reply (best-effort). */
+  updateEngagement?: (journalistId: string, orgId: string) => Promise<void>;
+  logWarn?: (obj: unknown, msg: string) => void;
+}
+
+export interface InboundReplyResult {
+  processed: boolean;
+  reason?: 'auto_responder' | 'duplicate';
+  forwarded?: boolean;
+}
+
+/**
+ * Provider-agnostic core: given a resolved token + a normalized message, dedupe,
+ * store, score (mark the run replied → recompute engagement), and forward to the
+ * customer. Both inbound transports call this after resolving the token so the
+ * capture/score/forward semantics stay identical regardless of provider.
+ *
+ * Best-effort throughout: scoring and forwarding failures are swallowed (logged)
+ * so a captured reply is never lost to a downstream hiccup. Callers ack 2xx on
+ * every returned result; only an unexpected throw should surface as a 5xx retry.
+ */
+export async function processInboundReply(
+  deps: InboundReplyDeps,
+  input: InboundReplyInput
+): Promise<InboundReplyResult> {
+  const { supabase } = deps;
+  const { tokenRow } = input;
+
+  // Auto-responders / bounces / vacation replies are not genuine replies.
+  if (
+    isAutoResponder({
+      from: input.fromEmail ?? '',
+      headers: input.headersRaw ?? '',
+    })
+  ) {
+    return { processed: false, reason: 'auto_responder' };
+  }
+
+  const rec = await recordInboundReply(supabase, {
+    orgId: tokenRow.org_id,
+    tokenId: tokenRow.id,
+    journalistId: tokenRow.journalist_id,
+    runId: tokenRow.run_id,
+    fromEmail: input.fromEmail,
+    subject: input.subject,
+    bodyText: input.bodyText,
+    bodyHtml: input.bodyHtml,
+    inboundMessageId: input.inboundMessageId,
+  });
+  if (!rec.inserted) return { processed: false, reason: 'duplicate' };
+
+  // Mark the run replied (feeds total_replied), then recompute the journalist
+  // engagement score. The CRAFT single-pitch path has no run, so its reply is
+  // captured + forwarded but not run-scored (Phase 1 limit).
+  if (tokenRow.run_id) {
+    await supabase
+      .from('pr_outreach_runs')
+      .update({
+        replied_at: new Date().toISOString(),
+        stop_reason: 'journalist_replied',
+      })
+      .eq('id', tokenRow.run_id)
+      .eq('org_id', tokenRow.org_id)
+      .is('replied_at', null);
+  }
+  if (tokenRow.journalist_id && deps.updateEngagement) {
+    try {
+      await deps.updateEngagement(tokenRow.journalist_id, tokenRow.org_id);
+    } catch (err) {
+      deps.logWarn?.({ err }, 'reply engagement update failed (non-fatal)');
+    }
+  }
+
+  // Forward to the customer via the transactional mailer. Non-fatal — the reply
+  // is already captured + scored even if the forward fails.
+  let forwarded = false;
+  if (tokenRow.forward_to) {
+    try {
+      const journalistFrom = input.fromEmail?.trim() || 'the journalist';
+      const baseSubject =
+        input.subject?.trim() ||
+        (tokenRow.subject ? `Re: ${tokenRow.subject}` : 'Re: your pitch');
+      const noticeHtml = `<p style="color:#667;font-size:12px;margin:0 0 8px">A journalist replied to your Pravado pitch — reply directly to <b>${journalistFrom}</b>.</p><hr style="border:none;border-top:1px solid #ddd"/>`;
+      const noticeText = `A journalist replied to your Pravado pitch — reply directly to ${journalistFrom}.\n\n`;
+      await deps.sendMail({
+        to: tokenRow.forward_to,
+        subject: baseSubject,
+        html:
+          noticeHtml + (input.bodyHtml || `<pre>${input.bodyText || ''}</pre>`),
+        text: noticeText + (input.bodyText || ''),
+      });
+      forwarded = true;
+      if (input.inboundMessageId) {
+        await supabase
+          .from('pr_outreach_inbound_replies')
+          .update({ forwarded_at: new Date().toISOString() })
+          .eq('org_id', tokenRow.org_id)
+          .eq('inbound_message_id', input.inboundMessageId);
+      }
+    } catch (err) {
+      deps.logWarn?.({ err }, 'reply forward failed (non-fatal)');
+    }
+  }
+
+  return { processed: true, forwarded };
 }
