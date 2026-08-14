@@ -18,7 +18,6 @@ import { createClient } from '@supabase/supabase-js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { captureRawBody } from '../../lib/captureRawBody';
-import { parseMultipartFields } from '../../lib/parseMultipartFields';
 import { requireUser } from '../../middleware/requireUser';
 import { createSupabaseGovernanceGateways } from '../../services/governanceGateways';
 import {
@@ -27,7 +26,6 @@ import {
   verifySvixSignature,
 } from '../../services/outreachDeliverabilityService';
 import {
-  extractMessageId,
   parseTokenFromRecipients,
   processInboundReply,
   resolveReplyToken,
@@ -638,86 +636,9 @@ export default async function prOutreachDeliverabilityRoutes(
     }
   );
 
-  // ===========================================================================
-  // Inbound reply capture — SendGrid Inbound Parse (LEGACY)
-  // POST /api/v1/pr-outreach-deliverability/inbound/sendgrid
-  //
-  // Retained only through the reply.pravado.io MX cutover from SendGrid Inbound
-  // Parse to Resend inbound (below). Delete once the MX has fully propagated to
-  // Resend and a reply has round-tripped through /inbound/resend in prod, then
-  // cancel the SendGrid account.
-  //
-  // A journalist reply to a tokenized reply-to (<token>@reply.pravado.io) lands
-  // here. We resolve the token → org/journalist/run + the customer inbox, dedupe
-  // on Message-ID, store the reply, score it (a reply is the strongest positive
-  // relationship signal), and forward it to the customer via the TRANSACTIONAL
-  // mailer (NOT the outreach provider — a forward is not a governed pitch). We
-  // ack 2xx on resolvable AND unresolvable input so SendGrid does not retry;
-  // 5xx only on an unexpected fault (so a transient error IS retried).
-  // ===========================================================================
-  fastify.post('/inbound/sendgrid', async (request, reply) => {
-    if (!FLAGS.PR_OUTREACH_INBOUND_WIRED) {
-      return reply
-        .status(404)
-        .send({ success: false, error: { code: 'NOT_WIRED' } });
-    }
-    // Optional shared-secret gate (defense-in-depth; the 128-bit token is the
-    // primary capability — an unsigned POST cannot forge a reply for a token it
-    // does not know).
-    const inboundSecret = process.env.PR_OUTREACH_INBOUND_SECRET;
-    if (
-      inboundSecret &&
-      (request.query as { key?: string } | undefined)?.key !== inboundSecret
-    ) {
-      return reply
-        .status(401)
-        .send({ success: false, error: { code: 'UNAUTHORIZED' } });
-    }
-
-    try {
-      const raw = request.body;
-      const buf = Buffer.isBuffer(raw)
-        ? raw
-        : Buffer.from(typeof raw === 'string' ? raw : '');
-      const fields = parseMultipartFields(buf, request.headers['content-type']);
-
-      const token = parseTokenFromRecipients(fields.to);
-      if (!token) {
-        return reply.send({
-          success: false,
-          data: { processed: false, reason: 'no_token' },
-        });
-      }
-      const tokenRow = await resolveReplyToken(supabase, token);
-      if (!tokenRow) {
-        return reply.send({
-          success: false,
-          data: { processed: false, reason: 'token_unresolved' },
-        });
-      }
-
-      const result = await processInboundReply(buildInboundDeps(request), {
-        tokenRow,
-        fromEmail: fields.from ?? null,
-        subject: fields.subject ?? null,
-        bodyText: fields.text ?? null,
-        bodyHtml: fields.html ?? null,
-        headersRaw: fields.headers ?? null,
-        inboundMessageId: extractMessageId(fields.headers),
-      });
-
-      return reply.send({ success: true, data: result });
-    } catch (error) {
-      fastify.log.error({ error }, 'Inbound reply processing error');
-      return reply.status(500).send({
-        success: false,
-        error: {
-          code: 'INBOUND_ERROR',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        },
-      });
-    }
-  });
+  // SendGrid Inbound Parse route removed: reply.pravado.io MX now points to
+  // Resend inbound (below), confirmed round-tripping in prod. SendGrid is
+  // retired from the mail path entirely.
 
   // ===========================================================================
   // Inbound reply capture — Resend inbound (PRIMARY)
