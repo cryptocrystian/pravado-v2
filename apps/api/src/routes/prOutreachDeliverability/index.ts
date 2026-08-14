@@ -24,12 +24,12 @@ import { createSupabaseGovernanceGateways } from '../../services/governanceGatew
 import {
   createOutreachDeliverabilityService,
   resolveWebhookOrgId,
+  verifySvixSignature,
 } from '../../services/outreachDeliverabilityService';
 import {
   extractMessageId,
-  isAutoResponder,
   parseTokenFromRecipients,
-  recordInboundReply,
+  processInboundReply,
   resolveReplyToken,
 } from '../../services/pr/replyCapture';
 import {
@@ -125,6 +125,32 @@ export default async function prOutreachDeliverabilityRoutes(
       .limit(1);
 
     return userOrgs?.[0]?.org_id || null;
+  }
+
+  /**
+   * Dependencies for the provider-agnostic inbound-reply core. The forward uses
+   * the transactional mailer (`request.server.mailer.sendMail`) — the
+   * governance-clean channel, NOT the outreach provider — and engagement
+   * recompute rides the deliverability service.
+   */
+  function buildInboundDeps(request: FastifyRequest) {
+    return {
+      supabase,
+      sendMail: (msg: {
+        to: string;
+        subject: string;
+        html: string;
+        text: string;
+      }) => request.server.mailer.sendMail(msg),
+      updateEngagement: async (journalistId: string, orgId: string) => {
+        const svc = createOutreachDeliverabilityService({
+          supabase,
+          providerConfig,
+        });
+        await svc.updateEngagementMetrics(journalistId, orgId);
+      },
+      logWarn: (obj: unknown, msg: string) => fastify.log.warn(obj, msg),
+    };
   }
 
   // =============================================
@@ -613,8 +639,13 @@ export default async function prOutreachDeliverabilityRoutes(
   );
 
   // ===========================================================================
-  // Inbound reply capture — SendGrid Inbound Parse (Phase 1: capture + forward)
+  // Inbound reply capture — SendGrid Inbound Parse (LEGACY)
   // POST /api/v1/pr-outreach-deliverability/inbound/sendgrid
+  //
+  // Retained only through the reply.pravado.io MX cutover from SendGrid Inbound
+  // Parse to Resend inbound (below). Delete once the MX has fully propagated to
+  // Resend and a reply has round-tripped through /inbound/resend in prod, then
+  // cancel the SendGrid account.
   //
   // A journalist reply to a tokenized reply-to (<token>@reply.pravado.io) lands
   // here. We resolve the token → org/journalist/run + the customer inbox, dedupe
@@ -665,101 +696,17 @@ export default async function prOutreachDeliverabilityRoutes(
         });
       }
 
-      // Auto-responders / bounces / vacation replies are not genuine replies.
-      if (isAutoResponder(fields)) {
-        return reply.send({
-          success: true,
-          data: { processed: false, reason: 'auto_responder' },
-        });
-      }
-
-      const inboundMessageId = extractMessageId(fields.headers);
-      const rec = await recordInboundReply(supabase, {
-        orgId: tokenRow.org_id,
-        tokenId: tokenRow.id,
-        journalistId: tokenRow.journalist_id,
-        runId: tokenRow.run_id,
+      const result = await processInboundReply(buildInboundDeps(request), {
+        tokenRow,
         fromEmail: fields.from ?? null,
         subject: fields.subject ?? null,
         bodyText: fields.text ?? null,
         bodyHtml: fields.html ?? null,
-        inboundMessageId,
+        headersRaw: fields.headers ?? null,
+        inboundMessageId: extractMessageId(fields.headers),
       });
-      if (!rec.inserted) {
-        return reply.send({
-          success: true,
-          data: { processed: false, reason: 'duplicate' },
-        });
-      }
 
-      // Score the reply: mark the run replied (feeds total_replied) then recompute
-      // the journalist engagement score. The CRAFT single-pitch path has no run,
-      // so its reply is captured + forwarded but not run-scored (Phase 1 limit).
-      if (tokenRow.run_id) {
-        await supabase
-          .from('pr_outreach_runs')
-          .update({
-            replied_at: new Date().toISOString(),
-            stop_reason: 'journalist_replied',
-          })
-          .eq('id', tokenRow.run_id)
-          .eq('org_id', tokenRow.org_id)
-          .is('replied_at', null);
-      }
-      if (tokenRow.journalist_id) {
-        try {
-          const svc = createOutreachDeliverabilityService({
-            supabase,
-            providerConfig,
-          });
-          await svc.updateEngagementMetrics(
-            tokenRow.journalist_id,
-            tokenRow.org_id
-          );
-        } catch (err) {
-          fastify.log.warn(
-            { err },
-            'reply engagement update failed (non-fatal)'
-          );
-        }
-      }
-
-      // Forward to the customer via the transactional mailer (guard-clean:
-      // `sendMail`, not the outreach provider). Non-fatal — the reply is already
-      // captured + scored even if the forward fails.
-      let forwarded = false;
-      if (tokenRow.forward_to) {
-        try {
-          const journalistFrom = fields.from?.trim() || 'the journalist';
-          const baseSubject =
-            fields.subject?.trim() ||
-            (tokenRow.subject ? `Re: ${tokenRow.subject}` : 'Re: your pitch');
-          const noticeHtml = `<p style="color:#667;font-size:12px;margin:0 0 8px">A journalist replied to your Pravado pitch — reply directly to <b>${journalistFrom}</b>.</p><hr style="border:none;border-top:1px solid #ddd"/>`;
-          const noticeText = `A journalist replied to your Pravado pitch — reply directly to ${journalistFrom}.\n\n`;
-          await request.server.mailer.sendMail({
-            to: tokenRow.forward_to,
-            subject: baseSubject,
-            html:
-              noticeHtml + (fields.html || `<pre>${fields.text || ''}</pre>`),
-            text: noticeText + (fields.text || ''),
-          });
-          forwarded = true;
-          if (inboundMessageId) {
-            await supabase
-              .from('pr_outreach_inbound_replies')
-              .update({ forwarded_at: new Date().toISOString() })
-              .eq('org_id', tokenRow.org_id)
-              .eq('inbound_message_id', inboundMessageId);
-          }
-        } catch (err) {
-          fastify.log.warn({ err }, 'reply forward failed (non-fatal)');
-        }
-      }
-
-      return reply.send({
-        success: true,
-        data: { processed: true, forwarded },
-      });
+      return reply.send({ success: true, data: result });
     } catch (error) {
       fastify.log.error({ error }, 'Inbound reply processing error');
       return reply.status(500).send({
@@ -771,6 +718,176 @@ export default async function prOutreachDeliverabilityRoutes(
       });
     }
   });
+
+  // ===========================================================================
+  // Inbound reply capture — Resend inbound (PRIMARY)
+  // POST /api/v1/pr-outreach-deliverability/inbound/resend
+  //
+  // Resend delivers inbound mail in two steps (unlike SendGrid's single multipart
+  // POST): an `email.received` Svix-signed webhook carries only metadata
+  // (email_id, from, to[], subject, message_id) — NOT the body — so we fetch the
+  // body from the Received-emails API by email_id, then hand the normalized
+  // message to the same provider-agnostic core the legacy route uses.
+  //
+  // Signature: Svix (svix-id / svix-timestamp / svix-signature, `whsec_` secret).
+  // Ack 2xx on resolvable AND unresolvable input so Resend does not retry a
+  // permanently-unprocessable event; 5xx only on an unexpected fault.
+  // ===========================================================================
+  fastify.post(
+    '/inbound/resend',
+    { preParsing: captureRawBody },
+    async (request, reply) => {
+      if (!FLAGS.PR_OUTREACH_INBOUND_WIRED) {
+        return reply
+          .status(404)
+          .send({ success: false, error: { code: 'NOT_WIRED' } });
+      }
+
+      // Verify the Svix signature over the byte-exact raw body. The inbound
+      // webhook has its own signing secret; fall back to the engagement webhook
+      // secret only if a dedicated one is not set (single-endpoint setups).
+      const secret =
+        process.env.RESEND_INBOUND_WEBHOOK_SECRET ||
+        process.env.RESEND_WEBHOOK_SECRET;
+      const rawBody = request.rawBody?.toString();
+      if (secret) {
+        if (!rawBody) {
+          fastify.log.error(
+            { requestId: request.id },
+            'Resend inbound rejected: raw body unavailable (captureRawBody hook did not run).'
+          );
+          return reply.status(500).send({
+            success: false,
+            error: { code: 'RAW_BODY_UNAVAILABLE' },
+          });
+        }
+        const ok = await verifySvixSignature(secret, {
+          id: request.headers['svix-id'] as string | undefined,
+          timestamp: request.headers['svix-timestamp'] as string | undefined,
+          signature: request.headers['svix-signature'] as string | undefined,
+          payload: rawBody,
+        });
+        if (!ok) {
+          return reply
+            .status(401)
+            .send({ success: false, error: { code: 'BAD_SIGNATURE' } });
+        }
+      }
+
+      try {
+        const payload = request.body as {
+          type?: string;
+          data?: {
+            email_id?: string;
+            from?: string;
+            to?: string[];
+            received_for?: string[];
+            subject?: string;
+            message_id?: string;
+          };
+        };
+
+        // Only inbound-received events are reply captures; ack-ignore the rest.
+        if (payload?.type !== 'email.received' || !payload.data?.email_id) {
+          return reply.send({
+            success: true,
+            data: { processed: false, reason: 'ignored_event' },
+          });
+        }
+        const data = payload.data;
+
+        // The tokenized reply-to is the envelope recipient; it may land in `to`
+        // or `received_for` (forwarded). Search both.
+        const recipients = [
+          ...(data.to ?? []),
+          ...(data.received_for ?? []),
+        ].join(', ');
+        const token = parseTokenFromRecipients(recipients);
+        if (!token) {
+          return reply.send({
+            success: false,
+            data: { processed: false, reason: 'no_token' },
+          });
+        }
+        const tokenRow = await resolveReplyToken(supabase, token);
+        if (!tokenRow) {
+          return reply.send({
+            success: false,
+            data: { processed: false, reason: 'token_unresolved' },
+          });
+        }
+
+        // Fetch the body (text/html/headers) from the Received-emails API. The
+        // webhook omits it by design (serverless-friendly payload size).
+        let bodyText: string | null = null;
+        let bodyHtml: string | null = null;
+        let headersRaw: string | null = null;
+        let fromEmail: string | null = data.from ?? null;
+        let subject: string | null = data.subject ?? null;
+        let inboundMessageId: string | null = data.message_id ?? null;
+        const apiKey = process.env.RESEND_API_KEY;
+        if (apiKey) {
+          try {
+            const res = await fetch(
+              `https://api.resend.com/emails/receiving/${data.email_id}`,
+              { headers: { Authorization: `Bearer ${apiKey}` } }
+            );
+            if (res.ok) {
+              const body = (await res.json()) as {
+                text?: string | null;
+                html?: string | null;
+                headers?: Record<string, string> | null;
+                from?: string;
+                subject?: string;
+                message_id?: string;
+              };
+              bodyText = body.text ?? null;
+              bodyHtml = body.html ?? null;
+              headersRaw = body.headers
+                ? Object.entries(body.headers)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join('\n')
+                : null;
+              fromEmail = body.from ?? fromEmail;
+              subject = body.subject ?? subject;
+              inboundMessageId = body.message_id ?? inboundMessageId;
+            } else {
+              fastify.log.warn(
+                { status: res.status, emailId: data.email_id },
+                'Resend received-email fetch failed; recording reply from webhook metadata only'
+              );
+            }
+          } catch (err) {
+            fastify.log.warn(
+              { err, emailId: data.email_id },
+              'Resend received-email fetch threw; recording reply from webhook metadata only'
+            );
+          }
+        }
+
+        const result = await processInboundReply(buildInboundDeps(request), {
+          tokenRow,
+          fromEmail,
+          subject,
+          bodyText,
+          bodyHtml,
+          headersRaw,
+          inboundMessageId,
+        });
+
+        return reply.send({ success: true, data: result });
+      } catch (error) {
+        fastify.log.error({ error }, 'Resend inbound processing error');
+        return reply.status(500).send({
+          success: false,
+          error: {
+            code: 'INBOUND_ERROR',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          },
+        });
+      }
+    }
+  );
 
   // =============================================
   // Testing & Development

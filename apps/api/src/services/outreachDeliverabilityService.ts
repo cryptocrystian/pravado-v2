@@ -519,6 +519,59 @@ function sanitizeResendTag(v: unknown): string {
 }
 
 /**
+ * Verify a Svix-signed webhook (Resend). Shared by the engagement webhook and
+ * the inbound-reply webhook — both are signed the same way but with their own
+ * per-endpoint `whsec_` secret.
+ *
+ * Returns true when no secret is configured (dev/CI escape hatch — the 128-bit
+ * reply token is the primary capability), false on any missing header or
+ * mismatch. The signed content is `${id}.${timestamp}.${rawBody}` and the
+ * `svix-signature` header is a space-separated list of `v1,<base64sig>` tokens.
+ */
+export async function verifySvixSignature(
+  secret: string | undefined,
+  opts: {
+    id?: string;
+    timestamp?: string;
+    signature?: string;
+    payload: string;
+  }
+): Promise<boolean> {
+  if (!secret) {
+    logger.warn('[Svix] No webhook secret configured, skipping validation');
+    return true;
+  }
+  if (!opts.signature || !opts.timestamp || !opts.id) {
+    logger.error('[Svix] Missing svix headers for webhook validation');
+    return false;
+  }
+  try {
+    const crypto = await import('crypto');
+    const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
+    const signedContent = `${opts.id}.${opts.timestamp}.${opts.payload}`;
+    const expected = crypto
+      .createHmac('sha256', secretBytes)
+      .update(signedContent)
+      .digest('base64');
+    const provided = opts.signature
+      .split(' ')
+      .map((s) => (s.includes(',') ? s.split(',')[1] : s));
+    return provided.some((sig) => {
+      try {
+        const a = Buffer.from(sig);
+        const b = Buffer.from(expected);
+        return a.length === b.length && crypto.timingSafeEqual(a, b);
+      } catch {
+        return false;
+      }
+    });
+  } catch (error) {
+    logger.error('[Svix] Webhook signature validation error:', error);
+    return false;
+  }
+}
+
+/**
  * Resend provider — real send + Svix-signed webhooks.
  *
  * Resend supports `reply_to` natively per-send (our tokenized reply-to) and has a
@@ -596,44 +649,12 @@ class ResendEmailProvider extends EmailProviderBase {
     timestamp?: string,
     id?: string
   ): Promise<boolean> {
-    const secret = this.config.webhookKey;
-    if (!secret) {
-      logger.warn(
-        '[Resend] No webhook secret configured, skipping signature validation'
-      );
-      return true;
-    }
-    if (!signature || !timestamp || !id) {
-      logger.error('[Resend] Missing svix headers for webhook validation');
-      return false;
-    }
-    try {
-      const crypto = await import('crypto');
-      const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
-      const signedContent = `${id}.${timestamp}.${payload}`;
-      const expected = crypto
-        .createHmac('sha256', secretBytes)
-        .update(signedContent)
-        .digest('base64');
-      // svix-signature is a space-separated list of "v1,<base64sig>" tokens.
-      const provided = signature
-        .split(' ')
-        .map((s) => (s.includes(',') ? s.split(',')[1] : s));
-      const ok = provided.some((sig) => {
-        try {
-          const a = Buffer.from(sig);
-          const b = Buffer.from(expected);
-          return a.length === b.length && crypto.timingSafeEqual(a, b);
-        } catch {
-          return false;
-        }
-      });
-      if (!ok) logger.error('[Resend] Webhook signature validation failed');
-      return ok;
-    } catch (error) {
-      logger.error('[Resend] Webhook signature validation error:', error);
-      return false;
-    }
+    return verifySvixSignature(this.config.webhookKey, {
+      id,
+      timestamp,
+      signature,
+      payload,
+    });
   }
 
   async normalizeWebhookEvent(payload: any): Promise<WebhookPayload | null> {
