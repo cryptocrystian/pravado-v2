@@ -29,7 +29,9 @@ const tokenRow: ReplyTokenRow = {
  * about: the inserted reply, whether the run was marked replied, and whether the
  * forwarded_at stamp was written.
  */
-function makeSupabase(opts: { existingReply?: unknown; insertError?: unknown } = {}) {
+function makeSupabase(
+  opts: { existingReply?: unknown; insertError?: unknown } = {}
+) {
   const captured = {
     inserts: [] as Array<{ table: string; row: Record<string, unknown> }>,
     runReplied: false,
@@ -41,8 +43,7 @@ function makeSupabase(opts: { existingReply?: unknown; insertError?: unknown } =
       select: () => builder,
       eq: () => builder,
       is: () => Promise.resolve({ error: null }),
-      maybeSingle: () =>
-        Promise.resolve({ data: opts.existingReply ?? null }),
+      maybeSingle: () => Promise.resolve({ data: opts.existingReply ?? null }),
       insert: (row: Record<string, unknown>) => {
         captured.inserts.push({ table, row });
         return Promise.resolve({ error: opts.insertError ?? null });
@@ -86,7 +87,9 @@ describe('processInboundReply', () => {
     });
 
     expect(result).toEqual({ processed: true, forwarded: true });
-    expect(captured.inserts.some((i) => i.table === 'pr_outreach_inbound_replies')).toBe(true);
+    expect(
+      captured.inserts.some((i) => i.table === 'pr_outreach_inbound_replies')
+    ).toBe(true);
     expect(captured.runReplied).toBe(true);
     expect(captured.forwardedStamped).toBe(true);
     expect(updateEngagement).toHaveBeenCalledWith('jour-1', 'org-1');
@@ -118,7 +121,9 @@ describe('processInboundReply', () => {
   });
 
   it('dedupes on Message-ID: a re-delivered reply is not re-processed', async () => {
-    const { supabase, captured } = makeSupabase({ existingReply: { id: 'existing' } });
+    const { supabase, captured } = makeSupabase({
+      existingReply: { id: 'existing' },
+    });
     const { deps, sendMail } = makeDeps(supabase);
 
     const result = await processInboundReply(deps, {
