@@ -22,7 +22,7 @@ The following documents constitute PRAVADO canon:
 | ------------------------------ | --------------------------------------- |
 | `PRODUCT_CONSTITUTION.md`      | Product philosophy, pillars, user model |
 | `SAGE_v2.md`                   | AI interaction framework                |
-| `AUTOMATE_v2.md`               | Automation modes and orchestration      |
+| `CRAFT_v2.md`                  | Execution layer, automation modes and orchestration |
 | `UX_SURFACES.md`               | Application surface definitions         |
 | `CORE_UX_FLOWS.md`             | User journey specifications             |
 | `DS_v3_PRINCIPLES.md`          | Design system foundation                |

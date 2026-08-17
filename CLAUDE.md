@@ -76,7 +76,7 @@ When two canon files conflict on the same topic, resolve by this chain (highest 
 | Priority | File(s)                                        | Domain                          |
 | -------- | ---------------------------------------------- | ------------------------------- |
 | 1        | `PRODUCT_CONSTITUTION.md`                      | Mission, non-negotiables        |
-| 2        | `SAGE_v2.md`, `AUTOMATE_v2.md`                 | Core product model              |
+| 2        | `SAGE_v2.md`, `CRAFT_v2.md`                    | Core product model              |
 | 3        | `DS_v3_PRINCIPLES.md`, `DS_v3_1_EXPRESSION.md` | Design system                   |
 | 4        | `CORE_UX_FLOWS.md`, `AUTOMATION_MODES_UX.md`   | UX flows and modes              |
 | 5        | `UX_SURFACES.md`                               | Surface definitions             |
@@ -120,7 +120,7 @@ See `DS_v3_COMPLIANCE_CHECKLIST.md` Section 1 for the full banned list and corre
 
 ## Project Overview
 
-PRAVADO is an AI-native Visibility Operating System — not a marketing tool collection, but an integrated platform where PR, Content, and SEO/AEO compound each other through shared strategy (SAGE), governed execution (AUTOMATE), and citation intelligence (CiteMind).
+PRAVADO is an AI-native Visibility Operating System — not a marketing tool collection, but an integrated platform where PR, Content, and SEO/AEO compound each other through shared strategy (SAGE), governed execution (CRAFT), and citation intelligence (CiteMind).
 
 **Three pillars, each best-in-class standalone, exponentially more powerful together:**
 
@@ -131,7 +131,7 @@ PRAVADO is an AI-native Visibility Operating System — not a marketing tool col
 **The governing layers visible in every surface:**
 
 - **SAGE** - Strategy mesh. Decides what to do next and why, across all pillars simultaneously.
-- **AUTOMATE** - Execution layer. Turns SAGE proposals into governed, traceable, mode-aware tasks.
+- **CRAFT** - Execution layer. Turns SAGE proposals into governed, traceable, mode-aware tasks.
 - **CiteMind** - Intelligence engine. Qualifies content, tracks AI citations, measures brand authority in LLM answers.
 
 **Target customer segments and their mode preferences:**
