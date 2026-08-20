@@ -127,8 +127,12 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     llmCallsPerHour: 500,
     llmSpendPerMonthUsd: 1_000,
   },
-  /** Growth — $1,199/mo: 15 seats, unlimited CRAFT, 50M tokens, autopilot (live page; PR-C) */
-  growth: {
+  /**
+   * Scale — $1,199/mo (renamed from "Growth" 2026-08-20; the team tier, ABOVE
+   * Pro): 15 seats, unlimited CRAFT, 50M tokens, autopilot. Legacy 'growth' slug
+   * is normalized to 'scale' in getPlanLimits/getPlanCeiling for back-compat.
+   */
+  scale: {
     seats: 15, // live page (was 50 — over-delivered vs contract)
     contentDocumentsPerMonth: 999_999, // live page: CRAFT Unlimited (was 500)
     sageProposalsPerMonth: 999_999,
@@ -249,8 +253,13 @@ export class PlanLimitExceededError extends Error {
  * Get the plan limits for a given plan slug.
  * Falls back to starter limits if unknown plan.
  */
+/** Normalize a plan slug, mapping the legacy 'growth' slug to 'scale'. */
+export function normalizePlanSlug(planSlug: string): string {
+  return planSlug === 'growth' ? 'scale' : planSlug;
+}
+
 export function getPlanLimits(planSlug: string): PlanLimits {
-  return PLAN_LIMITS[planSlug] ?? PLAN_LIMITS.starter;
+  return PLAN_LIMITS[normalizePlanSlug(planSlug)] ?? PLAN_LIMITS.starter;
 }
 
 /**

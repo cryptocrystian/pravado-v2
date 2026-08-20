@@ -50,9 +50,9 @@ const PLANS = [
     ],
   },
   {
-    slug: 'growth',
-    name: 'Pravado Growth',
-    description: 'For scaling organizations with full-stack AI visibility',
+    slug: 'scale',
+    name: 'Pravado Scale',
+    description: 'For scaling teams with full-stack AI visibility',
     monthlyPriceCents: 119900, // $1,199/month
     features: [
       '50 team seats',
@@ -289,7 +289,7 @@ async function bootstrapStripeBilling(): Promise<BootstrapResult> {
   console.log('\n\u2705 Stripe bootstrap complete. Add these to your .env:\n');
   console.log(`STRIPE_PRICE_STARTER=${priceMap['starter'] ?? ''}`);
   console.log(`STRIPE_PRICE_PRO=${priceMap['pro'] ?? ''}`);
-  console.log(`STRIPE_PRICE_GROWTH=${priceMap['growth'] ?? ''}`);
+  console.log(`STRIPE_PRICE_SCALE=${priceMap['scale'] ?? ''}`);
 
   if (result.webhook) {
     console.log(`STRIPE_WEBHOOK_SECRET=${result.webhook.secret}`);

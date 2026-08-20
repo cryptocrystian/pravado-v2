@@ -95,8 +95,8 @@ test.describe('Billing Page', () => {
             },
             {
               id: 'plan-2',
-              slug: 'growth',
-              name: 'Growth',
+              slug: 'scale',
+              name: 'Scale',
               description: 'For growing teams',
               monthlyPriceCents: 9900,
               includedTokensMonthly: 5000000,
@@ -189,7 +189,7 @@ test.describe('Billing Page', () => {
     // Check all 4 plans are displayed
     await expect(page.locator('text=Internal Dev')).toBeVisible();
     await expect(page.locator('text=Starter').nth(1)).toBeVisible(); // nth(1) because Starter appears twice
-    await expect(page.locator('text=Growth')).toBeVisible();
+    await expect(page.locator('text=Scale')).toBeVisible();
     await expect(page.locator('text=Enterprise')).toBeVisible();
 
     // Check current plan has "Current Plan" button
@@ -434,7 +434,7 @@ test.describe('Billing Page', () => {
               daysUntilRenewal: 15,
               projectedMonthlyCost: 3100,
               projectedOverageCost: 200,
-              recommendedPlanSlug: 'growth',
+              recommendedPlanSlug: 'scale',
               trialDaysRemaining: null,
             },
           }),

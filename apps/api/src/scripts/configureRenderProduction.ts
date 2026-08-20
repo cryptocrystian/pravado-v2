@@ -67,6 +67,9 @@ const ENV_VARS: Array<{ key: string; value: string }> = [
     value: process.env.STRIPE_PRICE_STARTER || '',
   },
   { key: 'STRIPE_PRICE_PRO', value: process.env.STRIPE_PRICE_PRO || '' },
+  // Scale (renamed from Growth 2026-08-20). STRIPE_PRICE_GROWTH is still pushed
+  // as the rollout fallback until the Render env is fully cut over to SCALE.
+  { key: 'STRIPE_PRICE_SCALE', value: process.env.STRIPE_PRICE_SCALE || '' },
   { key: 'STRIPE_PRICE_GROWTH', value: process.env.STRIPE_PRICE_GROWTH || '' },
 
   // AI Services

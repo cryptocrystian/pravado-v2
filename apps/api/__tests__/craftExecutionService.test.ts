@@ -51,7 +51,7 @@ function makeSupabase(config: MockConfig = {}) {
       };
     }
     if (table === 'billing_plans') {
-      return { data: { slug: config.planSlug ?? 'growth' }, error: null };
+      return { data: { slug: config.planSlug ?? 'scale' }, error: null };
     }
     if (table === 'sage_executions') {
       if (op === 'insert') {
@@ -209,7 +209,7 @@ describe('executeProposal — governed intake', () => {
   };
 
   it('creates a sage_executions row, an immutable audit row, and enqueues', async () => {
-    const { client, calls } = makeSupabase({ planSlug: 'growth' });
+    const { client, calls } = makeSupabase({ planSlug: 'scale' });
     const enqueue = vi.fn().mockResolvedValue(undefined);
 
     const result = await executeProposal(

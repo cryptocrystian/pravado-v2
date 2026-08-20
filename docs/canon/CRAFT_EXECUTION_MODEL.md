@@ -5,6 +5,21 @@
 > **Classification:** Defensible IP (Trade Secret + Patent Eligible)
 > **Last Updated:** 2026-01-14
 
+> ⚠️ **PLAN-TIER RECONCILIATION PENDING (D040, 2026-08-20).** Every plan-tier
+> table in this document (§2.2 mode-eligibility "Plan" row, §6.2 Execution
+> Guardrails, §6.3 Cost Guardrails, §12.5 CiteMind Cost Guardrails) predates the
+> ratified tier ladder and encodes the **retired** ordering **Starter → Growth →
+> Pro** (Growth as the mid tier BELOW Pro), with values increasing
+> Starter→Growth→Pro. The ratified ladder is **Starter < Pro < Scale <
+> Enterprise** — "Growth" has been renamed **Scale** and repositioned **ABOVE
+> Pro** (Scale is the top self-serve tier), and the code caps were corrected so
+> Scale > Pro (PR #178: Max Actions/Day Pro 200 / Scale 500, External/Day 50/100,
+> Concurrent 10/25, LLM Calls/Hr 500/1000, LLM Spend/Mo $1,000/$2,000). These
+> tables are therefore **non-authoritative for tiering and per-tier values**; the
+> live authority is `planLimitsService.ts`. Column re-ordering to
+> Starter | Pro | Scale | Enterprise and value reconciliation are a HELD
+> follow-up — see DECISIONS_LOG **D040**.
+
 ---
 
 ## 1. Formal Definition

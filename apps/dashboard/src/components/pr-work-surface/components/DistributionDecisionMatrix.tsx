@@ -545,7 +545,7 @@ export function DistributionDecisionMatrix({
             Add-on Option
           </span>
           <span className="px-2 py-0.5 text-[13px] font-medium rounded-full bg-white/10 text-white/55">
-            growth+ plan
+            Scale plan
           </span>
         </div>
 

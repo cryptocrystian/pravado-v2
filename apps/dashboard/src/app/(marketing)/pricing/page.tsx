@@ -28,7 +28,7 @@ const plans = [
     ],
   },
   {
-    name: 'Growth',
+    name: 'Scale',
     price: '$1,199/mo',
     features: [
       'Unlimited SAGE\u2122 actions',

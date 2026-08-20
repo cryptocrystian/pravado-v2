@@ -149,7 +149,7 @@ The generator takes scored signals from `sage_signals` and creates human-readabl
 Every call to the LLM:
 
 1. Checks `llm_usage_ledger` for org's monthly token consumption
-2. Enforces plan limit: Starter 500K tokens/month, Pro 5M, Growth 20M
+2. Enforces plan limit: Starter 2.5M tokens/month, Pro 5M, Scale 50M
 3. Uses JSON mode — system prompt explicitly requires `{ title, rationale, suggested_action }` JSON
 4. On parse failure: falls back to stub (never surfaces raw LLM text to the user)
 5. Logs to `llm_usage_ledger`: model, prompt_tokens, completion_tokens, cost_usd
