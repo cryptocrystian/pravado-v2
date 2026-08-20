@@ -44,7 +44,7 @@
  *     degrades safely to a no-match instead of inventing a mention.
  */
 
-import { LlmRouter } from '@pravado/utils';
+import { LlmRouter, getEconomyModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { createLogger } from '../../lib/logger';
@@ -301,7 +301,7 @@ export function createRouterClassifier(
   const router = new LlmRouter({
     provider,
     anthropicApiKey: deps.anthropicApiKey,
-    anthropicModel: deps.anthropicModel || 'claude-haiku-4-5-20251001',
+    anthropicModel: deps.anthropicModel || getEconomyModel(),
     openaiApiKey: deps.openaiApiKey,
     openaiModel: deps.openaiModel || 'gpt-4o-mini',
     timeoutMs: 20000,

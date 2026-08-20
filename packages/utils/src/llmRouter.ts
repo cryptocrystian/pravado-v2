@@ -20,6 +20,8 @@ import type {
   LlmRequest,
   LlmResponse,
   LlmFallbackInfo,
+  LlmTaskTier,
+  LlmTaskType,
   CreateLlmUsageLedgerEntry,
 } from '@pravado/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -29,13 +31,66 @@ import { createLogger } from './logger';
 const logger = createLogger('llm-router');
 
 /**
- * Canonical Anthropic model, read at call time from the environment so an
- * env update takes effect without a process restart. Falls back to the
- * current pinned Sonnet model so a deploy with a missing env var still lands
- * on the intended model instead of a retired one.
+ * STANDARD tier (Sonnet-class) — the default. Read at call time from the
+ * environment so an env update takes effect without a restart; falls back to the
+ * current pinned Sonnet so a missing env var lands on the intended model, not a
+ * retired one.
  */
 export function getAnthropicModel(): string {
   return process.env.LLM_ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929';
+}
+
+/**
+ * ECONOMY tier (Haiku-class) — high-volume, low-complexity work. Env-driven per
+ * the LLM_COST_ROUTER canon; falls back to the current pinned Haiku.
+ */
+export function getEconomyModel(): string {
+  return process.env.LLM_MODEL_ECONOMY || 'claude-haiku-4-5-20251001';
+}
+
+/**
+ * PREMIUM tier (Opus-class) — rare, opt-in complex synthesis. Fails SAFE: with no
+ * `LLM_MODEL_PREMIUM` configured it resolves to the STANDARD model rather than a
+ * possibly-unavailable hardcoded Opus id.
+ */
+export function getPremiumModel(): string {
+  return process.env.LLM_MODEL_PREMIUM || getAnthropicModel();
+}
+
+/**
+ * Task → cost-tier policy (canon: LLM_COST_ROUTER). The single source of truth
+ * for which tier a task routes to. Unknown/absent task → `standard`.
+ */
+export const TASK_TIER_MAP: Record<LlmTaskType, LlmTaskTier> = {
+  // economy — high-volume, low-complexity
+  citation_scan: 'economy',
+  brand_mention: 'economy',
+  classification: 'economy',
+  extraction: 'economy',
+  summarization: 'economy',
+  auto_responder_detection: 'economy',
+  entity_tagging: 'economy',
+  // standard — generation + reasoning
+  content_generation: 'standard',
+  content_rewrite: 'standard',
+  brief_generation: 'standard',
+  pitch_composition: 'standard',
+  strategy_reasoning: 'standard',
+  // premium — rare, opt-in
+  complex_synthesis: 'premium',
+};
+
+/** Resolve the concrete Anthropic model id for a task tier (env-driven). */
+export function modelForTier(tier: LlmTaskTier): string {
+  switch (tier) {
+    case 'economy':
+      return getEconomyModel();
+    case 'premium':
+      return getPremiumModel();
+    case 'standard':
+    default:
+      return getAnthropicModel();
+  }
 }
 
 /**
@@ -60,7 +115,12 @@ export interface LlmRouterConfig {
   openaiApiKey?: string;
   openaiModel?: string;
   anthropicApiKey?: string;
+  /** STANDARD tier (Sonnet-class) — the default Anthropic model. */
   anthropicModel?: string;
+  /** ECONOMY tier (Haiku-class) — resolved for economy-tier task types. */
+  economyModel?: string;
+  /** PREMIUM tier (Opus-class) — resolved for premium-tier task types. */
+  premiumModel?: string;
   timeoutMs?: number;
   maxTokens?: number;
   supabase?: SupabaseClient<any>;
@@ -276,6 +336,8 @@ export class LlmRouter {
       openaiModel: config.openaiModel || 'gpt-4o-mini',
       anthropicApiKey: config.anthropicApiKey || '',
       anthropicModel: config.anthropicModel || getAnthropicModel(),
+      economyModel: config.economyModel || getEconomyModel(),
+      premiumModel: config.premiumModel || getPremiumModel(),
       timeoutMs: config.timeoutMs || 20000,
       maxTokens: config.maxTokens || 2048,
     };
@@ -295,6 +357,8 @@ export class LlmRouter {
       openaiModel: (env.LLM_OPENAI_MODEL as string) || undefined,
       anthropicApiKey: (env.LLM_ANTHROPIC_API_KEY as string) || undefined,
       anthropicModel: (env.LLM_ANTHROPIC_MODEL as string) || undefined,
+      economyModel: (env.LLM_MODEL_ECONOMY as string) || undefined,
+      premiumModel: (env.LLM_MODEL_PREMIUM as string) || undefined,
       timeoutMs: (env.LLM_TIMEOUT_MS as number) || undefined,
       maxTokens: (env.LLM_MAX_TOKENS as number) || undefined,
     });
@@ -493,6 +557,22 @@ export class LlmRouter {
   }
 
   /**
+   * Resolve the concrete Anthropic model for a request (canon: LLM_COST_ROUTER).
+   * Precedence: explicit `request.model` (backward-compat) → `request.taskType`
+   * mapped to a cost tier → STANDARD default. Keeps model selection in one place
+   * so no feature code hardcodes a model id.
+   */
+  private resolveAnthropicModel(request: LlmRequest): string {
+    if (request.model) return request.model;
+    if (request.taskType) {
+      const tier = TASK_TIER_MAP[request.taskType] ?? 'standard';
+      if (tier === 'economy') return this.config.economyModel;
+      if (tier === 'premium') return this.config.premiumModel;
+    }
+    return this.config.anthropicModel;
+  }
+
+  /**
    * Generate completion using Anthropic
    */
   private async generateWithAnthropic(
@@ -510,7 +590,7 @@ export class LlmRouter {
       );
     }
 
-    const model = request.model || this.config.anthropicModel;
+    const model = this.resolveAnthropicModel(request);
     const maxTokens = request.maxTokens || this.config.maxTokens;
     const temperature =
       request.temperature !== undefined ? request.temperature : 0.7;
@@ -627,7 +707,7 @@ export class LlmRouter {
     err: Error,
     info: { errorCode: string; errorMessage: string; httpStatus?: number }
   ): LlmResponse {
-    const model = request.model || this.config.anthropicModel;
+    const model = this.resolveAnthropicModel(request);
     const errorMessage = this.sanitizeErrorMessage(info.errorMessage);
 
     logger.error('LLM call failed', {

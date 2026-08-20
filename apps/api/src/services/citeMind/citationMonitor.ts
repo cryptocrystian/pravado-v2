@@ -20,7 +20,7 @@
  * Results saved to citation_monitor_results, summaries to citation_summaries.
  */
 
-import { LlmRouter } from '@pravado/utils';
+import { LlmRouter, getEconomyModel } from '@pravado/utils';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import {
@@ -136,7 +136,7 @@ async function callViaRouter(
     openaiApiKey: config.openaiApiKey,
     openaiModel: 'gpt-4o-mini',
     anthropicApiKey: config.anthropicApiKey,
-    anthropicModel: 'claude-haiku-4-5-20251001',
+    anthropicModel: getEconomyModel(),
     timeoutMs: 30000,
     maxTokens: 512,
     supabase,
