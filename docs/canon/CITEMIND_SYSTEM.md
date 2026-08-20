@@ -10,6 +10,19 @@
 > **Classification:** Defensible IP (Trade Secret + Patent Eligible) — RESTRICTED
 > **Last Updated:** 2026-01-14
 
+> ⚠️ **PLAN-TIER RECONCILIATION PENDING (D040, 2026-08-20).** Every plan-tier
+> table in this document (Cost Profiles §2.6/§3.9, §4 cost inclusion, and the
+> §6.3 feature-gating matrix) predates the ratified tier ladder and encodes the
+> **retired** ordering **Starter → Growth → Pro** (Growth as the mid tier BELOW
+> Pro). The ratified ladder is **Starter < Pro < Scale < Enterprise** — "Growth"
+> has been renamed **Scale** and repositioned **ABOVE Pro** (Scale is the top
+> self-serve tier). These tables are therefore **non-authoritative for tiering
+> and per-tier values**; the live authority is `planLimitsService.ts` +
+> `bootstrapStripeBilling.ts` + the pricing page. Column re-ordering and per-tier
+> CiteMind cap values are a HELD reconciliation (values not yet ratified for
+> Scale) — see DECISIONS_LOG **D040**. (Note: "Growth zone" in §5.4 is an Entity
+> Map zone, NOT a plan tier, and is unaffected.)
+
 ---
 
 ## 1. Formal Definition

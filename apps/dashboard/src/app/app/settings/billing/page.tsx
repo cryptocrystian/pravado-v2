@@ -22,8 +22,8 @@ const PLANS = [
     features: ['Full SAGE + CiteMind', 'Manual CRAFT', '3 team members'],
   },
   {
-    id: 'growth',
-    name: 'Growth',
+    id: 'scale',
+    name: 'Scale',
     price: 799,
     users: 10,
     features: ['Full stack + Autopilot', '10 team members', 'Priority support'],

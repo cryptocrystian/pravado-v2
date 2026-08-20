@@ -72,6 +72,9 @@ export const apiEnvSchema = baseEnvSchema.extend({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   STRIPE_PRICE_STARTER: z.string().optional(),
   STRIPE_PRICE_PRO: z.string().optional(),
+  STRIPE_PRICE_SCALE: z.string().optional(),
+  // Legacy (pre-2026-08-20 Growth→Scale rename). Kept as a rollout fallback for
+  // STRIPE_PRICE_SCALE in priceIdMap; remove once Render env is fully renamed.
   STRIPE_PRICE_GROWTH: z.string().optional(),
   STRIPE_PRICE_ENTERPRISE: z.string().optional(),
   BILLING_PORTAL_RETURN_URL: z.string().url().optional(),

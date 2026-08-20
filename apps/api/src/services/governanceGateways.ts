@@ -241,7 +241,8 @@ function normalizeTier(slug?: string | null): PlanTier {
     case 'enterprise':
       return 'enterprise';
     case 'pro':
-    case 'growth':
+    case 'scale':
+    case 'growth': // legacy alias (renamed to 'scale' 2026-08-20)
     case 'professional':
       return 'pro';
     default:

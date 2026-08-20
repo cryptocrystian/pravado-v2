@@ -78,7 +78,7 @@ function makeSupabase(opts: {
 
 describe('getPlanDefaultMode — D026 compliance', () => {
   it('defaults every non-enterprise tier to copilot', () => {
-    for (const slug of ['starter', 'growth', 'pro', 'trial']) {
+    for (const slug of ['starter', 'scale', 'pro', 'trial']) {
       expect(getPlanDefaultMode(slug)).toBe('copilot');
     }
   });
@@ -89,8 +89,8 @@ describe('getPlanDefaultMode — D026 compliance', () => {
 
 describe('getPlanCeiling — autopilot gated on plan capability', () => {
   // PR-4a: pro (H1) and enterprise (H2) now carry autopilotMode=true.
-  it('growth / pro / enterprise (autopilotMode=true) → autopilot ceiling', () => {
-    for (const slug of ['growth', 'pro', 'enterprise']) {
+  it('scale / pro / enterprise (autopilotMode=true) → autopilot ceiling', () => {
+    for (const slug of ['scale', 'pro', 'enterprise']) {
       expect(getPlanCeiling(slug)).toBe('autopilot');
     }
   });
@@ -104,8 +104,8 @@ describe('getPlanCeiling — autopilot gated on plan capability', () => {
 describe('resolveOrgModeState — resolution hierarchy', () => {
   it('uses the explicit user preference when set (source=user)', async () => {
     const { client } = makeSupabase({
-      planId: 'plan-growth',
-      planSlug: 'growth',
+      planId: 'plan-scale',
+      planSlug: 'scale',
       prefs: [{ pillar: 'pr', mode: 'autopilot' }],
     });
     const state = await resolveOrgModeState(client, 'user-1', 'org-1');
@@ -166,8 +166,8 @@ describe('resolveOrgModeState — resolution hierarchy', () => {
 describe('setPillarMode', () => {
   it('upserts on the composite key and returns the new state', async () => {
     const { client, upsertSpy } = makeSupabase({
-      planId: 'plan-growth',
-      planSlug: 'growth',
+      planId: 'plan-scale',
+      planSlug: 'scale',
     });
     const result = await setPillarMode(
       client,
@@ -216,12 +216,12 @@ describe('setPillarMode — plan-tier ceiling enforcement (PR-4a, money-code)', 
   const PILLARS = ['pr', 'content', 'seo'] as const;
 
   // Tier → whether Autopilot is within the plan ceiling (PLAN_LIMITS.autopilotMode).
-  // starter/trial: false (ceiling Copilot). pro (H1) / growth / enterprise (H2): true.
+  // starter/trial: false (ceiling Copilot). pro (H1) / scale / enterprise (H2): true.
   const AUTOPILOT_ALLOWED: Record<string, boolean> = {
     starter: false,
     trial: false,
     pro: true,
-    growth: true,
+    scale: true,
     enterprise: true,
   };
 
@@ -314,14 +314,14 @@ describe('resolveOrgProposalMode — SAGE proposal mode label (PR-4b, #101)', ()
   const CASES: Array<{ slug: string; expected: string; note: string }> = [
     { slug: 'starter', expected: 'copilot', note: 'D026 default' },
     { slug: 'trial', expected: 'copilot', note: 'D026 default' },
-    // Ceiling permits autopilot (pro via H1, growth), but the DEFAULT is copilot.
+    // Ceiling permits autopilot (pro via H1, scale), but the DEFAULT is copilot.
     {
       slug: 'pro',
       expected: 'copilot',
       note: 'default copilot despite autopilot ceiling',
     },
     {
-      slug: 'growth',
+      slug: 'scale',
       expected: 'copilot',
       note: 'default copilot despite autopilot ceiling',
     },
@@ -347,8 +347,8 @@ describe('resolveOrgProposalMode — SAGE proposal mode label (PR-4b, #101)', ()
     // The resolver takes no pillar arg — the same org yields one mode for every
     // proposal, replacing the old `pillar === 'SEO' ? 'autopilot' : 'copilot'`.
     const { client } = makeSupabase({
-      planId: 'plan-growth',
-      planSlug: 'growth',
+      planId: 'plan-scale',
+      planSlug: 'scale',
     });
     const a = await resolveOrgProposalMode(client, 'org-1');
     const b = await resolveOrgProposalMode(client, 'org-1');

@@ -118,7 +118,7 @@ function makeSupabase(cfg: MockCfg = {}) {
 describe('evaluateAutonomousGuardrails — caps + kill-switch (canon §6/§11.2)', () => {
   it('NEVER allows an autonomous run this slice (autonomy globally OFF), even with full headroom', async () => {
     const { client } = makeSupabase({
-      planSlug: 'growth',
+      planSlug: 'scale',
       dailyActions: 0,
       concurrent: 0,
     });
@@ -147,7 +147,7 @@ describe('evaluateAutonomousGuardrails — caps + kill-switch (canon §6/§11.2)
 
   it('an engaged kill-switch is a block reason', async () => {
     const { client } = makeSupabase({
-      planSlug: 'growth',
+      planSlug: 'scale',
       dailyActions: 0,
       killEngaged: true,
     });
@@ -176,7 +176,7 @@ describe('evaluateAutonomousGuardrails — caps + kill-switch (canon §6/§11.2)
 
 describe('assertAutonomousExecutionAllowed — belt-and-suspenders', () => {
   it('returns allowed:false while autonomy is OFF regardless of headroom', async () => {
-    const { client } = makeSupabase({ planSlug: 'growth', dailyActions: 0 });
+    const { client } = makeSupabase({ planSlug: 'scale', dailyActions: 0 });
     const r = await assertAutonomousExecutionAllowed(client, {
       orgId: 'org-1',
       isExternal: false,

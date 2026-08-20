@@ -11,9 +11,9 @@
  * Guardrail Rules:
  * - Personalization gate: <40% BLOCKED, 40-60% WARNING, >60% ENABLED
  * - Follow-up limits: Max 2 per journalist per 7 days
- * - Daily pitch caps: Starter=10, Growth=50, Pro=200
+ * - Daily pitch caps: Starter=10, Pro=200, Scale=350
  *
- * @see /docs/canon/AUTOMATE_v2.md
+ * @see /docs/canon/CRAFT_v2.md
  * @see /docs/canon/PR_WORK_SURFACE_CONTRACT.md
  */
 
@@ -27,8 +27,8 @@ export const revalidate = 0;
 // Plan-based pitch caps
 const DAILY_PITCH_CAPS: Record<string, number> = {
   starter: 10,
-  growth: 50,
   pro: 200,
+  scale: 350, // renamed from 'growth' 2026-08-20; sits above Pro, below Enterprise
   enterprise: 500,
   free: 5,
 };
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     // Get current usage stats
     const dailyPitchCount = await getDailyPitchCount();
-    const plan = 'growth'; // TODO: Get from org settings
+    const plan = 'scale'; // TODO: Get from org settings
     const dailyPitchCap = DAILY_PITCH_CAPS[plan] || DAILY_PITCH_CAPS.free;
     const dailyPitchesRemaining = Math.max(0, dailyPitchCap - dailyPitchCount);
 
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     const dailyPitchCount = await getDailyPitchCount();
-    const plan = 'growth'; // TODO: Get from org settings
+    const plan = 'scale'; // TODO: Get from org settings
     const dailyPitchCap = DAILY_PITCH_CAPS[plan] || DAILY_PITCH_CAPS.free;
 
     return NextResponse.json({

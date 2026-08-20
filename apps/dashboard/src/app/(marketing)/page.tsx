@@ -743,7 +743,7 @@ const PLANS = [
     ],
   },
   {
-    name: 'Growth',
+    name: 'Scale',
     price: '$1,199/mo',
     annual: '$959/mo',
     desc: 'For scaling organizations',
@@ -2514,7 +2514,7 @@ export default function MarketingPage() {
             }}
           >
             Muck Rack ($833/mo) + Profound ($399/mo) + Semrush ($400/mo) =
-            $1,632/mo &mdash; replaced by Pravado Growth at $959/mo
+            $1,632/mo &mdash; replaced by Pravado Scale at $959/mo
           </p>
 
           {/* CTA banner */}

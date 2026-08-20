@@ -7,19 +7,25 @@
  * live in the shared `billing_plans` table. This replaces the dead
  * `billing_plans.stripe_price_id` read (the column never existed).
  *
- * Sellable self-serve tiers: starter, pro, growth. Enterprise is sales-led
+ * Sellable self-serve tiers: starter, pro, scale. Enterprise is sales-led
  * (custom) — it may carry a price ID for negotiated self-serve, but usually
  * resolves undefined (no self-serve checkout).
  *
  * Canonical prices (for reference; the amounts live in Stripe, keyed by these
- * IDs): Starter $199 / Pro $599 / Growth $1,199 — DECISIONS_LOG.md:334 +
- * bootstrapStripeBilling.ts:26/40/56.
+ * IDs): Starter $199 / Pro $599 / Scale $1,199 (Scale renamed from "Growth"
+ * 2026-08-20). DECISIONS_LOG.md + bootstrapStripeBilling.ts.
+ *
+ * ROLLOUT: `scale` reads STRIPE_PRICE_SCALE, falling back to the legacy
+ * STRIPE_PRICE_GROWTH so checkout never breaks before the env var is renamed
+ * in Render. The legacy 'growth' slug also normalizes to 'scale' below.
  */
 
 /** The env fields this module reads (subset of the validated api env). */
 export interface PriceIdEnv {
   STRIPE_PRICE_STARTER?: string;
   STRIPE_PRICE_PRO?: string;
+  STRIPE_PRICE_SCALE?: string;
+  /** Legacy (pre-2026-08-20 rename). Fallback for `scale` during rollout. */
   STRIPE_PRICE_GROWTH?: string;
   STRIPE_PRICE_ENTERPRISE?: string;
 }
@@ -33,6 +39,7 @@ export function priceIdEnvFromProcess(): PriceIdEnv {
   return {
     STRIPE_PRICE_STARTER: process.env.STRIPE_PRICE_STARTER,
     STRIPE_PRICE_PRO: process.env.STRIPE_PRICE_PRO,
+    STRIPE_PRICE_SCALE: process.env.STRIPE_PRICE_SCALE,
     STRIPE_PRICE_GROWTH: process.env.STRIPE_PRICE_GROWTH,
     STRIPE_PRICE_ENTERPRISE: process.env.STRIPE_PRICE_ENTERPRISE,
   };
@@ -45,7 +52,9 @@ export function buildPriceIdMap(
   return {
     starter: env.STRIPE_PRICE_STARTER,
     pro: env.STRIPE_PRICE_PRO, // PR-A: was missing → Pro checkout returned NO_PRICE_ID (#76)
-    growth: env.STRIPE_PRICE_GROWTH,
+    // Scale (renamed from Growth): prefer STRIPE_PRICE_SCALE, fall back to the
+    // legacy STRIPE_PRICE_GROWTH during the Render env rollout.
+    scale: env.STRIPE_PRICE_SCALE ?? env.STRIPE_PRICE_GROWTH,
     enterprise: env.STRIPE_PRICE_ENTERPRISE,
   };
 }
@@ -55,7 +64,9 @@ export function priceIdForSlug(
   env: PriceIdEnv,
   slug: string
 ): string | undefined {
-  return buildPriceIdMap(env)[slug];
+  // Normalize the legacy 'growth' slug to 'scale' (rename 2026-08-20).
+  const normalized = slug === 'growth' ? 'scale' : slug;
+  return buildPriceIdMap(env)[normalized];
 }
 
 /**

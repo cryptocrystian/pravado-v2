@@ -52,7 +52,7 @@ function session(
 ): Stripe.Checkout.Session {
   return {
     id: 'cs_test_1',
-    metadata: { orgId: 'org-1', planSlug: 'growth' },
+    metadata: { orgId: 'org-1', planSlug: 'scale' },
     subscription: 'sub_1',
     customer: 'cus_1',
     ...overrides,
@@ -62,7 +62,7 @@ function session(
 describe('applyCheckoutCompletion', () => {
   it('upserts plan_id + stripe ids when the org is on a different plan', async () => {
     const { client, upsertSpy } = makeSupabase({
-      plan: { data: { id: 'plan-growth' }, error: null },
+      plan: { data: { id: 'plan-scale' }, error: null },
       current: {
         data: { plan_id: 'plan-starter', stripe_subscription_id: 'sub_0' },
       },
@@ -73,13 +73,13 @@ describe('applyCheckoutCompletion', () => {
     expect(result).toEqual({
       updated: true,
       orgId: 'org-1',
-      planSlug: 'growth',
+      planSlug: 'scale',
     });
     expect(upsertSpy).toHaveBeenCalledTimes(1);
     expect(upsertSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         org_id: 'org-1',
-        plan_id: 'plan-growth',
+        plan_id: 'plan-scale',
         stripe_subscription_id: 'sub_1',
         stripe_customer_id: 'cus_1',
         subscription_status: 'active',
@@ -94,7 +94,7 @@ describe('applyCheckoutCompletion', () => {
     // The old code did `.update().eq('org_id')`, which affects 0 rows and
     // returns error=null → reported success, wrote nothing. Upsert must create.
     const { client, upsertSpy } = makeSupabase({
-      plan: { data: { id: 'plan-growth' }, error: null },
+      plan: { data: { id: 'plan-scale' }, error: null },
       current: { data: null },
     });
 
@@ -103,20 +103,20 @@ describe('applyCheckoutCompletion', () => {
     expect(result).toEqual({
       updated: true,
       orgId: 'org-1',
-      planSlug: 'growth',
+      planSlug: 'scale',
     });
     expect(upsertSpy).toHaveBeenCalledTimes(1);
     expect(upsertSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ org_id: 'org-1', plan_id: 'plan-growth' }),
+      expect.objectContaining({ org_id: 'org-1', plan_id: 'plan-scale' }),
       { onConflict: 'org_id' }
     );
   });
 
   it('is idempotent — no write when already on this plan + subscription', async () => {
     const { client, upsertSpy } = makeSupabase({
-      plan: { data: { id: 'plan-growth' }, error: null },
+      plan: { data: { id: 'plan-scale' }, error: null },
       current: {
-        data: { plan_id: 'plan-growth', stripe_subscription_id: 'sub_1' },
+        data: { plan_id: 'plan-scale', stripe_subscription_id: 'sub_1' },
       },
     });
 
@@ -147,7 +147,7 @@ describe('applyCheckoutCompletion', () => {
 
   it('returns update_failed when the org_billing_state upsert errors', async () => {
     const { client } = makeSupabase({
-      plan: { data: { id: 'plan-growth' }, error: null },
+      plan: { data: { id: 'plan-scale' }, error: null },
       current: {
         data: { plan_id: 'plan-starter', stripe_subscription_id: null },
       },

@@ -156,11 +156,12 @@ describe('handleSubscriptionChange — plan_id reconciliation (PR-A / #75)', () 
     vi.clearAllMocks(); // h.l is shared/hoisted — reset before asserting on it
     process.env.STRIPE_PRICE_STARTER = 'price_starter';
     process.env.STRIPE_PRICE_PRO = 'price_pro';
-    process.env.STRIPE_PRICE_GROWTH = 'price_growth';
+    process.env.STRIPE_PRICE_SCALE = 'price_scale';
   });
   afterEach(() => {
     delete process.env.STRIPE_PRICE_STARTER;
     delete process.env.STRIPE_PRICE_PRO;
+    delete process.env.STRIPE_PRICE_SCALE;
     delete process.env.STRIPE_PRICE_GROWTH;
     vi.clearAllMocks();
   });
@@ -214,14 +215,14 @@ describe('handleSubscriptionChange — plan_id reconciliation (PR-A / #75)', () 
   it.each([
     ['price_starter', 'plan-starter'],
     ['price_pro', 'plan-pro'],
-    ['price_growth', 'plan-growth'],
+    ['price_scale', 'plan-scale'],
   ])(
-    'writes plan_id resolved from the live price (%s) — starter/pro/growth',
+    'writes plan_id resolved from the live price (%s) — starter/pro/scale',
     async (priceId, planId) => {
       const { client, upsertSpy } = makeSupabaseWithPlans({
         starter: 'plan-starter',
         pro: 'plan-pro',
-        growth: 'plan-growth',
+        scale: 'plan-scale',
       });
       const svc = new StripeService(client, 'sk_test_fake', 'whsec_x');
       await svc.processWebhookEvent(liveSub(priceId));
@@ -233,6 +234,25 @@ describe('handleSubscriptionChange — plan_id reconciliation (PR-A / #75)', () 
       expect(h.l.error).not.toHaveBeenCalled();
     }
   );
+
+  it('rollout fallback: a legacy STRIPE_PRICE_GROWTH price resolves to the scale plan', async () => {
+    // Render env not yet renamed: only STRIPE_PRICE_GROWTH is set.
+    delete process.env.STRIPE_PRICE_SCALE;
+    process.env.STRIPE_PRICE_GROWTH = 'price_growth';
+    const { client, upsertSpy } = makeSupabaseWithPlans({
+      starter: 'plan-starter',
+      pro: 'plan-pro',
+      scale: 'plan-scale',
+    });
+    const svc = new StripeService(client, 'sk_test_fake', 'whsec_x');
+    await svc.processWebhookEvent(liveSub('price_growth'));
+
+    expect(upsertSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ org_id: 'org-1', plan_id: 'plan-scale' }),
+      { onConflict: 'org_id' }
+    );
+    expect(h.l.error).not.toHaveBeenCalled();
+  });
 
   it('fails loud + OMITS plan_id when a live sub price is unmapped (no silent under-entitle)', async () => {
     const { client, upsertSpy } = makeSupabaseWithPlans({});

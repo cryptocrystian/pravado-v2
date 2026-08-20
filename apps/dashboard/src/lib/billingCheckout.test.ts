@@ -29,14 +29,14 @@ describe('startCheckout', () => {
     }));
     vi.stubGlobal('fetch', fetchMock);
 
-    const url = await startCheckout('growth');
+    const url = await startCheckout('scale');
 
     expect(url).toBe('https://checkout.stripe.com/c/pay/cs_test_1');
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/billing/org/create-checkout',
       expect.objectContaining({
         method: 'POST',
-        body: JSON.stringify({ planSlug: 'growth' }),
+        body: JSON.stringify({ planSlug: 'scale' }),
       })
     );
     expect(captureException).not.toHaveBeenCalled();
@@ -50,9 +50,9 @@ describe('startCheckout', () => {
       })
     );
 
-    await expect(startCheckout('growth')).rejects.toThrow('network down');
+    await expect(startCheckout('scale')).rejects.toThrow('network down');
     expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
-      tags: { phase: 'billing_checkout', tier: 'growth' },
+      tags: { phase: 'billing_checkout', tier: 'scale' },
     });
   });
 

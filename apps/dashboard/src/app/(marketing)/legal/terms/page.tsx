@@ -155,7 +155,7 @@ export default function TermsPage() {
       <H3>5.1 Plans</H3>
       <P>
         The Service is offered under multiple subscription tiers, including but
-        not limited to Starter, Pro, and Growth plans. Each plan provides
+        not limited to Starter, Pro, and Scale plans. Each plan provides
         different levels of access to features, usage limits, and support. Plan
         details and current pricing are available on our website.
       </P>

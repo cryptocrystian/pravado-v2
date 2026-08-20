@@ -98,17 +98,17 @@ describe('seats — hard-block on the invite/join paths', () => {
     ).resolves.toBeUndefined();
   });
 
-  it('allows Growth up to 15 and blocks the 16th', async () => {
+  it('allows Scale up to 15 and blocks the 16th', async () => {
     await expect(
       enforcePlanLimit(
-        makeSupabase({ planSlug: 'growth', count: 14 }),
+        makeSupabase({ planSlug: 'scale', count: 14 }),
         'o',
         'seats'
       )
     ).resolves.toBeUndefined();
     await expect(
       enforcePlanLimit(
-        makeSupabase({ planSlug: 'growth', count: 15 }),
+        makeSupabase({ planSlug: 'scale', count: 15 }),
         'o',
         'seats'
       )
@@ -167,8 +167,8 @@ describe('contentDocumentsPerMonth — hard-block on content-item create', () =>
     ).resolves.toBeUndefined();
   });
 
-  it('does not block Growth (CRAFT unlimited on the live page)', async () => {
-    const supabase = makeSupabase({ planSlug: 'growth', count: 5_000 });
+  it('does not block Scale (CRAFT unlimited on the live page)', async () => {
+    const supabase = makeSupabase({ planSlug: 'scale', count: 5_000 });
     await expect(
       enforcePlanLimit(supabase, 'org-1', 'contentDocumentsPerMonth')
     ).resolves.toBeUndefined();
