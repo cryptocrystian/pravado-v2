@@ -45,13 +45,12 @@ export interface PlanLimits {
   // autonomous path today; they become live limits the moment autonomy is enabled.
   // The sentinel 999_999 = "unlimited" (Enterprise custom / internal-dev).
   //
-  // CANON-vs-PRICING FLAG: canon §6.2 orders tiers Starter<Growth<Pro<Enterprise
-  // with MONOTONICALLY increasing caps (Growth=50/day, Pro=200/day). The live
-  // pricing ladder here has `growth` ($1,199) priced ABOVE `pro` ($599). Following
-  // canon LITERALLY by tier name (CLAUDE.md: "canon wins on ALL conflicts") gives
-  // `pro` a HIGHER daily-action cap than the pricier `growth` — a real canon/pricing
-  // ordering conflict flagged for product reconciliation, NOT silently smoothed here.
-  // Safe to defer: the caps are inert while autonomy is off.
+  // TIER ORDER (RESOLVED 2026-08-18): the ladder is Starter < Pro < Scale (the
+  // `growth` slug, priced above Pro) < Enterprise, with MONOTONICALLY increasing
+  // caps. PLANS_LIMITS_ENTITLEMENTS is the tier authority (per the pricing model);
+  // canon CRAFT §6.2/§6.3, which previously ordered Growth BELOW Pro, is being
+  // re-ordered to match. The prior Pro > Scale cap inversion is fixed below.
+  // (Autonomy caps remain inert while Autopilot is off.)
   // --------------------------------------------------------------------------
   /** §6.2 Max Actions/Day — total governed actions per calendar day. */
   maxActionsPerDay: number;
@@ -120,8 +119,8 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     // action-level restriction (§2C), not a plan-tier ceiling of Copilot.
     autopilotMode: true,
     citeMindEngineLimit: 5,
-    // Canon §6.2/§6.3 Pro column (verbatim). See the CANON-vs-PRICING FLAG above:
-    // canon's Pro caps exceed canon's Growth caps.
+    // Pro CRAFT guardrails. Scale (below) now correctly exceeds these — the prior
+    // Pro > Scale inversion is resolved; PLANS_LIMITS is the tier authority.
     maxActionsPerDay: 200,
     externalActionsPerDay: 50,
     concurrentExecutions: 10,
@@ -140,13 +139,15 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     apiIntegrations: true,
     autopilotMode: true,
     citeMindEngineLimit: 5,
-    // Canon §6.2/§6.3 Growth column (verbatim). NOTE the flagged conflict: these are
-    // LOWER than Pro's above despite `growth` being the pricier tier here.
-    maxActionsPerDay: 50,
-    externalActionsPerDay: 10,
-    concurrentExecutions: 3,
-    llmCallsPerHour: 100,
-    llmSpendPerMonthUsd: 200,
+    // Scale sits ABOVE Pro — PLANS_LIMITS_ENTITLEMENTS is the tier authority per
+    // the pricing model. Resolves the prior inversion where these caps were LOWER
+    // than Pro's despite Scale being the pricier tier. Canon CRAFT §6.2/§6.3 to be
+    // re-ordered to match. (Autonomy caps — inert until Autopilot ships.)
+    maxActionsPerDay: 500,
+    externalActionsPerDay: 100,
+    concurrentExecutions: 25,
+    llmCallsPerHour: 1_000,
+    llmSpendPerMonthUsd: 2_000,
   },
   /**
    * Enterprise — custom contract: per-pillar mode control incl. Autopilot
