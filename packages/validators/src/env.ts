@@ -62,7 +62,12 @@ export const apiEnvSchema = baseEnvSchema.extend({
   LLM_OPENAI_API_KEY: z.string().optional(),
   LLM_OPENAI_MODEL: z.string().default('gpt-4o-mini'),
   LLM_ANTHROPIC_API_KEY: z.string().optional(),
+  // STANDARD tier (default). Cost-router tiers per canon LLM_COST_ROUTER —
+  // ECONOMY/PREMIUM are optional overrides; the router defaults to Haiku/Sonnet
+  // when unset. Set these to pin models or repoint ECONOMY at a self-hosted model.
   LLM_ANTHROPIC_MODEL: z.string().default('claude-sonnet-4-5-20250929'),
+  LLM_MODEL_ECONOMY: z.string().optional(),
+  LLM_MODEL_PREMIUM: z.string().optional(),
   LLM_TIMEOUT_MS: z.coerce.number().default(20000),
   LLM_MAX_TOKENS: z.coerce.number().default(2048),
   // Billing configuration (S28 - optional, falls back to internal-dev)

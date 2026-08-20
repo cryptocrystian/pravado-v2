@@ -9,13 +9,54 @@
 export type LlmProvider = 'openai' | 'anthropic' | 'stub';
 
 /**
+ * Cost-routing tier (canon: LLM_COST_ROUTER). The router maps a task to the
+ * least-cost model tier that meets its quality bar.
+ * - `economy`  — Haiku-class: high-volume, low-complexity work
+ * - `standard` — Sonnet-class: generation + reasoning (default)
+ * - `premium`  — Opus-class: rare, opt-in complex synthesis
+ */
+export type LlmTaskTier = 'economy' | 'standard' | 'premium';
+
+/**
+ * Known LLM task types, each mapped to a cost tier by the router's
+ * TASK_TIER_MAP (canon: LLM_COST_ROUTER). Callers declare intent via `taskType`
+ * rather than hardcoding a model id.
+ */
+export type LlmTaskType =
+  // economy
+  | 'citation_scan'
+  | 'brand_mention'
+  | 'classification'
+  | 'extraction'
+  | 'summarization'
+  | 'auto_responder_detection'
+  | 'entity_tagging'
+  // standard
+  | 'content_generation'
+  | 'content_rewrite'
+  | 'brief_generation'
+  | 'pitch_composition'
+  | 'strategy_reasoning'
+  // premium
+  | 'complex_synthesis';
+
+/**
  * Request to LLM router
  */
 export interface LlmRequest {
   /** Override default provider */
   provider?: LlmProvider;
-  /** Override default model */
+  /**
+   * Explicit model id override. Wins over `taskType` routing (backward-compat).
+   * Prefer `taskType` — hardcoded model ids in feature code are canon drift.
+   */
   model?: string;
+  /**
+   * Cost-routing hint (canon: LLM_COST_ROUTER). Resolved to the least-cost model
+   * tier via the router's TASK_TIER_MAP. Ignored if `model` is set. Defaults to
+   * the `standard` tier when unset.
+   */
+  taskType?: LlmTaskType;
   /** System-level instructions */
   systemPrompt?: string;
   /** User prompt/query */
