@@ -11,7 +11,7 @@
 Pravado is an **AI-native Visibility Operating System** — a unified PR + Content + SEO platform where:
 
 - **SAGE** (Strategy mesh) decides WHAT to do and WHY across all three pillars
-- **AUTOMATE** (Execution layer) turns SAGE proposals into governed, traceable tasks
+- **CRAFT** (Execution layer) turns SAGE proposals into governed, traceable tasks
 - **CiteMind** (Intelligence engine) qualifies content and tracks AI/citation visibility (AEO)
 
 The core differentiator: content is treated as **authority infrastructure**, not blog posts. Every action is explainable, labeled, and interruptible. No silent automation.
@@ -125,7 +125,7 @@ Every pillar uses the same mode framework:
 When two canon files conflict on the same topic, this is the priority:
 
 1. `PRODUCT_CONSTITUTION.md` — Mission/non-negotiables (highest)
-2. `SAGE_v2.md` + `AUTOMATE_v2.md` — Core model
+2. `SAGE_v2.md` + `CRAFT_v2.md` — Core model
 3. `DS_v3_PRINCIPLES.md` + `DS_v3_1_EXPRESSION.md` — Design system
 4. `CORE_UX_FLOWS.md` + `AUTOMATION_MODES_UX.md` — UX flows
 5. `UX_SURFACES.md` — Surface definitions
@@ -393,9 +393,9 @@ _(Architect updates this section at end of each session)_
 
 ### Remaining Post-V1 Gaps
 
-- API routes for real calendar data (AUTOMATE execution timeline)
+- API routes for real calendar data (CRAFT execution timeline)
 - Real data hooks (currently all mock data)
-- AUTOMATE integration (live status updates, real scheduled actions)
+- CRAFT integration (live status updates, real scheduled actions)
 - Cross-pillar dependency visualization (currently shows dep count only)
 - Recurring item support
 
@@ -492,7 +492,7 @@ _(Architect updates this section at end of each session)_
 - ~200 non-canonical/legacy component files retain `text-gray-*` violations (not in any canonical surface)
 - Omni-Tray is stub only (placeholder modal)
 - Old `ContentWorkQueueView.tsx` (Swiss Army Knife) still present but fully superseded
-- No real-time data, no webhooks, no AUTOMATE execution engine
+- No real-time data, no webhooks, no CRAFT execution engine
 - SVG charts in Analytics — no external charting library
 
 **Session 2026-02-20 (continued — UI Sprint 1):**

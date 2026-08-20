@@ -142,7 +142,7 @@ Actions may define a **maximum allowed automation level** (mode ceiling):
 Guardrails are conditions that force escalation even in Autopilot:
 
 - Critical priority items
-- High-risk actions (as defined by AUTOMATE_EXECUTION_MODEL)
+- High-risk actions (as defined by CRAFT_EXECUTION_MODEL)
 - Items requiring human judgment (e.g., journalist inquiries)
 - Confidence below threshold
 - Deadline proximity
