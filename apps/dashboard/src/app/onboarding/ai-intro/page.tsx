@@ -24,6 +24,19 @@ import { track, Events, identifyUser } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
 
+// Extract a bare hostname (no scheme, no leading www) from a possibly
+// schemeless URL. Used to prefill brand/competitor domains from the Silo Tax
+// audit, which stores full URLs. Returns '' on anything unparseable.
+function hostnameOf(url: string | null | undefined): string {
+  if (!url) return '';
+  try {
+    const u = url.includes('://') ? url : `https://${url}`;
+    return new URL(u).hostname.replace(/^www\./, '');
+  } catch {
+    return '';
+  }
+}
+
 // ============================================
 // TYPES
 // ============================================
@@ -478,12 +491,30 @@ export default function AIIntroPage() {
         const json = await res.json();
         if (json.success && json.data?.has_org) {
           setOrgId(json.data.org_id);
+          const auditBrandUrl: string | null =
+            json.data.audit_prefill?.brand_url ?? null;
           setBrand({
             name: json.data.org_name || '',
-            domain: json.data.domain || '',
+            // Fall back to the domain captured by the Silo Tax audit when the
+            // org has none yet (audit-funnel users).
+            domain: json.data.domain || hostnameOf(auditBrandUrl) || '',
             industry: json.data.industry || '',
             company_size: json.data.company_size || '',
           });
+          // Prefill competitors from the user's audit — only when none have been
+          // added to the org yet, so we never clobber real progress.
+          const auditCompetitors: string[] =
+            json.data.audit_prefill?.competitor_urls ?? [];
+          if (
+            (json.data.counts?.competitors ?? 0) === 0 &&
+            auditCompetitors.length > 0
+          ) {
+            setCompetitors(
+              auditCompetitors
+                .slice(0, 5)
+                .map((u) => ({ domain: hostnameOf(u) || u, name: '' }))
+            );
+          }
           // If completed, redirect to dashboard
           if (json.data.completed) {
             router.replace('/app/command-center');
