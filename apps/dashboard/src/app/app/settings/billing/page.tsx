@@ -6,27 +6,43 @@ import { startCheckout } from '@/lib/billingCheckout';
 
 export const dynamic = 'force-dynamic';
 
+// Display only — checkout resolves the real Stripe price server-side via
+// startCheckout(plan.id). Prices/seats/features MUST match the customer-facing
+// marketing pricing page (app/(marketing)/pricing) and the enforced entitlements
+// in planLimitsService: Starter $199/1 seat, Pro $599/5, Scale $1,199/15.
 const PLANS = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 99,
+    price: 199,
     users: 1,
-    features: ['Basic SAGE proposals', 'Content editor', 'PR outreach'],
+    features: [
+      '3 SAGE actions/day',
+      'Daily CiteMind scans',
+      '10 CRAFT pieces/mo',
+    ],
   },
   {
     id: 'pro',
     name: 'Pro',
-    price: 299,
-    users: 3,
-    features: ['Full SAGE + CiteMind', 'Manual CRAFT', '3 team members'],
+    price: 599,
+    users: 5,
+    features: [
+      '10 SAGE actions/day',
+      'Hourly CiteMind scans',
+      '50 CRAFT pieces/mo',
+    ],
   },
   {
     id: 'scale',
     name: 'Scale',
-    price: 799,
-    users: 10,
-    features: ['Full stack + Autopilot', '10 team members', 'Priority support'],
+    price: 1199,
+    users: 15,
+    features: [
+      'Unlimited SAGE actions',
+      'Real-time CiteMind',
+      'Unlimited CRAFT',
+    ],
   },
 ];
 
@@ -185,7 +201,7 @@ export default function BillingSettingsPage() {
               >
                 <p className="text-lg font-bold text-white mb-1">{plan.name}</p>
                 <p className="text-2xl font-bold text-white mb-1">
-                  ${plan.price}
+                  ${plan.price.toLocaleString()}
                   <span className="text-sm text-white/40 font-normal">/mo</span>
                 </p>
                 <p className="text-xs text-white/40 mb-4">

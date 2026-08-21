@@ -128,19 +128,24 @@ export function createSupabaseGovernanceGateways(
     },
 
     async getOrgTier(orgId: string): Promise<PlanTier> {
-      // orgs.plan_id -> billing_plans.slug. Default to the MOST restrictive
-      // tier (starter) on any ambiguity — fail-safe for send caps.
+      // org_billing_state.plan_id -> billing_plans.slug. Default to the MOST
+      // restrictive tier (starter) on any ambiguity — fail-safe for send caps.
+      // NOTE: previously read `orgs.plan_id`, a column that does NOT exist, so
+      // every lookup errored into the starter fallback (send caps silently
+      // pinned to starter for ALL orgs). The org→plan link lives in
+      // org_billing_state — same source as modeService.resolveOrgPlanSlug /
+      // planLimitsService.getOrgPlanSlug.
       try {
-        const { data: org } = await supabase
-          .from('orgs')
+        const { data: billing } = await supabase
+          .from('org_billing_state')
           .select('plan_id')
-          .eq('id', orgId)
+          .eq('org_id', orgId)
           .maybeSingle();
-        if (!org?.plan_id) return 'starter';
+        if (!billing?.plan_id) return 'starter';
         const { data: plan } = await supabase
           .from('billing_plans')
           .select('slug')
-          .eq('id', org.plan_id)
+          .eq('id', billing.plan_id)
           .maybeSingle();
         return normalizeTier(plan?.slug);
       } catch {
