@@ -196,6 +196,34 @@ export async function onboardingRoutes(server: FastifyInstance) {
         .eq('org_id', orgId),
     ]);
 
+    // Best-effort onboarding prefill from the user's most recent Silo Tax audit.
+    // The audit funnel pre-creates the org and already captured brand URL +
+    // competitors, so surface them and let the wizard prefill instead of asking
+    // the user to re-enter what they just gave. Never fails the status call.
+    let auditPrefill: {
+      brand_url: string | null;
+      competitor_urls: string[];
+    } | null = null;
+    try {
+      const { data: audit } = await supabase
+        .from('audit_sessions')
+        .select('brand_url, competitor_urls')
+        .eq('org_id', orgId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (audit) {
+        auditPrefill = {
+          brand_url: audit.brand_url ?? null,
+          competitor_urls: Array.isArray(audit.competitor_urls)
+            ? audit.competitor_urls
+            : [],
+        };
+      }
+    } catch {
+      auditPrefill = null;
+    }
+
     return reply.send({
       success: true,
       data: {
@@ -209,6 +237,7 @@ export async function onboardingRoutes(server: FastifyInstance) {
         completed: !!org.completed_onboarding_at,
         completed_at: org.completed_onboarding_at,
         skips: org.onboarding_skips ?? {},
+        audit_prefill: auditPrefill,
         counts: {
           competitors: competitorsRes.count ?? 0,
           journalists: journalistsRes.count ?? 0,
