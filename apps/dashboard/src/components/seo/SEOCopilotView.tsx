@@ -15,21 +15,19 @@
 
 import { useState, useCallback } from 'react';
 
-import { useGscStatus } from '@/lib/useGSC';
-
 import {
   MOCK_SEO_ASSETS,
   MOCK_TECHNICAL_FINDINGS,
   MOCK_CITATION_ACTIVITY,
   MOCK_TOPIC_CLUSTERS,
 } from './mock-data';
+import { SeoOverviewPanel } from './SeoOverviewPanel';
 import {
   getAEOBandColor,
   getAEOBandBgColor,
   getAEOBandLabel,
   FINDING_CATEGORY_CONFIG,
   SEVERITY_CONFIG,
-  type SAGEProposal,
 } from './types';
 
 // ============================================
@@ -101,271 +99,6 @@ function ReasoningChip({ reasoning }: { reasoning: string }) {
         {reasoning}
       </span>
     </button>
-  );
-}
-
-// ============================================
-// OVERVIEW TAB (COPILOT)
-// ============================================
-
-function OverviewTab({
-  proposals,
-  decisions,
-  onApprove,
-  onReject,
-}: {
-  proposals: SAGEProposal[];
-  decisions: Record<string, ProposalDecision>;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
-}) {
-  const totalAEO = proposals.reduce((sum, p) => sum + p.estimatedAEOImpact, 0);
-  const totalEVI = proposals.reduce((sum, p) => sum + p.estimatedEVIImpact, 0);
-  const pendingCount = proposals.filter((p) => !decisions[p.id]).length;
-
-  // GSC connection status — gates Share of Model and Layer Health data
-  const { data: gscStatus } = useGscStatus();
-  const gscConnected = gscStatus?.connected ?? false;
-
-  return (
-    <div className="space-y-6">
-      {/* SAGE Proposal Banner — only when proposals exist */}
-      {proposals.length > 0 ? (
-        <div className="bg-brand-cyan/10 border border-brand-cyan/30 rounded-xl p-5">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-              <p className="text-sm text-white/90">
-                <span className="font-semibold text-brand-cyan">SAGE</span>{' '}
-                identified{' '}
-                <span className="font-semibold text-white/90">
-                  {pendingCount} priority action{pendingCount !== 1 ? 's' : ''}
-                </span>{' '}
-                — Est. impact:{' '}
-                <span className="font-bold text-brand-cyan tabular-nums">
-                  +{totalAEO} AEO pts
-                </span>{' '}
-                ·{' '}
-                <span className="font-bold text-brand-cyan tabular-nums">
-                  +{totalEVI.toFixed(1)} EVI
-                </span>
-              </p>
-            </div>
-            <button
-              type="button"
-              className="px-4 py-2 text-sm font-semibold bg-brand-cyan text-white/90 rounded-lg hover:bg-brand-cyan/90 shadow-[0_0_16px_rgba(0,217,255,0.25)] transition-all duration-150 shrink-0"
-            >
-              Review Plan
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-brand-cyan/5 border border-brand-cyan/15 rounded-xl p-5">
-          <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan/50" />
-            <p className="text-sm text-white/60">
-              <span className="font-semibold text-brand-cyan">SAGE</span> is
-              analyzing your domain.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Share of Model */}
-      <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-white/90">
-            Share of Model
-          </h3>
-        </div>
-        {gscConnected ? (
-          <>
-            <div className="flex items-end gap-3 mb-4">
-              <span className="text-3xl font-bold text-white/30 tabular-nums">
-                --
-              </span>
-              <span className="text-sm text-white/40 mb-1">Calculating...</span>
-            </div>
-            <p className="text-[13px] text-white/50">
-              Share of Model data is being calculated from your connected
-              sources.
-            </p>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-8">
-            <p className="text-sm text-white/50 text-center">
-              Connect Google Search Console to see your Share of Model data.
-            </p>
-            <a
-              href="/app/settings"
-              className="mt-3 px-4 py-2 text-sm font-semibold text-brand-cyan border border-brand-cyan/30 rounded-lg hover:bg-brand-cyan/10 transition-colors"
-            >
-              Connect GSC
-            </a>
-          </div>
-        )}
-      </div>
-
-      {/* Three Layer Health Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { layer: 1, label: 'SEO Health' },
-          { layer: 2, label: 'AEO Readiness' },
-          { layer: 3, label: 'Share of Model' },
-        ].map((layerDef) => (
-          <div
-            key={layerDef.layer}
-            className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-5"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-                Layer {layerDef.layer}
-              </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
-                {gscConnected ? 'Pending' : 'No data'}
-              </span>
-            </div>
-            <h4 className="text-sm font-semibold text-white/90 mb-1">
-              {layerDef.label}
-            </h4>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-2xl font-bold tabular-nums text-white/30">
-                --
-              </span>
-              <span className="text-[13px] text-white/50 mb-0.5">/100</span>
-            </div>
-            <div className="w-full h-1.5 rounded-full bg-slate-5 overflow-hidden mb-3">
-              <div
-                className="h-full rounded-full bg-brand-cyan/25 transition-all duration-300"
-                style={{ width: '0%' }}
-              />
-            </div>
-            <p className="text-[13px] text-white/50 leading-relaxed">
-              {gscConnected
-                ? 'Data is being collected. Scores will appear after the first analysis cycle.'
-                : 'Connect Google Search Console to populate this layer.'}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* SAGE Priority Queue */}
-      <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1">
-        <div className="px-6 py-4 border-b border-border-subtle">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
-            <h3 className="text-sm font-semibold text-white/90">
-              SAGE Priority Queue
-            </h3>
-            <span className="text-[13px] text-white/50 ml-1">
-              AI-sorted by impact
-            </span>
-          </div>
-        </div>
-        {proposals.length === 0 ? (
-          <div className="px-6 py-10 text-center">
-            <p className="text-sm text-white/50">No SEO actions yet.</p>
-            <p className="text-xs text-white/30 mt-1">
-              SAGE will generate recommendations once your domain data has been
-              analyzed.
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-border-subtle">
-            {[...proposals]
-              .sort(
-                (a, b) =>
-                  b.estimatedAEOImpact +
-                  b.estimatedEVIImpact -
-                  (a.estimatedAEOImpact + a.estimatedEVIImpact)
-              )
-              .map((proposal) => {
-                const decision = decisions[proposal.id];
-                const isApproved = decision === 'approved';
-                const isRejected = decision === 'rejected';
-
-                return (
-                  <div
-                    key={proposal.id}
-                    className={`px-6 py-4 transition-all duration-150 ${
-                      isRejected ? 'opacity-40' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-white/90 mb-2">
-                          {proposal.title}
-                        </h4>
-                        <ReasoningChip reasoning={proposal.reasoning} />
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        {decision ? (
-                          isApproved ? (
-                            <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-semantic-success/10 text-semantic-success border-semantic-success/20">
-                              Approved
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border bg-white/5 text-white/40 border-white/10">
-                              Rejected
-                            </span>
-                          )
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => onApprove(proposal.id)}
-                              className="px-3 py-1.5 text-sm font-semibold bg-semantic-success text-white/90 rounded-lg hover:bg-semantic-success/90 shadow-[0_0_16px_rgba(34,197,94,0.25)] transition-all duration-150"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onReject(proposal.id)}
-                              className="px-3 py-1.5 text-sm font-medium text-white/50 bg-white/5 border border-white/10 rounded-lg hover:text-white/70 hover:border-white/20 hover:bg-white/10 transition-all duration-150"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 mt-2">
-                      <ConfidenceBar confidence={proposal.confidence} />
-                      <div className="flex items-center gap-3 text-[13px]">
-                        <span className="text-white/50">
-                          AEO{' '}
-                          <span className="font-semibold text-brand-cyan tabular-nums">
-                            +{proposal.estimatedAEOImpact}
-                          </span>
-                        </span>
-                        <span className="text-white/50">
-                          EVI{' '}
-                          <span className="font-semibold text-brand-cyan tabular-nums">
-                            +{proposal.estimatedEVIImpact.toFixed(1)}
-                          </span>
-                        </span>
-                      </div>
-                      <span
-                        className={`ml-auto px-2 py-0.5 rounded border text-[11px] font-bold uppercase tracking-wider ${
-                          proposal.type === 'schema'
-                            ? 'bg-brand-iris/10 text-brand-iris border-brand-iris/30'
-                            : proposal.type === 'entity'
-                              ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30'
-                              : proposal.type === 'content'
-                                ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
-                                : 'bg-brand-amber/10 text-brand-amber border-brand-amber/30'
-                        }`}
-                      >
-                        {proposal.type}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -865,14 +598,7 @@ export function SEOCopilotView({ activeTab }: SEOCopilotViewProps) {
     <>
       <ToastStack toasts={toasts} />
       <div className="max-w-6xl mx-auto">
-        {activeTab === 'overview' && (
-          <OverviewTab
-            proposals={[]}
-            decisions={decisions}
-            onApprove={handleApprove}
-            onReject={handleReject}
-          />
-        )}
+        {activeTab === 'overview' && <SeoOverviewPanel />}
         {activeTab === 'aeo' && (
           <AEOTab
             decisions={decisions}

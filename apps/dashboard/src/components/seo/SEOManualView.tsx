@@ -11,18 +11,16 @@
  * @see /docs/canon/DS_v3_1_EXPRESSION.md
  */
 
-import { Suspense, lazy, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
-  MOCK_SHARE_OF_MODEL,
   MOCK_COMPETITORS,
-  MOCK_LAYER_HEALTH,
   MOCK_SEO_ASSETS,
   MOCK_TECHNICAL_FINDINGS,
-  MOCK_ACTION_QUEUE,
   MOCK_CITATION_ACTIVITY,
   MOCK_TOPIC_CLUSTERS,
 } from './mock-data';
+import { SeoOverviewPanel } from './SeoOverviewPanel';
 import {
   getAEOBandColor,
   getAEOBandBgColor,
@@ -31,7 +29,6 @@ import {
   SEVERITY_CONFIG,
   type SEOAsset,
   type TechnicalFinding,
-  type ActionQueueItem,
 } from './types';
 
 // ============================================
@@ -45,24 +42,6 @@ interface SEOManualViewProps {
 // ============================================
 // HELPERS
 // ============================================
-
-function getLayerStatusColor(
-  status: 'healthy' | 'attention' | 'critical'
-): string {
-  if (status === 'healthy') return 'text-semantic-success';
-  if (status === 'attention') return 'text-semantic-warning';
-  return 'text-semantic-danger';
-}
-
-function getLayerStatusBadge(
-  status: 'healthy' | 'attention' | 'critical'
-): string {
-  if (status === 'healthy')
-    return 'bg-semantic-success/10 text-semantic-success border-semantic-success/20';
-  if (status === 'attention')
-    return 'bg-semantic-warning/10 text-semantic-warning border-semantic-warning/20';
-  return 'bg-semantic-danger/10 text-semantic-danger border-semantic-danger/20';
-}
 
 function getSchemaStatusBadge(status: 'complete' | 'partial' | 'missing'): {
   label: string;
@@ -158,240 +137,6 @@ function getTopicHealthColor(health: number): string {
 
 function severityOrder(severity: string): number {
   return SEVERITY_CONFIG[severity]?.order ?? 99;
-}
-
-// ============================================
-// OVERVIEW TAB
-// ============================================
-
-function OverviewTab() {
-  // GSC Connection Card at top of overview
-  const GscCard = lazy(() =>
-    import('./GscConnectionCard').then((m) => ({
-      default: m.GscConnectionCard,
-    }))
-  );
-
-  const sortedActions = useMemo(
-    () =>
-      [...MOCK_ACTION_QUEUE]
-        .filter((a) => a.status !== 'completed')
-        .sort((a, b) => severityOrder(a.severity) - severityOrder(b.severity)),
-    []
-  );
-
-  const maxCompetitorSoM = useMemo(
-    () => Math.max(...MOCK_COMPETITORS.map((c) => c.shareOfModel)),
-    []
-  );
-
-  return (
-    <div className="space-y-6">
-      {/* GSC Connection Status (S-INT-06) */}
-      <Suspense fallback={null}>
-        <GscCard />
-      </Suspense>
-
-      {/* Share of Model Hero */}
-      <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-              Share of Model
-            </span>
-            <div className="mt-2 flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-brand-cyan tabular-nums shadow-[0_0_24px_rgba(0,217,255,0.25)]">
-                {MOCK_SHARE_OF_MODEL.brand}%
-              </span>
-              <span className="flex items-center gap-1 text-sm font-semibold text-semantic-success">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 10l7-7m0 0l7 7m-7-7v18"
-                  />
-                </svg>
-                +{MOCK_SHARE_OF_MODEL.trend}
-              </span>
-            </div>
-            <span className="text-[13px] text-white/50 mt-1 block">
-              Last {MOCK_SHARE_OF_MODEL.period}
-            </span>
-          </div>
-          <div className="p-3 rounded-xl bg-brand-cyan/10 ring-1 ring-brand-cyan/20 shadow-[0_0_20px_rgba(0,217,255,0.12)]">
-            <svg
-              className="w-6 h-6 text-brand-cyan"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Competitive Bar Chart */}
-      <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-6">
-        <h3 className="text-sm font-semibold text-white/90 mb-4">
-          Competitive Landscape
-        </h3>
-        <div className="space-y-3">
-          {MOCK_COMPETITORS.map((competitor) => (
-            <div key={competitor.name} className="flex items-center gap-3">
-              <span
-                className={`text-sm w-32 shrink-0 truncate ${competitor.name === 'Your Brand' ? 'font-semibold text-brand-cyan' : 'text-white/70'}`}
-              >
-                {competitor.name}
-              </span>
-              <div className="flex-1 h-6 bg-slate-3 rounded overflow-hidden">
-                <div
-                  className={`h-full rounded transition-all duration-500 ${
-                    competitor.name === 'Your Brand'
-                      ? 'bg-brand-cyan shadow-[0_0_16px_rgba(0,217,255,0.15)]'
-                      : 'bg-white/20'
-                  }`}
-                  style={{
-                    width: `${(competitor.shareOfModel / maxCompetitorSoM) * 100}%`,
-                  }}
-                />
-              </div>
-              <span
-                className={`text-sm font-bold tabular-nums w-14 text-right ${competitor.name === 'Your Brand' ? 'text-brand-cyan' : 'text-white/70'}`}
-              >
-                {competitor.shareOfModel}%
-              </span>
-              <span
-                className={`text-[13px] tabular-nums w-12 text-right ${competitor.trend > 0 ? 'text-semantic-success' : competitor.trend < 0 ? 'text-semantic-danger' : 'text-white/50'}`}
-              >
-                {competitor.trend > 0 ? '+' : ''}
-                {competitor.trend}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Three Layer Health Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {MOCK_LAYER_HEALTH.map((layer) => (
-          <div
-            key={layer.layer}
-            className="bg-panel border border-border-subtle rounded-xl shadow-elev-1 p-5"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-                Layer {layer.layer}
-              </span>
-              <span
-                className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider rounded border ${getLayerStatusBadge(layer.status)}`}
-              >
-                {layer.status}
-              </span>
-            </div>
-            <h3 className="text-sm font-semibold text-white/90 mb-1">
-              {layer.label}
-            </h3>
-            <div className="flex items-baseline gap-2 mb-3">
-              <span
-                className={`text-3xl font-bold tabular-nums ${getLayerStatusColor(layer.status)}`}
-              >
-                {layer.score}
-              </span>
-              <span className="text-[13px] text-white/50">/100</span>
-            </div>
-            <p className="text-sm text-white/70 leading-relaxed">
-              {layer.summary}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Action Queue */}
-      <div className="bg-panel border border-border-subtle rounded-xl shadow-elev-1">
-        <div className="px-6 py-4 border-b border-border-subtle">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white/90">
-              Action Queue
-            </h3>
-            <span className="text-[13px] text-white/50">
-              {sortedActions.length} pending
-            </span>
-          </div>
-        </div>
-        <div className="divide-y divide-border-subtle">
-          {sortedActions.map((action) => (
-            <ActionQueueRow key={action.id} action={action} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ActionQueueRow({ action }: { action: ActionQueueItem }) {
-  const severityConf = SEVERITY_CONFIG[action.severity];
-
-  return (
-    <div className="px-6 py-4 hover:bg-slate-3 transition-all duration-150">
-      <div className="flex items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span
-              className={`px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded border ${severityConf?.color ?? 'bg-white/5 text-white/50 border-white/10'}`}
-            >
-              {severityConf?.label ?? action.severity}
-            </span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-              Layer {action.layer}
-            </span>
-          </div>
-          <h4 className="text-sm font-semibold text-white/90 mb-1">
-            {action.title}
-          </h4>
-          <p className="text-sm text-white/70 mb-2">{action.description}</p>
-
-          {/* AEO Bridge Impact */}
-          <div className="border-l-2 border-brand-cyan pl-3 py-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan">
-              AEO Bridge Impact
-            </span>
-            <p className="text-sm text-white/70 mt-0.5">
-              {action.aeoBridgeImpact}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-end gap-3 shrink-0">
-          <div className="text-right">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 block">
-              Impact
-            </span>
-            <span className="text-lg font-bold text-brand-cyan tabular-nums">
-              +{action.estimatedImpact}
-            </span>
-          </div>
-          <button
-            type="button"
-            className="px-4 py-2 text-sm font-semibold bg-brand-cyan text-slate-0 rounded-lg hover:bg-brand-cyan/90 shadow-[0_0_16px_rgba(0,217,255,0.25)] transition-all duration-150"
-          >
-            Fix Now
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 // ============================================
@@ -846,7 +591,7 @@ function IntelligenceTab() {
 export function SEOManualView({ activeTab }: SEOManualViewProps) {
   switch (activeTab) {
     case 'overview':
-      return <OverviewTab />;
+      return <SeoOverviewPanel />;
     case 'aeo':
       return <AEOTab />;
     case 'technical':
