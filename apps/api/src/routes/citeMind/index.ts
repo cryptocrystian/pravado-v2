@@ -33,6 +33,7 @@ import {
 } from '../../services/citeMind/citeMindPublishGateService';
 import { scoreAndPersist } from '../../services/citeMind/citeMindQualityScorer';
 import { generateSchema } from '../../services/citeMind/citeMindSchemaGenerator';
+import { getShareOfModel } from '../../services/citeMind/shareOfModelService';
 
 /**
  * Helper to get user's org ID
@@ -472,6 +473,56 @@ export async function citeMindRoutes(server: FastifyInstance) {
         .single();
 
       return reply.send({ success: true, data: summary });
+    }
+  );
+
+  // ========================================
+  // GET /share-of-model — Share of Model (Engine 3, SEO_AEO_PILLAR_CANON §4)
+  // Brand / (Brand + Competitors) × 100 across monitored AI answers, overall +
+  // per-topic + trend. Honest-empty (available:false) until the monitor runs.
+  // ========================================
+  server.get<{ Querystring: { days?: string } }>(
+    '/share-of-model',
+    { preHandler: requireUser },
+    async (request, reply) => {
+      const emptyDays = Math.min(
+        Math.max(parseInt(request.query.days ?? '30', 10) || 30, 1),
+        365
+      );
+
+      if (!FLAGS.ENABLE_CITEMIND) {
+        return reply.send({
+          success: true,
+          data: {
+            available: false,
+            shareOfModel: null,
+            trendDelta: null,
+            periodDays: emptyDays,
+            brandCitations: 0,
+            competitorCitations: 0,
+            sampledQueries: 0,
+            topics: [],
+          },
+        });
+      }
+
+      if (!request.user) {
+        return reply.code(401).send({
+          success: false,
+          error: { message: 'Authentication required' },
+        });
+      }
+
+      const orgId = await getUserOrgId(request.user.id, supabase);
+      if (!orgId) {
+        return reply.code(403).send({
+          success: false,
+          error: { code: 'NO_ORG', message: 'No organization found' },
+        });
+      }
+
+      const data = await getShareOfModel(supabase, orgId, emptyDays);
+      return reply.send({ success: true, data });
     }
   );
 
