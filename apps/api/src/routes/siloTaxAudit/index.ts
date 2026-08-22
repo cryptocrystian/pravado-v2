@@ -975,9 +975,16 @@ export async function siloTaxAuditRoutes(server: FastifyInstance) {
       try {
         const { data: linkData } = await supabase.auth.admin.generateLink({
           type: 'magiclink',
+          // Route through /callback (the canonical magic-link convergence, same
+          // as login) so the server-authoritative onboarding gate runs. The
+          // audit pre-creates the org + membership, so landing directly on
+          // /app/command-center previously SKIPPED onboarding and dropped the
+          // user into an unseeded dashboard (EVI 0). /callback → session-check
+          // now routes incomplete orgs into /onboarding/ai-intro for real SAGE
+          // activation. See DECISIONS_LOG (audit→onboarding handoff).
           email: normalizedEmail,
           options: {
-            redirectTo: 'https://app.pravado.io/app/command-center',
+            redirectTo: 'https://app.pravado.io/callback',
           },
         });
         if (linkData?.properties?.action_link) {
