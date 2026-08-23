@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react';
 
 import { ComingSoonGate } from '@/components/gates/ComingSoonGate';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import { useShareOfModel } from '@/hooks/useShareOfModel';
 
 import { EntityMap } from './EntityMap';
 import type { EntityMapPayload } from './types';
@@ -68,6 +69,63 @@ type FetchState =
   | { status: 'error'; message: string }
   | { status: 'no_org' }
   | { status: 'ready'; payload: EntityMapPayload };
+
+/**
+ * Share of Model — canon's "primary cross-pillar metric" for the Intelligence
+ * Canvas (SEO_AEO_PILLAR_CANON §4D). Compact strip above the canvas; real
+ * CiteMind Engine 3 data, honest-empty until the citation monitor has run.
+ */
+function ShareOfModelStrip() {
+  const { data, isLoading, error } = useShareOfModel();
+  const pct = data?.shareOfModel;
+  const trend = data?.trendDelta ?? null;
+  const measured =
+    !isLoading &&
+    !error &&
+    data?.available &&
+    pct !== null &&
+    pct !== undefined;
+
+  return (
+    <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b border-border-subtle bg-page">
+      <div className="flex items-baseline gap-2.5">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+          Share of Model
+        </span>
+        {isLoading ? (
+          <span className="h-4 w-14 bg-slate-3 rounded animate-pulse inline-block" />
+        ) : measured ? (
+          <>
+            <span className="text-lg font-bold text-brand-cyan tabular-nums leading-none">
+              {pct!.toFixed(1)}%
+            </span>
+            {trend !== null && (
+              <span
+                className={`text-[11px] font-semibold tabular-nums ${
+                  trend > 0
+                    ? 'text-semantic-success'
+                    : trend < 0
+                      ? 'text-semantic-danger'
+                      : 'text-white/40'
+                }`}
+              >
+                {trend > 0 ? '+' : ''}
+                {trend.toFixed(1)} pts
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="text-[11px] text-white/35">
+            Not measured yet — awaiting CiteMind citation scans
+          </span>
+        )}
+      </div>
+      <span className="text-[10px] text-white/25 uppercase tracking-wider">
+        Engine 3
+      </span>
+    </div>
+  );
+}
 
 export function IntelligenceCanvasPane({
   hoveredActionId = null,
@@ -127,6 +185,9 @@ export function IntelligenceCanvasPane({
 
   return (
     <div className="h-full flex flex-col">
+      {/* Share of Model — canon's primary cross-pillar metric (§4D) */}
+      <ShareOfModelStrip />
+
       {/* TOP ROW: tab toolbar (always rendered — shell stays intact even when gated) */}
       <div className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 border-b border-border-subtle bg-page">
         {TABS.map((tab) => (
