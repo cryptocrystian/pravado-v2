@@ -11,7 +11,7 @@
  *
  * Cost guardrails:
  * - Max 20 queries per org per cycle
- * - Uses cheapest models (haiku, sonar-small, gpt-4o-mini)
+ * - Uses cheapest models (haiku, sonar, gpt-4o-mini)
  * - Semantic classification only fires on responses without a direct match,
  *   at the cheapest tier (temperature 0, <=256 tokens)
  * - Checks budget before each engine
@@ -94,7 +94,11 @@ async function callPerplexity(prompt: string, apiKey: string): Promise<string> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'llama-3.1-sonar-small-128k-online',
+      // Perplexity RETIRED the `llama-3.1-sonar-*` model family — requests for it
+      // now fail with 400 Bad Request (every citation-monitor scan was erroring
+      // on Perplexity). `sonar` is the current cheapest online search model.
+      // Env-overridable so the next Perplexity rename is an ops change, not code.
+      model: process.env.PERPLEXITY_MODEL || 'sonar',
       messages: [
         {
           role: 'system',
