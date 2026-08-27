@@ -56,6 +56,7 @@ interface EnvConfig {
   openaiApiKey?: string;
   anthropicApiKey?: string;
   perplexityApiKey?: string;
+  geminiApiKey?: string;
 }
 
 // ============================================================================
@@ -71,6 +72,10 @@ function getEnvConfig(): EnvConfig {
       process.env.ANTHROPIC_API_KEY ||
       undefined,
     perplexityApiKey: process.env.PERPLEXITY_API_KEY || undefined,
+    geminiApiKey:
+      process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_GENAI_API_KEY ||
+      undefined,
   };
 }
 
@@ -79,7 +84,7 @@ function getAvailableEngines(config: EnvConfig): Engine[] {
   if (config.perplexityApiKey) engines.push('perplexity');
   if (config.openaiApiKey) engines.push('chatgpt');
   if (config.anthropicApiKey) engines.push('claude');
-  // Gemini: future — skip for now
+  if (config.geminiApiKey) engines.push('gemini');
   return engines;
 }
 
@@ -123,6 +128,48 @@ async function callPerplexity(prompt: string, apiKey: string): Promise<string> {
     choices?: Array<{ message?: { content?: string } }>;
   };
   return data.choices?.[0]?.message?.content || '';
+}
+
+/**
+ * Call Google Gemini (Generative Language API). Canon-listed Engine-3 surface
+ * (CITEMIND_SYSTEM). Direct call — the shared LlmRouter is openai/anthropic-only.
+ * Model is env-overridable (GEMINI_MODEL) so a future rename is an ops change.
+ */
+async function callGemini(prompt: string, apiKey: string): Promise<string> {
+  const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: 'You are a helpful research assistant. Provide comprehensive, factual answers. Mention specific companies, tools, and resources by name when relevant.',
+            },
+          ],
+        },
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 512, temperature: 0.3 },
+      }),
+      signal: AbortSignal.timeout(30000),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Gemini API error: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = (await response.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+  return (
+    data.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') ||
+    ''
+  );
 }
 
 /**
@@ -171,6 +218,9 @@ async function callEngine(
   switch (engine) {
     case 'perplexity':
       text = await callPerplexity(prompt, config.perplexityApiKey!);
+      break;
+    case 'gemini':
+      text = await callGemini(prompt, config.geminiApiKey!);
       break;
     case 'chatgpt':
     case 'claude':
