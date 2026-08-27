@@ -47,6 +47,8 @@ let citeMindQueue: QueueInstance | null = null;
 let citeMindWorker: WorkerInstance | null = null;
 let citationMonitorQueue: QueueInstance | null = null;
 let citationMonitorWorker: WorkerInstance | null = null;
+let aiSurfaceQueue: QueueInstance | null = null;
+let aiSurfaceWorker: WorkerInstance | null = null;
 let gscQueue: QueueInstance | null = null;
 let gscWorker: WorkerInstance | null = null;
 let journalistQueue: QueueInstance | null = null;
@@ -326,6 +328,45 @@ export async function initializeBullMQ(config: BullMQConfig): Promise<void> {
       );
 
       logger.info('CiteMind citation monitor queue initialized (every 6h)');
+
+      // AI SEARCH-SURFACE monitor (Google AI Overviews + Bing Copilot via
+      // DataForSEO). Separate, configurable cadence (default daily) because each
+      // query is a paid SERP call. CITEMIND_SERP_CADENCE_HOURS overrides (1-168).
+      const { processAiSurfaceMonitor } = await import(
+        './workers/aiSurfaceMonitorWorker'
+      );
+      aiSurfaceQueue = new Queue('citemind-ai-surface', {
+        connection,
+        prefix: bullPrefix,
+      });
+      aiSurfaceWorker = new Worker(
+        'citemind-ai-surface',
+        async (job) => {
+          logger.info(
+            `Processing AI-surface monitor job ${job.id} (${job.data.type ?? 'single-org'})`
+          );
+          await processAiSurfaceMonitor(job.data);
+        },
+        { connection, prefix: bullPrefix, concurrency: 1 }
+      );
+      const serpCadenceHours = Math.min(
+        Math.max(
+          parseInt(process.env.CITEMIND_SERP_CADENCE_HOURS ?? '24', 10) || 24,
+          1
+        ),
+        168
+      );
+      await aiSurfaceQueue.add(
+        'ai-surface-schedule',
+        { type: 'scheduled' },
+        {
+          repeat: { every: serpCadenceHours * 60 * 60 * 1000 },
+          jobId: 'citemind-ai-surface-scheduler',
+        }
+      );
+      logger.info(
+        `CiteMind AI-surface monitor queue initialized (every ${serpCadenceHours}h)`
+      );
     }
 
     // GSC Sync queue (S-INT-06)
@@ -612,6 +653,29 @@ export async function enqueueCitationMonitor(orgId: string): Promise<void> {
 }
 
 /**
+ * Enqueue an AI-surface monitor job (Google AI Overviews + Bing Copilot) for a
+ * given org. Used by the scheduled fan-out and any on-demand trigger.
+ */
+export async function enqueueAiSurfaceMonitor(orgId: string): Promise<void> {
+  if (!aiSurfaceQueue) {
+    logger.warn(
+      `Cannot enqueue AI-surface monitor for org ${orgId} — queue not initialized`
+    );
+    return;
+  }
+  await aiSurfaceQueue.add(
+    'ai-surface',
+    { orgId },
+    {
+      jobId: `citemind-ai-surface-${orgId}-${Date.now()}`,
+      removeOnComplete: { age: 86400 },
+      removeOnFail: { age: 604800 },
+    }
+  );
+  logger.info(`Enqueued AI-surface monitor for org ${orgId}`);
+}
+
+/**
  * Enqueue a GSC sync job for a given org.
  * No-op if BullMQ or GSC queue is not initialized.
  */
@@ -743,6 +807,12 @@ export async function shutdownBullMQ(): Promise<void> {
   }
   if (citationMonitorQueue) {
     closePromises.push(citationMonitorQueue.close());
+  }
+  if (aiSurfaceWorker) {
+    closePromises.push(aiSurfaceWorker.close());
+  }
+  if (aiSurfaceQueue) {
+    closePromises.push(aiSurfaceQueue.close());
   }
   if (gscWorker) {
     closePromises.push(gscWorker.close());
