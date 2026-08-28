@@ -140,38 +140,56 @@ async function callGemini(prompt: string, apiKey: string): Promise<string> {
   // model, so it won't 404 when Google retires a pinned version (gemini-2.0-flash
   // was retired → 404 Not Found). Override with GEMINI_MODEL to pin a version.
   const model = process.env.GEMINI_MODEL || 'gemini-flash-latest';
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const body = JSON.stringify({
+    systemInstruction: {
+      parts: [
+        {
+          text: 'You are a helpful research assistant. Provide comprehensive, factual answers. Mention specific companies, tools, and resources by name when relevant.',
+        },
+      ],
+    },
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { maxOutputTokens: 512, temperature: 0.3 },
+  });
+
+  // Retry transient errors with backoff. Gemini's free tier rate-limits bursts
+  // (429) and popular models are periodically overloaded (503/500). The monitor
+  // fires its queries back-to-back, so without a retry every burst Gemini call
+  // fails and writes no row. Non-transient errors throw immediately.
+  const RETRYABLE = new Set([429, 500, 503]);
+  let lastStatus = 0;
+  let lastText = '';
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, 1000 * attempt * attempt)); // +1s, +4s
+    }
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [
-            {
-              text: 'You are a helpful research assistant. Provide comprehensive, factual answers. Mention specific companies, tools, and resources by name when relevant.',
-            },
-          ],
-        },
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 512, temperature: 0.3 },
-      }),
+      body,
       signal: AbortSignal.timeout(30000),
+    });
+    if (response.ok) {
+      const data = (await response.json()) as {
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      };
+      return (
+        data.candidates?.[0]?.content?.parts
+          ?.map((p) => p.text || '')
+          .join('') || ''
+      );
     }
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      `Gemini API error: ${response.status} ${response.statusText}`
-    );
+    lastStatus = response.status;
+    lastText = response.statusText;
+    if (!RETRYABLE.has(response.status)) {
+      throw new Error(
+        `Gemini API error: ${response.status} ${response.statusText}`
+      );
+    }
   }
-
-  const data = (await response.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  };
-  return (
-    data.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') ||
-    ''
+  throw new Error(
+    `Gemini API error: ${lastStatus} ${lastText} (after 3 attempts)`
   );
 }
 
