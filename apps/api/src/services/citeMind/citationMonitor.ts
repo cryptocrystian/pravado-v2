@@ -136,7 +136,10 @@ async function callPerplexity(prompt: string, apiKey: string): Promise<string> {
  * Model is env-overridable (GEMINI_MODEL) so a future rename is an ops change.
  */
 async function callGemini(prompt: string, apiKey: string): Promise<string> {
-  const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  // `gemini-flash-latest` is an alias that tracks the current cheapest flash
+  // model, so it won't 404 when Google retires a pinned version (gemini-2.0-flash
+  // was retired → 404 Not Found). Override with GEMINI_MODEL to pin a version.
+  const model = process.env.GEMINI_MODEL || 'gemini-flash-latest';
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
